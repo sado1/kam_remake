@@ -12,6 +12,8 @@ type
   private
     fUpdating: Boolean;
 
+    procedure CreateMissionParams(aParent: TKMPopUpPanel);
+
     procedure Mission_ModeChange(Sender: TObject);
     procedure Mission_ModeUpdate;
     procedure AIBuilderChange(Sender: TObject);
@@ -72,12 +74,7 @@ uses
 { TKMMapEdMissionMode }
 constructor TKMMapEdMissionMode.Create(aParent: TKMPanel);
 const
-  CHK_W = 300;
-  RADIO_W = 250;
   POPUP_H = 700;
-var
-  difW, Top: Integer;
-  MD: TKMMissionDifficulty;
 begin
   inherited Create;
 
@@ -98,139 +95,9 @@ begin
 
   PopUp_MissionParams := TKMPopUpPanel.Create(aParent.MasterParent, 700, POPUP_H, gResTexts[TX_MAPED_MISSION_PARAMETERS_TITLE], pubgitYellow, False, False);
   PopUp_MissionParams.CapOffsetY := -5;
-
-    Panel_MissionParams := TKMPanel.Create(PopUp_MissionParams.ItemsPanel, 5, 5,
-                                           PopUp_MissionParams.ItemsPanel.Width - 10,
-                                           POPUP_H - 10);
-    Panel_MissionParams.AnchorsStretch;
-
-    Top := 0;
-    TKMLabel.Create(Panel_MissionParams, 0, Top, gResTexts[TX_MAPED_MISSION_AUTHOR], fntMetal, taLeft);
-    TKMLabel.Create(Panel_MissionParams, (Panel_MissionParams.Width div 2) + 5, Top, gResTexts[TX_MAPED_MISSION_VERSION], fntMetal, taLeft);
-    Inc(Top, 20);
-    Edit_Author := TKMEdit.Create(Panel_MissionParams, 0, Top, (Panel_MissionParams.Width div 2) - 5, 20, fntArial);
-    Edit_Author.ShowColors := True;
-    Edit_Version := TKMEdit.Create(Panel_MissionParams, (Panel_MissionParams.Width div 2) + 5, Top,
-                                   (Panel_MissionParams.Width div 2) - 5, 20, fntArial);
-    Edit_Version.ShowColors := True;
-
-    Inc(Top, 30);
-    TKMLabel.Create(Panel_MissionParams, 0, Top, gResTexts[TX_MAPED_MISSION_SMALL_DESC], fntMetal, taLeft);
-    Inc(Top, 20);
-    TKMBevel.Create(Panel_MissionParams, 0, Top, RADIO_W + 10, 45);
-
-    Radio_SmallDescType := TKMRadioGroup.Create(Panel_MissionParams, 5, Top + 5, RADIO_W, 40, fntMetal);
-    Radio_SmallDescType.Add(gResTexts[TX_WORD_TEXT]);
-    Radio_SmallDescType.Add(gResTexts[TX_MAPED_MISSION_LIBX_TEXT_ID]);
-    Radio_SmallDescType.OnChange := RadioMissionDesc_Changed;
-
-    Edit_SmallDesc := TKMEdit.Create(Panel_MissionParams, RADIO_W + 20, Top, Panel_MissionParams.Width - RADIO_W - 25, 20, fntGame);
-    Edit_SmallDesc.ShowColors := True;
-    NumEdit_SmallDesc := TKMNumericEdit.Create(Panel_MissionParams, RADIO_W + 20, Top, -1, 999, fntGrey);
-
-    Inc(Top, 55);
-    TKMLabel.Create(Panel_MissionParams, 0, Top, gResTexts[TX_MAPED_MISSION_PARAMETERS_TITLE], fntMetal, taLeft);
-    Inc(Top, 25);
-    TKMBevel.Create(Panel_MissionParams, 0, Top, Panel_MissionParams.Width, 85);
-
-    Inc(Top, 5);
-    Panel_CheckBoxes := TKMPanel.Create(Panel_MissionParams, 5, Top, Panel_MissionParams.Width - 10, 110);
-
-      CheckBox_Coop := TKMCheckBox.Create(Panel_CheckBoxes, 0, 0,  CHK_W, 20, gResTexts[TX_LOBBY_MAP_COOP], fntMetal);
-      CheckBox_Coop.Hint := gResTexts[TX_LOBBY_MAP_COOP];
-
-      CheckBox_Special := TKMCheckBox.Create(Panel_CheckBoxes, 0, 20, CHK_W, 20, gResTexts[TX_LOBBY_MAP_SPECIAL], fntMetal);
-      CheckBox_Special.Hint := gResTexts[TX_LOBBY_MAP_SPECIAL];
-
-      CheckBox_PlayableAsSP := TKMCheckBox.Create(Panel_CheckBoxes, 0, 40, CHK_W, 20, gResTexts[TX_MENU_MAP_PLAYABLE_AS_SP],  fntMetal);
-      CheckBox_PlayableAsSP.Hint := gResTexts[TX_MAPED_MISSION_PLAYABLE_AS_SP_HINT];
-
-      CheckBox_RMG := TKMCheckBox.Create(Panel_CheckBoxes, 0, 60, CHK_W, 20, gResTexts[TX_LOBBY_MAP_RANDOM], fntMetal);
-      CheckBox_RMG.Hint := gResTexts[TX_LOBBY_MAP_RANDOM_HINT];
-
-      CheckBox_BlockColorSelection := TKMCheckBox.Create(Panel_CheckBoxes, CHK_W + 10, 0, CHK_W, 20, gResTexts[TX_MAPED_MISSION_BLOCK_COLOR_SEL], fntMetal);
-      CheckBox_BlockColorSelection.Hint := gResTexts[TX_MAPED_MISSION_BLOCK_COLOR_SEL_HINT];
-
-      CheckBox_BlockTeamSelection := TKMCheckBox.Create(Panel_CheckBoxes, CHK_W + 10, 20, CHK_W, 20, gResTexts[TX_MAPED_MISSION_BLOCK_TEAM_SEL],  fntMetal);
-      CheckBox_BlockTeamSelection.Hint := gResTexts[TX_MAPED_MISSION_BLOCK_TEAM_SEL_HINT];
-
-      CheckBox_BlockPeacetime := TKMCheckBox.Create(Panel_CheckBoxes, CHK_W + 10, 40, CHK_W, 20, gResTexts[TX_MAPED_MISSION_BLOCK_PT], fntMetal);
-      CheckBox_BlockPeacetime.Hint := gResTexts[TX_MAPED_MISSION_BLOCK_PT_HINT];
-
-      CheckBox_BlockFullMapPreview := TKMCheckBox.Create(Panel_CheckBoxes, CHK_W + 10, 60, CHK_W, 20, gResTexts[TX_MAPED_MISSION_BLOCK_FULL_MAP_PREVIEW], fntMetal);
-      CheckBox_BlockFullMapPreview.Hint := gResTexts[TX_MAPED_MISSION_BLOCK_FULL_MAP_PREVIEW_HINT];
-
-
-    Inc(Top, 90);
-    with TKMLabel.Create(Panel_MissionParams, 0, Top, Panel_MissionParams.Width, 20, gResTexts[TX_MAPED_MISSION_DIFFICULTY_LEVELS], fntMetal, taLeft) do
-      Hint := gResTexts[TX_MAPED_MISSION_DIFFICULTY_LEVELS_HINT];
-    Inc(Top, 20);
-    TKMBevel.Create(Panel_MissionParams, 0, Top, Panel_MissionParams.Width, 65);
-
-    Inc(Top, 5);
-    difW := (PopUp_MissionParams.ItemsPanel.Width - 20) div 3;
-    for MD := MISSION_DIFFICULTY_MIN to mdEasy1 do
-      CheckBox_Difficulty[MD] := TKMCheckBox.Create(Panel_MissionParams,
-                                       5, Top + (Integer(MD) - Integer(mdEasy3))*20,
-                                       difW, 20, gResTexts[DIFFICULTY_LEVELS_TX[MD]], fntMetal);
-    CheckBox_Difficulty[mdNormal] := TKMCheckBox.Create(Panel_MissionParams,
-                                       5 + difW + 5, Top + 20, difW, 20,
-                                       gResTexts[DIFFICULTY_LEVELS_TX[mdNormal]], fntMetal);
-
-    for MD := mdHard1 to MISSION_DIFFICULTY_MAX do
-      CheckBox_Difficulty[MD] := TKMCheckBox.Create(Panel_MissionParams,
-                                       5 + 2*difW + 5, Top + (Integer(MD) - Integer(mdHard1))*20,
-                                       difW, 20, gResTexts[DIFFICULTY_LEVELS_TX[MD]], fntMetal);
-
-    Inc(Top, 65);
-    TKMLabel.Create(Panel_MissionParams, 0, Top, gResTexts[TX_MAPED_MISSION_BIG_DESC], fntMetal, taLeft);
-    Inc(Top, 20);
-    TKMBevel.Create(Panel_MissionParams, 0, Top, RADIO_W + 10, 45);
-
-    Radio_BigDescType := TKMRadioGroup.Create(Panel_MissionParams, 5, Top + 5, RADIO_W, 40, fntMetal);
-    Radio_BigDescType.Add(gResTexts[TX_WORD_TEXT]);
-    Radio_BigDescType.Add(gResTexts[TX_MAPED_MISSION_LIBX_TEXT_ID]);
-    Radio_BigDescType.OnChange := RadioMissionDesc_Changed;
-
-    Edit_BigDesc := TKMEdit.Create(Panel_MissionParams, RADIO_W + 20, Top, Panel_MissionParams.Width - RADIO_W - 25, 20, fntGame);
-    Edit_BigDesc.MaxLen := 4096;
-    Edit_BigDesc.AllowedChars := acAll;
-    Edit_BigDesc.ShowColors := True;
-    NumEdit_BigDesc := TKMNumericEdit.Create(Panel_MissionParams, RADIO_W + 20, Top, -1, 999, fntGrey);
-
-    Inc(Top, 55);
-    Memo_BigDesc := TKMMemo.Create(Panel_MissionParams, 0, Top, Panel_MissionParams.Width, 225, fntArial, bsGame);
-    Memo_BigDesc.AnchorsStretch;
-    Memo_BigDesc.WordWrap := True;
-    Memo_BigDesc.ScrollDown := True;
-
-    Edit_Author.OnChange                 := UpdateMapTxtInfo;
-    Edit_Version.OnChange                := UpdateMapTxtInfo;
-    Edit_SmallDesc.OnChange              := UpdateMapTxtInfo;
-    NumEdit_SmallDesc.OnChange           := UpdateMapTxtInfo;
-    Edit_BigDesc.OnChange                := UpdateMapTxtInfo;
-    NumEdit_BigDesc.OnChange             := UpdateMapTxtInfo;
-    CheckBox_Coop.OnClick                := UpdateMapTxtInfo;
-    CheckBox_Special.OnClick             := UpdateMapTxtInfo;
-    CheckBox_RMG.OnClick                 := UpdateMapTxtInfo;
-    CheckBox_PlayableAsSP.OnClick        := UpdateMapTxtInfo;
-    CheckBox_BlockTeamSelection.OnClick  := UpdateMapTxtInfo;
-    CheckBox_BlockColorSelection.OnClick := UpdateMapTxtInfo;
-    CheckBox_BlockPeacetime.OnClick      := UpdateMapTxtInfo;
-    CheckBox_BlockFullMapPreview.OnClick := UpdateMapTxtInfo;
-
-    for MD := MISSION_DIFFICULTY_MIN to MISSION_DIFFICULTY_MAX do
-      CheckBox_Difficulty[MD].OnClick := UpdateMapTxtInfo;
-
-    Button_Close := TKMButton.Create(Panel_MissionParams, 0, Panel_MissionParams.Height - 35, 120, 30, gResTexts[TX_WORD_CLOSE], bsGame);
-    Button_Close.SetPosCenterW;
-    Button_Close.OnClick := MissionParams_CloseClick;
-    Button_Close.Anchors := [anLeft, anRight, anBottom];
-
-  // Shrink panel height after all childs were added, so they will fit in according to their anchors
-  Panel_MissionParams.Height := PopUp_MissionParams.ItemsPanel.Height - 10;
-
   PopUp_MissionParams.OnKeyDown := MissionParams_OnKeyDown;
+
+  CreateMissionParams(PopUp_MissionParams);
 
   TKMLabel.Create(Panel_Mode, 0, 140, Panel_Mode.Width, 0, gResTexts[TX_MAPED_AI_DEFAULTS_HEADING], fntOutline, taCenter).Anchors := [anLeft, anTop, anRight];
 
@@ -250,6 +117,145 @@ begin
   Button_AIBuilderCancel.Anchors := [anTop, anRight];
   Button_AIBuilderCancel.OnClick := AIBuilderChange;
   Button_AIBuilderCancel.Hide;
+end;
+
+
+procedure TKMMapEdMissionMode.CreateMissionParams(aParent: TKMPopUpPanel);
+const
+  CHK_W = 300;
+  RADIO_W = 250;
+var
+  difW, Top: Integer;
+  MD: TKMMissionDifficulty;
+begin
+  Panel_MissionParams := TKMPanel.Create(aParent.ItemsPanel, 5, 5, aParent.ItemsPanel.Width - 10, aParent.ItemsPanel.Height - 10);
+  Panel_MissionParams.AnchorsStretch;
+
+  Top := 0;
+  TKMLabel.Create(Panel_MissionParams, 0, Top, gResTexts[TX_MAPED_MISSION_AUTHOR], fntMetal, taLeft);
+  TKMLabel.Create(Panel_MissionParams, (Panel_MissionParams.Width div 2) + 5, Top, gResTexts[TX_MAPED_MISSION_VERSION], fntMetal, taLeft);
+  Inc(Top, 20);
+  Edit_Author := TKMEdit.Create(Panel_MissionParams, 0, Top, (Panel_MissionParams.Width div 2) - 5, 20, fntArial);
+  Edit_Author.ShowColors := True;
+  Edit_Version := TKMEdit.Create(Panel_MissionParams, (Panel_MissionParams.Width div 2) + 5, Top,
+                                 (Panel_MissionParams.Width div 2) - 5, 20, fntArial);
+  Edit_Version.ShowColors := True;
+
+  Inc(Top, 30);
+  TKMLabel.Create(Panel_MissionParams, 0, Top, gResTexts[TX_MAPED_MISSION_SMALL_DESC], fntMetal, taLeft);
+  Inc(Top, 20);
+  TKMBevel.Create(Panel_MissionParams, 0, Top, RADIO_W + 10, 45);
+
+  Radio_SmallDescType := TKMRadioGroup.Create(Panel_MissionParams, 5, Top + 5, RADIO_W, 40, fntMetal);
+  Radio_SmallDescType.Add(gResTexts[TX_WORD_TEXT]);
+  Radio_SmallDescType.Add(gResTexts[TX_MAPED_MISSION_LIBX_TEXT_ID]);
+  Radio_SmallDescType.OnChange := RadioMissionDesc_Changed;
+
+  Edit_SmallDesc := TKMEdit.Create(Panel_MissionParams, RADIO_W + 20, Top, Panel_MissionParams.Width - RADIO_W - 25, 20, fntGame);
+  Edit_SmallDesc.ShowColors := True;
+  NumEdit_SmallDesc := TKMNumericEdit.Create(Panel_MissionParams, RADIO_W + 20, Top, -1, 999, fntGrey);
+
+  Inc(Top, 55);
+  TKMLabel.Create(Panel_MissionParams, 0, Top, gResTexts[TX_MAPED_MISSION_PARAMETERS_TITLE], fntMetal, taLeft);
+  Inc(Top, 25);
+  TKMBevel.Create(Panel_MissionParams, 0, Top, Panel_MissionParams.Width, 85);
+
+  Inc(Top, 5);
+  Panel_CheckBoxes := TKMPanel.Create(Panel_MissionParams, 5, Top, Panel_MissionParams.Width - 10, 110);
+
+    CheckBox_Coop := TKMCheckBox.Create(Panel_CheckBoxes, 0, 0,  CHK_W, 20, gResTexts[TX_LOBBY_MAP_COOP], fntMetal);
+    CheckBox_Coop.Hint := gResTexts[TX_LOBBY_MAP_COOP];
+
+    CheckBox_Special := TKMCheckBox.Create(Panel_CheckBoxes, 0, 20, CHK_W, 20, gResTexts[TX_LOBBY_MAP_SPECIAL], fntMetal);
+    CheckBox_Special.Hint := gResTexts[TX_LOBBY_MAP_SPECIAL];
+
+    CheckBox_PlayableAsSP := TKMCheckBox.Create(Panel_CheckBoxes, 0, 40, CHK_W, 20, gResTexts[TX_MENU_MAP_PLAYABLE_AS_SP],  fntMetal);
+    CheckBox_PlayableAsSP.Hint := gResTexts[TX_MAPED_MISSION_PLAYABLE_AS_SP_HINT];
+
+    CheckBox_RMG := TKMCheckBox.Create(Panel_CheckBoxes, 0, 60, CHK_W, 20, gResTexts[TX_LOBBY_MAP_RANDOM], fntMetal);
+    CheckBox_RMG.Hint := gResTexts[TX_LOBBY_MAP_RANDOM_HINT];
+
+    CheckBox_BlockColorSelection := TKMCheckBox.Create(Panel_CheckBoxes, CHK_W + 10, 0, CHK_W, 20, gResTexts[TX_MAPED_MISSION_BLOCK_COLOR_SEL], fntMetal);
+    CheckBox_BlockColorSelection.Hint := gResTexts[TX_MAPED_MISSION_BLOCK_COLOR_SEL_HINT];
+
+    CheckBox_BlockTeamSelection := TKMCheckBox.Create(Panel_CheckBoxes, CHK_W + 10, 20, CHK_W, 20, gResTexts[TX_MAPED_MISSION_BLOCK_TEAM_SEL],  fntMetal);
+    CheckBox_BlockTeamSelection.Hint := gResTexts[TX_MAPED_MISSION_BLOCK_TEAM_SEL_HINT];
+
+    CheckBox_BlockPeacetime := TKMCheckBox.Create(Panel_CheckBoxes, CHK_W + 10, 40, CHK_W, 20, gResTexts[TX_MAPED_MISSION_BLOCK_PT], fntMetal);
+    CheckBox_BlockPeacetime.Hint := gResTexts[TX_MAPED_MISSION_BLOCK_PT_HINT];
+
+    CheckBox_BlockFullMapPreview := TKMCheckBox.Create(Panel_CheckBoxes, CHK_W + 10, 60, CHK_W, 20, gResTexts[TX_MAPED_MISSION_BLOCK_FULL_MAP_PREVIEW], fntMetal);
+    CheckBox_BlockFullMapPreview.Hint := gResTexts[TX_MAPED_MISSION_BLOCK_FULL_MAP_PREVIEW_HINT];
+
+
+  Inc(Top, 90);
+  with TKMLabel.Create(Panel_MissionParams, 0, Top, Panel_MissionParams.Width, 20, gResTexts[TX_MAPED_MISSION_DIFFICULTY_LEVELS], fntMetal, taLeft) do
+    Hint := gResTexts[TX_MAPED_MISSION_DIFFICULTY_LEVELS_HINT];
+  Inc(Top, 20);
+  TKMBevel.Create(Panel_MissionParams, 0, Top, Panel_MissionParams.Width, 65);
+
+  Inc(Top, 5);
+  difW := (aParent.ItemsPanel.Width - 20) div 3;
+  for MD := MISSION_DIFFICULTY_MIN to mdEasy1 do
+    CheckBox_Difficulty[MD] := TKMCheckBox.Create(Panel_MissionParams,
+                                     5, Top + (Integer(MD) - Integer(mdEasy3))*20,
+                                     difW, 20, gResTexts[DIFFICULTY_LEVELS_TX[MD]], fntMetal);
+  CheckBox_Difficulty[mdNormal] := TKMCheckBox.Create(Panel_MissionParams,
+                                     5 + difW + 5, Top + 20, difW, 20,
+                                     gResTexts[DIFFICULTY_LEVELS_TX[mdNormal]], fntMetal);
+
+  for MD := mdHard1 to MISSION_DIFFICULTY_MAX do
+    CheckBox_Difficulty[MD] := TKMCheckBox.Create(Panel_MissionParams,
+                                     5 + 2*difW + 5, Top + (Integer(MD) - Integer(mdHard1))*20,
+                                     difW, 20, gResTexts[DIFFICULTY_LEVELS_TX[MD]], fntMetal);
+
+  Inc(Top, 65);
+  TKMLabel.Create(Panel_MissionParams, 0, Top, gResTexts[TX_MAPED_MISSION_BIG_DESC], fntMetal, taLeft);
+  Inc(Top, 20);
+  TKMBevel.Create(Panel_MissionParams, 0, Top, RADIO_W + 10, 45);
+
+  Radio_BigDescType := TKMRadioGroup.Create(Panel_MissionParams, 5, Top + 5, RADIO_W, 40, fntMetal);
+  Radio_BigDescType.Add(gResTexts[TX_WORD_TEXT]);
+  Radio_BigDescType.Add(gResTexts[TX_MAPED_MISSION_LIBX_TEXT_ID]);
+  Radio_BigDescType.OnChange := RadioMissionDesc_Changed;
+
+  Edit_BigDesc := TKMEdit.Create(Panel_MissionParams, RADIO_W + 20, Top, Panel_MissionParams.Width - RADIO_W - 25, 20, fntGame);
+  Edit_BigDesc.MaxLen := 4096;
+  Edit_BigDesc.AllowedChars := acAll;
+  Edit_BigDesc.ShowColors := True;
+  NumEdit_BigDesc := TKMNumericEdit.Create(Panel_MissionParams, RADIO_W + 20, Top, -1, 999, fntGrey);
+
+  Inc(Top, 55);
+  Memo_BigDesc := TKMMemo.Create(Panel_MissionParams, 0, Top, Panel_MissionParams.Width, 225, fntArial, bsGame);
+  Memo_BigDesc.AnchorsStretch;
+  Memo_BigDesc.WordWrap := True;
+  Memo_BigDesc.ScrollDown := True;
+
+  Edit_Author.OnChange                 := UpdateMapTxtInfo;
+  Edit_Version.OnChange                := UpdateMapTxtInfo;
+  Edit_SmallDesc.OnChange              := UpdateMapTxtInfo;
+  NumEdit_SmallDesc.OnChange           := UpdateMapTxtInfo;
+  Edit_BigDesc.OnChange                := UpdateMapTxtInfo;
+  NumEdit_BigDesc.OnChange             := UpdateMapTxtInfo;
+  CheckBox_Coop.OnClick                := UpdateMapTxtInfo;
+  CheckBox_Special.OnClick             := UpdateMapTxtInfo;
+  CheckBox_RMG.OnClick                 := UpdateMapTxtInfo;
+  CheckBox_PlayableAsSP.OnClick        := UpdateMapTxtInfo;
+  CheckBox_BlockTeamSelection.OnClick  := UpdateMapTxtInfo;
+  CheckBox_BlockColorSelection.OnClick := UpdateMapTxtInfo;
+  CheckBox_BlockPeacetime.OnClick      := UpdateMapTxtInfo;
+  CheckBox_BlockFullMapPreview.OnClick := UpdateMapTxtInfo;
+
+  for MD := MISSION_DIFFICULTY_MIN to MISSION_DIFFICULTY_MAX do
+    CheckBox_Difficulty[MD].OnClick := UpdateMapTxtInfo;
+
+  Button_Close := TKMButton.Create(Panel_MissionParams, 0, Panel_MissionParams.Height - 35, 120, 30, gResTexts[TX_WORD_CLOSE], bsGame);
+  Button_Close.SetPosCenterW;
+  Button_Close.OnClick := MissionParams_CloseClick;
+  Button_Close.Anchors := [anLeft, anRight, anBottom];
+
+  // Shrink panel height after all childs were added, so they will fit in according to their anchors
+  Panel_MissionParams.Height := aParent.ItemsPanel.Height - 10;
 end;
 
 
