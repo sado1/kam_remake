@@ -82,10 +82,8 @@ begin
   inherited Create;
 
   Panel_Mode := TKMPanel.Create(aParent, 0, 28, aParent.Width, 400);
-  with TKMLabel.Create(Panel_Mode, 0, PAGE_TITLE_Y, TB_MAP_ED_WIDTH, 0, gResTexts[TX_MAPED_MISSION_MODE], fntOutline, taCenter) do
-    Anchors := [anLeft, anTop, anRight];
-  with TKMBevel.Create(Panel_Mode, 9, 25, Panel_Mode.Width - 9, 45) do
-    Anchors := [anLeft, anTop, anRight];
+  TKMLabel.Create(Panel_Mode, 0, PAGE_TITLE_Y, TB_MAP_ED_WIDTH, 0, gResTexts[TX_MAPED_MISSION_MODE], fntOutline, taCenter).Anchors := [anLeft, anTop, anRight];
+  TKMBevel.Create(Panel_Mode, 9, 25, Panel_Mode.Width - 9, 45).Anchors := [anLeft, anTop, anRight];
 
   Radio_MissionMode := TKMRadioGroup.Create(Panel_Mode, 14, 30, Panel_Mode.Width - 28, 40, fntMetal);
   Radio_MissionMode.Anchors := [anLeft, anTop, anRight];
@@ -234,8 +232,7 @@ begin
 
   PopUp_MissionParams.OnKeyDown := MissionParams_OnKeyDown;
 
-  with TKMLabel.Create(Panel_Mode, 0, 140, Panel_Mode.Width, 0, gResTexts[TX_MAPED_AI_DEFAULTS_HEADING], fntOutline, taCenter) do
-    Anchors := [anLeft, anTop, anRight];
+  TKMLabel.Create(Panel_Mode, 0, 140, Panel_Mode.Width, 0, gResTexts[TX_MAPED_AI_DEFAULTS_HEADING], fntOutline, taCenter).Anchors := [anLeft, anTop, anRight];
 
   Button_AIBuilderSetup := TKMButton.Create(Panel_Mode, 9, 170, Panel_Mode.Width - 9, 30, gResTexts[TX_MAPED_AI_DEFAULTS_MP_BUILDER], bsGame);
   Button_AIBuilderSetup.Anchors := [anLeft, anTop, anRight];
