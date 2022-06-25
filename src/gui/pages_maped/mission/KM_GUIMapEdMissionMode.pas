@@ -10,6 +10,8 @@ uses
 type
   TKMMapEdMissionMode = class
   private
+    fUpdating: Boolean;
+
     procedure Mission_ModeChange(Sender: TObject);
     procedure Mission_ModeUpdate;
     procedure AIBuilderChange(Sender: TObject);
@@ -256,11 +258,10 @@ end;
 
 function TKMMapEdMissionMode.MissionParams_OnKeyDown(Sender: TObject; Key: Word; Shift: TShiftState): Boolean;
 begin
-  Result := True; //We want to handle all keys here
-  case Key of
-    VK_ESCAPE:  if Button_Close.IsClickable then
-                  MissionParams_CloseClick(Button_Close);
-  end;
+  Result := True; // We want to handle all keys here
+
+  if (Key = VK_ESCAPE) and Button_Close.IsClickable then
+    MissionParams_CloseClick(Button_Close);
 end;
 
 
@@ -310,7 +311,7 @@ end;
 
 procedure TKMMapEdMissionMode.Mission_ModeUpdate;
 begin
-  Radio_MissionMode.ItemIndex := Byte(gGameParams.MissionMode);
+  Radio_MissionMode.ItemIndex := Ord(gGameParams.MissionMode);
 end;
 
 
@@ -337,6 +338,8 @@ procedure TKMMapEdMissionMode.UpdateMapTxtInfo(Sender: TObject);
 var
   MD: TKMMissionDifficulty;
 begin
+  if fUpdating then Exit;
+
   if CheckBox_Coop.Checked then
   begin
     CheckBox_BlockTeamSelection.Check;
@@ -388,37 +391,35 @@ procedure TKMMapEdMissionMode.UpdateMapParams;
 var
   MD: TKMMissionDifficulty;
 begin
-  Edit_Author.SetTextSilently(gGame.MapTxtInfo.Author);   // Will not trigger OnChange event
-  Edit_Version.SetTextSilently(gGame.MapTxtInfo.Version); // Will not trigger OnChange event
+  fUpdating := True;
+  try
+    Edit_Author.Text := gGame.MapTxtInfo.Author;
+    Edit_Version.Text := gGame.MapTxtInfo.Version;
 
-  if gGame.MapTxtInfo.IsSmallDescLibxSet then
-    Radio_SmallDescType.ItemIndex := 1
-  else
-    Radio_SmallDescType.ItemIndex := 0;
+    Radio_SmallDescType.ItemIndex := Ord(gGame.MapTxtInfo.IsSmallDescLibxSet);
+    Radio_BigDescType.ItemIndex := Ord(gGame.MapTxtInfo.IsBigDescLibxSet);
 
-  if gGame.MapTxtInfo.IsBigDescLibxSet then
-    Radio_BigDescType.ItemIndex := 1
-  else
-    Radio_BigDescType.ItemIndex := 0;
+    Edit_SmallDesc.Text     := gGame.MapTxtInfo.SmallDescToDisplay;
+    NumEdit_SmallDesc.Value := gGame.MapTxtInfo.SmallDescLibx;
+    Edit_BigDesc.Text       := gGame.MapTxtInfo.BigDescToDisplay;
+    NumEdit_BigDesc.Value   := gGame.MapTxtInfo.BigDescLibx;
+    Memo_BigDesc.Text       := Edit_BigDesc.Text;
 
-  Edit_SmallDesc.SetTextSilently(gGame.MapTxtInfo.SmallDescToDisplay); // Will not trigger OnChange event
-  NumEdit_SmallDesc.Value := gGame.MapTxtInfo.SmallDescLibx;
-  Edit_BigDesc.SetTextSilently(gGame.MapTxtInfo.BigDescToDisplay);  // Will not trigger OnChange event
-  NumEdit_BigDesc.Value   := gGame.MapTxtInfo.BigDescLibx;
-  Memo_BigDesc.Text       := Edit_BigDesc.Text;
+    CheckBox_Coop.Checked         := gGame.MapTxtInfo.IsCoop;
+    CheckBox_Special.Checked      := gGame.MapTxtInfo.IsSpecial;
+    CheckBox_RMG.Checked          := gGame.MapTxtInfo.IsRMG;
+    CheckBox_PlayableAsSP.Checked := gGame.MapTxtInfo.IsPlayableAsSP;
 
-  CheckBox_Coop.Checked         := gGame.MapTxtInfo.IsCoop;
-  CheckBox_Special.Checked      := gGame.MapTxtInfo.IsSpecial;
-  CheckBox_RMG.Checked          := gGame.MapTxtInfo.IsRMG;
-  CheckBox_PlayableAsSP.Checked := gGame.MapTxtInfo.IsPlayableAsSP;
+    CheckBox_BlockTeamSelection.Checked   := gGame.MapTxtInfo.BlockTeamSelection;
+    CheckBox_BlockColorSelection.Checked  := gGame.MapTxtInfo.BlockColorSelection;
+    CheckBox_BlockPeacetime.Checked       := gGame.MapTxtInfo.BlockPeacetime;
+    CheckBox_BlockFullMapPreview.Checked  := gGame.MapTxtInfo.BlockFullMapPreview;
 
-  CheckBox_BlockTeamSelection.Checked   := gGame.MapTxtInfo.BlockTeamSelection;
-  CheckBox_BlockColorSelection.Checked  := gGame.MapTxtInfo.BlockColorSelection;
-  CheckBox_BlockPeacetime.Checked       := gGame.MapTxtInfo.BlockPeacetime;
-  CheckBox_BlockFullMapPreview.Checked  := gGame.MapTxtInfo.BlockFullMapPreview;
-
-  for MD := MISSION_DIFFICULTY_MIN to MISSION_DIFFICULTY_MAX do
-    CheckBox_Difficulty[MD].Checked := MD in gGame.MapTxtInfo.DifficultyLevels;
+    for MD := MISSION_DIFFICULTY_MIN to MISSION_DIFFICULTY_MAX do
+      CheckBox_Difficulty[MD].Checked := MD in gGame.MapTxtInfo.DifficultyLevels;
+  finally
+    fUpdating := False;
+  end;
 
   RadioMissionDesc_Changed(nil);
 end;
