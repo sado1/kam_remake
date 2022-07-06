@@ -378,6 +378,19 @@ end;
 // 1. Exhaustion = estimation of time when will be ware depleted (determine which house should be built at first)
 // 2. Fraction = fraction of required and available houses
 procedure TKMCityPredictor.UpdateWareDerivation(aWT: TKMWareType; aInitialization: Boolean = False);
+  function GetDependentWareBalance(): Single;
+  begin
+    Result := gHands[fOwner].Stats.GetWareBalance(aWT);
+    case aWT of
+      wtTrunk:   Result := Result + gHands[fOwner].Stats.GetWareBalance(wtTimber) / 2;
+      wtIronOre: Result := Result + gHands[fOwner].Stats.GetWareBalance(wtIron);
+      //wtGoldOre: Result := Result + gHands[fOwner].Stats.GetWareBalance(wtGold) / 2;
+      //wtCorn:    Result := Result + gHands[fOwner].Stats.GetWareBalance(wtGold) / 2;
+      wtFlour:   Result := Result + gHands[fOwner].Stats.GetWareBalance(wtBread) / 2;
+      wtPig:     Result := Result + gHands[fOwner].Stats.GetWareBalance(wtSausage) / 3;
+      wtSkin:    Result := Result + gHands[fOwner].Stats.GetWareBalance(wtLeather) / 2;
+    end;
+  end;
 var
   houseReqCnt: Integer;
   HT: TKMHouseType;
@@ -386,10 +399,14 @@ begin
   with fWareBalance[aWT] do
   begin
     // Calculate when will be ware depleted
-    Exhaustion := 99;
+    Exhaustion := 999;
     if (ActualConsumption - Production > 0) then
-      Exhaustion := Min( Exhaustion, gHands[fOwner].Stats.GetWareBalance(aWT) / (ActualConsumption - Production) );
+      Exhaustion := Min( Exhaustion, GetDependentWareBalance() / (ActualConsumption - Production) );
     houseReqCnt := Ceil(( Max(ActualConsumption, FinalConsumption) - Production) / Max(0.0001, PRODUCTION_RATE[aWT]*1.0));
+    if (houseReqCnt > 0) AND (Exhaustion >= 950) AND (fCityStats.Houses[ PRODUCTION_WARE2HOUSE[aWT] ] = 0) then
+      houseReqCnt := 1
+    else
+      houseReqCnt := Byte(Exhaustion < 950) * houseReqCnt;
     Fraction := houseReqCnt / Max(1.0,((fCityStats.Houses[HT] + houseReqCnt)*1.0));
   end;
   RequiredHouses[HT] := houseReqCnt;
@@ -522,6 +539,7 @@ const
   MAX_WOOD_PRODUCTION = 6;
   INV_REQUIRED_TILES_PER_WOOD = 1/450.0;
   TILE_RESERVE = 1000;
+  IRON_RESERVE_COEF = 300;
 var
   maxIronWeapProd, maxWoodWeapProd, freePlace: Single;
   WT: TKMWareType;
@@ -530,23 +548,36 @@ begin
   fUpdatedPeaceFactor := Min(1,fUpdatedPeaceFactor + aIncPeaceFactor);
   // Consider available space around loc
   // Iron weapons - use only fixed peace factor because mines will run out anyway
-  freePlace := Max( 0,
-                    (Min(fBuildCnt,2000) - TILE_RESERVE) * INV_REQUIRED_TILES_PER_IRON
-                  );
-  maxIronWeapProd := Min( Min( MAX_IRON_PRODUCTION, fIronMineCnt ),
-                          Round(freePlace * fPeaceFactor) + MIN_IRON_PRODUCTION
-                        );
+  freePlace :=
+    Max(
+      0,
+      (Min(fBuildCnt,2000) - TILE_RESERVE) * INV_REQUIRED_TILES_PER_IRON
+    );
+  maxIronWeapProd :=
+    Min(
+      Round(freePlace) + MIN_IRON_PRODUCTION,
+      Min(
+        MAX_IRON_PRODUCTION,
+        fIronMineCnt + (gHands[fOwner].Stats.GetWareBalance(wtIronOre) + gHands[fOwner].Stats.GetWareBalance(wtIron)) / IRON_RESERVE_COEF
+      )
+    );
   // Wooden weapons
-  freePlace := Max( 0,
-                    (Min(fFieldCnt,3000) - TILE_RESERVE) * INV_REQUIRED_TILES_PER_WOOD
-                  );
-  maxWoodWeapProd := Min( MAX_WOOD_PRODUCTION,
-                          Max( MIN_WOOD_PRODUCTION, Round(freePlace * fUpdatedPeaceFactor) )
-                        );
+  freePlace :=
+    Max(
+      0,
+      (Min(fFieldCnt,3000) - TILE_RESERVE) * INV_REQUIRED_TILES_PER_WOOD
+    );
+  maxWoodWeapProd :=
+    Min(
+      MAX_WOOD_PRODUCTION,
+      Max( MIN_WOOD_PRODUCTION, Round(freePlace * fUpdatedPeaceFactor) )
+    );
   // Consider Iron production
-  maxWoodWeapProd := Max( MIN_WOOD_PRODUCTION - Byte(maxIronWeapProd > 0),
-                          Round(maxWoodWeapProd - maxIronWeapProd * (1.0 - fUpdatedPeaceFactor) * 0.5)
-                        );
+  maxWoodWeapProd :=
+    Max(
+      MIN_WOOD_PRODUCTION - Byte(maxIronWeapProd > 0),
+      Round(maxWoodWeapProd - maxIronWeapProd * (1.0 - fUpdatedPeaceFactor) * 0.5)
+    );
 
   // Iron weapons
   maxIronWeapProd := maxIronWeapProd * PRODUCTION_RATE[wtIronOre] * 0.5; // Division into half because of iron weapon and armor

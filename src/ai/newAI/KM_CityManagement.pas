@@ -896,7 +896,7 @@ var
           for I := Low(TROOP_COST[UT]) to High(TROOP_COST[UT]) do
             if (TROOP_COST[UT,I] <> wtNone) then
               with fRequiredWeapons[ TROOP_COST[UT,I] ] do
-                Required := Min(High(Word), Required + Round(DEFAULT_ARMY_REQUIREMENTS[UT] * WoodReq * max(1, AllyCounterWeightRatio[GT] / max(1,RatioSum)) ));
+                Required := Min(High(Word), Available + Round(DEFAULT_ARMY_REQUIREMENTS[UT] * WoodReq * max(1, AllyCounterWeightRatio[GT] / max(1,RatioSum)) ));
       end;
     end;
 
@@ -908,13 +908,14 @@ var
                   );
     if (IronReq < 5) then
     begin
-      IronReq := Round((DEFAULT_COEFICIENT - IronReq) / 5.0); // 5 is equal to sum of all requirements in iron category
+      //IronReq := Round((DEFAULT_COEFICIENT - IronReq) / 5.0); // 5 is equal to sum of all requirements in iron category
       for UT in IRON_ARMY do
         if not gHands[fOwner].Locks.GetUnitBlocked(UT) then
           for I := Low(TROOP_COST[UT]) to High(TROOP_COST[UT]) do
             if (TROOP_COST[UT,I] <> wtNone) then
               with fRequiredWeapons[ TROOP_COST[UT,I] ] do
-                Required := Required + Round(DEFAULT_ARMY_REQUIREMENTS[UT] * IronReq);
+                Required := Min(High(Word), Round(abs(IronReq) + DEFAULT_COEFICIENT * DEFAULT_ARMY_REQUIREMENTS[UT]));
+      fRequiredWeapons[wtIronArmor].Required := fRequiredWeapons[wtIronArmor].Required * 3;
     end;
   end;
 //AITroopTrainOrder: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX, 1..3] of TKMUnitType = (
