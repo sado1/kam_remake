@@ -528,7 +528,7 @@ const
   WARFARE_SELL_LIMIT = 10;
   SELL_LIMIT = 30;
 var
-  MIN_GOLD_AMOUNT, MarketCnt, I, WareCnt: Word;
+  MIN_GOLD_AMOUNT, MarketCnt, I, WareCnt: Integer;
   WT: TKMWareType;
 begin
 
