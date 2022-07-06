@@ -875,8 +875,6 @@ procedure TKMArmyVectorField.InitQueue(const aCluster: pTKMCombatCluster);
 var
   K, L, Poly: Integer;
 begin
-  if (fVisitedIdx = High(Byte)) then
-    MakeNewQueue(False);
   Inc(fVisitedIdx);
   for K := 0 to aCluster.GroupsCount - 1 do
   begin
@@ -897,8 +895,6 @@ procedure TKMArmyVectorField.InitQueue(const aGroupsPoly: TKMWordArray; aCnt: Wo
 var
   K: Integer;
 begin
-  if (fVisitedIdx = High(Byte)) then
-    MakeNewQueue(False);
   Inc(fVisitedIdx);
   for K := 0 to aCnt - 1 do
     AddPolyToQueue(ffRally, aGroupsPoly[K]);
@@ -948,7 +944,8 @@ end;
 
 procedure TKMArmyVectorField.Flood(aCalulateDistance: TKMCalculateDistance; aAssignDistance: TKMAssignDistance);
 var
-  K, Idx, Dist: Word;
+  K: Integer;
+  Idx, Dist: Word;
 begin
   while RemoveFromQueue(Idx) do
     //if CanBeExpanded(Idx) then
@@ -974,7 +971,8 @@ end;
 
 function TKMArmyVectorField.SearchFlood(): Word;
 var
-  K, Idx, BestIdx: Word;
+  K: Integer;
+  Idx, BestIdx: Word;
   Dist, BestDist: Single;
 begin
   BestDist := 1E10;
