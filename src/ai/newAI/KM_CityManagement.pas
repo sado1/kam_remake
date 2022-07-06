@@ -528,7 +528,7 @@ const
   WARFARE_SELL_LIMIT = 10;
   SELL_LIMIT = 30;
 var
-  MIN_GOLD_AMOUNT, MarketCnt, I, WareCnt: Integer;
+  minGoldAmount, MarketCnt, I, WareCnt: Integer;
   WT: TKMWareType;
 begin
 
@@ -551,14 +551,14 @@ begin
       AND (Builder.Planner.PlannedHouses[htQuarry].Completed = 0) then
       AddWare(wtStone);
     // Gold ore
-    MIN_GOLD_AMOUNT := Round(AI_Par[MANAGEMENT_GoldShortage] * 3);
+    minGoldAmount := Round(AI_Par[MANAGEMENT_GoldShortage] * 3);
     if ( fPredictor.WareBalance[wtGoldOre].Exhaustion < 20 )
-      AND ( GetWareBalance(wtGold) < MIN_GOLD_AMOUNT )
-      AND ( GetWareBalance(wtGoldOre) < MIN_GOLD_AMOUNT ) then
+      AND ( GetWareBalance(wtGold) < minGoldAmount )
+      AND ( GetWareBalance(wtGoldOre) < minGoldAmount ) then
       AddWare(wtGoldOre);
     // Coal
     if ( fPredictor.WareBalance[wtCoal].Exhaustion < 50 )
-      AND ( GetWareBalance(wtCoal) < MIN_GOLD_AMOUNT + 5 * (Builder.Planner.PlannedHouses[htWeaponSmithy].Completed + Builder.Planner.PlannedHouses[htIronSmithy].Completed + Builder.Planner.PlannedHouses[htArmorSmithy].Completed) )
+      AND ( GetWareBalance(wtCoal) < minGoldAmount + 5 * (Builder.Planner.PlannedHouses[htWeaponSmithy].Completed + Builder.Planner.PlannedHouses[htIronSmithy].Completed + Builder.Planner.PlannedHouses[htArmorSmithy].Completed) )
       AND (Builder.Planner.PlannedHouses[htCoalMine].UnderConstruction = 0) then
       AddWare(wtCoal);
   end;
