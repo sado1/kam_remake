@@ -502,7 +502,7 @@ var
     for Y := 1 to fMapY - 1 do
     for X := 1 to fMapX do // -1 cannot be here
     begin
-      if Walkable AND (W[Y,X] = UNVISITED_OBSTACLE) then
+      if Walkable AND ((W[Y,X] = UNVISITED_OBSTACLE) OR ((W[Y,X] = NODE_IN_OBSTACLE) AND (W[Y,X-1] = 0))) then
       begin
         Cnt := BordNodeCnt;
         ScanObstacle(KMPoint(X,Y), KMPoint(X,Y), KMPoint(0,-1));
