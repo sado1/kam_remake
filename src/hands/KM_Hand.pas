@@ -582,10 +582,9 @@ var
   H: TKMHouse;
   HWFP: TKMHouseWFlagPoint;
 begin
-  //Warrior could be killed before he walked out, f.e. by script OnTick ---> Actions.UnitKill
-  //Then group will be assigned to invalid warrior and never gets removed from game
-  if  (aWarrior = nil)
-    or aWarrior.IsDeadOrDying then
+  // Warrior could be killed before he walked out, f.e. by script OnTick ---> Actions.UnitKill
+  // Then group will be assigned to invalid warrior and never gets removed from game
+  if (aWarrior = nil) or aWarrior.IsDeadOrDying then
     Exit;
 
   G := fUnitGroups.WarriorTrained(aWarrior);
@@ -609,7 +608,7 @@ begin
         HWFP := TKMHouseWFlagPoint(H);
         HWFP.ValidateFlagPoint; // Validate Flag point first. It will set it to a proper walkable position
         if HWFP.IsFlagPointSet
-          and G.CanWalkTo(HWFP.FlagPoint, 0) then
+        and G.CanWalkTo(HWFP.FlagPoint, 0) then
           G.OrderWalk(HWFP.FlagPoint, True, wtokFlagPoint);
       end;
     end;

@@ -2351,25 +2351,25 @@ function TKMUnitGroups.WarriorTrained(aUnit: TKMUnitWarrior): TKMUnitGroup;
 var
   linkUnit: TKMUnitWarrior;
 begin
-  Result := nil; //Makes compiler happy
+  Result := nil; // Makes compiler happy
 
   case gHands[aUnit.Owner].HandType of
     hndHuman:    begin
                    linkUnit := aUnit.FindLinkUnit(aUnit.Position);
                    if linkUnit <> nil then
                    begin
-                     //Link to other group
+                     // Link to other group
                      Result := gHands[aUnit.Owner].UnitGroups.GetGroupByMember(linkUnit);
                      Result.AddMember(aUnit);
-                     //Form a square (rather than a long snake like in TSK/TPR)
-                     //but don't change formation if player decided to set it manually
+                     // Form a square (rather than a long snake like in TSK/TPR)
+                     // but don't change formation if player decided to set it manually
                      if not Result.ManualFormation then
                        Result.UnitsPerRow := Ceil(Sqrt(Result.Count));
                      Result.OrderRepeat(False);
                    end
                    else
                    begin
-                     //Create a new group with this one warrior
+                     // Create a new group with this one warrior
                      Result := TKMUnitGroup.Create(gUIDTracker.GetNewUID, aUnit);
                      fGroups.Add(Result);
                    end;
