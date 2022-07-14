@@ -160,8 +160,9 @@ type
 
   TKMTerrainSelectionPasteTypeSet = set of TKMTerrainSelectionPasteType;
 
-  TKMTerrainObjectType = (otTrees, otAllButTrees, otFlowers, otMushrooms, otTrunks, otDeadTrees, otStones,
-                          otBushes, otCactus, otRuins);
+  TKMTerrainObjectType = (
+    otTrees, otAllButTrees, otFlowers, otMushrooms, otStumps,
+    otDeadTrees, otStones, otBushes, otCactus, otRuins);
 
 
 const

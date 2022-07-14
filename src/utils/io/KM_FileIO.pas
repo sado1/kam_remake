@@ -78,9 +78,10 @@ begin
     // Instead we read plain ANSI text. If there's BOM - clip it
     MS.LoadFromFile(aFileName);
 
-    MS.Read(Head, 4);
+    // Read 4 bytes but check just 3, cos reading 3 bytes is a hassle
+    MS.Read(Head, SizeOf(Cardinal));
 
-    //Trim UTF8 BOM (don't know how to deal with others yet)
+    // Trim UTF8 BOM (don't know how to deal with others yet)
     if Head and $FFFFFF = $BFBBEF then
       MS.Position := 3
     else

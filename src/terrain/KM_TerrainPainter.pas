@@ -246,7 +246,7 @@ const
     RandomCactus:    array[0..4]  of Byte = (216,217,218,219,220);
     RandomRuins:     array[0..5]  of Byte = (68,69,70,71,72,73);
     RandomDeadTrees: array[0..4]  of Byte = (190,191,192,193,194);
-    RandomTrunks:    array[0..30] of Byte = (10,11,12,13,14,15,16,25,26,27,29,30,31,33,34,35,37,38,39,41,42,43,45,46,47,49,50,51,64,65,66);
+    RandomStumps:    array[0..30] of Byte = (10,11,12,13,14,15,16,25,26,27,29,30,31,33,34,35,37,38,39,41,42,43,45,46,47,49,50,51,64,65,66);
 
 //  RMG2Painter: array [0..255] of TKMTerrainKind = (
 //    tkGrass, tkGrass, tkGrass, tkGrass, tkSnow, tkGrass, tkGrass, tkCustom, tkMoss, tkMoss, tkSnow, tkGrass, tkWater,
@@ -505,11 +505,11 @@ begin
                         objRandom := KaMRandom(High(RandomMushrooms), 'TKMTerrainPainter.PickRandomObject');
                         Result := RandomMushrooms[objRandom];
                       end;
-      otTrunks:       if   (aTerrainKind in [tkGrass..tkGrassSand3])
+      otStumps:       if   (aTerrainKind in [tkGrass..tkGrassSand3])
                         or (aTerrainKind in [tkGrassDirt..tkDirt]) then
                       begin
-                        objRandom := KaMRandom(High(RandomTrunks), 'TKMTerrainPainter.PickRandomObject');
-                        Result := RandomTrunks[objRandom];
+                        objRandom := KaMRandom(High(RandomStumps), 'TKMTerrainPainter.PickRandomObject');
+                        Result := RandomStumps[objRandom];
                       end;
       otDeadTrees:    if   (aTerrainKind in [tkGrass..tkGrassSand3])
                         or (aTerrainKind in [tkGrassDirt..tkDirt]) then
