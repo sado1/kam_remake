@@ -645,9 +645,9 @@ TX_MAPED_AI_ATTACK_TAKE_ANY_HINT = 1232; //Take any group type
 TX_MAPED_AI_ATTACK_COUNT = 465; //Group count
 TX_MAPED_AI_ATTACK_INFO = 466; //Attack info
 TX_MAPED_AI_ATTACK_DELAY = 788; //Initial delay (seconds)
-TX_MAPED_AI_ATTACK_SOLDIERS = 803; //Number of soldiers to attack
+TX_MAPED_AI_ATTACK_SOLDIERS = 803; //Minimum number of units to attack
 TX_MAPED_AI_ATTACK_TYPE_REP = 468; //Repeating
-TX_MAPED_AI_ATTACK_TYPE_ONCE = 469; //Once
+TX_MAPED_AI_ATTACK_TYPE_ONCE = 469; //Single attack
 TX_MAPED_AI_ATTACK_TYPE_MOUNTED = 470; //Mounted
 TX_MAPED_AI_ATTACK_TYPE_RANGED = 471; //Ranged
 TX_MAPED_AI_ATTACK_TYPE_ANTIHORSE = 472; //Antihorse
@@ -659,7 +659,7 @@ TX_MAPED_AI_ATTACK_COL_DELAY = 477; //Delay
 TX_MAPED_AI_ATTACK_COL_TYPE = 478; //Type
 TX_MAPED_AI_ATTACK_AUTO = 479; //Autoattack
 TX_MAPED_AI_ATTACK_AUTO_HINT = 810; //AI creates and manages attacks automatically. Ignores manually set attacks
-TX_MAPED_AI_ATTACK_HELP = 823; //Help section for AI attacks
+TX_MAPED_AI_ATTACK_HELP = 823; //Notice: the first "Repeating" attack will send all the troops that AI player has at the attacking outposts. However, for every next "Repeating" attack (as well as for "Single Attack"), it sends enough groups to exceed the "Minimum number of units to attack"
 TX_MAPED_AI_ATTACK = 480; //AI attacks
 TX_MAPED_AI_ATTACK_ADD = 1137; //Add AI attack
 TX_MAPED_AI_ATTACK_DEL = 1138; //Remove AI attack
@@ -1666,6 +1666,6 @@ TX_HOUSE_SCHOOL_TRAIN_DISABLED_HINT = 707; //This unit type is not available
 
 TX_MAPED_FISH_COUNT = 1593; //Fish count
 
-TX_MAPED_MAP_SAVED = 1595;
-TX_MAPED_MAP_SAVING = 1596;
+TX_MAPED_MAP_SAVED = 1595; //Map saved
+TX_MAPED_MAP_SAVING = 1596; //Saving map...
 
