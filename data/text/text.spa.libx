@@ -626,9 +626,7 @@
 639:Partida guardada no encontrada: %s
 640:El archivo del mapa no corresponde con el del Anfitrión: %s
 641:El archivo guardado no coincide con el archivo guardado del Anfitrión: %s
-642:La repetición ha fallado en una comprobación de coherencia. Este es un problema conocido que afecta la reproducción de algunas repeticiones. ¿Desea continuar viendo?\nLa reproducción falló una comprobación de coherencia. Este es un error conocido que afecta la reproducción de algunas repeticiones.
-Si sigues viendo, la repetición ya no será precisa y el juego puede bloquearse.
-¿Quieres seguir viendo? Elija 'Sí a todo' para ignorar futuras fallas de verificación de coherencia.
+642:La reproducción falló una comprobación de coherencia. Este es un error conocido que afecta la reproducción de algunas repeticiones.\nSi sigues viendo, la repetición ya no será precisa y el juego puede bloquearse.\n¿Quieres seguir viendo? Elija 'Sí a todo' para ignorar futuras fallas de verificación de coherencia.
 643:Sólo puede tener una instancia del juego en el modo multijugador a la vez
 644:Las modificaciones en el juego no se permite en el modo multijugador |. Vuelva a instalar para restaurar los archivos originales.
 645:Se ha producido un error en la aplicación. Por favor, haga clic en Enviar informe de errores para que podamos investigar este asunto. ¡Gracias por su ayuda!
