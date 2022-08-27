@@ -111,6 +111,15 @@ const
     $FFFFFF, //White
     $FFFFFF, //White
     $FFFFFF, //White
+    $FFFFFF, //White
+    $FFFFFF, //White
+    $FFFFFF, //White
+    $FFFFFF, //White
+    $FFFFFF, //White
+    $FFFFFF, //White
+    $FFFFFF, //White
+    $FFFFFF, //White
+    $FFFFFF, //White
     $FFFFFF  //White
   );
 
