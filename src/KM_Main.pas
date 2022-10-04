@@ -697,22 +697,18 @@ begin
   Result := True;
   {$IFDEF MSWindows}
     if not BLOCK_DUPLICATE_APP then Exit;
+
     fMutex := CreateMutex(nil, True, PChar(KAM_MUTEX));
+
     if fMutex = 0 then
       RaiseLastOSError;
+
     Result := (GetLastError <> ERROR_ALREADY_EXISTS);
-  if not Result then UnlockMutex; //Close our own handle on the mutex because someone else already made the mutex
-  {$ENDIF}
-  {$IFDEF Unix}
-    Result := True;
-  {$ENDIF}
-end;
 
-
-procedure TKMMain.MapCacheUpdate;
-begin
-  //Thread frees itself automatically
-  fMapCacheUpdater := TTMapsCacheUpdater.Create([mkSP, mkMP, mkDL]);
+    if not Result then
+      // Close our own handle on the mutex because someone else already made the mutex
+      UnlockMutex;
+  {$ENDIF}
 end;
 
 
@@ -724,6 +720,13 @@ begin
     CloseHandle(fMutex);
     fMutex := 0;
   {$ENDIF}
+end;
+
+
+procedure TKMMain.MapCacheUpdate;
+begin
+  // Thread frees itself automatically
+  fMapCacheUpdater := TTMapsCacheUpdater.Create([mkSP, mkMP, mkDL]);
 end;
 
 
