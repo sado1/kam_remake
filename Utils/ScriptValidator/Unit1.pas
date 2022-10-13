@@ -1,7 +1,6 @@
 unit Unit1;
 {$WARN SYMBOL_PLATFORM OFF}
 {$WARN UNIT_PLATFORM OFF}
-
 interface
 uses
   Windows, Messages, Classes, Controls, Dialogs, Forms, StdCtrls, StrUtils, SysUtils,
@@ -51,6 +50,7 @@ uses
 
 {$R *.dfm}
 
+{ TForm1 }
 procedure TForm1.FindFiles(aPath: String; out aList: TStringList);
 var
   SearchRec: TSearchRec;
@@ -66,6 +66,7 @@ begin
   until (FindNext(SearchRec) <> 0);
   FindClose(SearchRec);
 end;
+
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -223,10 +224,11 @@ begin
   EnableFormComponents(True);
 end;
 
+
 function TForm1.Validate(aPath: string; aReportGood: Boolean): Boolean;
 var
   CampaignFile: UnicodeString;
-  txt:          string;
+  txt: string;
 begin
   Result := True;
   if not FileExists(aPath) and aReportGood then
@@ -264,11 +266,12 @@ end;
 
 procedure TForm1.WMDropFiles(var Msg: TWMDropFiles);
 var
-  Filename: array[0 .. MAX_PATH] of Char;
+  fname: array [0 .. MAX_PATH] of Char;
 begin
-  DragQueryFile(Msg.Drop, 0, Filename, MAX_PATH);
-  Edit1.Text := Filename;
+  DragQueryFile(Msg.Drop, 0, fname, MAX_PATH);
+  Edit1.Text := fname;
   DragFinish(Msg.Drop);
 end;
+
 
 end.

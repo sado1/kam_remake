@@ -43,7 +43,8 @@ type
     procedure AppendErrorStr(const aErrorString: String; const aDetailedErrorString: String = '');
     procedure AppendWarningStr(const aWarningString: String; const aDetailedWarningString: String = '');
     procedure HandleErrors;
-    procedure Clear;
+
+    procedure Clear; // Used by ScriptValidator
   end;
 
 implementation
