@@ -90,7 +90,7 @@ type
   end;
 
 
-  //Scripting creator
+  //Scripting creator that will store local instance reference in gScripting
   TKMScriptingCreator = class
   public
     class function CreateScripting(aOnScriptError: TUnicodeStringEvent): TKMScripting;
@@ -114,8 +114,8 @@ const
     btUnicodeString, //string and UnicodeString
     btStaticArray, btArray, //Static and Dynamic Arrays
     btRecord, btSet,
-    btProcPtr]; // type TProc = procedure
-
+    btProcPtr // type TProc = procedure
+  ];
 
 implementation
 uses
@@ -130,7 +130,8 @@ var
   gScripting: TKMScripting;
 
 
-{Regular procedures and functions to wrap TKMScripting procedures and functions}
+// PS needs regular procedures and functions as handlers
+// Hence we have to wrap TKMScripting methods like so
 function ScriptOnUsesFunc(Sender: TPSPascalCompiler; const Name: AnsiString): Boolean;
 begin
   Result := False;
