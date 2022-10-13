@@ -80,27 +80,27 @@ function TKMScriptPreProcessorGame.TryLoadCustomConsoleCommands(const aDirective
 var
   cmdName, procName: AnsiString;
   errorStr: UnicodeString;
-  SL: TStringList;
+  sl: TStringList;
 begin
   Result := inherited;
-  //Load custom event handlers
+  // Load custom event handlers
   if not Result then Exit;
 
-  //Do not do anything for while in MapEd
-  //But we have to allow to preprocess file, as preprocessed file used for CRC calc in MapEd aswell
-  //gGame could be nil here, but that does not change final CRC, so we can Exit
+  // Do not do anything for while in MapEd
+  // But we have to allow to preprocess file, as preprocessed file used for CRC calc in MapEd as well
+  // gGame could be nil here, but that does not change final CRC, so we can Exit
   if not AllowGameUpdate then Exit;
 
   try
-    SL := TStringList.Create;
+    sl := TStringList.Create;
     try
-      StringSplit(aDirectiveParam, ':', SL);
-      cmdName := AnsiString(Trim(SL[0]));
-      procName := AnsiString(Trim(SL[1]));
+      StringSplit(aDirectiveParam, ':', sl);
+      cmdName := AnsiString(Trim(sl[0]));
+      procName := AnsiString(Trim(sl[1]));
 
       gScriptEvents.AddConsoleCommand(cmdName, procName);
     finally
-      FreeAndNil(SL);
+      FreeAndNil(sl);
     end;
   except
     on E: Exception do
@@ -116,5 +116,4 @@ end;
 
 
 end.
-
 

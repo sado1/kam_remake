@@ -100,12 +100,10 @@ type
     function TrimRight(const Str: String): String;
 
     function UpperCase(const Str: String): String;
-
   end;
 
 
 implementation
-
 uses
   KM_CommonUtils;
 
@@ -131,7 +129,6 @@ end;
 
 
 { TKMScriptingUtils }
-
 
 //* Version: 7000+
 //* Returns absolute value of specified integer

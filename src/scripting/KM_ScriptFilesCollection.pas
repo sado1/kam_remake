@@ -37,9 +37,11 @@ uses
   SysUtils;
 
 
-{TKMScriptFilesCollection}
+{ TKMScriptFilesCollection }
 constructor TKMScriptFilesCollection.Create;
 begin
+  inherited;
+
   fIncludedCnt := 0;
   fHasDefDirectives := False;
   SetLength(fIncluded, 8);
@@ -127,5 +129,6 @@ end;
 //  Result := aFoundCnt;
 //  strings.Free;
 //end;
+
 
 end.

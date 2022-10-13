@@ -355,7 +355,7 @@ end;
 
 function RoundP(Value, Precision: Double): Double;
 begin
- Result := Round(Value/Precision)*Precision;
+  Result := Round(Value/Precision)*Precision;
 end;
 
 
@@ -1379,8 +1379,8 @@ begin
 end;
 
 
-//Quote from page 5 of 'Random Number Generators': "We recommend the construction of an initialization procedure,
-//Randomize, which prompts for an initial value of seed and forces it to be an integer between 1 and 2^31 - 2."
+// Quote from page 5 of 'Random Number Generators': "We recommend the construction of an initialization procedure,
+// Randomize, which prompts for an initial value of seed and forces it to be an integer between 1 and 2^31 - 2."
 procedure SetKaMSeed(aSeed: Integer);
 begin
   Assert(InRange(aSeed, 1, 2147483646), 'KaMSeed initialised incorrectly: ' + IntToStr(aSeed));

@@ -19,7 +19,6 @@ type
     cpkUStr
   );
 
-
   TKMConsoleCommand = class
   private
     fName: AnsiString;
@@ -471,7 +470,6 @@ begin
 
   for I := 0 to MAX_SCRIPT_CONSOLE_COMMAND_PARAMS - 1 do
     fPT[I] := aParamTypes[I];
-
 end;
 
 
