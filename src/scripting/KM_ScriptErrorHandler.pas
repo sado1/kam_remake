@@ -11,13 +11,13 @@ type
     fWarningsString: TKMScriptErrorMessage;
     fHintsString: TKMScriptErrorMessage;
 
-    fHasErrorOccured: Boolean; //Has runtime error occurred? (only display first error)
+    fRuntimeErrorOccured: Boolean; // Has runtime error occurred? (only display first error)
     fScriptLogFile: UnicodeString;
     fOnScriptError: TUnicodeStringEvent;
 
     fLogLinesCnt: Integer; // number of log messages (lines) logged
     fLogLinesCntMax: Integer; // Max number of lines to log (could be changed via scripts)
-    fLogTooLongMsgAppended: Boolean; // Flag if we logged 'too many log lines' message
+    fLoggedTooManyLines: Boolean; // Flag if we have logged 'too many log lines' message
 
     procedure SetScriptLogFile(const aScriptLogFile: UnicodeString);
     function AppendErrorPrefix(const aPrefix: UnicodeString; var aError: TKMScriptErrorMessage): TKMScriptErrorMessage;
@@ -56,6 +56,7 @@ const
   MAX_LOG_SIZE = 1024 * 1024; //1 MB
   MAX_LOG_LINES_CNT_DEFAULT = 100; //Default max number of log lines, allowed to be made by script
 
+
 { TKMScriptErrorHandler }
 constructor TKMScriptErrorHandler.Create(aOnScriptError: TUnicodeStringEvent);
 begin
@@ -63,7 +64,6 @@ begin
 
   fOnScriptError := aOnScriptError;
   fLogLinesCntMax := MAX_LOG_LINES_CNT_DEFAULT;
-  Clear;
 end;
 
 
@@ -204,7 +204,7 @@ begin
           WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now),
                   'Log file exceeded ' + IntToStr(MAX_LOG_SIZE) + ' bytes and was reset']));
           fLogLinesCnt := 0;
-          fLogTooLongMsgAppended := False;
+          fLoggedTooManyLines := False;
         end
         else
           Append(fl);
@@ -213,7 +213,7 @@ begin
       CloseFile(fl);
     end
     else
-    if not fLogTooLongMsgAppended then
+    if not fLoggedTooManyLines then
     begin
       AssignFile(fl, fScriptLogFile);
       // File should always exists
@@ -229,7 +229,7 @@ begin
       gLog.AddTime('Script: ' + logErrorMsg); //log the error to global game log
       WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), logErrorMsg]));
       CloseFile(fl);
-      fLogTooLongMsgAppended := True;
+      fLoggedTooManyLines := True;
     end;
   end;
 
@@ -239,14 +239,14 @@ begin
   if (aType in [seCompileError, sePreprocessorError]) and Assigned(fOnScriptError) then
     fOnScriptError(errorStr);
 
-  //Serious runtime errors should be shown to the player
+  // Serious runtime errors should be shown to the player
   if aType in [seException] then
   begin
-    //Only show the first message in-game to avoid spamming the player
-    if not fHasErrorOccured and Assigned(fOnScriptError) then
+    // Only show the first message in-game to avoid spamming the player
+    if not fRuntimeErrorOccured and Assigned(fOnScriptError) then
       fOnScriptError('Error(s) have occured in the mission script. ' +
                      'Please check the log file for further details. First error:|' + errorStr);
-    fHasErrorOccured := True;
+    fRuntimeErrorOccured := True;
   end;
 end;
 
