@@ -169,24 +169,24 @@ end;
 
 
 { TKMScriptingCreator }
-//We need to save pointer to scripting object (in gScripting), as it is used by ScriptOnUsesFunc/ScriptOnUseVariableProc/ScriptOnExportCheckFunc
-//These functions are regular methods and need TKMScripting object in global scope
+// We need to save pointer to scripting object (in gScripting), as it is used by ScriptOnUsesFunc/ScriptOnUseVariableProc/ScriptOnExportCheckFunc
+// These functions are regular methods and need TKMScripting object in global scope
 class function TKMScriptingCreator.CreateScripting(aOnScriptError: TUnicodeStringEvent): TKMScripting;
 begin
-  if gScripting <> nil then // Should never happen in 1 application, as only 1 TKMScripting object is needed usually
-    FreeAndNil(gScripting);
+  // Should never happen in 1 application, as only 1 TKMScripting object is needed
+  FreeAndNil(gScripting);
 
   gScripting := TKMScripting.Create(aOnScriptError, False);
   Result := gScripting;
 end;
 
 
-//We need to save pointer to scripting object (in gScripting), as it is used by ScriptOnUsesFunc/ScriptOnUseVariableProc/ScriptOnExportCheckFunc
-//These functions are regular methods and need TKMScripting object in global scope
+// We need to save pointer to scripting object (in gScripting), as it is used by ScriptOnUsesFunc/ScriptOnUseVariableProc/ScriptOnExportCheckFunc
+// These functions are regular methods and need TKMScripting object in global scope
 class function TKMScriptingCreator.CreateGameScripting(aOnScriptError: TUnicodeStringEvent): TKMScripting;
 begin
-  if gScripting <> nil then // Should never happen in 1 application, as only 1 TKMScripting object is needed usually
-    FreeAndNil(gScripting);
+  // Should never happen in 1 application, as only 1 TKMScripting object is needed
+  FreeAndNil(gScripting);
 
   gScripting := TKMScripting.Create(aOnScriptError, True);
   Result := gScripting;
