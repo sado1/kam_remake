@@ -2,7 +2,6 @@
 {$I KaM_Remake.inc}
 interface
 uses
-  {$IFDEF USE_MAD_EXCEPT} MadExcept, {$ENDIF}
   Generics.Collections,
   KM_WorkerThread,
   KM_Networking,
@@ -295,10 +294,10 @@ type
 
     procedure SetSeed(aSeed: Integer);
 
+    property LastSaves: TKMLimitedUniqueList<string> read fLastSaves;
+    property SaveWorkerThreadHolder: TKMWorkerThreadHolder read fSaveWorkerThreadHolder;
+
     function GetCurrectTickSaveCRC: Cardinal;
-    {$IFDEF USE_MAD_EXCEPT}
-    procedure AttachCrashReport(const ExceptIntf: IMEException; const aZipFile: UnicodeString);
-    {$ENDIF}
     procedure ReplayInconsistency(aCommand: TKMStoredGIPCommand; aMyRand: Cardinal);
     procedure SaveCampaignScriptData(SaveStream: TKMemoryStream);
 
@@ -1133,140 +1132,6 @@ begin
     gGameApp.StopGame(grDisconnect, gResTexts[TX_GAME_ERROR_NETWORK] + ' ' + aData)
   end;
 end;
-
-
-{$IFDEF USE_MAD_EXCEPT}
-procedure TKMGame.AttachCrashReport(const ExceptIntf: IMEException; const aZipFile: UnicodeString);
-var
-  attachedFilesStr: UnicodeString;
-
-  procedure AttachFile(const aFile: UnicodeString);
-  begin
-    if (aFile <> '') and FileExists(aFile) then
-    begin
-      if Pos(aFile, attachedFilesStr) = 0 then
-      begin
-        attachedFilesStr := attachedFilesStr + aFile + '; ';
-        ExceptIntf.AdditionalAttachments.Add(aFile, '', aZipFile);
-        gLog.AddTime('Attached file: ' + aFile);
-      end
-      else
-        gLog.AddTime('File already attached: ' + aFile);
-    end;
-  end;
-
-  procedure AttachSaveFiles(const aFile: UnicodeString; aAttachRNG: Boolean = True);
-  begin
-    AttachFile(ChangeFileExt(aFile, EXT_SAVE_MAIN_DOT));
-    AttachFile(ChangeFileExt(aFile, EXT_SAVE_BASE_DOT));
-    AttachFile(ChangeFileExt(aFile, EXT_SAVE_REPLAY_DOT));
-    AttachFile(ChangeFileExt(aFile, EXT_SAVE_MP_LOCAL_DOT));
-    if aAttachRNG then
-      AttachFile(ChangeFileExt(aFile, EXT_SAVE_RNG_LOG_DOT));
-  end;
-
-  procedure AttachLoadedFiles(aAttachRNG: Boolean);
-  begin
-    if fLoadFromFileRel = '' then Exit;
-
-    gLog.AddTime('Attaching game loaded file: ' + ExeDir + fLoadFromFileRel);
-    AttachSaveFiles(ExeDir + fLoadFromFileRel, aAttachRNG);
-  end;
-
-var
-  index: Byte;
-  missionFile, path: UnicodeString;
-  searchRec: TSearchRec;
-  indexesSet: set of Byte;
-begin
-  gLog.AddTime('Creating crash report...');
-  attachedFilesStr := '';
-
-  // Attempt to save the game, but if the state is too messed up it might fail
-  fSaveWorkerThreadHolder.Worker.fSynchronousExceptionMode := True; //Do saving synchronously in main thread
-  try
-    try
-      if (fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate])
-        and not (fGamePlayInterface.UIMode = umReplay) then //In case game mode was altered or loaded with logical error
-      begin
-        Save(CRASHREPORT_SAVE_NAME, UTCNow, fSaveWorkerThreadHolder.Worker);
-        fSaveWorkerThreadHolder.Worker.WaitForAllWorkToComplete; //Wait till save is made
-        AttachSaveFiles(SaveName(CRASHREPORT_SAVE_NAME, EXT_SAVE_MAIN, fParams.IsMultiPlayerOrSpec));
-      end;
-    except
-      on E : Exception do
-        gLog.AddTime('Exception while trying to save game for crash report: ' + E.ClassName + ': ' + E.Message
-                     {$IFDEF WDC}+ sLineBreak + E.StackTrace{$ENDIF});
-    end;
-  finally
-    fSaveWorkerThreadHolder.Worker.fSynchronousExceptionMode := False;
-  end;
-
-  missionFile := fParams.MissionFileRel;
-  path := ExtractFilePath(ExeDir + missionFile);
-
-  // Try to attach the dat+map
-  AttachFile(ExeDir + missionFile);
-  AttachFile(ExeDir + ChangeFileExt(missionFile, '.map'));
-  AttachFile(ExeDir + ChangeFileExt(missionFile, '.txt'));
-
-  // Try to add main script file and all other scripts, because they could be included
-  if FileExists(ExeDir + ChangeFileExt(missionFile, '.script')) then
-  begin
-    FindFirst(path + '*.script', faAnyFile - faDirectory, searchRec);
-    try
-      repeat
-        if (searchRec.Name <> '.') and (searchRec.Name <> '..') then
-          AttachFile(path + searchRec.Name);
-      until (FindNext(searchRec) <> 0);
-    finally
-      FindClose(searchRec);
-    end;
-  end;
-
-  // Try to add libx files
-  FindFirst(path + '*.libx', faAnyFile - faDirectory, searchRec);
-  try
-    repeat
-      if (searchRec.Name <> '.') and (searchRec.Name <> '..') then
-        AttachFile(path + searchRec.Name);
-    until (FindNext(searchRec) <> 0);
-  finally
-    FindClose(searchRec);
-  end;
-
-  if fParams.IsReplay
-    or ((fGamePlayInterface <> nil) and (fGamePlayInterface.UIMode = umReplay)) then //In case game mode was altered or loaded with logical error
-    // For replays attach only replay save files
-    AttachLoadedFiles(False)
-  else
-  if not fParams.IsMapEditor then // no need autosaves for MapEd error...
-  begin
-    // For other game modes attach last saves
-    
-    // We want to attach up to 3 saves, lets determine what are best indexes of last saves to attach
-    indexesSet := [];
-    // 0 is the oldest save
-    case fLastSaves.Count of
-      0:      ;
-      1,2,3:  indexesSet := [0,1,2];
-      4:      indexesSet := [0,2,3];
-      else    indexesSet := [0,Byte(Floor(fLastSaves.Count / 2)),fLastSaves.Count - 1];
-    end;
-    for index in indexesSet do
-    begin
-      if index >= fLastSaves.Count then Break;
-      
-      AttachSaveFiles(SaveName(fLastSaves[index], EXT_SAVE_MAIN, fParams.IsMultiPlayerOrSpec));
-    end;
-
-    // It could be usefull to attach loaded file, to check what was wrong there
-    AttachLoadedFiles(True); // Also attach RNG file
-  end;
-
-  gLog.AddTime('Crash report created');
-end;
-{$ENDIF}
 
 
 //Occasional replay inconsistencies are a known bug, we don't need reports of it

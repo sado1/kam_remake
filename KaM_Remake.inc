@@ -37,7 +37,7 @@
 {$IFDEF WDC}
   {$IFNDEF WDC64} // Not available on Win64
     //Project can be compiled without madExcept features (if you dont have madExcept installed)
-    {$DEFINE USE_MAD_EXCEPT}  
+    {$DEFINE USE_MAD_EXCEPT}
     //Delphi compiler video play
     {$DEFINE VIDEOS}
     

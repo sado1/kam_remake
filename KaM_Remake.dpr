@@ -90,13 +90,15 @@ uses
   KM_ControlsUtils in 'src\controls\KM_ControlsUtils.pas',
   KM_ControlsWaresRow in 'src\controls\KM_ControlsWaresRow.pas',
 
+  {$IFDEF USE_MAD_EXCEPT} KM_Crashreport in 'src\KM_Crashreport.pas', {$ENDIF}
+
   KM_DevPerfLog in 'src\perflog\KM_DevPerfLog.pas',
   KM_DevPerfLogForm in 'src\perflog\KM_DevPerfLogForm.pas',
   KM_DevPerfLogSingle in 'src\perflog\KM_DevPerfLogSingle.pas',
   KM_DevPerfLogStack in 'src\perflog\KM_DevPerfLogStack.pas',
   KM_DevPerfLogTypes in 'src\perflog\KM_DevPerfLogTypes.pas',
 
-  {$IFDEF USE_MAD_EXCEPT}KM_Exceptions in 'src\KM_Exceptions.pas',{$ENDIF}
+  {$IFDEF USE_MAD_EXCEPT} KM_Exceptions in 'src\KM_Exceptions.pas', {$ENDIF}
 
   KM_Game in 'src\game\KM_Game.pas',
   KM_GameClasses in 'src\game\KM_GameClasses.pas',

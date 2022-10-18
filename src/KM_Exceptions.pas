@@ -25,7 +25,7 @@ implementation
 uses
   SysUtils,
   KM_FileIO, KM_Cursor,
-  KM_GameApp, KM_Game,
+  KM_GameApp, KM_CrashReport, KM_Game,
   KM_Log, KM_ResTexts, KM_Defaults, KM_Points,
   KM_CommonExceptions, KM_Settings, KM_GameAppSettings, KM_ServerSettings;
 
@@ -140,9 +140,9 @@ begin
   MESettings.ScreenShotZip := crashFile; //Screenshot also goes in the zip
 
   if gGame <> nil then
-    gGame.AttachCrashReport(ExceptIntf, crashFile);
+    TKMCrashReport.AttachCrashReport(ExceptIntf, crashFile);
 
-  //Do the log after fGame because fGame adds stuff to the log
+  // Do the log after gGame because gGame adds stuff to the log
   if gLog <> nil then
   begin
     if gGameApp <> nil then
@@ -162,7 +162,7 @@ begin
 
   sharedSettingsPath := TKMSettings.GetDir;
 
-  //Do settings here not in fGame because we could crash before fGame is created
+  // Do settings here not in gGame because we could crash before gGame is created
   if gGameAppSettings <> nil then
     AttachFile(gGameAppSettings.Path)
   else
