@@ -140,7 +140,7 @@ begin
   MESettings.ScreenShotZip := crashFile; //Screenshot also goes in the zip
 
   if gGame <> nil then
-    TKMCrashReport.AttachCrashReport(ExceptIntf, crashFile);
+    TKMCrashReport.Generate(ExceptIntf, crashFile);
 
   // Do the log after gGame because gGame adds stuff to the log
   if gLog <> nil then

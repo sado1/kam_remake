@@ -12,9 +12,12 @@ type
   // which are not quite related to the Game's SRP
   TKMCrashReport = class
   private
-
+     fExceptIntf: IMEException;
+     fZipFile: UnicodeString;
   public
-    class procedure AttachCrashReport(const ExceptIntf: IMEException; const aZipFile: UnicodeString);
+    constructor Create(const aExceptIntf: IMEException; const aZipFile: UnicodeString);
+    procedure AttachEverything;
+    class procedure Generate(const aExceptIntf: IMEException; const aZipFile: UnicodeString); static;
   end;
 
 implementation
@@ -23,7 +26,16 @@ uses
   KM_CommonUtils, KM_InterfaceTypes, KM_Log, KM_Game;
 
 
-class procedure TKMCrashReport.AttachCrashReport(const ExceptIntf: IMEException; const aZipFile: UnicodeString);
+constructor TKMCrashReport.Create(const aExceptIntf: IMEException; const aZipFile: UnicodeString);
+begin
+  inherited Create;
+
+  fExceptIntf := aExceptIntf;
+  fZipFile := aZipFile;
+end;
+
+
+procedure TKMCrashReport.AttachEverything;
 var
   attachedFilesStr: UnicodeString;
 
@@ -34,7 +46,7 @@ var
       if Pos(aFile, attachedFilesStr) = 0 then
       begin
         attachedFilesStr := attachedFilesStr + aFile + '; ';
-        ExceptIntf.AdditionalAttachments.Add(aFile, '', aZipFile);
+        fExceptIntf.AdditionalAttachments.Add(aFile, '', fZipFile);
         gLog.AddTime('Attached file: ' + aFile);
       end
       else
@@ -152,6 +164,19 @@ begin
   end;
 
   gLog.AddTime('Crash report created');
+end;
+
+
+class procedure TKMCrashReport.Generate(const aExceptIntf: IMEException; const aZipFile: UnicodeString);
+var
+  cr: TKMCrashReport;
+begin
+  cr := TKMCrashReport.Create(aExceptIntf, aZipFile);
+  try
+    cr.AttachEverything;
+  finally
+    cr.Free;
+  end;
 end;
 
 
