@@ -22,7 +22,7 @@ type
     procedure AttachLoadedFiles(aAttachRNG: Boolean);
   public
     constructor Create(const aExceptIntf: IMEException; const aZipFile: UnicodeString);
-    class procedure Generate(const aExceptIntf: IMEException; const aZipFile: UnicodeString); static;
+    class procedure Generate(const aExceptIntf: IMEException; const aZipFile: UnicodeString);
   end;
 
 implementation
