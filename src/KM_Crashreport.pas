@@ -12,11 +12,14 @@ type
   // which are not quite related to the Game's SRP
   TKMCrashReport = class
   private
-     fExceptIntf: IMEException;
-     fZipFile: UnicodeString;
+    fExceptIntf: IMEException;
+    fZipFile: UnicodeString;
+
+    fAttachedFilesStr: UnicodeString;
+    procedure AttachFile(const aFile: UnicodeString);
+    procedure AttachEverything;
   public
     constructor Create(const aExceptIntf: IMEException; const aZipFile: UnicodeString);
-    procedure AttachEverything;
     class procedure Generate(const aExceptIntf: IMEException; const aZipFile: UnicodeString); static;
   end;
 
@@ -35,25 +38,23 @@ begin
 end;
 
 
-procedure TKMCrashReport.AttachEverything;
-var
-  attachedFilesStr: UnicodeString;
-
-  procedure AttachFile(const aFile: UnicodeString);
+procedure TKMCrashReport.AttachFile(const aFile: UnicodeString);
+begin
+  if (aFile <> '') and FileExists(aFile) then
   begin
-    if (aFile <> '') and FileExists(aFile) then
+    if Pos(aFile, fAttachedFilesStr) = 0 then
     begin
-      if Pos(aFile, attachedFilesStr) = 0 then
-      begin
-        attachedFilesStr := attachedFilesStr + aFile + '; ';
-        fExceptIntf.AdditionalAttachments.Add(aFile, '', fZipFile);
-        gLog.AddTime('Attached file: ' + aFile);
-      end
-      else
-        gLog.AddTime('File already attached: ' + aFile);
-    end;
+      fAttachedFilesStr := fAttachedFilesStr + aFile + '; ';
+      fExceptIntf.AdditionalAttachments.Add(aFile, '', fZipFile);
+      gLog.AddTime('Attached file: ' + aFile);
+    end
+    else
+      gLog.AddTime('File already attached: ' + aFile);
   end;
+end;
 
+
+procedure TKMCrashReport.AttachEverything;
   procedure AttachSaveFiles(const aFile: UnicodeString; aAttachRNG: Boolean = True);
   begin
     AttachFile(ChangeFileExt(aFile, EXT_SAVE_MAIN_DOT));
@@ -79,7 +80,6 @@ var
   indexesSet: set of Byte;
 begin
   gLog.AddTime('Creating crash report...');
-  attachedFilesStr := '';
 
   // Attempt to save the game, but if the state is too messed up it might fail
   gGame.SaveWorkerThreadHolder.Worker.fSynchronousExceptionMode := True; //Do saving synchronously in main thread
