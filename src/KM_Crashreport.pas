@@ -18,6 +18,8 @@ type
     fAttachedFilesStr: UnicodeString;
     procedure AttachFile(const aFile: UnicodeString);
     procedure AttachEverything;
+    procedure AttachSaveFiles(const aFile: UnicodeString; aAttachRNG: Boolean = True);
+    procedure AttachLoadedFiles(aAttachRNG: Boolean);
   public
     constructor Create(const aExceptIntf: IMEException; const aZipFile: UnicodeString);
     class procedure Generate(const aExceptIntf: IMEException; const aZipFile: UnicodeString); static;
@@ -54,25 +56,27 @@ begin
 end;
 
 
+procedure TKMCrashReport.AttachSaveFiles(const aFile: UnicodeString; aAttachRNG: Boolean = True);
+begin
+  AttachFile(ChangeFileExt(aFile, EXT_SAVE_MAIN_DOT));
+  AttachFile(ChangeFileExt(aFile, EXT_SAVE_BASE_DOT));
+  AttachFile(ChangeFileExt(aFile, EXT_SAVE_REPLAY_DOT));
+  AttachFile(ChangeFileExt(aFile, EXT_SAVE_MP_LOCAL_DOT));
+  if aAttachRNG then
+    AttachFile(ChangeFileExt(aFile, EXT_SAVE_RNG_LOG_DOT));
+end;
+
+
+procedure TKMCrashReport.AttachLoadedFiles(aAttachRNG: Boolean);
+begin
+  if gGame.SaveFile = '' then Exit;
+
+  gLog.AddTime('Attaching game loaded file: ' + ExeDir + gGame.SaveFile);
+  AttachSaveFiles(ExeDir + gGame.SaveFile, aAttachRNG);
+end;
+
+
 procedure TKMCrashReport.AttachEverything;
-  procedure AttachSaveFiles(const aFile: UnicodeString; aAttachRNG: Boolean = True);
-  begin
-    AttachFile(ChangeFileExt(aFile, EXT_SAVE_MAIN_DOT));
-    AttachFile(ChangeFileExt(aFile, EXT_SAVE_BASE_DOT));
-    AttachFile(ChangeFileExt(aFile, EXT_SAVE_REPLAY_DOT));
-    AttachFile(ChangeFileExt(aFile, EXT_SAVE_MP_LOCAL_DOT));
-    if aAttachRNG then
-      AttachFile(ChangeFileExt(aFile, EXT_SAVE_RNG_LOG_DOT));
-  end;
-
-  procedure AttachLoadedFiles(aAttachRNG: Boolean);
-  begin
-    if gGame.SaveFile = '' then Exit;
-
-    gLog.AddTime('Attaching game loaded file: ' + ExeDir + gGame.SaveFile);
-    AttachSaveFiles(ExeDir + gGame.SaveFile, aAttachRNG);
-  end;
-
 var
   index: Byte;
   missionFile, path: UnicodeString;
@@ -150,8 +154,10 @@ begin
       0:      ;
       1,2,3:  indexesSet := [0,1,2];
       4:      indexesSet := [0,2,3];
-      else    indexesSet := [0,Byte(Floor(gGame.LastSaves.Count / 2)), gGame.LastSaves.Count - 1];
+    else
+      indexesSet := [0, gGame.LastSaves.Count div 2, gGame.LastSaves.Count - 1];
     end;
+
     for index in indexesSet do
     begin
       if index >= gGame.LastSaves.Count then Break;
