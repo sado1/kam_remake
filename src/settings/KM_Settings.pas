@@ -18,8 +18,6 @@ type
     function GetDirectory: string;
     function GetPath: string;
   protected
-    fNeedsSave: Boolean;
-
     function GetDefaultSettingsName: string; virtual; abstract;
 
     procedure LoadFromFile(const aPath: string); virtual; abstract;

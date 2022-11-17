@@ -12,25 +12,22 @@ uses
   KM_GameAppSettingsPart;
 
 type
-  // Settings that are irrelevant to the game (game does not cares about them)
-  // Everything gets written through setter to set fNeedsSave flag
+  // Settings that are irrelevant to the game (game does not care about them)
   TKMainSettings = class(TKMGameAppSettingsPart)
   private
     //Not a setting, used to properly set default Resolution value
     fScreenWidth: Integer;
     fScreenHeight: Integer;
 
-    fFullScreen: Boolean;
     fFPSCap: Integer;
-    fResolution: TKMScreenRes;
     fWindowParams: TKMWindowParams;
-    fVSync: Boolean;
-    fNoRenderMaxTime: Integer;     //Longest period of time, when there was no Render (usually on hiiiigh game speed like x300)
-    procedure SetFullScreen(aValue: Boolean);
-    procedure SetResolution(const Value: TKMScreenRes);
-    procedure SetVSync(aValue: Boolean);
+    fNoRenderMaxTime: Integer;     // Longest period of time, when there was no Render (usually on hiiiigh game speed like x300)
     function GetWindowParams: TKMWindowParams;
   public
+    FullScreen: Boolean;
+    Resolution: TKMScreenRes;
+    VSync: Boolean;
+
     constructor Create(aScreenWidth, aScreenHeight: Integer);
     destructor Destroy; override;
 
@@ -38,10 +35,7 @@ type
     procedure SaveToXML; override;
 
     property FPSCap: Integer read fFPSCap;
-    property FullScreen: Boolean read fFullScreen write SetFullScreen;
-    property Resolution: TKMScreenRes read fResolution write SetResolution;
     property WindowParams: TKMWindowParams read GetWindowParams;
-    property VSync: Boolean read fVSync write SetVSync;
     property NoRenderMaxTime: Integer read fNoRenderMaxTime;
 
     function IsNoRenderMaxTimeSet: Boolean;
@@ -101,11 +95,11 @@ begin
 
   // GFX
   nGFX := nMainSettings.AddOrFindChild('GFX');
-  fFullScreen         := nGFX.Attributes['FullScreen'].AsBoolean(False);
-  fVSync              := nGFX.Attributes['VSync'].AsBoolean(True);
-  fResolution.Width   := nGFX.Attributes['ResolutionWidth'].AsInteger(Max(MENU_DESIGN_X, fScreenWidth));
-  fResolution.Height  := nGFX.Attributes['ResolutionHeight'].AsInteger(Max(MENU_DESIGN_Y, fScreenHeight));
-  fResolution.RefRate := nGFX.Attributes['RefreshRate'].AsInteger(60);
+  FullScreen         := nGFX.Attributes['FullScreen'].AsBoolean(False);
+  VSync              := nGFX.Attributes['VSync'].AsBoolean(True);
+  Resolution.Width   := nGFX.Attributes['ResolutionWidth'].AsInteger(Max(MENU_DESIGN_X, fScreenWidth));
+  Resolution.Height  := nGFX.Attributes['ResolutionHeight'].AsInteger(Max(MENU_DESIGN_Y, fScreenHeight));
+  Resolution.RefRate := nGFX.Attributes['RefreshRate'].AsInteger(60);
   fFPSCap := EnsureRange(nGFX.Attributes['FPSCap'].AsInteger(DEF_FPS_CAP), MIN_FPS_CAP, MAX_FPS_CAP);
 
   // Window
@@ -150,11 +144,11 @@ begin
 
   // GFX
   nGFX := nMainSettings.AddOrFindChild('GFX');
-    nGFX.Attributes['FullScreen']       := fFullScreen;
-    nGFX.Attributes['VSync']            := fVSync;
-    nGFX.Attributes['ResolutionWidth']  := fResolution.Width;
-    nGFX.Attributes['ResolutionHeight'] := fResolution.Height;
-    nGFX.Attributes['RefreshRate']      := fResolution.RefRate;
+    nGFX.Attributes['FullScreen']       := FullScreen;
+    nGFX.Attributes['VSync']            := VSync;
+    nGFX.Attributes['ResolutionWidth']  := Resolution.Width;
+    nGFX.Attributes['ResolutionHeight'] := Resolution.Height;
+    nGFX.Attributes['RefreshRate']      := Resolution.RefRate;
     nGFX.Attributes['FPSCap']           := fFPSCap;
 
   // Window
@@ -174,24 +168,6 @@ end;
 function TKMainSettings.IsNoRenderMaxTimeSet: Boolean;
 begin
   Result := fNoRenderMaxTime <> NO_RENDER_MAX_TIME_UNDEF;
-end;
-
-
-procedure TKMainSettings.SetFullScreen(aValue: boolean);
-begin
-  fFullScreen := aValue;
-end;
-
-
-procedure TKMainSettings.SetResolution(const Value: TKMScreenRes);
-begin
-  fResolution := Value;
-end;
-
-
-procedure TKMainSettings.SetVSync(aValue: boolean);
-begin
-  fVSync := aValue;
 end;
 
 
