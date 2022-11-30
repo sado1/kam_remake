@@ -701,11 +701,11 @@ begin
     P1 := KMPoint(Entrance.X - 1, Entrance.Y + 1) ; //Point to the left from PointBelowEntrance
     P2 := KMPoint(P1.X + 2, P1.Y);        //Point to the right from PointBelowEntrance
 
-    if not gTerrain.CanWalkDiagonaly(Entrance, P1.X, P1.Y)
+    if not gTerrain.CanWalkDiagonally(Entrance, P1.X, P1.Y)
       and ObjectShouldBeCleared(P1.X + 1, P1.Y) then // Do not clear choppable trees
       gTerrain.RemoveObject(KMPoint(P1.X + 1, P1.Y)); //Clear object at PointBelowEntrance
 
-    if not gTerrain.CanWalkDiagonaly(Entrance, P2.X, P2.Y)
+    if not gTerrain.CanWalkDiagonally(Entrance, P2.X, P2.Y)
       and ObjectShouldBeCleared(P2.X, P2.Y) then
       gTerrain.RemoveObject(P2);
   end;

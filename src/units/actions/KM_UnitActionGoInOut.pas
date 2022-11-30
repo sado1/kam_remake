@@ -256,17 +256,17 @@ begin
 
   if gTerrain.TileInMapCoords(X,Y)
     and (gTerrain.CheckPassability(KMPoint(X,Y), fUnit.DesiredPassability))
-    and (gTerrain.CanWalkDiagonaly(fUnit.Position, X, Y))
+    and (gTerrain.CanWalkDiagonally(fUnit.Position, X, Y))
     and (gTerrain.Land^[Y,X].IsUnit <> nil) then //If there's some unit we need to do a better check on him
   begin
     U := gTerrain.UnitsHitTest(X,Y); //Let's see who is standing there
 
     //Check that the unit is idling and not an enemy, so that we can push it away
     if (U <> nil)
-      and not U.IsAnimal // Can't push animals
-      and (U.Action is TKMUnitActionStay)
-      and not TKMUnitActionStay(U.Action).Locked
-      and (gHands.CheckAlliance(U.Owner, fUnit.Owner) = atAlly) then
+    and not U.IsAnimal // Can't push animals
+    and (U.Action is TKMUnitActionStay)
+    and not TKMUnitActionStay(U.Action).Locked
+    and (gHands.CheckAlliance(U.Owner, fUnit.Owner) = atAlly) then
       Result := U;
   end;
 end;
@@ -309,9 +309,9 @@ begin
 
   //Use InHouse instead of Home, since Home could be cleared via ProceedHouseClosedForWorker (f.e. when wGoingForEating = True)
   if (fUnit.UnitType = utRecruit) //Recruit
-    and(fUnit.InHouse <> nil) //In some house
-    and (fUnit.InHouse.HouseType = htBarracks) //Recruit is in barracks
-    and (fUnit.InHouse = fHouse) then //And is the house we are walking from
+  and(fUnit.InHouse <> nil) //In some house
+  and (fUnit.InHouse.HouseType = htBarracks) //Recruit is in barracks
+  and (fUnit.InHouse = fHouse) then //And is the house we are walking from
     TKMHouseBarracks(fHouse).RecruitsRemove(fUnit);
 
   //We are walking straight

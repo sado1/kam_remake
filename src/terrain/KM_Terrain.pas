@@ -277,7 +277,7 @@ type
     function ObjectIsChopableTree(X,Y: Word): Boolean; overload; inline;
     function ObjectIsChopableTree(const aLoc: TKMPoint; aStage: TKMChopableAge): Boolean; overload; inline;
     function ObjectIsChopableTree(const aLoc: TKMPoint; aStages: TKMChopableAgeSet): Boolean; overload; inline;
-    function CanWalkDiagonaly(const aFrom: TKMPoint; aX, aY: SmallInt): Boolean;
+    function CanWalkDiagonally(const aFrom: TKMPoint; aX, aY: SmallInt): Boolean;
 
     function GetFieldStage(const aLoc: TKMPoint): Byte;
     function GetCornStage(const aLoc: TKMPoint): Byte;
@@ -2018,7 +2018,7 @@ begin
       requiredMaxRad := 1.42; //Use diagonal radius sqrt(2) instead
 
     if (not aTestDiagWalkable
-        or CanWalkDiagonaly(aLoc, P.X, P.Y)
+        or CanWalkDiagonally(aLoc, P.X, P.Y)
           and ((Abs(aLoc.X - P.X) <> 1)
             or (Abs(aLoc.Y - P.Y) <> 1)
             or VertexUsageCompatible(aLoc, P)
@@ -2104,10 +2104,10 @@ begin
 end;
 
 
-// Check wherever unit can walk from A to B diagonaly
+// Check wherever unit can walk from A to B diagonally
 // Return True if direction is either walkable or not diagonal
 // Maybe this can also be used later for inter-tile passability
-function TKMTerrain.CanWalkDiagonaly(const aFrom: TKMPoint; aX, aY: SmallInt): Boolean;
+function TKMTerrain.CanWalkDiagonally(const aFrom: TKMPoint; aX, aY: SmallInt): Boolean;
 begin
   Result := True;
 
@@ -3910,14 +3910,11 @@ begin
   Result := True; //Assume we are stuck
   for I := -1 to 1 do for K := -1 to 1 do
     if (I <> 0) or (K <> 0) then
-      if TileInMapCoords(aLoc.X+K,aLoc.Y+I) then
-        if CanWalkDiagonaly(aLoc, aLoc.X+K, aLoc.Y+I) then
+      if TileInMapCoords(aLoc.X+K, aLoc.Y+I) then
+        if CanWalkDiagonally(aLoc, aLoc.X+K, aLoc.Y+I) then
           if (Land^[aLoc.Y+I,aLoc.X+K].IsUnit = nil) or (not aCheckUnits) then
             if aPass in Land^[aLoc.Y+I,aLoc.X+K].Passability then
-            begin
-              Result := False; //at least one tile is empty, so unit is not stuck
-              exit;
-            end;
+              Exit(False); // At least one tile is empty, so unit is not stuck
 end;
 
 
@@ -3958,7 +3955,7 @@ begin
       ty := loc.Y + I;
 
       if TileInMapCoords(tx, ty)
-        and CanWalkDiagonaly(loc, tx, ty) //Check for trees that stop us walking on the diagonals!
+        and CanWalkDiagonally(loc, tx, ty) //Check for trees that stop us walking on the diagonals!
         and (Land^[ty,tx].TileLock in [tlNone, tlFenced])
         and (aPass in Land^[ty,tx].Passability)
         and (not (U is TKMUnitWorker) or GoodForBuilder(tx, ty)) then
@@ -4025,7 +4022,7 @@ begin
       and TileInMapCoords(aLoc.X+K, aLoc.Y+I)
       and not KMSamePoint(KMPoint(aLoc.X+K, aLoc.Y+I), aLoc2)
       and (aPass in Land^[aLoc.Y+I, aLoc.X+K].Passability)
-      and CanWalkDiagonaly(aLoc, aLoc.X+K, aLoc.Y+I) // Check for trees that stop us walking on the diagonals!
+      and CanWalkDiagonally(aLoc, aLoc.X+K, aLoc.Y+I) // Check for trees that stop us walking on the diagonals!
       and (Land^[aLoc.Y+I,aLoc.X+K].TileLock in [tlNone, tlFenced])
       and (KMLengthDiag(aLoc.X+K, aLoc.Y+I, aLoc2) <= 1) // Right next to aLoc2 (not diagonal)
       and not HasUnit(KMPoint(aLoc.X+K, aLoc.Y+I)) then // Doesn't have a unit

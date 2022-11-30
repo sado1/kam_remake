@@ -588,7 +588,7 @@ begin
 
   // Check if there is an real obstacle first
   if (not gTerrain.CheckPassability(nextPos, GetEffectivePassability))
-  or (not gTerrain.CanWalkDiagonaly(fUnit.Position, nextPos.X, nextPos.Y)) then
+  or (not gTerrain.CanWalkDiagonally(fUnit.Position, nextPos.X, nextPos.Y)) then
   begin
     //Try side stepping the obstacle.
     //By making HighestInteractionCount be the required timeout, we assure the solution is always checked
@@ -868,7 +868,7 @@ begin
 
       //First make sure tile is on map and walkable!
       if gTerrain.TileInMapCoords(tempPos.X, tempPos.Y)
-      and gTerrain.CanWalkDiagonaly(fUnit.Position, tempPos.X, tempPos.Y)
+      and gTerrain.CanWalkDiagonally(fUnit.Position, tempPos.X, tempPos.Y)
       and (GetEffectivePassability in gTerrain.Land^[tempPos.Y, tempPos.X].Passability) then
 
         if gTerrain.HasUnit(tempPos) then //Now see if it has a unit

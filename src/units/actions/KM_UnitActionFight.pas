@@ -192,7 +192,7 @@ begin
   or not fOpponent.Visible //Don't continue to fight units that have went into a house
   or (gHands[fUnit.Owner].Alliances[fOpponent.Owner] = atAlly) //Unit could become ally from script
   or not TKMUnitWarrior(fUnit).WithinFightRange(fOpponent.Position)
-  or not fUnit.CanWalkDiagonaly(fUnit.Position, fOpponent.Position) then //Might be a tree between us now
+  or not fUnit.CanWalkDiagonally(fUnit.Position, fOpponent.Position) then //Might be a tree between us now
   begin
     //After killing an opponent there is a very high chance that there is another enemy to be fought immediately
     //Try to start fighting that enemy by reusing this FightAction, rather than destroying it and making a new one

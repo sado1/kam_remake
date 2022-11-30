@@ -257,7 +257,7 @@ end;
 
 function TKMPathFinding.CanWalkTo(const aFrom: TKMPoint; bX, bY: SmallInt): Boolean;
 begin
-  Result := gTerrain.CanWalkDiagonaly(aFrom, bX, bY);
+  Result := gTerrain.CanWalkDiagonally(aFrom, bX, bY);
 end;
 
 
@@ -377,27 +377,23 @@ begin
   Result := False;
 
   for I := 0 to PATH_CACHE_NO_ROUTES_AVOID_LOCKED_MAX - 1 do
-  begin
     if (fCacheAvoidLocked[I].TimeToLive > 0)
-      and (fCacheAvoidLocked[I].Pass = fPass)
-      and (fCacheAvoidLocked[I].LocB = fLocB) then //Destination should be the same in cache and our path
+    and (fCacheAvoidLocked[I].Pass = fPass)
+    and (fCacheAvoidLocked[I].LocB = fLocB) then //Destination should be the same in cache and our path
     begin
       //But starting point in cache could be near our path starting point
       P := fCacheAvoidLocked[I].LocA;
       Len := KMLengthDiag(fLocA, P);
-      if ((Len <= 1)
-        or ((Len < 2)
-          and gTerrain.CanWalkDiagonaly(fLocB, P.X, P.Y))) then //Check if we can walk diagonally
-        Exit( True );
+      if (Len <= 1)
+      or ((Len < 2) and gTerrain.CanWalkDiagonally(fLocB, P.X, P.Y)) then // Check if we can walk diagonally
+        Exit(True);
     end;
-  end;
 end;
 
 
 function TKMPathFinding.TryRouteFromCache(NodeList: TKMPointList): Boolean;
 const
   MIN_POINTS_TO_CHECK_START = 10;
-
 var
   I,K: Integer;
   BestStart, BestEnd: Integer;
@@ -417,8 +413,7 @@ begin
     begin
       //Check if route goes through out position
       //We could check almost all points
-      for K := 0 to Max(MIN_POINTS_TO_CHECK_START,
-                        fCache[I].Route.Count - 1 - PATH_CACHE_NODES_MIN_CNT) do
+      for K := 0 to Max(MIN_POINTS_TO_CHECK_START, fCache[I].Route.Count - 1 - PATH_CACHE_NODES_MIN_CNT) do
       begin
         //Restrict cache to go through our starting point,
         //otherwise some bad-looking behaviour possible
@@ -440,8 +435,7 @@ begin
         P := fCache[I].Route[K];
         NewL := KMLengthDiag(fLocB, P);
         if (NewL <= 1)
-          or ((NewL < 2)
-            and gTerrain.CanWalkDiagonaly(fLocB, P.X, P.Y)) then
+        or ((NewL < 2) and gTerrain.CanWalkDiagonally(fLocB, P.X, P.Y)) then
         begin
           BestEnd := K;
           BestL := NewL;

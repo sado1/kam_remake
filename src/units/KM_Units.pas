@@ -240,7 +240,7 @@ type
     function CanWalkTo(const aFrom, aTo: TKMPoint; aPass: TKMTerrainPassability): Boolean; overload;
     function CanWalkTo(const aFrom, aTo: TKMPoint; aPass: TKMTerrainPassability; aDistance: Single): Boolean; overload;
     function CanWalkTo(const aFrom: TKMPoint; aHouse: TKMHouse; aPass: TKMTerrainPassability; aDistance: Single): Boolean; overload;
-    function CanWalkDiagonaly(const aFrom, aTo: TKMPoint): Boolean;
+    function CanWalkDiagonally(const aFrom, aTo: TKMPoint): Boolean;
     procedure VertexRem(const aLoc: TKMPoint);
     function  VertexUsageCompatible(const aFrom, aTo: TKMPoint): Boolean;
     procedure VertexAdd(const aFrom, aTo: TKMPoint);
@@ -2064,9 +2064,9 @@ begin
 end;
 
 
-function TKMUnit.CanWalkDiagonaly(const aFrom, aTo: TKMPoint): Boolean;
+function TKMUnit.CanWalkDiagonally(const aFrom, aTo: TKMPoint): Boolean;
 begin
-  Result := gTerrain.CanWalkDiagonaly(aFrom, aTo.X, aTo.Y);
+  Result := gTerrain.CanWalkDiagonally(aFrom, aTo.X, aTo.Y);
 end;
 
 
@@ -2126,7 +2126,7 @@ begin
         and (gTerrain.CheckPassability(KMPoint(X,Y), aPass))
         and (not KMStepIsDiag(Position, KMPoint(X,Y)) //Only check vertex usage if the step is diagonal
              or (not gTerrain.HasVertexUnit(KMGetDiagVertex(Position, KMPoint(X,Y)))))
-        and (gTerrain.CanWalkDiagonaly(Position, X, Y));
+        and (gTerrain.CanWalkDiagonally(Position, X, Y));
 end;
 
 
