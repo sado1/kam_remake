@@ -6,8 +6,6 @@ uses
   KM_MarchingSquares, KM_AIDefensePos;
 
 type
-  TKMAreaData = class;
-
   TKMRenderDebug = class
   private
     fClipRect: TKMRect;

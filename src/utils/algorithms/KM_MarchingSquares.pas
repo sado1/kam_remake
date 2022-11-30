@@ -16,7 +16,7 @@ type
     fHeight: Integer;
     fData: IKMData2D<Boolean>;
 
-    // Data taht was countered once
+    // Data that was countered once
     // We suggest all tiles around perimeter vertex as countered
     fCountouredData: TDictionary<Integer, Boolean>;
 
