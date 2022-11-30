@@ -510,7 +510,7 @@ begin
 end;
 
 
-{ TKMDefPosData }
+{ TKMAreaData }
 function TKMAreaData.GetData(X, Y: Integer): Boolean;
 begin
   Result :=     InRange(Y, Low(fAreaPoints), High(fAreaPoints))
