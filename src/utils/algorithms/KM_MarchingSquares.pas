@@ -140,7 +140,7 @@ begin
   for I := 0 to fHeight - 1 do
     for K := 0 to fWidth - 1 do
       if fData.GetData(K, I)
-        and not fCountouredData.ContainsKey(GetPlainIndex(K, I)) then //Don't make contour twice
+      and not fCountouredData.ContainsKey(GetPlainIndex(K, I)) then //Don't make contour twice
         Exit(IdentifyPerimeter(aPerimeterVertexes, K, I));
 end;
 
@@ -182,9 +182,7 @@ begin
           else
             direction := drE;
       7:  direction := drE;
-      8:  begin
-            direction := drS;
-          end;
+      8:  direction := drS;
       9:  if prevDir = drE then
             direction := drN
           else
