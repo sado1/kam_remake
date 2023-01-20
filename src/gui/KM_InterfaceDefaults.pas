@@ -103,10 +103,6 @@ type
     procedure Paint; virtual;
   end;
 
-const
-  SUB_MENU_ACTIONS_CNT = 7;
-
-type
   TKMMapEdMenuPage = class
   protected
     procedure DoShowSubMenu(aIndex: Byte); virtual;
@@ -120,10 +116,14 @@ type
   end;
 
 
+const
+  SUB_MENU_ACTIONS_CNT = 7;
+
+type
   TKMMapEdSubMenuPage = class
   protected
-    fSubMenuActionsEvents: array[0..SUB_MENU_ACTIONS_CNT - 1] of TNotifyEvent;
-    fSubMenuActionsCtrls: array[0..SUB_MENU_ACTIONS_CNT - 1] of array[0..1] of TKMControl;
+    fSubMenuActionsEvents: array [0..SUB_MENU_ACTIONS_CNT - 1] of TNotifyEvent;
+    fSubMenuActionsCtrls: array [0..SUB_MENU_ACTIONS_CNT - 1] of array [0..1] of TKMControl;
   public
     procedure ExecuteSubMenuAction(aIndex: Byte; var aHandled: Boolean);
     function Visible: Boolean; virtual; abstract;
@@ -131,9 +131,13 @@ type
   end;
 
 
-var
-  MAPED_SUBMENU_HOTKEYS: array[0..5] of TKMKeyFunction;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS: array[0..SUB_MENU_ACTIONS_CNT - 1] of TKMKeyFunction;
+const
+  MAPED_SUBMENU_HOTKEYS: array [0..5] of TKMKeyFunction = (
+    kfMapedSubMenu1, kfMapedSubMenu2, kfMapedSubMenu3, kfMapedSubMenu4, kfMapedSubMenu5, kfMapedSubMenu6);
+
+  MAPED_SUBMENU_ACTIONS_HOTKEYS: array [0..SUB_MENU_ACTIONS_CNT - 1] of TKMKeyFunction = (
+    kfMapedSubMenuAction1, kfMapedSubMenuAction2, kfMapedSubMenuAction3, kfMapedSubMenuAction4,
+    kfMapedSubMenuAction5, kfMapedSubMenuAction6, kfMapedSubMenuAction7);
 
 
 implementation
@@ -149,14 +153,14 @@ uses
   KM_CommonTypes;
 
 
-{ TKMUserInterface }
+{ TKMUserInterfaceCommon }
 constructor TKMUserInterfaceCommon.Create(aScreenX, aScreenY: Word);
 begin
   inherited Create;
 
   fMyControls := TKMMasterControl.Create;
 
-  //Parent Panel for whole UI
+  // Parent Panel for the whole UI
   Panel_Main := TKMPanel.Create(fMyControls, 0, 0, aScreenX, aScreenY);
 end;
 
@@ -732,7 +736,7 @@ begin
 
   for I := Low(fSubMenuActionsCtrls[aIndex]) to High(fSubMenuActionsCtrls[aIndex]) do
     if (fSubMenuActionsCtrls[aIndex, I] <> nil)
-      and fSubMenuActionsCtrls[aIndex, I].IsClickable then
+    and fSubMenuActionsCtrls[aIndex, I].IsClickable then
     begin
       if fSubMenuActionsCtrls[aIndex, I] is TKMCheckBox then
         TKMCheckBox(fSubMenuActionsCtrls[aIndex, I]).SwitchCheck;
@@ -748,25 +752,6 @@ end;
 function TKMMapEdSubMenuPage.IsFocused: Boolean;
 begin
   Result := Visible;
-end;
-
-
-initialization
-begin
-  MAPED_SUBMENU_HOTKEYS[0] := kfMapedSubMenu1;
-  MAPED_SUBMENU_HOTKEYS[1] := kfMapedSubMenu2;
-  MAPED_SUBMENU_HOTKEYS[2] := kfMapedSubMenu3;
-  MAPED_SUBMENU_HOTKEYS[3] := kfMapedSubMenu4;
-  MAPED_SUBMENU_HOTKEYS[4] := kfMapedSubMenu5;
-  MAPED_SUBMENU_HOTKEYS[5] := kfMapedSubMenu6;
-
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[0] := kfMapedSubMenuAction1;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[1] := kfMapedSubMenuAction2;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[2] := kfMapedSubMenuAction3;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[3] := kfMapedSubMenuAction4;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[4] := kfMapedSubMenuAction5;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[5] := kfMapedSubMenuAction6;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[6] := kfMapedSubMenuAction7;
 end;
 
 
