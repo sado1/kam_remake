@@ -185,7 +185,8 @@ begin
   begin
     RoundingMode := rOdd;
     MaxIJ := Rad;
-  end else begin
+  end else
+  begin
     RoundingMode := rEven;
     MaxIJ := Rad - 1;
   end;
@@ -207,9 +208,9 @@ begin
 
   if aAroundArea and not aIsSquare then
   begin
-    AroundArea := TStringList.Create;
+    AroundArea := TStringList.Create; //todo: Replace with TKMPointList
     try
-      AroundArea.Sort;
+      AroundArea.Sort; //todo: Sorting empty list, why?
       AroundArea.Duplicates := dupIgnore;
 
       for I := 0 to K - 1 do
