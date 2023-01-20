@@ -90,8 +90,7 @@ type
     procedure RenderFence(aFence: TKMFenceKind; Pos: TKMDirection; pX,pY: Integer);
     procedure RenderMarkup(pX, pY: Word; aFieldType: TKMFieldType);
     procedure DoRenderTile(aTerrainId: Word; pX,pY,Rot: Integer; aDoBindTexture: Boolean; aUseTileLookup: Boolean;
-                           DoHighlight: Boolean = False; HighlightColor: Cardinal = 0;
-                           aBlendingLvl: Byte = 0); overload;
+                           DoHighlight: Boolean = False; HighlightColor: Cardinal = 0; aBlendingLvl: Byte = 0); overload;
     procedure DoRenderTile(aTerrainId: Word; pX,pY,Rot: Integer; aCorners: TKMTileCorners; aDoBindTexture: Boolean;
                            aUseTileLookup: Boolean; DoHighlight: Boolean = False; HighlightColor: Cardinal = 0;
                            aBlendingLvl: Byte = 0); overload;
@@ -126,6 +125,7 @@ const
   MAX_RENDERABLE_INDEXES = 6 * MAX_RENDERABLE_TILES;
 
 
+{ TKMRenderTerrain }
 constructor TKMRenderTerrain.Create;
 var
   I, K: Integer;
@@ -206,6 +206,7 @@ begin
     glDeleteBuffers(1, @fVtxTilesFowShd);
     glDeleteBuffers(1, @fIndTilesFowShd);
   end;
+
   inherited;
 end;
 
@@ -527,7 +528,8 @@ begin
       glTexCoord2fv(@TexC[2]); glVertex3f(tX-1,tY  ,-LandExt^[tY+1,tX].RenderHeight/CELL_HEIGHT_DIV);
       glTexCoord2fv(@TexC[3]); glVertex3f(tX  ,tY  ,-LandExt^[tY+1,tX+1].RenderHeight/CELL_HEIGHT_DIV);
       glTexCoord2fv(@TexC[4]); glVertex3f(tX  ,tY-1,-LandExt^[tY,  tX+1].RenderHeight/CELL_HEIGHT_DIV);
-    end else begin
+    end else
+    begin
       glTexCoord2fv(@TexC[1]); glVertex3f(tX-1,tY-1-LandExt^[tY,  tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
       glTexCoord2fv(@TexC[2]); glVertex3f(tX-1,tY  -LandExt^[tY+1,tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
       glTexCoord2fv(@TexC[3]); glVertex3f(tX  ,tY  -LandExt^[tY+1,tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
@@ -548,7 +550,8 @@ begin
       glTexCoord2fv(@TexC[2]); glVertex3f(tX-1,tY  ,-LandExt^[tY+1,tX].RenderHeight/CELL_HEIGHT_DIV);
       glTexCoord2fv(@TexC[3]); glVertex3f(tX  ,tY  ,-LandExt^[tY+1,tX+1].RenderHeight/CELL_HEIGHT_DIV);
       glTexCoord2fv(@TexC[4]); glVertex3f(tX  ,tY-1,-LandExt^[tY,  tX+1].RenderHeight/CELL_HEIGHT_DIV);
-    end else begin
+    end else
+    begin
       if aCorners[0] then
         glColor4f(1,1,1,1)
       else
@@ -1264,8 +1267,7 @@ end;
 
 
 procedure TKMRenderTerrain.DoRenderTile(aTerrainId: Word; pX,pY,Rot: Integer; aDoBindTexture: Boolean; aUseTileLookup: Boolean;
-                                      DoHighlight: Boolean = False; HighlightColor: Cardinal = 0;
-                                      aBlendingLvl: Byte = 0);
+                                      DoHighlight: Boolean = False; HighlightColor: Cardinal = 0; aBlendingLvl: Byte = 0);
 const
   NO_CORNERS: TKMTileCorners = (False, False, False, False);
 begin
