@@ -90,9 +90,9 @@ type
     function PaintBucket_UnitToRender(aUnit: TObject): Boolean;
     function PaintBucket_GroupToRender(aGroup: TObject): Boolean;
 
-    procedure RenderSprite(aRX: TRXType; aId: Integer; pX,pY: Single; Col: TColor4; DoHighlight: Boolean = False;
+    procedure RenderSprite(aRX: TRXType; aId: Integer; aX, aY: Single; Col: TColor4; DoHighlight: Boolean = False;
                            HighlightColor: TColor4 = 0; aForced: Boolean = False);
-    procedure RenderSpriteAlphaTest(aRX: TRXType; aId: Integer; aWoodProgress: Single; pX, pY: Single; aId2: Integer = 0; aStoneProgress: Single = 0; X2: Single = 0; Y2: Single = 0);
+    procedure RenderSpriteAlphaTest(aRX: TRXType; aId: Integer; aWoodProgress: Single; aX, aY: Single; aId2: Integer = 0; aStoneProgress: Single = 0; X2: Single = 0; Y2: Single = 0);
     procedure RenderMapElement1(aIndex: Word; aAnimStep: Cardinal; LocX,LocY: Integer; aLoopAnim: Boolean; aDoImmediateRender: Boolean = False; aDeleting: Boolean = False);
     procedure RenderMapElement4(aIndex: Word; aAnimStep: Cardinal; pX,pY: Integer; aIsDouble: Boolean; aDoImmediateRender: Boolean = False; aDeleting: Boolean = False);
     procedure RenderHouseOutline(aHouseSketch: TKMHouseSketch; aCol: Cardinal = icCyan);
@@ -1231,19 +1231,20 @@ begin
   glPopMatrix;
 end;}
 
-procedure TKMRenderPool.RenderSprite(aRX: TRXType; aId: Integer; pX,pY: Single; Col: TColor4; DoHighlight: Boolean = False;
+procedure TKMRenderPool.RenderSprite(aRX: TRXType; aId: Integer; aX, aY: Single; Col: TColor4; DoHighlight: Boolean = False;
                                    HighlightColor: TColor4 = 0; aForced: Boolean = False);
 var
-  X, Y: Integer;
+  tX, tY: Integer;
+  rX, rY: Single;
 begin
-  X := EnsureRange(Round(pX),1,gTerrain.MapX);
-  Y := EnsureRange(Round(pY),1,gTerrain.MapY);
+  tX := EnsureRange(Round(aX), 1, gTerrain.MapX);
+  tY := EnsureRange(Round(aY), 1, gTerrain.MapY);
   //Do not render if sprite is under FOW
-  if not aForced and (gMySpectator.FogOfWar.CheckVerticeRenderRev(X,Y) <= FOG_OF_WAR_MIN) then
+  if not aForced and (gMySpectator.FogOfWar.CheckVerticeRenderRev(tX, tY) <= FOG_OF_WAR_MIN) then
     Exit;
 
-  pX := RoundToTilePixel(pX);
-  pY := RoundToTilePixel(pY);
+  rX := RoundToTilePixel(aX);
+  rY := RoundToTilePixel(aY);
 
   with gGFXData[aRX, aId] do
   begin
@@ -1254,10 +1255,10 @@ begin
     if DoHighlight then
       glColor3ub(HighlightColor AND $FF, HighlightColor SHR 8 AND $FF, HighlightColor SHR 16 AND $FF);
     glBegin(GL_QUADS);
-      glTexCoord2f(Tex.u1, Tex.v2); glVertex2f(pX                     , pY                      );
-      glTexCoord2f(Tex.u2, Tex.v2); glVertex2f(pX+pxWidth/CELL_SIZE_PX, pY                      );
-      glTexCoord2f(Tex.u2, Tex.v1); glVertex2f(pX+pxWidth/CELL_SIZE_PX, pY-pxHeight/CELL_SIZE_PX);
-      glTexCoord2f(Tex.u1, Tex.v1); glVertex2f(pX                     , pY-pxHeight/CELL_SIZE_PX);
+      glTexCoord2f(Tex.u1, Tex.v2); glVertex2f(rX                     , rY                      );
+      glTexCoord2f(Tex.u2, Tex.v2); glVertex2f(rX+pxWidth/CELL_SIZE_PX, rY                      );
+      glTexCoord2f(Tex.u2, Tex.v1); glVertex2f(rX+pxWidth/CELL_SIZE_PX, rY-pxHeight/CELL_SIZE_PX);
+      glTexCoord2f(Tex.u1, Tex.v1); glVertex2f(rX                     , rY-pxHeight/CELL_SIZE_PX);
     glEnd;
   end;
 
@@ -1267,10 +1268,10 @@ begin
       glColor4ubv(@Col);
       TKMRender.BindTexture(Alt.TexID);
       glBegin(GL_QUADS);
-        glTexCoord2f(Alt.u1, Alt.v2); glVertex2f(pX                     , pY                      );
-        glTexCoord2f(Alt.u2, Alt.v2); glVertex2f(pX+pxWidth/CELL_SIZE_PX, pY                      );
-        glTexCoord2f(Alt.u2, Alt.v1); glVertex2f(pX+pxWidth/CELL_SIZE_PX, pY-pxHeight/CELL_SIZE_PX);
-        glTexCoord2f(Alt.u1, Alt.v1); glVertex2f(pX                     , pY-pxHeight/CELL_SIZE_PX);
+        glTexCoord2f(Alt.u1, Alt.v2); glVertex2f(rX                     , rY                      );
+        glTexCoord2f(Alt.u2, Alt.v2); glVertex2f(rX+pxWidth/CELL_SIZE_PX, rY                      );
+        glTexCoord2f(Alt.u2, Alt.v1); glVertex2f(rX+pxWidth/CELL_SIZE_PX, rY-pxHeight/CELL_SIZE_PX);
+        glTexCoord2f(Alt.u1, Alt.v1); glVertex2f(rX                     , rY-pxHeight/CELL_SIZE_PX);
       glEnd;
     end;
 end;
@@ -1281,19 +1282,21 @@ end;
 // white there will have sprite rendered
 // If there are two masks then we need to render sprite only there
 // where its mask is white AND where second mask is black
-procedure TKMRenderPool.RenderSpriteAlphaTest(aRX: TRXType; aId: Integer; aWoodProgress: Single; pX, pY: Single;
-                                            aId2: Integer = 0; aStoneProgress: Single = 0; X2: Single = 0; Y2: Single = 0);
+procedure TKMRenderPool.RenderSpriteAlphaTest(aRX: TRXType; aId: Integer; aWoodProgress: Single; aX, aY: Single;
+  aId2: Integer = 0; aStoneProgress: Single = 0; X2: Single = 0; Y2: Single = 0);
 var
-  X, Y: Integer;
+  tX, tY: Integer;
+  rX, rY: Single;
 begin
-  X := EnsureRange(Round(pX),1,gTerrain.MapX);
-  Y := EnsureRange(Round(pY),1,gTerrain.MapY);
-  if (gMySpectator.FogOfWar.CheckVerticeRenderRev(X,Y) <= FOG_OF_WAR_MIN) then Exit;
   // Skip rendering if alphas are zero (occurs so non-started houses can still have child sprites)
   if (aWoodProgress = 0) and (aStoneProgress = 0) then Exit;
 
-  pX := RoundToTilePixel(pX);
-  pY := RoundToTilePixel(pY);
+  tX := EnsureRange(Round(aX), 1, gTerrain.MapX);
+  tY := EnsureRange(Round(aY), 1, gTerrain.MapY);
+  if gMySpectator.FogOfWar.CheckVerticeRenderRev(tX, tY) <= FOG_OF_WAR_MIN then Exit;
+
+  rX := RoundToTilePixel(aX);
+  rY := RoundToTilePixel(aY);
 
   X2 := RoundToTilePixel(X2);
   Y2 := RoundToTilePixel(Y2);
@@ -1320,10 +1323,10 @@ begin
       glColor3f(1, 1, 1);
       TKMRender.BindTexture(Alt.TexID);
       glBegin(GL_QUADS);
-        glTexCoord2f(Alt.u1,Alt.v2); glVertex2f(pX                     ,pY         );
-        glTexCoord2f(Alt.u2,Alt.v2); glVertex2f(pX+pxWidth/CELL_SIZE_PX,pY         );
-        glTexCoord2f(Alt.u2,Alt.v1); glVertex2f(pX+pxWidth/CELL_SIZE_PX,pY-pxHeight/CELL_SIZE_PX);
-        glTexCoord2f(Alt.u1,Alt.v1); glVertex2f(pX                     ,pY-pxHeight/CELL_SIZE_PX);
+        glTexCoord2f(Alt.u1,Alt.v2); glVertex2f(rX                     , rY         );
+        glTexCoord2f(Alt.u2,Alt.v2); glVertex2f(rX+pxWidth/CELL_SIZE_PX, rY         );
+        glTexCoord2f(Alt.u2,Alt.v1); glVertex2f(rX+pxWidth/CELL_SIZE_PX, rY-pxHeight/CELL_SIZE_PX);
+        glTexCoord2f(Alt.u1,Alt.v1); glVertex2f(rX                     , rY-pxHeight/CELL_SIZE_PX);
       glEnd;
       TKMRender.BindTexture(0);
     end;
@@ -1366,10 +1369,10 @@ begin
 
     TKMRender.BindTexture(Tex.TexID);
     glBegin(GL_QUADS);
-      glTexCoord2f(Tex.u1,Tex.v2); glVertex2f(pX                     ,pY         );
-      glTexCoord2f(Tex.u2,Tex.v2); glVertex2f(pX+pxWidth/CELL_SIZE_PX,pY         );
-      glTexCoord2f(Tex.u2,Tex.v1); glVertex2f(pX+pxWidth/CELL_SIZE_PX,pY-pxHeight/CELL_SIZE_PX);
-      glTexCoord2f(Tex.u1,Tex.v1); glVertex2f(pX                     ,pY-pxHeight/CELL_SIZE_PX);
+      glTexCoord2f(Tex.u1,Tex.v2); glVertex2f(rX                     , rY         );
+      glTexCoord2f(Tex.u2,Tex.v2); glVertex2f(rX+pxWidth/CELL_SIZE_PX, rY         );
+      glTexCoord2f(Tex.u2,Tex.v1); glVertex2f(rX+pxWidth/CELL_SIZE_PX, rY-pxHeight/CELL_SIZE_PX);
+      glTexCoord2f(Tex.u1,Tex.v1); glVertex2f(rX                     , rY-pxHeight/CELL_SIZE_PX);
     glEnd;
     TKMRender.BindTexture(0);
   end;
