@@ -396,7 +396,7 @@ begin
     // UI
     nUI := nGameCommon.AddOrFindChild('UI');
       fDefaultZoom    := nUI.Attributes['DefaultZoom'].AsFloat(1);
-      fZoomBehaviour  := TKMZoomBehaviour(nUI.Attributes['ZoomBehaviour'].AsInteger(Integer(zbFull))); // Default zoom value is zbFull
+      fZoomBehaviour  := TKMZoomBehaviour(nUI.Attributes['ZoomBehaviour'].AsInteger(Ord(zbFull))); // Default zoom value is zbFull
     // Speed
     nGameSpeed := nGameCommon.AddOrFindChild('Speed');
       fSpeedMedium    := nGameSpeed.Attributes['Medium'].AsFloat(3);

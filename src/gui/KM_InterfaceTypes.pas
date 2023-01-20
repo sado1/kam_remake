@@ -28,13 +28,13 @@ type
 
 
   TKMZoomBehaviour = (
-                      zbRestricted, // Limit the zoom to within the map boundaries (classic zoom behaviour)
-                      zbFull,       // Prevents the zoom from crossing both map boundaries
-                      zbLoose       // Limit the zoom to 1.1x the map width or height
-                     );
+    zbRestricted, // Limit the zoom to within the map boundaries (classic zoom behaviour)
+    zbFull,       // Prevents the zoom from crossing both map boundaries
+    zbLoose       // Limit the zoom to 1.1x the map width or height
+  );
 
 const
-  //Options sliders
+  // Options sliders
   OPT_SLIDER_MIN = 0;
   OPT_SLIDER_MAX = 20;
 
