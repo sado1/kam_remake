@@ -289,8 +289,6 @@ var
   EXPORT_SPRITE_ATLASES_RXA:Boolean = False; //Whenever to write all loaded from .RXA files textures to PNG on loading (super extremely time consuming)
   EXPORT_INFLUENCE        :Boolean = False;
   LOG_FONTS_RAM_USAGE     :Boolean = False;
-  {Statistic}
-  CtrlPaintCount: Word; //How many Controls were painted in last frame
 
 
 const

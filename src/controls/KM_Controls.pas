@@ -93,8 +93,10 @@ type
   end;
 
 
-  {Base class for all TKM elements}
+  // Base class for all TKM controls
   TKMControl = class
+  public class var
+    PaintCount: Cardinal;
 //  type
 //    TKMKeyPressKind = (kpkDown, kpkPress);
 //    TKMKeyPress = record
@@ -740,14 +742,14 @@ begin
 end;
 
 
-{One common thing - draw childs for self}
+// One common thing - draw childs for self
 procedure TKMControl.Paint;
 var
   sColor: TColor4;
   tmp: TKMPoint;
   skipText: Boolean;
 begin
-  Inc(CtrlPaintCount);
+  Inc(PaintCount);
 
   if SHOW_FOCUSED_CONTROL and (csFocus in State) then
     TKMRenderUI.WriteOutline(AbsLeft-2, AbsTop-2, Width+4, Height+4, 2, $FF00D0FF);
@@ -2099,7 +2101,9 @@ var
 begin
   if Self = nil then Exit;
 
-  CtrlPaintCount := 0;
+  // Reset counter
+  TKMControl.PaintCount := 0;
+
   fMasterPanel.Paint;
 
   if MODE_DESIGN_CONTROLS and (CtrlOver <> nil) then

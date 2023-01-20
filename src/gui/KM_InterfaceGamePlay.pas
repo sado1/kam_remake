@@ -4685,7 +4685,7 @@ begin
     Result := IntToStr(gHands.UnitCount) + ' units on map|' +
          IntToStr(gRenderPool.RenderList.DbgSpritesQueued) + '/' +
          IntToStr(gRenderPool.RenderList.DbgSpritesDrawn) + ' sprites queued/rendered|' +
-         IntToStr(CtrlPaintCount) + ' controls rendered|';
+         IntToStr(TKMControl.PaintCount) + ' controls rendered|';
 
   if SHOW_POINTER_COUNT then
     Result := Result + Format('Pointers: %d units, %d houses|', [gMySpectator.Hand.Units.GetTotalPointers, gMySpectator.Hand.Houses.GetTotalPointers]);
