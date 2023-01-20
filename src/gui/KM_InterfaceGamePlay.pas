@@ -4682,10 +4682,8 @@ begin
     Result := Result + 'Tick: ' + IntToStr(gGameParams.Tick) + '|';
 
   if SHOW_SPRITE_COUNT then
-    Result := IntToStr(gHands.UnitCount) + ' units on map|' +
-         IntToStr(gRenderPool.RenderList.DbgSpritesQueued) + '/' +
-         IntToStr(gRenderPool.RenderList.DbgSpritesDrawn) + ' sprites queued/rendered|' +
-         IntToStr(TKMControl.PaintCount) + ' controls rendered|';
+    Result := Result + Format('%d units on map|%d/%d sprites queued/rendered|%d controls rendered|', [
+      gHands.UnitCount, gRenderPool.RenderList.DbgSpritesQueued, gRenderPool.RenderList.DbgSpritesDrawn, TKMControl.PaintCount]);
 
   if SHOW_POINTER_COUNT then
     Result := Result + Format('Pointers: %d units, %d houses|', [gMySpectator.Hand.Units.GetTotalPointers, gMySpectator.Hand.Houses.GetTotalPointers]);
