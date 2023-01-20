@@ -33,8 +33,9 @@ type
     fRenderOrder: array of Word; // Order in which sprites will be drawn ()
     fRenderList: array of TKMRenderSprite;
 
-    fStat_Sprites: Integer; // Total sprites in queue
-    fStat_Sprites2: Integer;// Rendered sprites
+    fDbgSpritesQueued: Word;
+    fDbgSpritesDrawn: Word;
+
     procedure ClipRenderList;
     procedure SendToRender(aId: Integer);
   public
@@ -44,8 +45,9 @@ type
     procedure AddSprite(aRX: TRXType; aID: Integer; pX,pY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
     procedure AddSpriteG(aRX: TRXType; aID: Integer; aUID: Integer; pX,pY,gX,gY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
 
-    property Stat_Sprites: Integer read fStat_Sprites;
-    property Stat_Sprites2: Integer read fStat_Sprites2;
+    property DbgSpritesQueued: Word read fDbgSpritesQueued;
+    property DbgSpritesDrawn: Word read fDbgSpritesDrawn;
+
     function GetSelectionUID(const aCurPos: TKMPointF): Integer;
     procedure Clear;
     procedure SortRenderList;
@@ -1975,8 +1977,8 @@ constructor TKMRenderList.Create;
 begin
   inherited;
 
-  fCount := 0;
-  SetLength(fRenderList, 512); // Allocate some space
+  // Pre-allocate some space
+  SetLength(fRenderList, 512);
 
   fUnitsRXData := gRes.Sprites[rxUnits].RXData;
 end;
@@ -2232,8 +2234,9 @@ begin
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psFrameRenderList);
   {$ENDIF}
-  fStat_Sprites := fCount;
-  fStat_Sprites2 := 0;
+
+  fDbgSpritesQueued := fCount;
+  fDbgSpritesDrawn := 0;
   objectsCount := Length(fRenderOrder);
 
   for I := 0 to objectsCount - 1 do
@@ -2254,7 +2257,7 @@ begin
           gRenderAux.SquareOnTerrain(fRenderList[K].SelectionRect.Left , fRenderList[K].SelectionRect.Top,
                                      fRenderList[K].SelectionRect.Right, fRenderList[K].SelectionRect.Bottom, fRenderList[K].UID or $FF000000, 1);
         Inc(K);
-        Inc(fStat_Sprites2);
+        Inc(fDbgSpritesDrawn);
       until ((K = fCount) or fRenderList[K].NewInst);
     glPopMatrix;
   end;
