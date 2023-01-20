@@ -112,7 +112,6 @@ type
         Label_MapMoveConfirmTitle, Label_MapMoveName: TKMLabel;
 
       Button_MapEdBack: TKMButton;
-
   public
     OnNewMapEditor: TKMNewMapEditorEvent;
 
@@ -418,29 +417,29 @@ procedure TKMMenuMapEditor.Radio_MapSizes_HeightChange(Sender: TObject; aValue: 
 const
   RADIO_MAPSIZE_LINE_H = 20;
   RADIO_MAPSIZE_LINE_MAX_H = 25;
-  //Indexes of new map sizes to skip. First less important
+  // Indexes of new map sizes to skip. First less important
   RADIO_SKIP_SIZES_I: array [0..MAPSIZES_COUNT - 1] of Integer = (1,5,7,3,4,6,0,2);
 var
-  I: Integer;
+  rg: TKMRadioGroup;
+  cnt: Integer;
 begin
-  Assert(Sender is TKMRadioGroup);
-  I := TKMRadioGroup(Sender).Count - 1;
+  rg := TKMRadioGroup(Sender);
+  cnt := rg.Count - 1;
 
-  while (TKMRadioGroup(Sender).LineHeight < RADIO_MAPSIZE_LINE_H)
-    and (TKMRadioGroup(Sender).VisibleCount >= 0)
-    and (I >= 0) do
+  while (rg.LineHeight < RADIO_MAPSIZE_LINE_H)
+  and (rg.VisibleCount >= 0)
+  and (cnt >= 0) do
   begin
-    TKMRadioGroup(Sender).SetItemVisible(RADIO_SKIP_SIZES_I[I], False);
-    Dec(I);
+    rg.SetItemVisible(RADIO_SKIP_SIZES_I[cnt], False);
+    Dec(cnt);
   end;
 
-  I := 0;
-  while ((TKMRadioGroup(Sender).LineHeight > RADIO_MAPSIZE_LINE_MAX_H)
-      or ((TKMRadioGroup(Sender).LineHeight > RADIO_MAPSIZE_LINE_H) and (TKMRadioGroup(Sender).VisibleCount = 0)))
-    and (I < TKMRadioGroup(Sender).Count) do
+  cnt := 0;
+  while ((rg.LineHeight > RADIO_MAPSIZE_LINE_MAX_H) or ((rg.LineHeight > RADIO_MAPSIZE_LINE_H) and (rg.VisibleCount = 0)))
+  and (cnt < rg.Count) do
   begin
-    TKMRadioGroup(Sender).SetItemVisible(RADIO_SKIP_SIZES_I[I], True);
-    Inc(I);
+    rg.SetItemVisible(RADIO_SKIP_SIZES_I[cnt], True);
+    Inc(cnt);
   end;
 end;
 
@@ -460,7 +459,8 @@ begin
       begin
         gGameSettings.FavouriteMaps.Add(fMaps[I].MapAndDatCRC);
         gServerSettings.ServerMapsRoster.Add(fMaps[I].CRC);
-      end else begin
+      end else
+      begin
         gGameSettings.FavouriteMaps.Remove(fMaps[I].MapAndDatCRC);
         gServerSettings.ServerMapsRoster.Remove(fMaps[I].CRC);
       end;
@@ -483,9 +483,9 @@ begin
   NewMapEnsureNumEdValues;
   fMaps.Lock;
   try
-  //This is also called by double clicking on a map in the list
-    if ((Sender = Button_Load) or (Sender = ColumnBox_MapEd)) and
-       Button_Load.Enabled and ColumnBox_MapEd.IsSelected then
+    //This is also called by double clicking on a map in the list
+    if ((Sender = Button_Load) or (Sender = ColumnBox_MapEd))
+    and Button_Load.Enabled and ColumnBox_MapEd.IsSelected then
     begin
       //Make local copy of Map before Unlock
       map := fMaps[ColumnBox_MapEd.SelectedItemTag];
@@ -726,15 +726,16 @@ begin
     begin
       skipMap := False;
       if ((Radio_MapType.ItemIndex = 0) and not fMaps[I].IsSinglePlayerKind)  //SP map filter
-        or ((Radio_MapType.ItemIndex = 1) and not fMaps[I].IsMultiPlayerKind) //MP map filter
-        or ((Radio_MapType.ItemIndex = 2) and not fMaps[I].IsDownloadedKind)  //MP DL map filter
-        or ((Radio_BuildFight.ItemIndex = 0) and (fMaps[I].MissionMode <> mmBuilding)) //Build map filter
-        or ((Radio_BuildFight.ItemIndex = 1) and (fMaps[I].MissionMode <> mmFighting)) //Fight map filter
-        or ((Radio_CoopSpecial.ItemIndex = 0) and not fMaps[I].TxtInfo.IsSpecial)     //Special map filter
-        or ((Radio_CoopSpecial.ItemIndex = 1) and not fMaps[I].TxtInfo.IsCoop)        //Coop map filter
-        or (TrackBar_PlayersCnt.Enabled and (fMaps[I].HumanPlayerCount <> TrackBar_PlayersCnt.Position)) //Players number map filter
-         then
+      or ((Radio_MapType.ItemIndex = 1) and not fMaps[I].IsMultiPlayerKind) //MP map filter
+      or ((Radio_MapType.ItemIndex = 2) and not fMaps[I].IsDownloadedKind)  //MP DL map filter
+      or ((Radio_BuildFight.ItemIndex = 0) and (fMaps[I].MissionMode <> mmBuilding)) //Build map filter
+      or ((Radio_BuildFight.ItemIndex = 1) and (fMaps[I].MissionMode <> mmFighting)) //Fight map filter
+      or ((Radio_CoopSpecial.ItemIndex = 0) and not fMaps[I].TxtInfo.IsSpecial)     //Special map filter
+      or ((Radio_CoopSpecial.ItemIndex = 1) and not fMaps[I].TxtInfo.IsCoop)        //Coop map filter
+      or (TrackBar_PlayersCnt.Enabled and (fMaps[I].HumanPlayerCount <> TrackBar_PlayersCnt.Position)) //Players number map filter
+      then
         skipMap := True;
+
       for MS := MAP_SIZE_ENUM_MIN to MAP_SIZE_ENUM_MAX do
         if not CheckBox_Sizes[MS].Checked and (fMaps[I].Size = MS) then
         begin
@@ -757,9 +758,9 @@ begin
       ColumnBox_MapEd.AddItem(R);
 
       if (fMaps[I].MapAndDatCRC = fSelectedMapInfo.CRC)
-        and ((Radio_MapType.ItemIndex = 0)
-          or (Radio_MapType.ItemIndex = 2)
-          or (fMaps[I].Name = fSelectedMapInfo.Name)) then  //Check name only for MP maps
+      and ((Radio_MapType.ItemIndex = 0)
+        or (Radio_MapType.ItemIndex = 2)
+        or (fMaps[I].Name = fSelectedMapInfo.Name)) then  //Check name only for MP maps
       begin
         ColumnBox_MapEd.ItemIndex := listI;
         UpdateMapInfo(listI);
@@ -773,8 +774,7 @@ begin
   ColumnBox_MapEd.TopIndex := prevTop;
 
   if aJumpToSelected and ColumnBox_MapEd.IsSelected
-    and not InRange(ColumnBox_MapEd.ItemIndex - ColumnBox_MapEd.TopIndex, 0, ColumnBox_MapEd.GetVisibleRows - 1)
-  then
+  and not InRange(ColumnBox_MapEd.ItemIndex - ColumnBox_MapEd.TopIndex, 0, ColumnBox_MapEd.GetVisibleRows - 1) then
     if ColumnBox_MapEd.ItemIndex < ColumnBox_MapEd.TopIndex then
       ColumnBox_MapEd.TopIndex := ColumnBox_MapEd.ItemIndex
     else
@@ -843,7 +843,8 @@ begin
     finally
       fMaps.Unlock;
     end;
-  end else begin
+  end else
+  begin
     SetSelectedMapInfo;
     MinimapView_MapEd.Hide;
   end;
@@ -913,7 +914,8 @@ begin
   begin
     PopUp_Delete.Show;
     ColumnBox_MapEd.Focusable := False; // Will update focus automatically
-  end else begin
+  end else
+  begin
     PopUp_Delete.Hide;
     ColumnBox_MapEd.Focusable := True; // Will update focus automatically
   end;
@@ -966,7 +968,8 @@ begin
   begin
     PopUp_Move.Show;
     ColumnBox_MapEd.Focusable := False; // Will update focus automatically
-  end else begin
+  end else
+  begin
     PopUp_Move.Hide;
     ColumnBox_MapEd.Focusable := True; // Will update focus automatically
   end;
@@ -982,7 +985,8 @@ begin
   begin
     CRC := fMaps[aID].MapAndDatCRC;
     name := fMaps[aID].Name;
-  end else begin
+  end else
+  begin
     CRC := 0;
     name := '';
   end;
@@ -1089,7 +1093,8 @@ begin
       Button_ViewReadme.Top := Memo_MapDesc.Bottom + 5;
       Label_MapType.Show;
     end;
-  end else begin
+  end else
+  begin
     MinimapView_MapEd.Hide;
     Panel_MapInfo.Hide;
     Memo_MapDesc.Clear;
