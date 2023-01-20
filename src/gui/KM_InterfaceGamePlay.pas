@@ -4695,7 +4695,7 @@ begin
     Result := Result + 'Network delay: ' + IntToStr(TKMGameInputProcess_Multi(gGame.GameInputProcess).GetNetworkDelay) + '|';
 
   if DISPLAY_SOUNDS then
-    Result := Result + IntToStr(gSoundPlayer.ActiveCount) + ' sounds playing' + gScriptSounds.ToString + '|';
+    Result := Result + IntToStr(gSoundPlayer.ActiveCount) + ' sounds playing|' + gScriptSounds.GetDbgString;
 
   if OVERLAY_AI_SUPERVISOR then
     Result := Result + gAIFields.Supervisor.LogStatus;

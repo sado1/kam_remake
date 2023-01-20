@@ -55,7 +55,7 @@ type
 
     procedure UpdateStateGlobal;
 
-    function ToString: String; override;
+    function GetDbgString: string;
   end;
 
 var
@@ -68,6 +68,16 @@ uses
   KM_Game,
   KM_HandsCollection, KM_HandTypes,
   KM_Sound;
+
+
+{ TKMScriptSound }
+constructor TKMScriptSound.Create;
+begin
+  inherited;
+
+  // Set in default values
+  PlayingIndex := -1;
+end;
 
 
 { TKMScriptSoundsManager }
@@ -369,7 +379,7 @@ begin
 end;
 
 
-function TKMScriptSoundsManager.ToString: String;
+function TKMScriptSoundsManager.GetDbgString: string;
 var
   I: Byte;
   pair: TPair<Integer, TKMByteSet>;
@@ -387,25 +397,8 @@ begin
     str := str + '|';
   end;
 
-  Result := Format('|Script sounds cnt = %d|RemoveRequests: CNT = %d:|%s', [fScriptSounds.Count, fSoundRemoveRequests.Count, str]);
+  Result := Format('Script sounds cnt = %d|RemoveRequests: CNT = %d:|%s', [fScriptSounds.Count, fSoundRemoveRequests.Count, str]);
 end;
 
-
-{ TKMScriptSound }
-constructor TKMScriptSound.Create;
-begin
-  PlayingIndex := -1;
-  RemoveRequestSent := False;
-  Looped := False;
-  FadeMusic := False;
-  ScriptUID := 0;
-  SoundName := '';
-  AudioFormat := Low(TKMAudioFormat);
-  Volume := 0.0;
-  Radius := 0.0;
-  Attenuate := False;
-  Loc := KMPoint(0,0);
-  HandIndex := 0;
-end;
 
 end.
