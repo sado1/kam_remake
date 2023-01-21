@@ -77,14 +77,14 @@ var
   RT: TRXType;
   packData: TRXXPackData;
 begin
-  fRXXPacker.SpritesLoadDir := edSpritesLoadDir.Text;
+  fRXXPacker.SpritesSourcePath := edSpritesLoadDir.Text;
 
   ListBox1.Items.Clear;
   fPacksCnt := 0;
   SetLength(fPacksData, fPacksCnt);
   for RT := Low(TRXType) to High(TRXType) do
     if (RT = rxTiles) //Tiles are always in the list
-    or FileExists(fRXXPacker.SpritesLoadDir + 'SpriteResource\' + RXInfo[RT].FileName + '.rx') then
+    or FileExists(fRXXPacker.SpritesSourcePath + 'SpriteResource\' + RXInfo[RT].FileName + '.rx') then
     begin
       packData := AddPackData(GetEnumName(TypeInfo(TRXType), Integer(RT)), Integer(RT));
       ListBox1.Items.Add(packData.Name);
@@ -222,15 +222,15 @@ begin
   try
     tick := GetTickCount;
 
-    fRXXPacker.SpritesLoadDir := edSpritesLoadDir.Text;
+    fRXXPacker.SpritesSourcePath := edSpritesLoadDir.Text;
     fRXXPacker.SpritesSaveDir := edSpritesSaveDir.Text;
     fRxxPacker.PackToRXX      := chkPackToRXX.Checked;
     fRxxPacker.PackToRXA      := chkPackToRXA.Checked;
     fRxxPacker.AddRXXHeader   := chkAddRXXHeader.Checked;
 
-    if not DirectoryExists(fRXXPacker.SpritesLoadDir + SPRITES_RES_DIR + '\') then
+    if not DirectoryExists(fRXXPacker.SpritesSourcePath + SPRITES_RES_DIR + '\') then
     begin
-      MessageBox(Handle, PWideChar('Cannot find ' + fRXXPacker.SpritesLoadDir + SPRITES_RES_DIR + '\ folder.' +
+      MessageBox(Handle, PWideChar('Cannot find ' + fRXXPacker.SpritesSourcePath + SPRITES_RES_DIR + '\ folder.' +
         sLineBreak + 'Please make sure this folder exists.'), 'Error', MB_ICONEXCLAMATION + MB_OK);
       Exit;
     end;

@@ -8,12 +8,12 @@ uses
 type
   TKMRXXPacker = class
   private
-    fSpritesLoadDir: string;
+    fSpritesSourcePath: string;
     fSpritesSaveDir: string;
     fPackToRXX: Boolean;
     fPackToRXA: Boolean;
     fAddVersionHeader: Boolean;
-    procedure SetSpritesLoadDir(const aValue: string);
+    procedure SetSpritesSourcePath(const aValue: string);
     procedure SetSpritesSaveDir(const aValue: string);
   public
     constructor Create(const aSpritesBaseDir: string);
@@ -21,7 +21,7 @@ type
     property PackToRXX: Boolean read fPackToRXX write fPackToRXX;
     property PackToRXA: Boolean read fPackToRXA write fPackToRXA;
     property AddRXXHeader: Boolean read fAddVersionHeader write fAddVersionHeader;
-    property SpritesLoadDir: string read fSpritesLoadDir write SetSpritesLoadDir;
+    property SpritesSourcePath: string read fSpritesSourcePath write SetSpritesSourcePath;
     property SpritesSaveDir: string read fSpritesSaveDir write SetSpritesSaveDir;
 
     procedure Pack(RT: TRXType; fPalettes: TKMResPalettes);
@@ -38,7 +38,7 @@ uses
   KM_ResHouses, KM_ResUnits, KM_ResSprites, KM_Points, KM_ResSpritesEdit, KM_Defaults, KM_Log;
 
 
-{ TRXXPacker }
+{ TKMRXXPacker }
 constructor TKMRXXPacker.Create(const aSpritesBaseDir: string);
 begin
   inherited Create;
@@ -46,7 +46,7 @@ begin
   fPackToRXX := True;
   fPackToRXA := False;
   fAddVersionHeader := True;
-  SpritesLoadDir := aSpritesBaseDir;
+  SpritesSourcePath := aSpritesBaseDir;
 end;
 
 
@@ -77,7 +77,7 @@ begin
   //ruCustom sprite packs do not have a main RXX file so don't need packing
   if RXInfo[RT].Usage <> ruCustom then
   begin
-    rxName := SpritesLoadDir + SPRITES_RES_DIR + '\' + RXInfo[RT].FileName + '.rx';
+    rxName := fSpritesSourcePath + SPRITES_RES_DIR + '\' + RXInfo[RT].FileName + '.rx';
     Assert((RT = rxTiles) or FileExists(rxName),
            'Cannot find ' + rxName + ' file.' + #13#10 +
            'Please copy the file from your KaM\data\gfx\res\ folder.');
@@ -88,11 +88,11 @@ begin
       if RT <> rxTiles then
       begin
         spritePack.LoadFromRXFile(rxName);
-        spritePack.OverloadRXDataFromFolder(SpritesLoadDir + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
+        spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
       end
       else
-      if DirectoryExists(SpritesLoadDir + SPRITES_RES_DIR + '\') then
-        spritePack.OverloadRXDataFromFolder(SpritesLoadDir + SPRITES_RES_DIR + '\');
+      if DirectoryExists(fSpritesSourcePath + SPRITES_RES_DIR + '\') then
+        spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_RES_DIR + '\');
 
       //Tiles must stay the same size as they can't use pivots
       if (RT <> rxTiles) and (gLog <> nil) then
@@ -168,8 +168,8 @@ begin
 
         if fPackToRXA then
         begin
-          if DirectoryExists(SpritesLoadDir + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\') then
-            spritePack.OverloadRXDataFromFolder(SpritesLoadDir + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\', False); // Shadows are already softened for interps
+          if DirectoryExists(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\') then
+            spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\', False); // Shadows are already softened for interps
 
           spritePack.SaveToRXAFile(fSpritesSaveDir + 'data\Sprites\' + RXInfo[RT].FileName + '.rxa', fAddVersionHeader);
         end;
@@ -181,15 +181,15 @@ begin
 end;
 
 
-procedure TKMRXXPacker.SetSpritesLoadDir(const aValue: string);
+procedure TKMRXXPacker.SetSpritesSourcePath(const aValue: string);
 begin
-  fSpritesLoadDir := IncludeTrailingPathDelimiter(fSpritesLoadDir);
+  fSpritesSourcePath := IncludeTrailingPathDelimiter(aValue);
 end;
 
 
 procedure TKMRXXPacker.SetSpritesSaveDir(const aValue: string);
 begin
-  fSpritesSaveDir := IncludeTrailingPathDelimiter(fSpritesSaveDir);
+  fSpritesSaveDir := IncludeTrailingPathDelimiter(aValue);
 end;
 
 

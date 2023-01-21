@@ -26,14 +26,14 @@ object RXXForm1: TRXXForm1
   end
   object Label2: TLabel
     Left = 16
-    Top = 224
+    Top = 232
     Width = 99
     Height = 13
     Caption = 'Sprites source folder'
   end
   object Label3: TLabel
     Left = 16
-    Top = 272
+    Top = 280
     Width = 156
     Height = 13
     Caption = 'Packed sprites destination folder'
@@ -67,7 +67,7 @@ object RXXForm1: TRXXForm1
   end
   object edSpritesLoadDir: TEdit
     Left = 16
-    Top = 240
+    Top = 248
     Width = 257
     Height = 21
     TabOrder = 3
@@ -84,7 +84,7 @@ object RXXForm1: TRXXForm1
   end
   object chkAddRXXHeader: TCheckBox
     Left = 160
-    Top = 216
+    Top = 208
     Width = 113
     Height = 17
     Caption = 'Add Version header'
@@ -105,7 +105,7 @@ object RXXForm1: TRXXForm1
   end
   object edSpritesSaveDir: TEdit
     Left = 16
-    Top = 288
+    Top = 296
     Width = 257
     Height = 21
     TabOrder = 7

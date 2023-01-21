@@ -130,7 +130,7 @@ begin
               writeln('spritesLoadDir directory does not exist: ' + ParamStr(I));
               Exit;
             end;
-            lRxxPacker.SpritesLoadDir := ParamStr(I);
+            lRxxPacker.SpritesSourcePath := ParamStr(I);
             Continue;
           end;
 
