@@ -52,9 +52,7 @@ uses
 const
   RXX_VERSION_1: AnsiString = 'RXX1';
 
-
-var
-  RX5Pal: array [1 .. 40] of TKMPal = (
+  RX_GUIMAIN_PAL: array [1 .. 40] of TKMPal = (
     pal2_setup,   pal2_setup,   pal2_setup,   pal2_setup,   pal2_setup,
     pal2_setup,   palset2,     palset2,     palset2,     palmap,
     palmap,      palmap,      palmap,      palmap,      palmap,
@@ -66,7 +64,7 @@ var
   );
 
   // I couldn't find matching palettes for the 17th and 18th entries
-  RX6Pal: array [1 .. 20] of TKMPal = (
+  RX6_PAL: array [1 .. 20] of TKMPal = (
     palset,  palset,  palset,  palset,  palset,
     palset,  palset2, palset2, palset2, palmap,
     palmap,  palmap,  palmap,  palmap,  palmap,
@@ -75,7 +73,7 @@ var
 
 
 { TKMSpritePackEdit }
-//We need to access to palettes to properly Expand RX files
+// We need to have access to the palettes to properly Expand RX files
 constructor TKMSpritePackEdit.Create(aRT: TRXType; aPalettes: TKMResPalettes);
 begin
   inherited Create(aRT);
@@ -105,14 +103,15 @@ procedure TKMSpritePackEdit.Expand;
   function HouseWIP(aID: Integer): TKMPaletteSpec;
   const
     // These are sprites with house building steps
-    WIP: array[0..55] of Word = (3,4,25,43,44,116,118,119,120,121,123,126,127,136,137,140,141,144,145,148,149,213,214,237,238,241,242,243,246,247,252,253,257,258,275,276,336,338,360,361,365,366,370,371,380,381,399,400,665,666,670,671,1658,1660,1682,1684);
+    HOUSES_BUILDING_STAGES: array [0..55] of Word = (
+      3,4,25,43,44,116,118,119,120,121,123,126,127,136,137,140,141,144,145,148,149,213,214,237,238,241,242,243,246,247,252,253,257,258,275,276,336,338,360,361,365,366,370,371,380,381,399,400,665,666,670,671,1658,1660,1682,1684);
   var
     I: Byte;
   begin
     Result := fPalettes.DefaultPalette;
 
-    for I := 0 to High(WIP) do
-    if aID = WIP[I] then
+    for I := 0 to High(HOUSES_BUILDING_STAGES) do
+    if aID = HOUSES_BUILDING_STAGES[I] then
       Exit(fPalettes[pallin]);
   end;
 var
@@ -128,7 +127,7 @@ begin
     //Choose proper palette
     case fRT of
       rxHouses:   Palette := HouseWIP(H);
-      rxGuiMain:  Palette := fPalettes[RX5Pal[H]];
+      rxGuiMain:  Palette := fPalettes[RX_GUIMAIN_PAL[H]];
     else
       Palette := fPalettes.DefaultPalette;
     end;

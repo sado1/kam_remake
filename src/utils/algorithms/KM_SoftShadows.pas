@@ -281,6 +281,7 @@ begin
       else
         OriginalColor := OriginalColor and $00FFFFFF;
     end;
+
     fRXData.RGBA[aIndex, I * fRXData.Size[aIndex].X + K] := (RealShadow shl 24) or OriginalColor;
   end;
 end;
