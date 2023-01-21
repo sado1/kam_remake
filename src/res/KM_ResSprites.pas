@@ -36,7 +36,7 @@ type
     procedure SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; var Data: TKMCardinalArray);
     procedure SetGFXData(aTexID: Cardinal; aSpriteInfo: TKMBinItem; aAtlasType: TKMSpriteAtlasType);
     procedure PrepareAtlases(aSpriteInfo: TBinArray; aMode: TKMSpriteAtlasType; aTexType: TKMTexFormat; var aBaseRAM, aColorRAM, aTexCount: Cardinal;
-                             aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
+                             aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil);
   protected
     fRT: TRXType;
     fRXData: TRXData;
@@ -48,9 +48,9 @@ type
     procedure CollectSpriteFilesToOverloadInFolder(const aFolder: string; aFileList: TStringList);
     {$IFNDEF NO_OGL}
     procedure MakeGFX_BinPacking(aTexType: TKMTexFormat; aIDList: TList<Integer>; var aBaseRAM, aColorRAM, aTexCount: Cardinal;
-                                 aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil); overload;
+                                 aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil); overload;
     procedure MakeGFX_BinPacking(aTexType: TKMTexFormat; aStartingIndex: Integer; var aBaseRAM, aColorRAM, aTexCount: Cardinal;
-                                 aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil); overload;
+                                 aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil); overload;
     {$ENDIF}
   public
     constructor Create(aRT: TRXType; aTemp: Boolean = False);
@@ -63,8 +63,8 @@ type
     property GFXPrepData: TKMGFXPrepData read fGFXPrepData;
 
     {$IFNDEF NO_OGL}
-    procedure MakeGFX(aAlphaShadows: Boolean; aStartingIndex: Integer = 1; aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil); overload;
-    procedure MakeGFX(aAlphaShadows: Boolean; aIDList: TList<Integer>; aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil); overload;
+    procedure MakeGFX(aAlphaShadows: Boolean; aStartingIndex: Integer = 1; aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil); overload;
+    procedure MakeGFX(aAlphaShadows: Boolean; aIDList: TList<Integer>; aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil); overload;
     {$ENDIF}
     procedure DeleteSpriteTexture(aIndex: Integer);
 
@@ -72,7 +72,7 @@ type
     procedure LoadFromRXAFile(const aFileName: string);
     procedure LoadFromRXAAndGenTextures(const aFileName: string);
     procedure OverloadGeneratedFromFolder(aAlphaShadows: Boolean; const aFolder: string; aSoftenShadows: Boolean = True;
-                                          aOnStopExecution: TBooleanFuncSimple = nil);
+                                          aOnCheckTerminated: TBooleanFuncSimple = nil);
 
     procedure LoadFromRXXFile(const aFileName: string; aStartingIndex: Integer = 1);
     procedure OverloadRXDataFromFolder(const aFolder: string; aSoftenShadows: Boolean = True);
@@ -907,8 +907,7 @@ end;
 
 
 procedure TKMSpritePack.OverloadGeneratedFromFolder(aAlphaShadows: Boolean; const aFolder: string; aSoftenShadows: Boolean = True;
-                                                    aOnStopExecution: TBooleanFuncSimple = nil);
-
+                                                    aOnCheckTerminated: TBooleanFuncSimple = nil);
   // Append all PNGs including the subfolders
   // Pattern is X_nnnn.png, where nnnn is dynamic (1..n chars) for modders convenience
   procedure AppendFolder(idList: TList<Integer>);
@@ -946,7 +945,6 @@ procedure TKMSpritePack.OverloadGeneratedFromFolder(aAlphaShadows: Boolean; cons
 
 var
   idList: TList<Integer>;
-
 begin
   if SKIP_RENDER then Exit;
   if not DirectoryExists(aFolder) then Exit;
@@ -956,7 +954,7 @@ begin
   try
     AppendFolder(idList);
     {$IFNDEF NO_OGL}
-    MakeGFX(aAlphaShadows, idList, False, aOnStopExecution);
+    MakeGFX(aAlphaShadows, idList, False, aOnCheckTerminated);
     {$ENDIF}
   finally
     idList.Free;
@@ -1234,7 +1232,7 @@ end;
 // Take RX data and make nice atlas texture out of it
 // Atlases should be POT to improve performance and avoid driver bugs
 // In result we have GFXData structure filled
-procedure TKMSpritePack.MakeGFX(aAlphaShadows: Boolean; aStartingIndex: Integer = 1; aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
+procedure TKMSpritePack.MakeGFX(aAlphaShadows: Boolean; aStartingIndex: Integer = 1; aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil);
 var
   I: Integer;
   idList: TList<Integer>;
@@ -1244,14 +1242,14 @@ begin
     for I := aStartingIndex to fRXData.Count do
       idList.Add(I);
 
-    MakeGFX(aAlphaShadows, idList, aFillGFXData, aOnStopExecution);
+    MakeGFX(aAlphaShadows, idList, aFillGFXData, aOnCheckTerminated);
   finally
     idList.Free;
   end;
 end;
 
 
-procedure TKMSpritePack.MakeGFX(aAlphaShadows: Boolean; aIDList: TList<Integer>; aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
+procedure TKMSpritePack.MakeGFX(aAlphaShadows: Boolean; aIDList: TList<Integer>; aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil);
 var
   I, K: Integer;
   texType: TKMTexFormat;
@@ -1265,7 +1263,7 @@ begin
   else
     texType := tfRGB5A1;
 
-  MakeGFX_BinPacking(texType, aIDList, baseRAM, colorRAM, texCount, aFillGFXData, aOnStopExecution);
+  MakeGFX_BinPacking(texType, aIDList, baseRAM, colorRAM, texCount, aFillGFXData, aOnCheckTerminated);
 
   if LOG_EXTRA_GFX then
   begin
@@ -1317,7 +1315,7 @@ end;
 
 {$IFNDEF NO_OGL}
 procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TKMTexFormat; aStartingIndex: Integer; var aBaseRAM, aColorRAM, aTexCount: Cardinal;
-                                           aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
+                                           aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil);
 var
   I: Integer;
   idList: TList<Integer>;
@@ -1327,7 +1325,7 @@ begin
     for I := aStartingIndex to fRXData.Count do
       idList.Add(I);
 
-    MakeGFX_BinPacking(aTexType, idList, aBaseRAM, aColorRAM, aTexCount, aFillGFXData, aOnStopExecution);
+    MakeGFX_BinPacking(aTexType, idList, aBaseRAM, aColorRAM, aTexCount, aFillGFXData, aOnCheckTerminated);
   finally
     idList.Free;
   end;
@@ -1335,7 +1333,7 @@ end;
 
 
 procedure TKMSpritePack.PrepareAtlases(aSpriteInfo: TBinArray; aMode: TKMSpriteAtlasType; aTexType: TKMTexFormat; var aBaseRAM, aColorRAM, aTexCount: Cardinal;
-                                       aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
+                                       aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil);
 var
   I, K, L, M: Integer;
   CT, CL, Pixel: Cardinal;
@@ -1443,10 +1441,10 @@ end;
 
 // This algorithm is planned to take advantage of more efficient 2D bin packing
 procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TKMTexFormat; aIDList: TList<Integer>; var aBaseRAM, aColorRAM, aTexCount: Cardinal;
-                                           aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
+                                           aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil);
   function CheckTerminated: Boolean;
   begin
-    Result := Assigned(aOnStopExecution) and aOnStopExecution;
+    Result := Assigned(aOnCheckTerminated) and aOnCheckTerminated;
   end;
 
 var
@@ -1492,7 +1490,7 @@ begin
 
   SetLength(fGFXPrepData[saBase], Length(spriteInfo));
 
-  PrepareAtlases(spriteInfo, saBase, aTexType, aBaseRAM, aColorRAM, aTexCount, aFillGFXData, aOnStopExecution);
+  PrepareAtlases(spriteInfo, saBase, aTexType, aBaseRAM, aColorRAM, aTexCount, aFillGFXData, aOnCheckTerminated);
 
   if CheckTerminated then Exit;
 
@@ -1516,7 +1514,7 @@ begin
   BinPack(spriteSizes, atlasSize, fPad, spriteInfo);
   if CheckTerminated then Exit;
   SetLength(fGFXPrepData[saMask], Length(spriteInfo));
-  PrepareAtlases(spriteInfo, saMask, tfAlpha8, aBaseRAM, aColorRAM, aTexCount, aFillGFXData, aOnStopExecution);
+  PrepareAtlases(spriteInfo, saMask, tfAlpha8, aBaseRAM, aColorRAM, aTexCount, aFillGFXData, aOnCheckTerminated);
 end;
 {$ENDIF}
 
