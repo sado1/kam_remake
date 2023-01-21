@@ -1,9 +1,9 @@
 unit RXXPackerProc;
-
 {$I ..\..\KaM_Remake.inc}
 interface
 uses
   SysUtils, KM_ResTypes, KM_ResPalettes;
+
 
 type
   TKMRXXPacker = class
@@ -16,22 +16,27 @@ type
     procedure SetSpritesLoadDir(const aValue: string);
     procedure SetSpritesSaveDir(const aValue: string);
   public
+    constructor Create(const aSpritesBaseDir: string);
+
     property PackToRXX: Boolean read fPackToRXX write fPackToRXX;
     property PackToRXA: Boolean read fPackToRXA write fPackToRXA;
     property AddRXXHeader: Boolean read fAddVersionHeader write fAddVersionHeader;
     property SpritesLoadDir: string read fSpritesLoadDir write SetSpritesLoadDir;
     property SpritesSaveDir: string read fSpritesSaveDir write SetSpritesSaveDir;
-    constructor Create(const aSpritesBaseDir: string);
+
     procedure Pack(RT: TRXType; fPalettes: TKMResPalettes);
   end;
+
 
 const
   SPRITES_RES_DIR = 'SpriteResource';
   SPRITES_INTERP_DIR = 'SpriteInterp' + PathDelim + 'Output';
 
+
 implementation
 uses
   KM_ResHouses, KM_ResUnits, KM_ResSprites, KM_Points, KM_ResSpritesEdit, KM_Defaults, KM_Log;
+
 
 { TRXXPacker }
 constructor TKMRXXPacker.Create(const aSpritesBaseDir: string);
@@ -178,21 +183,13 @@ end;
 
 procedure TKMRXXPacker.SetSpritesLoadDir(const aValue: string);
 begin
-  fSpritesLoadDir := aValue;
-
-  // Append PathDelim '/' at the end of path to dir
-  if not aValue.EndsWith(PathDelim) then
-    fSpritesLoadDir := fSpritesLoadDir + PathDelim;
+  fSpritesLoadDir := IncludeTrailingPathDelimiter(fSpritesLoadDir);
 end;
 
 
 procedure TKMRXXPacker.SetSpritesSaveDir(const aValue: string);
 begin
-  fSpritesSaveDir := aValue;
-
-  // Append PathDelim '/' at the end of path to dir
-  if not aValue.EndsWith(PathDelim) then
-    fSpritesSaveDir := fSpritesSaveDir + PathDelim;
+  fSpritesSaveDir := IncludeTrailingPathDelimiter(fSpritesSaveDir);
 end;
 
 

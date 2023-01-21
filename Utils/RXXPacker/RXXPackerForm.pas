@@ -52,10 +52,6 @@ type
   end;
 
 
-var
-  RXXForm1: TRXXForm1;
-
-
 implementation
 uses
   INIFiles,
@@ -64,6 +60,8 @@ uses
 
 {$R *.dfm}
 
+
+{ TRXXForm1 }
 function TRXXForm1.AddPackData(aName: String; aId: Integer): TRXXPackData;
 begin
   Result.Name := aName;
@@ -94,7 +92,7 @@ begin
 
   if ListBox1.Items.Count = 0 then
   begin
-    ShowMessage('No .RX file was found in' + #10 + ExeDir + 'SpriteResource\');
+    ShowMessage('No .RX files were found in' + sLineBreak + ExeDir + 'SpriteResource\');
     btnPackRXX.Enabled := False;
   end
   else
@@ -108,11 +106,11 @@ end;
 
 procedure TRXXForm1.btnUpdateListClick(Sender: TObject);
 begin
-  btnUpdateList.Enabled := false;
+  btnUpdateList.Enabled := False;
 
   UpdateList;
 
-  btnUpdateList.Enabled := true;
+  btnUpdateList.Enabled := True;
 end;
 
 
@@ -148,7 +146,6 @@ begin
 
   Caption := 'RXX Packer (' + GAME_REVISION + ')';
 
-  //Although we don't need them in this tool, these are required to load sprites
   gLog := TKMLog.Create(ExeDir + 'RXXPacker.log');
 
   fUpdating := True;
@@ -172,8 +169,8 @@ end;
 procedure TRXXForm1.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(fPalettes);
-  FreeAndNil(gLog);
   FreeAndNil(fRXXPacker);
+  FreeAndNil(gLog);
 end;
 
 
@@ -184,11 +181,12 @@ begin
   fUpdating := True;
 
   ini := TINIFile.Create(fSettingsPath);
-
-  edSpritesLoadDir.Text := ini.ReadString('SETTINGS',  'SpritesLoadDir', ExeDir);
-  edSpritesSaveDir.Text := ini.ReadString('SETTINGS',  'SpritesSaveDir', ExeDir);
-
-  FreeAndNil(ini);
+  try
+    edSpritesLoadDir.Text := ini.ReadString('SETTINGS',  'SpritesLoadDir', ExeDir);
+    edSpritesSaveDir.Text := ini.ReadString('SETTINGS',  'SpritesSaveDir', ExeDir);
+  finally
+    ini.Free;
+  end;
 
   fUpdating := False;
 
@@ -202,11 +200,12 @@ var
   ini: TINIFile;
 begin
   ini := TINIFile.Create(fSettingsPath);
-
-  ini.WriteString('SETTINGS',  'SpritesLoadDir', edSpritesLoadDir.Text);
-  ini.WriteString('SETTINGS',  'SpritesSaveDir', edSpritesSaveDir.Text);
-
-  FreeAndNil(ini);
+  try
+    ini.WriteString('SETTINGS',  'SpritesLoadDir', edSpritesLoadDir.Text);
+    ini.WriteString('SETTINGS',  'SpritesSaveDir', edSpritesSaveDir.Text);
+  finally
+    ini.Free;
+  end;
 end;
 
 

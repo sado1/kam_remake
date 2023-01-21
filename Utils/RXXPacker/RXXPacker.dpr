@@ -63,8 +63,11 @@ var
   palettes: TKMResPalettes;
   tick: Cardinal;
 
+var
+  RXXForm1: TRXXForm1;
+
 const
-  RXX_TO_PACK: array[0..5] of TRXType = (
+  RXX_TO_PACK: array [0..5] of TRXType = (
     rxTrees,
     rxHouses,
     rxUnits,
@@ -94,6 +97,7 @@ begin
     False
   {$ENDIF}
     ;
+
   if forcedConsoleMode or IsConsoleMode then
   begin
     if ParamCount >= 1 then
