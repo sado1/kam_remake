@@ -18,7 +18,7 @@ type
   TRXXForm1 = class(TForm)
     btnPackRXX: TButton;
     ListBox1: TListBox;
-    Label1: TLabel;
+    lpProgress: TLabel;
     btnUpdateList: TButton;
     edSpritesLoadDir: TEdit;
     Label2: TLabel;
@@ -219,35 +219,40 @@ begin
   chkPackToRXX.Enabled := False;
   chkPackToRXA.Enabled := False;
   chkAddRXXHeader.Enabled := False;
-  tick := GetTickCount;
+  try
+    tick := GetTickCount;
 
-  fRXXPacker.SpritesLoadDir := edSpritesLoadDir.Text;
-  fRXXPacker.SpritesSaveDir := edSpritesSaveDir.Text;
-  fRxxPacker.PackToRXX      := chkPackToRXX.Checked;
-  fRxxPacker.PackToRXA      := chkPackToRXA.Checked;
-  fRxxPacker.AddRXXHeader   := chkAddRXXHeader.Checked;
+    fRXXPacker.SpritesLoadDir := edSpritesLoadDir.Text;
+    fRXXPacker.SpritesSaveDir := edSpritesSaveDir.Text;
+    fRxxPacker.PackToRXX      := chkPackToRXX.Checked;
+    fRxxPacker.PackToRXA      := chkPackToRXA.Checked;
+    fRxxPacker.AddRXXHeader   := chkAddRXXHeader.Checked;
 
-  Assert(DirectoryExists(fRXXPacker.SpritesLoadDir + SPRITES_RES_DIR + '\'),
-         'Cannot find ' + fRXXPacker.SpritesLoadDir + SPRITES_RES_DIR + '\ folder.' + #10#13 +
-         'Please make sure this folder exists.');
-
-  for I := 0 to ListBox1.Items.Count - 1 do
-    if ListBox1.Selected[I] then
+    if not DirectoryExists(fRXXPacker.SpritesLoadDir + SPRITES_RES_DIR + '\') then
     begin
-      RT := TRXType(fPacksData[I].Id);
-
-      fRxxPacker.Pack(RT, fPalettes);
-
-      ListBox1.Selected[I] := False;
-      ListBox1.Refresh;
+      MessageBox(Handle, PWideChar('Cannot find ' + fRXXPacker.SpritesLoadDir + SPRITES_RES_DIR + '\ folder.' +
+        sLineBreak + 'Please make sure this folder exists.'), 'Error', MB_ICONEXCLAMATION + MB_OK);
+      Exit;
     end;
 
-  Label1.Caption := 'Elapsed: ' + IntToStr(GetTickCount - tick) + ' ms';
+    for I := 0 to ListBox1.Items.Count - 1 do
+      if ListBox1.Selected[I] then
+      begin
+        RT := TRXType(fPacksData[I].Id);
 
-  btnPackRXX.Enabled := True;
-  chkPackToRXX.Enabled := True;
-  chkPackToRXA.Enabled := True;
-  chkAddRXXHeader.Enabled := True;
+        fRxxPacker.Pack(RT, fPalettes);
+
+        ListBox1.Selected[I] := False;
+        ListBox1.Refresh;
+      end;
+
+    lpProgress.Caption := 'Packed in: ' + IntToStr(GetTickCount - tick) + ' ms';
+  finally
+    btnPackRXX.Enabled := True;
+    chkPackToRXX.Enabled := True;
+    chkPackToRXA.Enabled := True;
+    chkAddRXXHeader.Enabled := True;
+  end;
 end;
 
 

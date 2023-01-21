@@ -2,8 +2,9 @@ object RXXForm1: TRXXForm1
   Left = 72
   Top = 90
   BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
   Caption = 'RXX Packer'
-  ClientHeight = 400
+  ClientHeight = 401
   ClientWidth = 289
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -15,12 +16,9 @@ object RXXForm1: TRXXForm1
   Position = poDesktopCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    289
-    400)
   PixelsPerInch = 96
-  TextHeight = 13
-  object Label1: TLabel
+  TextHeight = 14
+  object lpProgress: TLabel
     Left = 16
     Top = 176
     Width = 3
@@ -28,68 +26,57 @@ object RXXForm1: TRXXForm1
   end
   object Label2: TLabel
     Left = 16
-    Top = 220
-    Width = 89
+    Top = 224
+    Width = 99
     Height = 13
-    Anchors = [akLeft, akBottom]
-    Caption = 'Sprites load dir'
-    ExplicitTop = 264
+    Caption = 'Sprites source folder'
   end
   object Label3: TLabel
     Left = 16
-    Top = 271
-    Width = 110
+    Top = 272
+    Width = 156
     Height = 13
-    Anchors = [akLeft, akBottom]
-    Caption = 'Packed sprites save dir'
-    ExplicitTop = 315
+    Caption = 'Packed sprites destination folder'
   end
   object btnPackRXX: TButton
     Left = 16
-    Top = 357
+    Top = 360
     Width = 257
     Height = 25
-    Anchors = [akLeft, akRight, akBottom]
     Caption = 'Pack'
     TabOrder = 0
     OnClick = btnPackRXXClick
-    ExplicitTop = 354
   end
   object ListBox1: TListBox
     Left = 16
     Top = 16
     Width = 257
     Height = 153
-    Anchors = [akLeft, akTop, akRight]
-    ItemHeight = 13
+    ItemHeight = 14
     MultiSelect = True
     TabOrder = 1
   end
   object btnUpdateList: TButton
     Left = 16
-    Top = 326
+    Top = 328
     Width = 257
     Height = 25
-    Anchors = [akLeft, akRight, akBottom]
     Caption = 'Update List'
     TabOrder = 2
     OnClick = btnUpdateListClick
-    ExplicitTop = 323
   end
   object edSpritesLoadDir: TEdit
     Left = 16
     Top = 240
     Width = 257
     Height = 21
-    Anchors = [akLeft, akRight, akBottom]
     TabOrder = 3
     OnChange = edSpritesLoadDirChange
-    ExplicitTop = 284
   end
   object chkPackToRXA: TCheckBox
     Left = 160
-    Top = 195
-    Width = 89
+    Top = 192
+    Width = 73
     Height = 17
     Caption = 'Pack to RXA'
     TabOrder = 4
@@ -97,7 +84,7 @@ object RXXForm1: TRXXForm1
   end
   object chkAddRXXHeader: TCheckBox
     Left = 160
-    Top = 215
+    Top = 216
     Width = 113
     Height = 17
     Caption = 'Add Version header'
@@ -107,8 +94,8 @@ object RXXForm1: TRXXForm1
   end
   object chkPackToRXX: TCheckBox
     Left = 160
-    Top = 175
-    Width = 89
+    Top = 176
+    Width = 73
     Height = 17
     Caption = 'Pack to RXX'
     Checked = True
@@ -118,12 +105,10 @@ object RXXForm1: TRXXForm1
   end
   object edSpritesSaveDir: TEdit
     Left = 16
-    Top = 291
+    Top = 288
     Width = 257
     Height = 21
-    Anchors = [akLeft, akRight, akBottom]
     TabOrder = 7
     OnChange = edSpritesLoadDirChange
-    ExplicitTop = 335
   end
 end
