@@ -134,7 +134,7 @@ begin
             if (spriteID > 0)
             and not deathAnimProcessed.Contains(spriteID) then
             begin
-              spritePack.SoftenShadowsOne(spriteID, False);
+              spritePack.SoftenShadowsRange(spriteID, spriteID, False);
               deathAnimProcessed.Add(spriteID);
             end;
           end;

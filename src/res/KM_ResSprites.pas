@@ -81,7 +81,6 @@ type
 
     procedure SoftenShadowsList(aIdList: TList<Integer>);
     procedure SoftenShadowsRange(aStart, aEnd: Integer; aOnlyShadows: Boolean = True);
-    procedure SoftenShadowsOne(aID: Integer; aOnlyShadows: Boolean = True);
 
     procedure DetermineImagesObjectSize(aStart: Integer = 1; aEnd: Integer = -1); overload;
     procedure DetermineImagesObjectSize(aIdList: TList<Integer>); overload;
@@ -369,8 +368,6 @@ var
 begin
   shadowConverter := TKMSoftShadowConverter.Create(Self);
   try
-    if aEnd = -1 then aEnd := fRXData.Count;
-
     for I := aStart to aEnd do
       if (fRXData.Flag[I] <> 0) then
         shadowConverter.ConvertShadows(I, aOnlyShadows);
@@ -549,20 +546,6 @@ begin
     for I := MARKET_WARES_TEX_START + 1 to MARKET_WARES_TEX_START + MARKET_WARES_TEX_CNT - 1 do
     if (fRXData.Flag[I] <> 0) then
       shadowConverter.RemoveShadow(I, False);
-  finally
-    shadowConverter.Free;
-  end;
-end;
-
-
-procedure TKMSpritePack.SoftenShadowsOne(aID: Integer; aOnlyShadows: Boolean = True);
-var
-  shadowConverter: TKMSoftShadowConverter;
-begin
-  shadowConverter := TKMSoftShadowConverter.Create(Self);
-  try
-    if (fRXData.Flag[aID] <> 0) then
-      shadowConverter.ConvertShadows(aID, aOnlyShadows);
   finally
     shadowConverter.Free;
   end;
