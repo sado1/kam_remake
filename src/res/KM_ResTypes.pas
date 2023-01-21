@@ -271,7 +271,7 @@ type
     rxGuiMain,
     rxCustom, //Used for loading stuff like campaign maps (there is no main RXX file)
     rxTiles //Tiles
-    );
+  );
 
 const
   EXPORT_SPRITE_ATLASES_LIST: set of TRXType = [

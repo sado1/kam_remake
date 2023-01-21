@@ -1417,7 +1417,8 @@ begin
 
       //Now that we know texture IDs we can fill GFXData structure
       SetGFXData(texID, aSpriteInfo[I], aMode);
-    end else begin
+    end else
+    begin
       Assert(InRange(I, Low(fGFXPrepData[aMode]), High(fGFXPrepData[aMode])),
              Format('Preloading sprite index out of range: %d, range [%d;%d]', [I, Low(fGFXPrepData[aMode]), High(fGFXPrepData[aMode])]));
       // Save prepared data for generating later (in main thread)

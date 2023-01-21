@@ -400,7 +400,6 @@ begin
 end;
 
 
-//
 procedure TKMSpritePackEdit.AdjoinHouseMasks(aResHouses: TKMResHouses);
 var
   HT: TKMHouseType;
@@ -412,11 +411,13 @@ begin
   for HT := HOUSE_MIN to HOUSE_MAX do
   for Lay := 1 to 2 do //House is rendered in two layers since Stone does not covers Wood parts in e.g. Sawmill
   begin
-    if Lay = 1 then begin
+    if Lay = 1 then
+    begin
       ID1 := aResHouses[HT].WoodPic + 1;
       ID2 := aResHouses[HT].WoodPal + 1;
       StepCount := aResHouses[HT].WoodPicSteps;
-    end else begin
+    end else
+    begin
       ID1 := aResHouses[HT].StonePic + 1;
       ID2 := aResHouses[HT].StonePal + 1;
       StepCount := aResHouses[HT].StonePicSteps;
@@ -452,7 +453,7 @@ var
   A, B, C, D: Byte;
 begin
   for HT := HOUSE_MIN to HOUSE_MAX do
-  for Lay := 1 to 2 do //House is rendered in two layers since Stone does not covers Wood parts in e.g. Sawmill
+  for Lay := 1 to 2 do //House is rendered in two layers since Stone does not cover Wood parts in e.g. Sawmill
   begin
     ID := IfThen(Lay = 1, aResHouses[HT].WoodPic, aResHouses[HT].StonePic) + 1;
 
