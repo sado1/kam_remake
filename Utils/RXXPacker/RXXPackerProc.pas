@@ -2,7 +2,8 @@ unit RXXPackerProc;
 {$I ..\..\KaM_Remake.inc}
 interface
 uses
-  SysUtils, KM_ResTypes, KM_ResPalettes;
+  SysUtils, Generics.Collections,
+  KM_ResTypes, KM_ResPalettes;
 
 
 type
@@ -52,20 +53,7 @@ end;
 
 procedure TKMRXXPacker.Pack(RT: TRXType; fPalettes: TKMResPalettes);
 var
-  deathAnimProcessed: array of Integer;
-  deathAnimCount: Integer;
-
-  function DeathAnimAlreadyDone(aID: Integer):Boolean;
-  var
-    I: Integer;
-  begin
-    Result := False;
-    for I := 0 to deathAnimCount - 1 do
-      if deathAnimProcessed[I] = aID then
-        Exit(True);
-  end;
-
-var
+  deathAnimProcessed: TList<Integer>;
   spritePack: TKMSpritePackEdit;
   step, spriteID: Integer;
   rxName: string;
@@ -134,24 +122,26 @@ begin
       if RT = rxUnits then
       begin
         spritePack.SoftenShadows(6251, 6322, False); // Smooth thought bubbles
-        // Smooth all death animations for all units
-        resUnits := TKMResUnits.Create;
-        deathAnimCount := 0; //We need to remember which ones we've done because units reuse them
-        SetLength(deathAnimProcessed, 1000); //Hopefully more than enough
-        for UT := HUMANS_MIN to HUMANS_MAX do
+
+        resUnits := TKMResUnits.Create; // Smooth all death animations for all units
+        deathAnimProcessed := TList<Integer>.Create; // We need to remember which ones we've done because units reuse them
+        try
+          for UT := HUMANS_MIN to HUMANS_MAX do
           for dir := dirN to dirNW do
-            for step := 1 to 30 do
+          for step := 1 to 30 do
+          begin
+            spriteID := resUnits[UT].UnitAnim[uaDie,dir].Step[step]+1; //Sprites in units.dat are 0 indexed
+            if (spriteID > 0)
+            and not deathAnimProcessed.Contains(spriteID) then
             begin
-              spriteID := resUnits[UT].UnitAnim[uaDie,dir].Step[step]+1; //Sprites in units.dat are 0 indexed
-              if (spriteID > 0)
-              and not DeathAnimAlreadyDone(spriteID) then
-              begin
-                spritePack.SoftenShadows(spriteID, False);
-                deathAnimProcessed[deathAnimCount] := spriteID;
-                Inc(deathAnimCount);
-              end;
+              spritePack.SoftenShadows(spriteID, False);
+              deathAnimProcessed.Add(spriteID);
             end;
-        resUnits.Free;
+          end;
+        finally
+          deathAnimProcessed.Free;
+          resUnits.Free;
+        end;
       end;
 
       if RT = rxGui then
