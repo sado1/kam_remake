@@ -84,21 +84,21 @@ begin
 
   spritePack := TKMSpritePackEdit.Create(RT, fPalettes);
   try
-    //Load
+    // Load
     if RT <> rxTiles then
     begin
       spritePack.LoadFromRXFile(rxName);
       spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
     end
     else
-    if DirectoryExists(fSpritesSourcePath + SPRITES_RES_DIR + '\') then
-      spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_RES_DIR + '\');
+      if DirectoryExists(fSpritesSourcePath + SPRITES_RES_DIR + '\') then
+        spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_RES_DIR + '\');
 
-    //Tiles must stay the same size as they can't use pivots
+    // Tiles must stay the same size as they can't use pivots
     if (RT <> rxTiles) and (gLog <> nil) then
       gLog.AddTime('Trimmed ' + IntToStr(spritePack.TrimSprites));
 
-    //Houses need some special treatment to adapt to GL_ALPHA_TEST that we use for construction steps
+    // Houses need some special treatment to adapt to GL_ALPHA_TEST that we use for construction steps
     if RT = rxHouses then
     begin
       resHouses := TKMResHouses.Create;
@@ -114,27 +114,27 @@ begin
     if RT = rxUnits then
       spritePack.DetermineImagesObjectSize;
 
-    //The idea was to blur the water and make it semitrasparent, but it did not worked out as expected
+    // The idea was to blur the water and make it semi-trasparent, but it did not work out as expected
     //if RT = rxTiles then
     //  SpritePack.SoftWater(nil);
 
-    //Save
+    // Save
     if PackToRXX then
       spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RXInfo[RT].FileName + '.rxx', AddVersionHeader);
 
-    //Generate alpha shadows for the following sprite packs
-    if RT in [rxHouses,rxUnits,rxGui,rxTrees] then
+    // Generate alpha shadows for the following sprite packs
+    if RT in [rxHouses, rxUnits, rxGui, rxTrees] then
     begin
       if RT = rxHouses then
       begin
-        spritePack.SoftenShadows(889, 892, False); //Smooth smoke
-        spritePack.SoftenShadows(1615, 1638, False); //Smooth flame
+        spritePack.SoftenShadows(889, 892, False); // Smooth smoke
+        spritePack.SoftenShadows(1615, 1638, False); // Smooth flame
       end;
 
       if RT = rxUnits then
       begin
-        spritePack.SoftenShadows(6251, 6322, False); //Smooth thought bubbles
-        //Smooth all death animations for all units
+        spritePack.SoftenShadows(6251, 6322, False); // Smooth thought bubbles
+        // Smooth all death animations for all units
         resUnits := TKMResUnits.Create;
         deathAnimCount := 0; //We need to remember which ones we've done because units reuse them
         SetLength(deathAnimProcessed, 1000); //Hopefully more than enough
