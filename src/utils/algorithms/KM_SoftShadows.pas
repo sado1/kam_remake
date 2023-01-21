@@ -16,10 +16,10 @@ type
 
     function ReadPixelSafe(aIndex, aX, aY: Integer): Cardinal;
 
-    function IsBlack(Color: Cardinal): Boolean;
-    function IsTransparent(Color: Cardinal): Boolean;
-    function IsObject(Color: Cardinal): Boolean;
-    function IsTransparentOrObject(Color: Cardinal): Boolean;
+    function IsBlack(aColor: Cardinal): Boolean;
+    function IsTransparent(aColor: Cardinal): Boolean;
+    function IsObject(aColor: Cardinal): Boolean;
+    function IsTransparentOrObject(aColor: Cardinal): Boolean;
     function IsShadow(aIndex, aX, aY: Integer): Boolean;
     procedure PrepareShadows(aIndex: Word; aOnlyShadows: Boolean);
 
@@ -58,32 +58,32 @@ end;
 
 
 //Maybe the definition of black will change later (to include almost black colors?)
-function TKMSoftShadowConverter.IsBlack(Color: Cardinal): Boolean;
+function TKMSoftShadowConverter.IsBlack(aColor: Cardinal): Boolean;
 begin
   if fOnlyShadows then
-    Result := (Color = $FF000000) //Only black areas
+    Result := (aColor = $FF000000) //Only black areas
   else
-    Result := (Color and $FF000000) <> 0; //Everything that's not transparent
+    Result := (aColor and $FF000000) <> 0; //Everything that's not transparent
 end;
 
 
 //Maybe the definition of transparent will change later
-function TKMSoftShadowConverter.IsTransparent(Color: Cardinal): Boolean;
+function TKMSoftShadowConverter.IsTransparent(aColor: Cardinal): Boolean;
 begin
-  Result := (Color shr 24 = 0);
+  Result := (aColor shr 24 = 0);
 end;
 
 
 //Pixels that are not transparent and not black are an object (part of actual sprite)
-function TKMSoftShadowConverter.IsObject(Color: Cardinal): Boolean;
+function TKMSoftShadowConverter.IsObject(aColor: Cardinal): Boolean;
 begin
-  Result := not IsTransparent(Color) and not IsBlack(Color);
+  Result := not IsTransparent(aColor) and not IsBlack(aColor);
 end;
 
 
-function TKMSoftShadowConverter.IsTransparentOrObject(Color: Cardinal): Boolean;
+function TKMSoftShadowConverter.IsTransparentOrObject(aColor: Cardinal): Boolean;
 begin
-  Result := IsTransparent(Color) or not IsBlack(Color);
+  Result := IsTransparent(aColor) or not IsBlack(aColor);
 end;
 
 
