@@ -130,6 +130,7 @@ begin
         spritePack.SoftenShadows(889, 892, False); //Smooth smoke
         spritePack.SoftenShadows(1615, 1638, False); //Smooth flame
       end;
+
       if RT = rxUnits then
       begin
         spritePack.SoftenShadows(6251, 6322, False); //Smooth thought bubbles

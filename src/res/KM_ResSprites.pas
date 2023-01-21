@@ -368,6 +368,7 @@ begin
   shadowConverter := TKMSoftShadowConverter.Create(Self);
   try
     if aEnd = -1 then aEnd := fRXData.Count;
+
     for I := aStart to aEnd do
       if (fRXData.Flag[I] <> 0) then
         shadowConverter.ConvertShadows(I, aOnlyShadows);
@@ -385,6 +386,7 @@ begin
   shadowConverter := TKMSoftShadowConverter.Create(Self);
   try
     if aEnd = -1 then aEnd := fRXData.Count;
+
     for I := aStart to aEnd do
       if (fRXData.Flag[I] <> 0) then
         shadowConverter.DetermineImageObjectSize(I);
