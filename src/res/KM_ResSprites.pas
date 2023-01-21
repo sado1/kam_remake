@@ -80,7 +80,7 @@ type
     function GetSoftenShadowType(aID: Integer): TKMSpriteSoftening;
 
     procedure SoftenShadowsList(aIdList: TList<Integer>);
-    procedure SoftenShadowsRange(aStart, aEnd: Integer; aOnlyShadows: Boolean = True);
+    procedure SoftenShadowsRange(aFrom, aTo: Integer; aOnlyShadows: Boolean = True);
 
     procedure DetermineImagesObjectSize(aStart: Integer = 1; aEnd: Integer = -1); overload;
     procedure DetermineImagesObjectSize(aIdList: TList<Integer>); overload;
@@ -361,14 +361,14 @@ end;
 
 
 // Make old style KaM checkerboard shadows smooth and transparent
-procedure TKMSpritePack.SoftenShadowsRange(aStart, aEnd: Integer; aOnlyShadows: Boolean = True);
+procedure TKMSpritePack.SoftenShadowsRange(aFrom, aTo: Integer; aOnlyShadows: Boolean = True);
 var
   I: Integer;
   shadowConverter: TKMSoftShadowConverter;
 begin
   shadowConverter := TKMSoftShadowConverter.Create(Self);
   try
-    for I := aStart to aEnd do
+    for I := aFrom to aTo do
       if (fRXData.Flag[I] <> 0) then
         shadowConverter.ConvertShadows(I, aOnlyShadows);
   finally
