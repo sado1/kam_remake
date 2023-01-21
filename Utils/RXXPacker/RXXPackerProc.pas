@@ -78,9 +78,9 @@ begin
   if RXInfo[RT].Usage <> ruCustom then
   begin
     rxName := fSpritesSourcePath + SPRITES_RES_DIR + '\' + RXInfo[RT].FileName + '.rx';
-    Assert((RT = rxTiles) or FileExists(rxName),
-           'Cannot find ' + rxName + ' file.' + #13#10 +
-           'Please copy the file from your KaM\data\gfx\res\ folder.');
+
+    if (RT <> rxTiles) and not FileExists(rxName) then
+      raise Exception.Create('Cannot find ' + rxName + ' file.' + sLineBreak + 'Please copy the file from your KaM\data\gfx\res\ folder.');
 
     spritePack := TKMSpritePackEdit.Create(RT, fPalettes);
     try

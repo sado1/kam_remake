@@ -235,18 +235,23 @@ begin
       Exit;
     end;
 
-    for I := 0 to ListBox1.Items.Count - 1 do
-      if ListBox1.Selected[I] then
-      begin
-        RT := TRXType(fPacksData[I].Id);
+    try
+      for I := 0 to ListBox1.Items.Count - 1 do
+        if ListBox1.Selected[I] then
+        begin
+          RT := TRXType(fPacksData[I].Id);
 
-        fRxxPacker.Pack(RT, fPalettes);
+          fRxxPacker.Pack(RT, fPalettes);
 
-        ListBox1.Selected[I] := False;
-        ListBox1.Refresh;
-      end;
+          ListBox1.Selected[I] := False;
+          ListBox1.Refresh;
+        end;
 
-    lpProgress.Caption := 'Packed in: ' + IntToStr(GetTickCount - tick) + ' ms';
+      lpProgress.Caption := 'Packed in: ' + IntToStr(GetTickCount - tick) + ' ms';
+    except
+      on E: Exception do
+        MessageBox(Handle, PWideChar(E.Message), 'Error', MB_ICONEXCLAMATION + MB_OK);
+    end;
   finally
     btnPackRXX.Enabled := True;
     chkPackToRXX.Enabled := True;
