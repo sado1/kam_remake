@@ -285,7 +285,7 @@ const
   ];
 
   //Colors to paint beneath player color areas (flags)
-  //The blacker/whighter - the more contrast player color will be
+  //The blacker/whiter - the more contrast player color will be
   FLAG_COLOR_DARK = $FF101010;   //Dark-grey (Black)
   FLAG_COLOR_LITE = $FFFFFFFF;   //White
 

@@ -337,7 +337,7 @@ var
 begin
   if aIdList.Count = 0 then Exit;
 
-  shadowConverter := TKMSoftShadowConverter.Create(Self);
+  shadowConverter := TKMSoftShadowConverter.Create(@fRXData);
   try
     for I := 0 to aIdList.Count - 1 do
     begin
@@ -367,7 +367,7 @@ var
   I: Integer;
   shadowConverter: TKMSoftShadowConverter;
 begin
-  shadowConverter := TKMSoftShadowConverter.Create(Self);
+  shadowConverter := TKMSoftShadowConverter.Create(@fRXData);
   try
     for I := aFrom to aTo do
       if fRXData.Flag[I] <> 0 then
@@ -383,7 +383,7 @@ var
   I: Integer;
   shadowConverter: TKMSoftShadowConverter;
 begin
-  shadowConverter := TKMSoftShadowConverter.Create(Self);
+  shadowConverter := TKMSoftShadowConverter.Create(@fRXData);
   try
     for I := 1 to fRXData.Count do
       if fRXData.Flag[I] <> 0 then
@@ -401,7 +401,7 @@ var
 begin
   if aIdList.Count = 0 then Exit;
 
-  shadowConverter := TKMSoftShadowConverter.Create(Self);
+  shadowConverter := TKMSoftShadowConverter.Create(@fRXData);
   try
     for I := 0 to aIdList.Count - 1 do
     begin
@@ -423,7 +423,7 @@ var
 begin
   Assert(fRT = rxHouses);
 
-  shadowConverter := TKMSoftShadowConverter.Create(Self);
+  shadowConverter := TKMSoftShadowConverter.Create(@fRXData);
   try
     for HT := HOUSE_MIN to HOUSE_MAX do
     begin
@@ -540,10 +540,10 @@ var
 begin
   Assert(fRT = rxHouses);
 
-  shadowConverter := TKMSoftShadowConverter.Create(Self);
+  shadowConverter := TKMSoftShadowConverter.Create(@fRXData);
   try
     for I := MARKET_WARES_TEX_START + 1 to MARKET_WARES_TEX_START + MARKET_WARES_TEX_CNT - 1 do
-    if (fRXData.Flag[I] <> 0) then
+    if fRXData.Flag[I] <> 0 then
       shadowConverter.RemoveShadow(I, False);
   finally
     shadowConverter.Free;
@@ -668,11 +668,11 @@ begin
       for K := 0 to pngHeight - 1 do
       for I := 0 to pngWidth - 1 do
       case maskTyp of
-        smtPlain:  begin
+        smtPlain: begin
                     //For now process just red (assume pic is greyscale)
                     fRXData.Mask[aIndex, K*pngWidth+I] := pngData[K*pngWidth+I] and $FF;
                   end;
-        smtSmart:  begin
+        smtSmart: begin
                     if Cardinal(pngData[K*pngWidth+I] and $FFFFFF) <> 0 then
                     begin
                       Tr := fRXData.RGBA[aIndex, K*pngWidth+I] and $FF;
