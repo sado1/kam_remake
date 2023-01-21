@@ -711,10 +711,10 @@ begin
     //SizeNoShadow is used only for Units
     if fRT = rxUnits then
     begin
-      ReadLn(ft, fRXData.SizeNoShadow[aIndex].left);
-      ReadLn(ft, fRXData.SizeNoShadow[aIndex].top);
-      ReadLn(ft, fRXData.SizeNoShadow[aIndex].right);
-      ReadLn(ft, fRXData.SizeNoShadow[aIndex].bottom);
+      ReadLn(ft, fRXData.SizeNoShadow[aIndex].Left);
+      ReadLn(ft, fRXData.SizeNoShadow[aIndex].Top);
+      ReadLn(ft, fRXData.SizeNoShadow[aIndex].Right);
+      ReadLn(ft, fRXData.SizeNoShadow[aIndex].Bottom);
     end;
     CloseFile(ft);
   end;
@@ -783,7 +783,7 @@ begin
         decompressionStream.Read(fRXData.Pivot[I].X, SizeOf(fRXData.Pivot[I]));
         //SizeNoShadow is used only for Units
         if fRT = rxUnits then
-          decompressionStream.Read(fRXData.SizeNoShadow[I].left, SizeOf(fRXData.SizeNoShadow[I]));
+          decompressionStream.Read(fRXData.SizeNoShadow[I].Left, SizeOf(fRXData.SizeNoShadow[I]));
         //Data part of each sprite is 32BPP RGBA in Remake RXX files
         SetLength(fRXData.RGBA[I], fRXData.Size[I].X * fRXData.Size[I].Y);
         SetLength(fRXData.Mask[I], fRXData.Size[I].X * fRXData.Size[I].Y);
@@ -840,7 +840,7 @@ begin
         decompressionStream.Read(fRXData.Pivot[I].X, SizeOf(fRXData.Pivot[I]));
         //SizeNoShadow is used only for Units
         if fRT = rxUnits then
-          decompressionStream.Read(fRXData.SizeNoShadow[I].left, SizeOf(fRXData.SizeNoShadow[I]));
+          decompressionStream.Read(fRXData.SizeNoShadow[I].Left, SizeOf(fRXData.SizeNoShadow[I]));
         decompressionStream.Read(fRXData.HasMask[I], 1);
 
         // Check if our load resource thread was terminated
@@ -1095,12 +1095,12 @@ begin
     //SizeNoShadow is used only for Units
     if fRT = rxUnits then
     begin
-      aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].left));
-      aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].top));
-      aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].right));
-      aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].bottom));
+      aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].Left));
+      aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].Top));
+      aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].Right));
+      aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].Bottom));
     end;
-    aTempList.SaveToFile(aFolder + Format('%d_%.4d.txt', [Byte(fRT)+1, aIndex]));
+    aTempList.SaveToFile(aFolder + Format('%d_%.4d.txt', [Ord(fRT)+1, aIndex]));
   end;
 
   if listCreated then

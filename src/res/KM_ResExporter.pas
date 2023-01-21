@@ -735,12 +735,12 @@ begin
     //SizeNoShadow is used only for Units
     if aSpritePack.RT = rxUnits then
     begin
-      aTempList.Append(IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].left));
-      aTempList.Append(IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].top));
-      aTempList.Append(IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].right));
-      aTempList.Append(IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].bottom));
+      aTempList.Append(IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].Left));
+      aTempList.Append(IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].Top));
+      aTempList.Append(IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].Right));
+      aTempList.Append(IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].Bottom));
     end;
-    aTempList.SaveToFile(aFolder + Format('%d_%.4d.txt', [Byte(aSpritePack.RT)+1, aSpriteID]));
+    aTempList.SaveToFile(aFolder + Format('%d_%.4d.txt', [Ord(aSpritePack.RT)+1, aSpriteID]));
   end;
 
   if listCreated then

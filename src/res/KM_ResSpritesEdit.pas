@@ -718,12 +718,12 @@ begin
       if fRT = rxUnits then
       begin
         // Protection from incorect values
-        fRXData.SizeNoShadow[I].left    := EnsureRange(fRXData.SizeNoShadow[I].left,   -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
-        fRXData.SizeNoShadow[I].top     := EnsureRange(fRXData.SizeNoShadow[I].top,    -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
-        fRXData.SizeNoShadow[I].right   := EnsureRange(fRXData.SizeNoShadow[I].right,  -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
-        fRXData.SizeNoShadow[I].bottom  := EnsureRange(fRXData.SizeNoShadow[I].bottom, -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
+        fRXData.SizeNoShadow[I].Left    := EnsureRange(fRXData.SizeNoShadow[I].Left,   -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
+        fRXData.SizeNoShadow[I].Top     := EnsureRange(fRXData.SizeNoShadow[I].Top,    -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
+        fRXData.SizeNoShadow[I].Right   := EnsureRange(fRXData.SizeNoShadow[I].Right,  -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
+        fRXData.SizeNoShadow[I].Bottom  := EnsureRange(fRXData.SizeNoShadow[I].Bottom, -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
 
-        InputStream.Write(fRXData.SizeNoShadow[I].left, SizeOf(fRXData.SizeNoShadow[I]));
+        InputStream.Write(fRXData.SizeNoShadow[I].Left, SizeOf(fRXData.SizeNoShadow[I]));
       end;
       InputStream.Write(fRXData.HasMask[I], 1);
     end;
@@ -778,7 +778,7 @@ begin
       InputStream.Write(fRXData.Pivot[I].X, SizeOf(fRXData.Pivot[I]));
 
       if fRT = rxUnits then
-        InputStream.Write(fRXData.SizeNoShadow[I].left, SizeOf(fRXData.SizeNoShadow[I]));
+        InputStream.Write(fRXData.SizeNoShadow[I].Left, SizeOf(fRXData.SizeNoShadow[I]));
       InputStream.Write(fRXData.RGBA[I, 0], 4 * fRXData.Size[I].X * fRXData.Size[I].Y);
       InputStream.Write(fRXData.HasMask[I], 1);
       if fRXData.HasMask[I] then

@@ -11,8 +11,8 @@ type
     fRXData: PRXData;
 
     fOnlyShadows: boolean;
-    TempShadowMap: array of array of Boolean;
-    ShadowMap: array of array of Boolean;
+    TempShadowMap: array {X} of array {Y} of Boolean; //todo: Flip to be common pattern of [Y,X]
+    ShadowMap: array {X} of array {Y} of Boolean; //todo: Flip to be common pattern of [Y,X]
 
     function ReadPixelSafe(aIndex, aX, aY: Integer): Cardinal;
 
@@ -144,43 +144,41 @@ end;
 
 procedure TKMSoftShadowConverter.DetermineImageObjectSize(aIndex: Word);
 var
-  X,Y: Integer;
+  K,I: Integer;
 begin
   PrepareShadows(aIndex, True);
 
-  fRXData.SizeNoShadow[aIndex].left := fRXData.Size[aIndex].X - 1;
-  fRXData.SizeNoShadow[aIndex].right := 0;
-  fRXData.SizeNoShadow[aIndex].top := fRXData.Size[aIndex].Y - 1;
-  fRXData.SizeNoShadow[aIndex].bottom := 0;
+  fRXData.SizeNoShadow[aIndex].Left := fRXData.Size[aIndex].X - 1;
+  fRXData.SizeNoShadow[aIndex].Right := 0;
+  fRXData.SizeNoShadow[aIndex].Top := fRXData.Size[aIndex].Y - 1;
+  fRXData.SizeNoShadow[aIndex].Bottom := 0;
 
-  for X := 0 to fRXData.Size[aIndex].X - 1 do
-    for Y := 0 to fRXData.Size[aIndex].Y - 1 do
-      if IsObjectPixel(aIndex, X, Y) then
-      begin
-        fRXData.SizeNoShadow[aIndex].left := Min(fRXData.SizeNoShadow[aIndex].left, X);
-        fRXData.SizeNoShadow[aIndex].right := Max(fRXData.SizeNoShadow[aIndex].right, X);
-        fRXData.SizeNoShadow[aIndex].top := Min(fRXData.SizeNoShadow[aIndex].top, Y);
-        fRXData.SizeNoShadow[aIndex].bottom := Max(fRXData.SizeNoShadow[aIndex].bottom, Y);
-      end;
+  for I := 0 to fRXData.Size[aIndex].Y - 1 do
+  for K := 0 to fRXData.Size[aIndex].X - 1 do
+  if IsObjectPixel(aIndex, K, I) then
+  begin
+    fRXData.SizeNoShadow[aIndex].Left := Min(fRXData.SizeNoShadow[aIndex].Left, K);
+    fRXData.SizeNoShadow[aIndex].Right := Max(fRXData.SizeNoShadow[aIndex].Right, K);
+    fRXData.SizeNoShadow[aIndex].Top := Min(fRXData.SizeNoShadow[aIndex].Top, I);
+    fRXData.SizeNoShadow[aIndex].Bottom := Max(fRXData.SizeNoShadow[aIndex].Bottom, I);
+  end;
 end;
 
 
 //RemoveShadow via removing its mask
 procedure TKMSoftShadowConverter.RemoveShadow(aIndex: Word; aByMask: Boolean);
 var
-  X,Y: Integer;
+  I, K: Integer;
 begin
   PrepareShadows(aIndex, False);
 
-  for X := 0 to fRXData.Size[aIndex].X - 1 do
-    for Y := 0 to fRXData.Size[aIndex].Y - 1 do
-      if IsShadowPixel(aIndex, X, Y) then
-      begin
-        if aByMask then
-          fRXData.Mask[aIndex, Y*fRXData.Size[aIndex].X + X] := 0 //Remove mask image outside of object
-        else
-          fRXData.RGBA[aIndex, Y*fRXData.Size[aIndex].X + X] := 0;
-      end;
+  for I := 0 to fRXData.Size[aIndex].Y - 1 do
+  for K := 0 to fRXData.Size[aIndex].X - 1 do
+  if IsShadowPixel(aIndex, K, I) then
+    if aByMask then
+      fRXData.Mask[aIndex, I * fRXData.Size[aIndex].X + K] := 0 //Remove mask image outside of object
+    else
+      fRXData.RGBA[aIndex, I * fRXData.Size[aIndex].X + K] := 0;
 end;
 
 
@@ -188,7 +186,7 @@ procedure TKMSoftShadowConverter.ConvertShadows(aIndex: Word; aOnlyShadows: Bool
 
   function GetBlurredShadow(X,Y: Integer): Single;
   var
-    aX, aY, XDiff, YDiff, BlurCeil: Integer;
+    iX, iY, XDiff, YDiff, BlurCeil: Integer;
     Distance, Multiplier, Divisor, Ret: Single;
     Shadow, WasRealShadow: Boolean;
   begin
@@ -196,32 +194,33 @@ procedure TKMSoftShadowConverter.ConvertShadows(aIndex: Word; aOnlyShadows: Bool
     Ret := 0;
     Divisor := 0;
     BlurCeil := Ceil(BLUR_RADIUS);
-    for aX := X - BlurCeil to X + BlurCeil do
-      for aY := Y - BlurCeil to Y + BlurCeil do
-      begin
-        XDiff := aX-X;
-        YDiff := aY-Y;
-        Distance := Sqrt(XDiff*XDiff + YDiff*YDiff);
-        Multiplier := BLUR_RADIUS - Distance;
+    for iY := Y - BlurCeil to Y + BlurCeil do
+    for iX := X - BlurCeil to X + BlurCeil do
+    begin
+      XDiff := iX-X;
+      YDiff := iY-Y;
+      Distance := Sqrt(XDiff*XDiff + YDiff*YDiff);
+      Multiplier := BLUR_RADIUS - Distance;
 
-        if Multiplier > 0 then
-        begin
-          Divisor := Divisor + Multiplier;
-          if (aX < 0) or (aY < 0) or (aX >= fRXData.Size[aIndex].X) or (aY >= fRXData.Size[aIndex].Y) then
-            Continue;
-          Shadow := ShadowMap[aX, aY];
-          if Shadow then WasRealShadow := True;
-          if not IsTransparent(ReadPixelSafe(aIndex, aX, aY)) then Shadow := True;
-          if Shadow then Ret := Ret + Multiplier;
-        end;
+      if Multiplier > 0 then
+      begin
+        Divisor := Divisor + Multiplier;
+        if (iX < 0) or (iY < 0) or (iX >= fRXData.Size[aIndex].X) or (iY >= fRXData.Size[aIndex].Y) then
+          Continue;
+        Shadow := ShadowMap[iX, iY];
+        if Shadow then WasRealShadow := True;
+        if not IsTransparent(ReadPixelSafe(aIndex, iX, iY)) then Shadow := True;
+        if Shadow then Ret := Ret + Multiplier;
       end;
+    end;
+
     if not WasRealShadow then
       Result := 0
     else
-      Result := Ret/Divisor;
+      Result := Ret / Divisor;
   end;
 
-  function MixColors(colors: array of Cardinal): Cardinal;
+  function MixColors(aColors: array of Cardinal): Cardinal;
   var
     i, R, G, B, Count: Cardinal;
   begin
@@ -229,17 +228,17 @@ procedure TKMSoftShadowConverter.ConvertShadows(aIndex: Word; aOnlyShadows: Bool
     B := 0;
     G := 0;
     count := 0;
-    for i := 0 to Length(colors) - 1 do
-      if colors[i] and $FF000000 <> 0 then
+    for i := 0 to Length(aColors) - 1 do
+      if aColors[i] and $FF000000 <> 0 then
       begin
-        R := R+(colors[i] and $FF);
-        G := G+(colors[i] shr 8 and $FF);
-        B := B+(colors[i] shr 16 and $FF);
-        inc(count);
+        R := R+(aColors[i] and $FF);
+        G := G+(aColors[i] shr 8 and $FF);
+        B := B+(aColors[i] shr 16 and $FF);
+        Inc(count);
       end;
 
     Result := 0;
-    if count=0 then exit;
+    if count = 0 then Exit;
     R := R div count;
     B := B div count;
     G := G div count;
@@ -248,7 +247,7 @@ procedure TKMSoftShadowConverter.ConvertShadows(aIndex: Word; aOnlyShadows: Bool
   end;
 
 var
-  X,Y: Integer;
+  I,K: Integer;
   OriginalColor: Cardinal;
   RealShadow: Byte;
 begin
@@ -256,70 +255,70 @@ begin
 
   OriginalColor := 0;
 
-  for X := 0 to fRXData.Size[aIndex].X - 1 do
-    for Y := 0 to fRXData.Size[aIndex].Y - 1 do
-      if IsShadowPixel(aIndex, X, Y) then
+  for I := 0 to fRXData.Size[aIndex].Y - 1 do
+  for K := 0 to fRXData.Size[aIndex].X - 1 do
+  if IsShadowPixel(aIndex, K, I) then
+  begin
+    RealShadow := Min(Round(GetBlurredShadow(K, I) * SHADING_LEVEL), 255);
+    //If we're doing the entire sprite consider the original color, else use black
+    if not fOnlyShadows then
+    begin
+      OriginalColor := fRXData.RGBA[aIndex, I * fRXData.Size[aIndex].X + K];
+      if (OriginalColor and $FF000000) = 0 then
       begin
-        RealShadow := Min(Round(GetBlurredShadow(X, Y) * SHADING_LEVEL), 255);
-        //If we're doing the entire sprite consider the original color, else use black
-        if not fOnlyShadows then
-        begin
-          OriginalColor := fRXData.RGBA[aIndex, Y * fRXData.Size[aIndex].X + X];
-          if (OriginalColor and $FF000000) = 0 then
-          begin
-            //Take a blend of all the surrounding colors and use that to fill in gaps
-            OriginalColor :=
-            MixColors([fRXData.RGBA[aIndex, Max(Y-1,0                       )*fRXData.Size[aIndex].X + X],
-                       fRXData.RGBA[aIndex, Min(Y+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + X],
-                       fRXData.RGBA[aIndex, Y                                *fRXData.Size[aIndex].X + Max(X-1,0)],
-                       fRXData.RGBA[aIndex, Y                                *fRXData.Size[aIndex].X + Min(X+1,fRXData.Size[aIndex].X-1)],
-                       //Diagonals
-                       fRXData.RGBA[aIndex, Max(Y-1,0                       )*fRXData.Size[aIndex].X + Min(X+1,fRXData.Size[aIndex].X-1)],
-                       fRXData.RGBA[aIndex, Min(Y+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Max(X-1,0)],
-                       fRXData.RGBA[aIndex, Max(Y-1,0                       )*fRXData.Size[aIndex].X + Max(X-1,0)],
-                       fRXData.RGBA[aIndex, Min(Y+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Min(X+1,fRXData.Size[aIndex].X-1)]]);
-          end
-          else
-            OriginalColor := OriginalColor and $00FFFFFF;
-        end;
-        fRXData.RGBA[aIndex, Y*fRXData.Size[aIndex].X + X] := (RealShadow shl 24) or OriginalColor;
-      end;
+        //Take a blend of all the surrounding colors and use that to fill in gaps
+        OriginalColor :=
+        MixColors([fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + K],
+                   fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + K],
+                   fRXData.RGBA[aIndex, I                                *fRXData.Size[aIndex].X + Max(K-1,0)],
+                   fRXData.RGBA[aIndex, I                                *fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)],
+                   //Diagonals
+                   fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)],
+                   fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Max(K-1,0)],
+                   fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + Max(K-1,0)],
+                   fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)]]);
+      end
+      else
+        OriginalColor := OriginalColor and $00FFFFFF;
+    end;
+    fRXData.RGBA[aIndex, I * fRXData.Size[aIndex].X + K] := (RealShadow shl 24) or OriginalColor;
+  end;
 end;
 
 
 procedure TKMSoftShadowConverter.PrepareShadows(aIndex: Word; aOnlyShadows: Boolean);
 
-  function ReadTempShadowMapSafe(X, Y: Integer): Boolean;
+  function ReadTempShadowMapSafe(aX, aY: Integer): Boolean;
   begin
-    if (X < 0) or (Y < 0) or (X >= fRXData.Size[aIndex].X) or (Y >= fRXData.Size[aIndex].Y) then
+    if (aX < 0) or (aY < 0) or (aX >= fRXData.Size[aIndex].X) or (aY >= fRXData.Size[aIndex].Y) then
       Result := False
     else
-      Result := TempShadowMap[X, Y];
+      Result := TempShadowMap[aX, aY];
   end;
 
-  function IsShadowOrObject(X, Y: Integer): Boolean;
+  function IsShadowOrObject(aX, aY: Integer): Boolean;
   begin
-    if (X < 0) or (Y < 0) or (X >= fRXData.Size[aIndex].X) or (Y >= fRXData.Size[aIndex].Y) then
+    if (aX < 0) or (aY < 0) or (aX >= fRXData.Size[aIndex].X) or (aY >= fRXData.Size[aIndex].Y) then
       Result := False
     else
-      Result := TempShadowMap[X, Y] or IsObject(ReadPixelSafe(aIndex, X, Y));
+      Result := TempShadowMap[aX, aY] or IsObject(ReadPixelSafe(aIndex, aX, aY));
   end;
 
-  function ShadowsNearby(X,Y: Integer): Byte;
+  function ShadowsNearby(aX, aY: Integer): Byte;
   begin
     Result := 0;
-    if ReadTempShadowMapSafe(X-1, Y  )
-    or ReadTempShadowMapSafe(X+1, Y  )
-    or ReadTempShadowMapSafe(X,   Y-1)
-    or ReadTempShadowMapSafe(X,   Y+1) then
-      Result := Byte(IsShadowOrObject(X-1, Y  )) +
-                Byte(IsShadowOrObject(X+1, Y  )) +
-                Byte(IsShadowOrObject(X,   Y-1)) +
-                Byte(IsShadowOrObject(X,   Y+1));
+    if ReadTempShadowMapSafe(aX-1, aY  )
+    or ReadTempShadowMapSafe(aX+1, aY  )
+    or ReadTempShadowMapSafe(aX,   aY-1)
+    or ReadTempShadowMapSafe(aX,   aY+1) then
+      Result := Ord(IsShadowOrObject(aX-1, aY  )) +
+                Ord(IsShadowOrObject(aX+1, aY  )) +
+                Ord(IsShadowOrObject(aX,   aY-1)) +
+                Ord(IsShadowOrObject(aX,   aY+1));
   end;
 
 var
-  X,Y: Integer;
+  I, K: Integer;
   Shadow: Boolean;
 begin
   fOnlyShadows := aOnlyShadows;
@@ -330,21 +329,21 @@ begin
   SetLength(TempShadowMap, fRXData.Size[aIndex].X, fRXData.Size[aIndex].Y);
   SetLength(ShadowMap,     fRXData.Size[aIndex].X, fRXData.Size[aIndex].Y);
 
-  for X := 0 to fRXData.Size[aIndex].X - 1 do
-    for Y := 0 to fRXData.Size[aIndex].Y - 1 do
-      TempShadowMap[X, Y] := IsShadow(aIndex,X,Y);
+  for I := 0 to fRXData.Size[aIndex].Y - 1 do
+  for K := 0 to fRXData.Size[aIndex].X - 1 do
+    TempShadowMap[K, I] := IsShadow(aIndex, K, I);
 
-  for X := 0 to fRXData.Size[aIndex].X - 1 do
-    for Y := 0 to fRXData.Size[aIndex].Y - 1 do
-    begin
-      Shadow := TempShadowMap[X, Y];
+  for I := 0 to fRXData.Size[aIndex].Y - 1 do
+  for K := 0 to fRXData.Size[aIndex].X - 1 do
+  begin
+    Shadow := TempShadowMap[K, I];
 
-      if Shadow and not IsObject(ReadPixelSafe(aIndex, X, Y))
-      and (ShadowsNearby(X, Y) = 1) then
-        Shadow := False;
+    if Shadow and not IsObject(ReadPixelSafe(aIndex, K, I))
+    and (ShadowsNearby(K, I) = 1) then
+      Shadow := False;
 
-      ShadowMap[X, Y] := Shadow;
-    end;
+    ShadowMap[K, I] := Shadow;
+  end;
 end;
 
 

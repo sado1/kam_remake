@@ -2150,8 +2150,8 @@ begin
   if aUID > 0 then
     with fRenderList[fCount].SelectionRect do
     begin
-      snsTop    := fUnitsRXData.SizeNoShadow[aId].top;
-      snsBottom := fUnitsRXData.SizeNoShadow[aId].bottom;
+      snsTop    := fUnitsRXData.SizeNoShadow[aId].Top;
+      snsBottom := fUnitsRXData.SizeNoShadow[aId].Bottom;
 
       imH := snsBottom - snsTop + 1;
       hTop := EnsureRange(imH, CELL_SIZE_PX, MAX_SEL_RECT_HEIGHT);
