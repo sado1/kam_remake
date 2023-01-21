@@ -82,8 +82,9 @@ type
     procedure SoftenShadowsList(aIdList: TList<Integer>);
     procedure SoftenShadowsRange(aFrom, aTo: Integer; aOnlyShadows: Boolean = True);
 
-    procedure DetermineImagesObjectSize(aStart: Integer = 1; aEnd: Integer = -1); overload;
-    procedure DetermineImagesObjectSize(aIdList: TList<Integer>); overload;
+    procedure DetermineImagesObjectSizeAll;
+    procedure DetermineImagesObjectSizeList(aIdList: TList<Integer>);
+
     procedure RemoveMarketWaresShadows(aResHouses: TKMResHouses);
     procedure RemoveSnowHouseShadows(aResHouses: TKMResHouses);
     procedure RemoveHouseWorkBackgrounds(aResHouses: TKMResHouses);
@@ -369,7 +370,7 @@ begin
   shadowConverter := TKMSoftShadowConverter.Create(Self);
   try
     for I := aFrom to aTo do
-      if (fRXData.Flag[I] <> 0) then
+      if fRXData.Flag[I] <> 0 then
         shadowConverter.ConvertShadows(I, aOnlyShadows);
   finally
     shadowConverter.Free;
@@ -377,17 +378,15 @@ begin
 end;
 
 
-procedure TKMSpritePack.DetermineImagesObjectSize(aStart: Integer = 1; aEnd: Integer = -1);
+procedure TKMSpritePack.DetermineImagesObjectSizeAll;
 var
   I: Integer;
   shadowConverter: TKMSoftShadowConverter;
 begin
   shadowConverter := TKMSoftShadowConverter.Create(Self);
   try
-    if aEnd = -1 then aEnd := fRXData.Count;
-
-    for I := aStart to aEnd do
-      if (fRXData.Flag[I] <> 0) then
+    for I := 1 to fRXData.Count do
+      if fRXData.Flag[I] <> 0 then
         shadowConverter.DetermineImageObjectSize(I);
   finally
     shadowConverter.Free;
@@ -395,7 +394,7 @@ begin
 end;
 
 
-procedure TKMSpritePack.DetermineImagesObjectSize(aIdList: TList<Integer>);
+procedure TKMSpritePack.DetermineImagesObjectSizeList(aIdList: TList<Integer>);
 var
   I, id: Integer;
   shadowConverter: TKMSoftShadowConverter;
@@ -939,7 +938,7 @@ procedure TKMSpritePack.OverloadGeneratedFromFolder(aAlphaShadows: Boolean; cons
       // Determine objects size only for units (used for hitbox)
       //todo: do we need it for houses too ?
       if fRT = rxUnits then
-        DetermineImagesObjectSize(idList);
+        DetermineImagesObjectSizeList(idList);
     finally
       fileList.Free;
     end;
@@ -1002,7 +1001,7 @@ procedure TKMSpritePack.OverloadRXDataFromFolder(const aFolder: string; aSoftenS
       // Determine objects size only for units (used for hitbox)
       //todo: do we need it for houses too ?
       if fRT = rxUnits then
-        DetermineImagesObjectSize(idList);
+        DetermineImagesObjectSizeList(idList);
     finally
       idList.Free;
       fileList.Free;

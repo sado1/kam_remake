@@ -100,7 +100,7 @@ begin
     // Determine objects size only for units (used for hitbox)
     //todo: do we need it for houses too ?
     if RT = rxUnits then
-      spritePack.DetermineImagesObjectSize;
+      spritePack.DetermineImagesObjectSizeAll;
 
     // The idea was to blur the water and make it semi-trasparent, but it did not work out as expected
     //if RT = rxTiles then
