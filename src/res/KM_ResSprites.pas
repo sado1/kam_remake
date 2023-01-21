@@ -291,37 +291,34 @@ begin
   Result := sstNone;
 
   case fRT of
-    rxHouses: if InRange(aID, 889, 892)            //Smooth smoke
-                or InRange(aID, 1615, 1638) then   //Smooth flame
+    rxHouses: // Smooth smoke and flame
+              if InRange(aID, 889, 892)
+              or InRange(aID, 1615, 1638) then
                 Result := sstBoth
               else
                 Result := sstOnlyShadow;
     rxUnits:  begin
-                if InRange(aID, 6251, 6322) then     //Smooth thought bubbles
-                begin
-                  Result := sstBoth;
-                  Exit;
-                end;
-                //Smooth all death animations for all units
+                // Smooth thought bubbles
+                if InRange(aID, 6251, 6322) then
+                  Exit(sstBoth);
+
+                // Smooth all death animations for all units
                 for UT := HUMANS_MIN to HUMANS_MAX do
                   for dir := dirN to dirNW do
                     for step := 1 to 30 do
                     begin
-                      spriteID := gRes.Units[UT].UnitAnim[uaDie,dir].Step[step]+1; //Sprites in units.dat are 0 indexed
+                      spriteID := gRes.Units[UT].UnitAnim[uaDie,dir].Step[step]+1; // Sprites in units.dat are 0 indexed
                       if (aID = spriteID) and (spriteID > 0) then
-                      begin
-                        Result := sstBoth;
-                        Exit;
-                      end;
+                        Exit(sstBoth);
                     end;
                 if Result = sstNone then
                   Result := sstOnlyShadow;
               end;
     rxTrees:  Result := sstOnlyShadow;
-    rxGui:    if InRange(aID, 105, 128)         //Field plans
-                or InRange(aID, 249, 281)       //House tablets only (shadow softening messes up other rxGui sprites)
-                or InRange(aID, 461, 468)       //Field fences
-                or InRange(aID, 660, 660) then  //Woodcutter cutting point sign
+    rxGui:    if InRange(aID, 105, 128)       // Field plans
+              or InRange(aID, 249, 281)       // House tablets only (shadow softening messes up other rxGui sprites)
+              or InRange(aID, 461, 468)       // Field fences
+              or InRange(aID, 660, 660) then  // Woodcutter cutting point sign
                 Result := sstOnlyShadow;
   end;
 end;
@@ -2256,7 +2253,7 @@ begin
       // Make this atomic, since LoadStepDone is accessed in different threads
       AtomicExchange(Integer(LoadStepDone), Integer(True));
     end;
-    Sleep(1); // sleep a a bit
+    Sleep(1); // sleep for a bit
   end;
 end;
 
