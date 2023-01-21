@@ -697,7 +697,7 @@ var
 begin
   if IsEmpty then Exit;
 
-  MakeGFX_BinPacking(tfRGBA8, 1, baseRAM, colorRAM, texCount, False, nil);
+  MakeGFX_BinPacking(tfRGBA8, 1, baseRAM, colorRAM, texCount, False);
 
   ForceDirectories(ExtractFilePath(aFileName));
 

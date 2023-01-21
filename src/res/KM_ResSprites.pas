@@ -1244,10 +1244,10 @@ begin
 end;
 
 
-//Take RX data and make nice atlas texture out of it
-//Atlases should be POT to improve performance and avoid driver bugs
-//In result we have GFXData structure filled
 {$IFNDEF NO_OGL}
+// Take RX data and make nice atlas texture out of it
+// Atlases should be POT to improve performance and avoid driver bugs
+// In result we have GFXData structure filled
 procedure TKMSpritePack.MakeGFX(aAlphaShadows: Boolean; aStartingIndex: Integer = 1; aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
 var
   I: Integer;
@@ -1454,12 +1454,10 @@ begin
 end;
 
 
-//This algorithm is planned to take advantage of more efficient 2D bin packing
+// This algorithm is planned to take advantage of more efficient 2D bin packing
 procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TKMTexFormat; aIDList: TList<Integer>; var aBaseRAM, aColorRAM, aTexCount: Cardinal;
                                            aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
-
-
-  function StopExec: Boolean;
+  function CheckTerminated: Boolean;
   begin
     Result := Assigned(aOnStopExecution) and aOnStopExecution;
   end;
@@ -1503,13 +1501,13 @@ begin
   SetLength(spriteInfo, 0);
   BinPack(spriteSizes, atlasSize, fPad, spriteInfo);
 
-  if StopExec then Exit; //Our thread could be terminated and asked to stop. Exit immidiately then
+  if CheckTerminated then Exit; //Our thread could be terminated and asked to stop. Exit immediately then
 
   SetLength(fGFXPrepData[saBase], Length(spriteInfo));
 
   PrepareAtlases(spriteInfo, saBase, aTexType, aBaseRAM, aColorRAM, aTexCount, aFillGFXData, aOnStopExecution);
 
-  if StopExec then Exit;
+  if CheckTerminated then Exit;
 
   //Prepare masking atlases
   SetLength(spriteSizes, aIDList.Count);
@@ -1529,7 +1527,7 @@ begin
 
   SetLength(spriteInfo, 0);
   BinPack(spriteSizes, atlasSize, fPad, spriteInfo);
-  if StopExec then Exit;
+  if CheckTerminated then Exit;
   SetLength(fGFXPrepData[saMask], Length(spriteInfo));
   PrepareAtlases(spriteInfo, saMask, tfAlpha8, aBaseRAM, aColorRAM, aTexCount, aFillGFXData, aOnStopExecution);
 end;
