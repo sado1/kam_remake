@@ -14,6 +14,9 @@ uses
 
 
 type
+  // How do we want to soften the sprite
+  TKMSpriteSoftening = (ssNone, ssOnlyShadow, ssWhole);
+
   TTGameResourceLoader = class;
 
   TKMGFXPrepData =  array [TKMSpriteAtlasType] of // for each atlas type
@@ -74,7 +77,7 @@ type
     procedure LoadFromRXXFile(const aFileName: string; aStartingIndex: Integer = 1);
     procedure OverloadRXDataFromFolder(const aFolder: string; aSoftenShadows: Boolean = True);
 
-    function GetSoftenShadowType(aID: Integer): TKMSoftenShadowType;
+    function GetSoftenShadowType(aID: Integer): TKMSpriteSoftening;
     procedure SoftenShadows(aIdList: TList<Integer>); overload;
     procedure SoftenShadows(aStart: Integer = 1; aEnd: Integer = -1; aOnlyShadows: Boolean = True); overload;
     procedure SoftenShadows(aID: Integer; aOnlyShadows: Boolean = True); overload;
@@ -282,44 +285,44 @@ begin
 end;
 
 
-function TKMSpritePack.GetSoftenShadowType(aID: Integer): TKMSoftenShadowType;
+function TKMSpritePack.GetSoftenShadowType(aID: Integer): TKMSpriteSoftening;
 var
   step, spriteID: Integer;
   UT: TKMUnitType;
   dir: TKMDirection;
 begin
-  Result := sstNone;
+  Result := ssNone;
 
   case fRT of
     rxHouses: // Smooth smoke and flame
               if InRange(aID, 889, 892)
               or InRange(aID, 1615, 1638) then
-                Result := sstBoth
+                Result := ssWhole
               else
-                Result := sstOnlyShadow;
+                Result := ssOnlyShadow;
     rxUnits:  begin
                 // Smooth thought bubbles
                 if InRange(aID, 6251, 6322) then
-                  Exit(sstBoth);
+                  Exit(ssWhole);
 
                 // Smooth all death animations for all units
                 for UT := HUMANS_MIN to HUMANS_MAX do
                   for dir := dirN to dirNW do
                     for step := 1 to 30 do
                     begin
-                      spriteID := gRes.Units[UT].UnitAnim[uaDie,dir].Step[step]+1; // Sprites in units.dat are 0 indexed
+                      spriteID := gRes.Units[UT].UnitAnim[uaDie, dir].Step[step] + 1; // Sprites in units.dat are 0 indexed
                       if (aID = spriteID) and (spriteID > 0) then
-                        Exit(sstBoth);
+                        Exit(ssWhole);
                     end;
-                if Result = sstNone then
-                  Result := sstOnlyShadow;
+                if Result = ssNone then
+                  Result := ssOnlyShadow;
               end;
-    rxTrees:  Result := sstOnlyShadow;
+    rxTrees:  Result := ssOnlyShadow;
     rxGui:    if InRange(aID, 105, 128)       // Field plans
               or InRange(aID, 249, 281)       // House tablets only (shadow softening messes up other rxGui sprites)
               or InRange(aID, 461, 468)       // Field fences
               or InRange(aID, 660, 660) then  // Woodcutter cutting point sign
-                Result := sstOnlyShadow;
+                Result := ssOnlyShadow;
   end;
 end;
 
@@ -328,7 +331,7 @@ procedure TKMSpritePack.SoftenShadows(aIdList: TList<Integer>);
 var
   I, id: Integer;
   shadowConverter: TKMSoftShadowConverter;
-  softenShadowType: TKMSoftenShadowType;
+  spriteSoftening: TKMSpriteSoftening;
 begin
   if aIdList.Count = 0 then Exit;
 
@@ -339,14 +342,14 @@ begin
       id := aIdList[I];
       if fRXData.Flag[id] <> 0 then
       begin
-        softenShadowType := GetSoftenShadowType(id);
-        case softenShadowType of
-          sstNone: ;
-          sstOnlyShadow:  shadowConverter.ConvertShadows(id, True);
-          sstBoth:        begin
-                            shadowConverter.ConvertShadows(id, False);
-                            shadowConverter.ConvertShadows(id, True);
-                          end;
+        spriteSoftening := GetSoftenShadowType(id);
+        case spriteSoftening of
+          ssNone:       ;
+          ssOnlyShadow: shadowConverter.ConvertShadows(id, True);
+          ssWhole:      begin
+                          shadowConverter.ConvertShadows(id, False);
+                          shadowConverter.ConvertShadows(id, True);
+                        end;
         end;
       end;
     end;

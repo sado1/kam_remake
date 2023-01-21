@@ -303,8 +303,6 @@ type
   end;
   PRXData = ^TRXData;
 
-  TKMSoftenShadowType = (sstNone, sstOnlyShadow, sstBoth);
-
 const
   {$I KM_TextIDs.inc}
 
