@@ -115,13 +115,13 @@ begin
     begin
       if RT = rxHouses then
       begin
-        spritePack.SoftenShadows(889, 892, False); // Smooth smoke
-        spritePack.SoftenShadows(1615, 1638, False); // Smooth flame
+        spritePack.SoftenShadowsRange(889, 892, False); // Smooth smoke
+        spritePack.SoftenShadowsRange(1615, 1638, False); // Smooth flame
       end;
 
       if RT = rxUnits then
       begin
-        spritePack.SoftenShadows(6251, 6322, False); // Smooth thought bubbles
+        spritePack.SoftenShadowsRange(6251, 6322, False); // Smooth thought bubbles
 
         resUnits := TKMResUnits.Create; // Smooth all death animations for all units
         deathAnimProcessed := TList<Integer>.Create; // We need to remember which ones we've done because units reuse them
@@ -134,7 +134,7 @@ begin
             if (spriteID > 0)
             and not deathAnimProcessed.Contains(spriteID) then
             begin
-              spritePack.SoftenShadows(spriteID, False);
+              spritePack.SoftenShadowsOne(spriteID, False);
               deathAnimProcessed.Add(spriteID);
             end;
           end;
@@ -146,13 +146,13 @@ begin
 
       if RT = rxGui then
       begin
-        spritePack.SoftenShadows(105, 128); //Field plans
-        spritePack.SoftenShadows(249, 281); //House tablets only (shadow softening messes up other rxGui sprites)
-        spritePack.SoftenShadows(461, 468); //Field fences
-        spritePack.SoftenShadows(660, 660); //Woodcutter cutting point sign
+        spritePack.SoftenShadowsRange(105, 128); //Field plans
+        spritePack.SoftenShadowsRange(249, 281); //House tablets only (shadow softening messes up other rxGui sprites)
+        spritePack.SoftenShadowsRange(461, 468); //Field fences
+        spritePack.SoftenShadowsRange(660, 660); //Woodcutter cutting point sign
       end
       else
-        spritePack.SoftenShadows;
+        spritePack.SoftenShadowsRange(1, spritePack.RXData.Count);
 
       if PackToRXX then
         spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx', AddVersionHeader);

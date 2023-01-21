@@ -78,9 +78,11 @@ type
     procedure OverloadRXDataFromFolder(const aFolder: string; aSoftenShadows: Boolean = True);
 
     function GetSoftenShadowType(aID: Integer): TKMSpriteSoftening;
-    procedure SoftenShadows(aIdList: TList<Integer>); overload;
-    procedure SoftenShadows(aStart: Integer = 1; aEnd: Integer = -1; aOnlyShadows: Boolean = True); overload;
-    procedure SoftenShadows(aID: Integer; aOnlyShadows: Boolean = True); overload;
+
+    procedure SoftenShadowsList(aIdList: TList<Integer>);
+    procedure SoftenShadowsRange(aStart, aEnd: Integer; aOnlyShadows: Boolean = True);
+    procedure SoftenShadowsOne(aID: Integer; aOnlyShadows: Boolean = True);
+
     procedure DetermineImagesObjectSize(aStart: Integer = 1; aEnd: Integer = -1); overload;
     procedure DetermineImagesObjectSize(aIdList: TList<Integer>); overload;
     procedure RemoveMarketWaresShadows(aResHouses: TKMResHouses);
@@ -327,7 +329,7 @@ begin
 end;
 
 
-procedure TKMSpritePack.SoftenShadows(aIdList: TList<Integer>);
+procedure TKMSpritePack.SoftenShadowsList(aIdList: TList<Integer>);
 var
   I, id: Integer;
   shadowConverter: TKMSoftShadowConverter;
@@ -359,8 +361,8 @@ begin
 end;
 
 
-//Make old style KaM checkerboard shadows smooth and transparent
-procedure TKMSpritePack.SoftenShadows(aStart: Integer = 1; aEnd: Integer = -1; aOnlyShadows: Boolean = True);
+// Make old style KaM checkerboard shadows smooth and transparent
+procedure TKMSpritePack.SoftenShadowsRange(aStart, aEnd: Integer; aOnlyShadows: Boolean = True);
 var
   I: Integer;
   shadowConverter: TKMSoftShadowConverter;
@@ -553,7 +555,7 @@ begin
 end;
 
 
-procedure TKMSpritePack.SoftenShadows(aID: Integer; aOnlyShadows: Boolean = True);
+procedure TKMSpritePack.SoftenShadowsOne(aID: Integer; aOnlyShadows: Boolean = True);
 var
   shadowConverter: TKMSoftShadowConverter;
 begin
@@ -949,7 +951,7 @@ procedure TKMSpritePack.OverloadGeneratedFromFolder(aAlphaShadows: Boolean; cons
 
       // Soften shadows for overloaded sprites
       if aSoftenShadows then
-        SoftenShadows(idList);
+        SoftenShadowsList(idList);
 
       // Determine objects size only for units (used for hitbox)
       //todo: do we need it for houses too ?
@@ -1012,7 +1014,7 @@ procedure TKMSpritePack.OverloadRXDataFromFolder(const aFolder: string; aSoftenS
 
       // Soften shadows for overloaded sprites
       if aSoftenShadows then
-        SoftenShadows(idList);
+        SoftenShadowsList(idList);
 
       // Determine objects size only for units (used for hitbox)
       //todo: do we need it for houses too ?
