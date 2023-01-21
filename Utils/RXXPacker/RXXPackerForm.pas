@@ -223,10 +223,10 @@ begin
     tick := GetTickCount;
 
     fRXXPacker.SpritesSourcePath := edSpritesLoadDir.Text;
-    fRXXPacker.SpritesSaveDir := edSpritesSaveDir.Text;
+    fRXXPacker.RXXSavePath    := edSpritesSaveDir.Text;
     fRxxPacker.PackToRXX      := chkPackToRXX.Checked;
     fRxxPacker.PackToRXA      := chkPackToRXA.Checked;
-    fRxxPacker.AddRXXHeader   := chkAddRXXHeader.Checked;
+    fRxxPacker.AddVersionHeader := chkAddRXXHeader.Checked;
 
     if not DirectoryExists(fRXXPacker.SpritesSourcePath + SPRITES_RES_DIR + '\') then
     begin

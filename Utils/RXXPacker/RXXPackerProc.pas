@@ -9,20 +9,19 @@ type
   TKMRXXPacker = class
   private
     fSpritesSourcePath: string;
-    fSpritesSaveDir: string;
-    fPackToRXX: Boolean;
-    fPackToRXA: Boolean;
-    fAddVersionHeader: Boolean;
+    fRXXSavePath: string;
+
     procedure SetSpritesSourcePath(const aValue: string);
-    procedure SetSpritesSaveDir(const aValue: string);
+    procedure SetRXXSavePath(const aValue: string);
   public
+    PackToRXX: Boolean;
+    PackToRXA: Boolean;
+    AddVersionHeader: Boolean;
+
     constructor Create(const aSpritesBaseDir: string);
 
-    property PackToRXX: Boolean read fPackToRXX write fPackToRXX;
-    property PackToRXA: Boolean read fPackToRXA write fPackToRXA;
-    property AddRXXHeader: Boolean read fAddVersionHeader write fAddVersionHeader;
     property SpritesSourcePath: string read fSpritesSourcePath write SetSpritesSourcePath;
-    property SpritesSaveDir: string read fSpritesSaveDir write SetSpritesSaveDir;
+    property RXXSavePath: string read fRXXSavePath write SetRXXSavePath;
 
     procedure Pack(RT: TRXType; fPalettes: TKMResPalettes);
   end;
@@ -43,10 +42,11 @@ constructor TKMRXXPacker.Create(const aSpritesBaseDir: string);
 begin
   inherited Create;
 
-  fPackToRXX := True;
-  fPackToRXA := False;
-  fAddVersionHeader := True;
   SpritesSourcePath := aSpritesBaseDir;
+
+  PackToRXX := True;
+  PackToRXA := False;
+  AddVersionHeader := True;
 end;
 
 
@@ -119,8 +119,8 @@ begin
       //  SpritePack.SoftWater(nil);
 
       //Save
-      if fPackToRXX then
-        spritePack.SaveToRXXFile(fSpritesSaveDir + 'data\Sprites\' + RXInfo[RT].FileName + '.rxx', fAddVersionHeader);
+      if PackToRXX then
+        spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RXInfo[RT].FileName + '.rxx', AddVersionHeader);
 
       //Generate alpha shadows for the following sprite packs
       if RT in [rxHouses,rxUnits,rxGui,rxTrees] then
@@ -163,15 +163,15 @@ begin
         else
           spritePack.SoftenShadows;
 
-        if fPackToRXX then
-          spritePack.SaveToRXXFile(fSpritesSaveDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx', fAddVersionHeader);
+        if PackToRXX then
+          spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx', AddVersionHeader);
 
-        if fPackToRXA then
+        if PackToRXA then
         begin
           if DirectoryExists(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\') then
             spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\', False); // Shadows are already softened for interps
 
-          spritePack.SaveToRXAFile(fSpritesSaveDir + 'data\Sprites\' + RXInfo[RT].FileName + '.rxa', fAddVersionHeader);
+          spritePack.SaveToRXAFile(fRXXSavePath + 'data\Sprites\' + RXInfo[RT].FileName + '.rxa', AddVersionHeader);
         end;
       end;
     finally
@@ -187,9 +187,9 @@ begin
 end;
 
 
-procedure TKMRXXPacker.SetSpritesSaveDir(const aValue: string);
+procedure TKMRXXPacker.SetRXXSavePath(const aValue: string);
 begin
-  fSpritesSaveDir := IncludeTrailingPathDelimiter(aValue);
+  fRXXSavePath := IncludeTrailingPathDelimiter(aValue);
 end;
 
 

@@ -143,7 +143,7 @@ begin
             end;
 
             Inc(I);
-            lRxxPacker.SpritesSaveDir := ParamStr(I);
+            lRxxPacker.RXXSavePath := ParamStr(I);
             Continue;
           end;
 
