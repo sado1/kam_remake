@@ -32,7 +32,7 @@ object fmRXXEditor: TfmRXXEditor
   object Label2: TLabel
     Left = 232
     Top = 48
-    Width = 57
+    Width = 53
     Height = 13
     Caption = 'Main image'
     Font.Charset = DEFAULT_CHARSET
@@ -45,7 +45,7 @@ object fmRXXEditor: TfmRXXEditor
   object Label3: TLabel
     Left = 232
     Top = 296
-    Width = 57
+    Width = 55
     Height = 13
     Caption = 'Mask image'
     Font.Charset = DEFAULT_CHARSET

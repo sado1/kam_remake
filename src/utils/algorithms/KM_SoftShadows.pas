@@ -248,42 +248,52 @@ procedure TKMSoftShadowConverter.ConvertShadows(aIndex: Word; aOnlyShadows: Bool
 
 var
   I,K: Integer;
-  OriginalColor: Cardinal;
+  originalColor: Cardinal;
   RealShadow: Byte;
+  tempTarget: array of Cardinal;
 begin
   PrepareShadows(aIndex, aOnlyShadows);
 
-  OriginalColor := 0;
+  originalColor := 0;
+
+  // We should not be reading from and writing to the same image, as writes affect the subsequent reads
+  // Blit whole image in one go (and doctor shadows per-pixel further down the line)
+  SetLength(tempTarget, fRXData.Size[aIndex].Y * fRXData.Size[aIndex].X);
+  Move(fRXData.RGBA[aIndex, 0], tempTarget[0], Length(tempTarget) * SizeOf(Cardinal));
 
   for I := 0 to fRXData.Size[aIndex].Y - 1 do
   for K := 0 to fRXData.Size[aIndex].X - 1 do
   if IsShadowPixel(aIndex, K, I) then
   begin
     RealShadow := Min(Round(GetBlurredShadow(K, I) * SHADING_LEVEL), 255);
-    //If we're doing the entire sprite consider the original color, else use black
+
+    // If we're doing the entire sprite consider the original color, else use black
     if not fOnlyShadows then
     begin
-      OriginalColor := fRXData.RGBA[aIndex, I * fRXData.Size[aIndex].X + K];
-      if (OriginalColor and $FF000000) = 0 then
+      originalColor := fRXData.RGBA[aIndex, I * fRXData.Size[aIndex].X + K];
+
+      if (originalColor and $FF000000) = 0 then
       begin
-        //Take a blend of all the surrounding colors and use that to fill in gaps
-        OriginalColor :=
-        MixColors([fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + K],
-                   fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + K],
-                   fRXData.RGBA[aIndex, I                                *fRXData.Size[aIndex].X + Max(K-1,0)],
-                   fRXData.RGBA[aIndex, I                                *fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)],
-                   //Diagonals
-                   fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)],
-                   fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Max(K-1,0)],
-                   fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + Max(K-1,0)],
-                   fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)]]);
-      end
-      else
-        OriginalColor := OriginalColor and $00FFFFFF;
+        // Take a blend of all the surrounding colors and use that to fill in gaps
+        originalColor :=
+          MixColors([fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + K],
+                     fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + K],
+                     fRXData.RGBA[aIndex, I                                *fRXData.Size[aIndex].X + Max(K-1,0)],
+                     fRXData.RGBA[aIndex, I                                *fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)],
+                     //Diagonals
+                     fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)],
+                     fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Max(K-1,0)],
+                     fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + Max(K-1,0)],
+                     fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)]]);
+      end else
+        originalColor := originalColor and $00FFFFFF;
     end;
 
-    fRXData.RGBA[aIndex, I * fRXData.Size[aIndex].X + K] := (RealShadow shl 24) or OriginalColor;
+    tempTarget[I * fRXData.Size[aIndex].X + K] := (RealShadow shl 24) or originalColor;
   end;
+
+  // Blit image with softened shadows back
+  Move(tempTarget[0], fRXData.RGBA[aIndex, 0], Length(tempTarget) * SizeOf(Cardinal));
 end;
 
 

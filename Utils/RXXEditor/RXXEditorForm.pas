@@ -156,7 +156,11 @@ var
 begin
   //WinXP needs InitialDir to be set before Execute
   OpenDialog1.Filter := 'RX, RXX packages (*.rx;*.rxx)|*.rxx;*.rx;';
-  OpenDialog1.InitialDir := ExeDir + 'data\sprites\';
+  if DirectoryExists(ExeDir + 'data\sprites\') then
+    OpenDialog1.InitialDir := ExeDir + 'data\sprites\'
+  else
+    OpenDialog1.InitialDir := ExeDir + 'data\';
+
   OpenDialog1.Options := OpenDialog1.Options - [ofAllowMultiSelect];
   if not OpenDialog1.Execute then Exit;
 

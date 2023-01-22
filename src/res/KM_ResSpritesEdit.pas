@@ -788,6 +788,7 @@ begin
   OutputStream := TFileStream.Create(aFileName, fmCreate);
   if aAddHeader then
     WriteBinaryHeader(OutputStream, RXX_VERSION_1);
+
   CompressionStream := TCompressionStream.Create(clMax, OutputStream);
   InputStream.Position := 0;
   CompressionStream.CopyFrom(InputStream, InputStream.Size);
