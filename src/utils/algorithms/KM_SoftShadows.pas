@@ -2,7 +2,8 @@ unit KM_SoftShadows;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, SysUtils, Math, KM_ResSprites, KM_ResTypes;
+  Classes, SysUtils, Math,
+  KM_ResSprites, KM_ResTypes;
 
 type
   TKMSoftShadowConverter = class
@@ -220,30 +221,30 @@ procedure TKMSoftShadowConverter.ConvertShadows(aIndex: Word; aOnlyShadows: Bool
       Result := Ret / Divisor;
   end;
 
-  function MixColors(aColors: array of Cardinal): Cardinal;
+  function GetAverageColor(aColors: array of Cardinal): Cardinal;
   var
-    i, R, G, B, Count: Cardinal;
+    I, accR, accG, accB, count: Cardinal;
   begin
-    R := 0;
-    B := 0;
-    G := 0;
+    accR := 0;
+    accB := 0;
+    accG := 0;
     count := 0;
-    for i := 0 to Length(aColors) - 1 do
-      if aColors[i] and $FF000000 <> 0 then
+    for I := 0 to Length(aColors) - 1 do
+      if aColors[I] and $FF000000 <> 0 then
       begin
-        R := R+(aColors[i] and $FF);
-        G := G+(aColors[i] shr 8 and $FF);
-        B := B+(aColors[i] shr 16 and $FF);
+        accR := accR + (aColors[I] and $FF);
+        accG := accG + (aColors[I] shr 8 and $FF);
+        accB := accB + (aColors[I] shr 16 and $FF);
         Inc(count);
       end;
 
     Result := 0;
     if count = 0 then Exit;
-    R := R div count;
-    B := B div count;
-    G := G div count;
+    accR := accR div count;
+    accB := accB div count;
+    accG := accG div count;
 
-    Result := (R + G shl 8 + B shl 16);
+    Result := (accR + accG shl 8 + accB shl 16);
   end;
 
 var
@@ -276,15 +277,15 @@ begin
       begin
         // Take a blend of all the surrounding colors and use that to fill in gaps
         originalColor :=
-          MixColors([fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + K],
-                     fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + K],
-                     fRXData.RGBA[aIndex, I                                *fRXData.Size[aIndex].X + Max(K-1,0)],
-                     fRXData.RGBA[aIndex, I                                *fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)],
-                     //Diagonals
-                     fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)],
-                     fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Max(K-1,0)],
-                     fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + Max(K-1,0)],
-                     fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)]]);
+          GetAverageColor([fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + K],
+                           fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + K],
+                           fRXData.RGBA[aIndex, I                                *fRXData.Size[aIndex].X + Max(K-1,0)],
+                           fRXData.RGBA[aIndex, I                                *fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)],
+                           //Diagonals
+                           fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)],
+                           fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Max(K-1,0)],
+                           fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + Max(K-1,0)],
+                           fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)]]);
       end else
         originalColor := originalColor and $00FFFFFF;
     end;
