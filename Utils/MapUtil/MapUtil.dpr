@@ -109,8 +109,8 @@ begin
     on E: Exception do
     begin
       Writeln(ErrOutput, E.ClassName, ': ', E.Message); // output error to stderr
-      if gLog <> nil then
-        gLog.AddTime('Exception while generating minimap: ' + E.Message);
+
+      gLog.AddTime('Exception while generating minimap: ' + E.Message);
     end;
   end;
 
