@@ -2,7 +2,7 @@ object RXXForm1: TRXXForm1
   Left = 72
   Top = 90
   Caption = 'RXX Editor'
-  ClientHeight = 514
+  ClientHeight = 505
   ClientWidth = 473
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -14,7 +14,7 @@ object RXXForm1: TRXXForm1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 14
   object Label1: TLabel
     Left = 8
     Top = 40
@@ -43,7 +43,7 @@ object RXXForm1: TRXXForm1
   end
   object Label3: TLabel
     Left = 224
-    Top = 290
+    Top = 288
     Width = 68
     Height = 13
     Caption = 'Mask image'
@@ -56,7 +56,7 @@ object RXXForm1: TRXXForm1
   end
   object btnAdd: TButton
     Left = 8
-    Top = 474
+    Top = 472
     Width = 81
     Height = 25
     Caption = 'Add Image ...'
@@ -79,7 +79,7 @@ object RXXForm1: TRXXForm1
     Top = 56
     Width = 209
     Height = 412
-    ItemHeight = 13
+    ItemHeight = 14
     TabOrder = 2
     OnClick = lbSpritesListClick
   end
@@ -94,7 +94,7 @@ object RXXForm1: TRXXForm1
   end
   object btnDelete: TButton
     Left = 96
-    Top = 474
+    Top = 472
     Width = 81
     Height = 25
     Caption = 'Delete image'
@@ -104,7 +104,7 @@ object RXXForm1: TRXXForm1
   end
   object btnReplace: TButton
     Left = 224
-    Top = 250
+    Top = 248
     Width = 105
     Height = 25
     Caption = 'Replace image ...'
@@ -114,7 +114,7 @@ object RXXForm1: TRXXForm1
   end
   object btnExport: TButton
     Left = 336
-    Top = 250
+    Top = 248
     Width = 97
     Height = 25
     Caption = 'Export image ...'
@@ -129,7 +129,7 @@ object RXXForm1: TRXXForm1
     Height = 162
     BevelOuter = bvLowered
     TabOrder = 7
-    object Image1: TImage
+    object imgMain: TImage
       Left = 1
       Top = 1
       Width = 240
@@ -138,20 +138,18 @@ object RXXForm1: TRXXForm1
       Proportional = True
       Stretch = True
       Transparent = True
-      ExplicitLeft = 24
-      ExplicitTop = -56
-      ExplicitWidth = 209
-      ExplicitHeight = 169
+      ExplicitLeft = 41
+      ExplicitTop = 33
     end
   end
   object Panel2: TPanel
     Left = 224
-    Top = 306
+    Top = 304
     Width = 242
     Height = 162
     BevelOuter = bvLowered
     TabOrder = 8
-    object Image2: TImage
+    object imgMask: TImage
       Left = 1
       Top = 1
       Width = 240
@@ -166,7 +164,7 @@ object RXXForm1: TRXXForm1
   end
   object btnMaskReplace: TButton
     Left = 224
-    Top = 474
+    Top = 472
     Width = 105
     Height = 25
     Caption = 'Replace mask ...'
@@ -176,7 +174,7 @@ object RXXForm1: TRXXForm1
   end
   object btnMaskExport: TButton
     Left = 336
-    Top = 474
+    Top = 472
     Width = 97
     Height = 25
     Caption = 'Export mask ...'
@@ -208,7 +206,7 @@ object RXXForm1: TRXXForm1
   end
   object chkHasMask: TCheckBox
     Left = 400
-    Top = 290
+    Top = 288
     Width = 65
     Height = 15
     Caption = 'Has mask'

@@ -204,7 +204,7 @@ begin
     if not DirectoryExists(fRXXPacker.SpritesSourcePath + SPRITES_RES_DIR + '\') then
     begin
       MessageBox(Handle, PWideChar('Cannot find ' + fRXXPacker.SpritesSourcePath + SPRITES_RES_DIR + '\ folder.' +
-        sLineBreak + 'Please make sure this folder exists.'), 'Error', MB_ICONEXCLAMATION + MB_OK);
+        sLineBreak + 'Please make sure this folder exists.'), 'Error', MB_ICONEXCLAMATION or MB_OK);
       Exit;
     end;
 
@@ -228,7 +228,7 @@ begin
       meLog.Lines.Append('Everything packed in ' + IntToStr(GetTickCount - tickTotal) + ' ms');
     except
       on E: Exception do
-        MessageBox(Handle, PWideChar(E.Message), 'Error', MB_ICONEXCLAMATION + MB_OK);
+        MessageBox(Handle, PWideChar(E.Message), 'Error', MB_ICONEXCLAMATION or MB_OK);
     end;
   finally
     btnPackRXX.Enabled := True;

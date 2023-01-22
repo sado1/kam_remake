@@ -21,10 +21,10 @@ type
     btnReplace: TButton;
     btnExport: TButton;
     Panel1: TPanel;
-    Image1: TImage;
+    imgMain: TImage;
     Label1: TLabel;
     Panel2: TPanel;
-    Image2: TImage;
+    imgMask: TImage;
     Label2: TLabel;
     Label3: TLabel;
     btnMaskReplace: TButton;
@@ -108,10 +108,11 @@ var
   bmpBase, bmpMask: TBitmap;
 begin
   ToggleImageButtons(False);
-  Image1.Picture.Bitmap.Canvas.Brush.Color := 0;
-  Image1.Picture.Bitmap.Canvas.FillRect(Image1.Picture.Bitmap.Canvas.ClipRect);
-  Image2.Picture.Bitmap.Canvas.Brush.Color := 0;
-  Image2.Picture.Bitmap.Canvas.FillRect(Image1.Picture.Bitmap.Canvas.ClipRect);
+
+  imgMain.Picture.Bitmap.Canvas.Brush.Color := 0;
+  imgMain.Picture.Bitmap.Canvas.FillRect(imgMain.Picture.Bitmap.Canvas.ClipRect);
+  imgMask.Picture.Bitmap.Canvas.Brush.Color := 0;
+  imgMask.Picture.Bitmap.Canvas.FillRect(imgMain.Picture.Bitmap.Canvas.ClipRect);
   chkHasMask.Checked := False;
 
   if lbSpritesList.SelCount <> 1 then
@@ -119,7 +120,6 @@ begin
     btnExport.Enabled := True;
     Exit;
   end;
-
 
   ID := lbSpritesList.ItemIndex + 1;
   if ID = 0 then Exit;
@@ -129,10 +129,10 @@ begin
   bmpMask := TBitmap.Create;
   try
     fSprites.GetImageToBitmap(ID, bmpBase, bmpMask);
-    Image1.Picture.Assign(bmpBase);
+    imgMain.Picture.Assign(bmpBase);
 
     if bmpMask.Width * bmpMask.Height <> 0 then
-      Image2.Picture.Assign(bmpMask);
+      imgMask.Picture.Assign(bmpMask);
   finally
     bmpBase.Free;
     bmpMask.Free;
@@ -224,10 +224,8 @@ begin
   if not OpenDialog1.Execute then Exit;
 
   for I := 0 to OpenDialog1.Files.Count - 1 do
-  begin
     fSprites.AddImage(ExtractFilePath(OpenDialog1.Files[I]),
                       ExtractFileName(OpenDialog1.Files[I]), fSprites.RXData.Count+1);
-  end;
 
   UpdateList;
 end;
@@ -314,9 +312,10 @@ end;
 
 procedure TRXXForm1.chbImageStretchClick(Sender: TObject);
 begin
-  Image1.Stretch := chbImageStretch.Checked;
-  Image1.Center := not chbImageStretch.Checked;
+  imgMain.Stretch := chbImageStretch.Checked;
+  imgMain.Center := not chbImageStretch.Checked;
 end;
+
 
 procedure TRXXForm1.chkHasMaskClick(Sender: TObject);
 begin
