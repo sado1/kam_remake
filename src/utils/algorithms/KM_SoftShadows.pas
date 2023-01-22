@@ -252,6 +252,7 @@ var
   originalColor: Cardinal;
   RealShadow: Byte;
   tempTarget: array of Cardinal;
+  sx, sy: Word;
 begin
   PrepareShadows(aIndex, aOnlyShadows);
 
@@ -275,17 +276,20 @@ begin
 
       if (originalColor and $FF000000) = 0 then
       begin
+        // Local vars for cache and neater code
+        sx := fRXData.Size[aIndex].X;
+        sy := fRXData.Size[aIndex].Y;
+
         // Take a blend of all the surrounding colors and use that to fill in gaps
-        originalColor :=
-          GetAverageColor([fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + K],
-                           fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + K],
-                           fRXData.RGBA[aIndex, I                                *fRXData.Size[aIndex].X + Max(K-1,0)],
-                           fRXData.RGBA[aIndex, I                                *fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)],
-                           //Diagonals
-                           fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)],
-                           fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Max(K-1,0)],
-                           fRXData.RGBA[aIndex, Max(I-1,0                       )*fRXData.Size[aIndex].X + Max(K-1,0)],
-                           fRXData.RGBA[aIndex, Min(I+1,fRXData.Size[aIndex].Y-1)*fRXData.Size[aIndex].X + Min(K+1,fRXData.Size[aIndex].X-1)]]);
+        originalColor := GetAverageColor([fRXData.RGBA[aIndex, Max(I-1, 0   ) * sx + K],
+                                          fRXData.RGBA[aIndex, Min(I+1, sy-1) * sx + K],
+                                          fRXData.RGBA[aIndex, I              * sx + Max(K-1, 0)],
+                                          fRXData.RGBA[aIndex, I              * sx + Min(K+1, sx-1)],
+                                          // Diagonals
+                                          fRXData.RGBA[aIndex, Max(I-1, 0   ) * sx + Min(K+1, sx-1)],
+                                          fRXData.RGBA[aIndex, Min(I+1, sy-1) * sx + Max(K-1, 0)],
+                                          fRXData.RGBA[aIndex, Max(I-1, 0   ) * sx + Max(K-1, 0)],
+                                          fRXData.RGBA[aIndex, Min(I+1, sy-1) * sx + Min(K+1, sx-1)]]);
       end else
         originalColor := originalColor and $00FFFFFF;
     end;
