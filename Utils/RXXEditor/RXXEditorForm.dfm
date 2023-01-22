@@ -171,26 +171,6 @@ object fmRXXEditor: TfmRXXEditor
       ExplicitTop = 33
     end
   end
-  object btnMaskReplace: TButton
-    Left = 232
-    Top = 480
-    Width = 105
-    Height = 25
-    Caption = 'Replace mask ...'
-    Enabled = False
-    TabOrder = 9
-    OnClick = btnMaskReplaceClick
-  end
-  object btnMaskExport: TButton
-    Left = 344
-    Top = 480
-    Width = 97
-    Height = 25
-    Caption = 'Export mask ...'
-    Enabled = False
-    TabOrder = 10
-    OnClick = btnMaskExportClick
-  end
   object edtPivotX: TSpinEdit
     Left = 360
     Top = 40
@@ -198,7 +178,7 @@ object fmRXXEditor: TfmRXXEditor
     Height = 22
     MaxValue = 0
     MinValue = 0
-    TabOrder = 11
+    TabOrder = 9
     Value = 0
     OnChange = PivotChange
   end
@@ -209,7 +189,7 @@ object fmRXXEditor: TfmRXXEditor
     Height = 22
     MaxValue = 0
     MinValue = 0
-    TabOrder = 12
+    TabOrder = 10
     Value = 0
     OnChange = PivotChange
   end
@@ -220,19 +200,18 @@ object fmRXXEditor: TfmRXXEditor
     Height = 15
     Caption = 'Has mask'
     Enabled = False
-    TabOrder = 13
-    OnClick = chkHasMaskClick
+    TabOrder = 11
   end
   object chbImageStretch: TCheckBox
     Left = 232
     Top = 232
-    Width = 241
+    Width = 89
     Height = 18
     Cursor = crHandPoint
-    Caption = 'Stretch'
+    Caption = 'Draw stretched'
     Checked = True
     State = cbChecked
-    TabOrder = 14
+    TabOrder = 12
     OnClick = chbImageStretchClick
   end
   object OpenDialog1: TOpenDialog

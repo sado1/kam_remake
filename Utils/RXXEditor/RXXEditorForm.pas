@@ -27,8 +27,6 @@ type
     imgMask: TImage;
     Label2: TLabel;
     Label3: TLabel;
-    btnMaskReplace: TButton;
-    btnMaskExport: TButton;
     edtPivotX: TSpinEdit;
     edtPivotY: TSpinEdit;
     chkHasMask: TCheckBox;
@@ -45,9 +43,6 @@ type
     procedure btnReplaceClick(Sender: TObject);
     procedure btnExportClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure btnMaskReplaceClick(Sender: TObject);
-    procedure btnMaskExportClick(Sender: TObject);
-    procedure chkHasMaskClick(Sender: TObject);
     procedure PivotChange(Sender: TObject);
     procedure chbImageStretchClick(Sender: TObject);
   private
@@ -71,7 +66,6 @@ begin
 
   Caption := 'RXX Editor (' + GAME_REVISION + ')';
 
-  //Although we don't need them in this tool, these are required to load sprites
   gLog := TKMLog.Create(ExeDir + 'RXXEditor.log');
 
   fPalettes := TKMResPalettes.Create;
@@ -97,12 +91,9 @@ procedure TfmRXXEditor.lbSpritesListClick(Sender: TObject);
     btnDelete.Enabled := aEnabled;
     btnReplace.Enabled := aEnabled;
     btnExport.Enabled := aEnabled;
-    {chkHasMask.Enabled := aEnabled;
-    btnMaskReplace.Enabled := aEnabled;
-    btnMaskExport.Enabled := aEnabled;}
   end;
 var
-  ID: Integer;
+  id: Integer;
   bmpBase, bmpMask: TBitmap;
 begin
   ToggleImageButtons(False);
@@ -115,18 +106,19 @@ begin
 
   if lbSpritesList.SelCount <> 1 then
   begin
+    // With multiple images selected there's nothing we can display or edit, we can only Export them
     btnExport.Enabled := True;
     Exit;
   end;
 
-  ID := lbSpritesList.ItemIndex + 1;
-  if ID = 0 then Exit;
-  if fSprites.RXData.Flag[ID] = 0 then Exit;
+  id := lbSpritesList.ItemIndex + 1;
+  if id = 0 then Exit;
+  if fSprites.RXData.Flag[id] = 0 then Exit;
 
   bmpBase := TBitmap.Create;
   bmpMask := TBitmap.Create;
   try
-    fSprites.GetImageToBitmap(ID, bmpBase, bmpMask);
+    fSprites.GetImageToBitmap(id, bmpBase, bmpMask);
     imgMain.Picture.Assign(bmpBase);
 
     if bmpMask.Width * bmpMask.Height <> 0 then
@@ -136,9 +128,9 @@ begin
     bmpMask.Free;
   end;
 
-  edtPivotX.Value := fSprites.RXData.Pivot[ID].x;
-  edtPivotY.Value := fSprites.RXData.Pivot[ID].y;
-  chkHasMask.Checked := fSprites.RXData.HasMask[ID];
+  edtPivotX.Value := fSprites.RXData.Pivot[id].x;
+  edtPivotY.Value := fSprites.RXData.Pivot[id].y;
+  chkHasMask.Checked := fSprites.RXData.HasMask[id];
 
   ToggleImageButtons(True);
 end;
@@ -199,18 +191,6 @@ begin
 end;
 
 
-procedure TfmRXXEditor.btnMaskExportClick(Sender: TObject);
-begin
-  //
-end;
-
-
-procedure TfmRXXEditor.btnMaskReplaceClick(Sender: TObject);
-begin
-  //
-end;
-
-
 procedure TfmRXXEditor.btnAddClick(Sender: TObject);
 var
   I: Integer;
@@ -231,10 +211,10 @@ end;
 
 procedure TfmRXXEditor.btnReplaceClick(Sender: TObject);
 var
-  ID: Integer;
+  id: Integer;
 begin
-  ID := lbSpritesList.ItemIndex + 1;
-  if ID = 0 then Exit;
+  id := lbSpritesList.ItemIndex + 1;
+  if id = 0 then Exit;
 
   //WinXP needs InitialDir to be set before Execute
   OpenDialog1.InitialDir := ExeDir;
@@ -243,7 +223,7 @@ begin
   if not OpenDialog1.Execute then Exit;
 
   fSprites.AddImage(ExtractFilePath(OpenDialog1.FileName),
-                    ExtractFileName(OpenDialog1.FileName), ID);
+                    ExtractFileName(OpenDialog1.FileName), id);
 
   UpdateList;
 end;
@@ -251,12 +231,12 @@ end;
 
 procedure TfmRXXEditor.btnDeleteClick(Sender: TObject);
 var
-  ID: Integer;
+  id: Integer;
 begin
-  ID := lbSpritesList.ItemIndex + 1;
-  if ID = 0 then Exit;
+  id := lbSpritesList.ItemIndex + 1;
+  if id = 0 then Exit;
 
-  fSprites.Delete(ID);
+  fSprites.Delete(id);
 
   UpdateList;
 end;
@@ -293,9 +273,9 @@ var
 begin
   if fSprites.RXData.Flag[aID] = 0 then Exit;
 
-  maskFileName := ChangeFileExt(aFileName, 'a.png');
-
   fSprites.ExportImage(aFileName, aID);
+
+  maskFileName := ChangeFileExt(aFileName, 'a.png');
   fSprites.ExportMask(maskFileName, aID);
 end;
 
@@ -312,12 +292,9 @@ procedure TfmRXXEditor.chbImageStretchClick(Sender: TObject);
 begin
   imgMain.Stretch := chbImageStretch.Checked;
   imgMain.Center := not chbImageStretch.Checked;
-end;
 
-
-procedure TfmRXXEditor.chkHasMaskClick(Sender: TObject);
-begin
-  //
+  imgMask.Stretch := chbImageStretch.Checked;
+  imgMask.Center := not chbImageStretch.Checked;
 end;
 
 
