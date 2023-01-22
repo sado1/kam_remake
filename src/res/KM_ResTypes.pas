@@ -306,8 +306,7 @@ type
 const
   {$I KM_TextIDs.inc}
 
-var
-  RXInfo: array [TRXType] of TRXInfo = (
+  RX_INFO: array [TRXType] of TRXInfo = (
     (FileName: 'Trees';      TeamColors: False; Usage: ruGame;   LoadingTextID: TX_MENU_LOADING_TREES;),
     (FileName: 'Houses';     TeamColors: True;  Usage: ruGame;   LoadingTextID: TX_MENU_LOADING_HOUSES;),
     (FileName: 'Units';      TeamColors: True;  Usage: ruGame;   LoadingTextID: TX_MENU_LOADING_UNITS;),

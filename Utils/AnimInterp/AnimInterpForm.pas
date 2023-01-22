@@ -231,7 +231,7 @@ begin
   if fSprites[RT] = nil then
   begin
     fSprites[RT] := TKMSpritePackEdit.Create(RT, fPalettes);
-    fSprites[RT].LoadFromRXXFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx');
+    fSprites[RT].LoadFromRXXFile(ExeDir + 'data\Sprites\' + RX_INFO[RT].FileName + '_a.rxx');
   end;
 
   origSpritesDir := aBaseDir + 'original_frames\';

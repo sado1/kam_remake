@@ -767,7 +767,7 @@ begin
   try
     decompressionStream.Read(rxxCount, 4);
     if gLog <> nil then
-      gLog.AddTime(RXInfo[fRT].FileName + ' -', rxxCount);
+      gLog.AddTime(RX_INFO[fRT].FileName + ' -', rxxCount);
 
     if rxxCount = 0 then
       Exit;
@@ -823,7 +823,7 @@ begin
   try
     decompressionStream.Read(rxxCount, 4);
     if gLog <> nil then
-      gLog.AddTime(RXInfo[fRT].FileName + ' -', rxxCount);
+      gLog.AddTime(RX_INFO[fRT].FileName + ' -', rxxCount);
 
     if rxxCount = 0 then
       Exit;
@@ -1277,7 +1277,7 @@ begin
 
     gLog.AddTime(IntToStr(texCount) + ' Textures created');
     gLog.AddNoTime(Format('%d/%d', [baseRAM div 1024, idealRAM div 1024]) +
-                  ' Kbytes allocated/ideal for ' + RXInfo[fRT].FileName + ' GFX when using Packing');
+                  ' Kbytes allocated/ideal for ' + RX_INFO[fRT].FileName + ' GFX when using Packing');
     gLog.AddNoTime(IntToStr(colorRAM div 1024) + ' KBytes for team colors');
   end;
 end;
@@ -1433,7 +1433,7 @@ begin
     Inc(aTexCount);
 
     if aFillGFXData and EXPORT_SPRITE_ATLASES and (fRT in EXPORT_SPRITE_ATLASES_LIST) then
-      SaveTextureToPNG(aSpriteInfo[I].Width, aSpriteInfo[I].Height, RXInfo[fRT].FileName + '_' +
+      SaveTextureToPNG(aSpriteInfo[I].Width, aSpriteInfo[I].Height, RX_INFO[fRT].FileName + '_' +
                        SPRITE_TYPE_EXPORT_NAME[aMode] + IntToStr(I), TD);
   end;
 end;
@@ -1578,7 +1578,7 @@ begin
 
         if ((not aIsRXA and EXPORT_SPRITE_ATLASES) or (aIsRXA and EXPORT_SPRITE_ATLASES_RXA))
            and (fRT in EXPORT_SPRITE_ATLASES_LIST) then
-          SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[fRT].FileName + IfThenS(aIsRXA, '_rxa_', '_') +
+          SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RX_INFO[fRT].FileName + IfThenS(aIsRXA, '_rxa_', '_') +
                            SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(texID), Data);
       end;
     end;
@@ -1599,7 +1599,7 @@ begin
   for RT := Low(TRXType) to High(TRXType) do
   begin
     fSprites[RT] := TKMSpritePack.Create(RT, fTemp);
-    if RXInfo[RT].Usage = ruGame then
+    if RX_INFO[RT].Usage = ruGame then
       fGameRXTypes.Add(IntToStr(Integer(RT)));
   end;
 
@@ -1877,7 +1877,7 @@ end;
 
 function TKMResSprites.GetRXFileName(aRX: TRXType): string;
 begin
-  Result := RXInfo[aRX].FileName;
+  Result := RX_INFO[aRX].FileName;
 end;
 
 
@@ -1889,7 +1889,7 @@ end;
 
 function TKMResSprites.GetSpritesRXAFilePath(aRT: TRXType): string;
 begin
-  Result := ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RXInfo[aRT].FileName + '.rxa';
+  Result := ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RX_INFO[aRT].FileName + '.rxa';
 end;
 
 
@@ -1904,12 +1904,12 @@ var
   RT: TRXType;
 begin
   for RT := Low(TRXType) to High(TRXType) do
-    if RXInfo[RT].Usage = ruMenu then
+    if RX_INFO[RT].Usage = ruMenu then
     begin
       if Assigned(fStepCaption) then
-        fStepCaption('Reading ' + RXInfo[RT].FileName + ' ...');
+        fStepCaption('Reading ' + RX_INFO[RT].FileName + ' ...');
 
-      gLog.AddTime('Reading ' + RXInfo[RT].FileName + '.rx');
+      gLog.AddTime('Reading ' + RX_INFO[RT].FileName + '.rx');
       // Only GUI needs alpha channel for shadows
       LoadSprites(RT, RT = rxGUI);
       // We also use alpha channel in the generated tiles
@@ -1940,19 +1940,19 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
     RT: TRXType;
   begin
     for RT := Low(TRXType) to High(TRXType) do
-      if RXInfo[RT].Usage = ruGame then
+      if RX_INFO[RT].Usage = ruGame then
       begin
         if Assigned(fStepCaption) then
-          fStepCaption(gResTexts[RXInfo[RT].LoadingTextID]);
+          fStepCaption(gResTexts[RX_INFO[RT].LoadingTextID]);
 
         if fAlphaShadows and FileExists(GetSpritesRXAFilePath(RT)) then
         begin
-          gLog.AddTime('Reading ' + RXInfo[RT].FileName + '.rxa');
+          gLog.AddTime('Reading ' + RX_INFO[RT].FileName + '.rxa');
           LoadRXASpritesAndGenTextures(RT);
         end
         else
         begin
-          gLog.AddTime('Reading ' + RXInfo[RT].FileName + '.rx');
+          gLog.AddTime('Reading ' + RX_INFO[RT].FileName + '.rx');
           LoadSprites(RT, fAlphaShadows);
           {$IFNDEF NO_OGL}
           fSprites[RT].MakeGFX(fAlphaShadows);
@@ -2010,15 +2010,15 @@ function TKMResSprites.LoadSprites(aRT: TRXType; aAlphaShadows: Boolean): Boolea
 begin
   gLog.AddTime('Load Sprites started');
   Result := False;
-  if aAlphaShadows and FileExists(ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RXInfo[aRT].FileName + '_a.rxx') then
+  if aAlphaShadows and FileExists(ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RX_INFO[aRT].FileName + '_a.rxx') then
   begin
-    fSprites[aRT].LoadFromRXXFile(ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RXInfo[aRT].FileName + '_a.rxx');
+    fSprites[aRT].LoadFromRXXFile(ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RX_INFO[aRT].FileName + '_a.rxx');
     Result := True;
   end
   else
-  if FileExists(ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RXInfo[aRT].FileName + '.rxx') then
+  if FileExists(ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RX_INFO[aRT].FileName + '.rxx') then
   begin
-    fSprites[aRT].LoadFromRXXFile(ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RXInfo[aRT].FileName + '.rxx');
+    fSprites[aRT].LoadFromRXXFile(ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RX_INFO[aRT].FileName + '.rxx');
     Result := True;
   end
   else
@@ -2088,7 +2088,7 @@ begin
       lsLoad:         ;
       lsGenMain:      begin
                         if Assigned(fStepCaption) then
-                          fStepCaption(gResTexts[RXInfo[fGameResLoader.RXType].LoadingTextID]);
+                          fStepCaption(gResTexts[RX_INFO[fGameResLoader.RXType].LoadingTextID]);
                         // Generate texture atlas from prepared data for game resources
                         // OpenGL work mainly with 1 thread only, so we have to call gl functions only from main thread
                         // That is why we need call this method from main thread only
@@ -2144,7 +2144,7 @@ procedure TKMResSprites.ExportToPNG(aRT: TRXType);
 begin
   if LoadSprites(aRT, False) then
   begin
-    fSprites[aRT].ExportAllSpritesFromRXData(ExeDir + 'Export' + PathDelim + RXInfo[aRT].FileName + '.rx' + PathDelim);
+    fSprites[aRT].ExportAllSpritesFromRXData(ExeDir + 'Export' + PathDelim + RX_INFO[aRT].FileName + '.rx' + PathDelim);
     ClearTemp;
   end;
 end;
@@ -2204,16 +2204,16 @@ begin
         lsLoad:         begin
                           if fAlphaShadows and FileExists(fResSprites.GetSpritesRXAFilePath(RXType)) then
                           begin
-                            Log('Start Load RXA ''' + RXInfo[RXType].FileName + '.rxa''');
+                            Log('Start Load RXA ''' + RX_INFO[RXType].FileName + '.rxa''');
                             fResSprites.LoadRXASprites(RXType);
                             if Terminated then Exit;
 
                             AtomicExchange(Integer(LastLoadedRXA), Integer(True));
-                            Log('DONE Load RXA ''' + RXInfo[RXType].FileName + '.rxa''');
+                            Log('DONE Load RXA ''' + RX_INFO[RXType].FileName + '.rxa''');
                           end
                           else
                           begin
-                            Log('Start Load RXX ''' + RXInfo[RXType].FileName + '.rxx''');
+                            Log('Start Load RXX ''' + RX_INFO[RXType].FileName + '.rxx''');
                             fResSprites.LoadSprites(RXType, fAlphaShadows);
                             if Terminated then Exit;
 
@@ -2222,7 +2222,7 @@ begin
                             {$ENDIF}
 
                             AtomicExchange(Integer(LastLoadedRXA), Integer(False));
-                            Log('DONE Load RXX ''' + RXInfo[RXType].FileName + '.rxa''');
+                            Log('DONE Load RXX ''' + RX_INFO[RXType].FileName + '.rxa''');
                           end;
                         end;
         lsGenMain:      ;

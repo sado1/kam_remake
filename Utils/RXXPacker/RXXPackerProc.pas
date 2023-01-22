@@ -63,9 +63,9 @@ var
   dir: TKMDirection;
 begin
   //ruCustom sprite packs do not have a main RXX file so don't need packing
-  if RXInfo[RT].Usage = ruCustom then Exit;
+  if RX_INFO[RT].Usage = ruCustom then Exit;
 
-  rxName := fSpritesSourcePath + SPRITES_RES_DIR + '\' + RXInfo[RT].FileName + '.rx';
+  rxName := fSpritesSourcePath + SPRITES_RES_DIR + '\' + RX_INFO[RT].FileName + '.rx';
 
   if (RT <> rxTiles) and not FileExists(rxName) then
     raise Exception.Create('Cannot find ' + rxName + ' file.' + sLineBreak + 'Please copy the file from your KaM\data\gfx\res\ folder.');
@@ -108,7 +108,7 @@ begin
 
     // Save
     if PackToRXX then
-      spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RXInfo[RT].FileName + '.rxx', AddVersionHeader);
+      spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[RT].FileName + '.rxx', AddVersionHeader);
 
     // Generate alpha shadows for the following sprite packs
     if RT in [rxHouses, rxUnits, rxGui, rxTrees] then
@@ -155,14 +155,14 @@ begin
         spritePack.SoftenShadowsRange(1, spritePack.RXData.Count);
 
       if PackToRXX then
-        spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx', AddVersionHeader);
+        spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[RT].FileName + '_a.rxx', AddVersionHeader);
 
       if PackToRXA then
       begin
         if DirectoryExists(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\') then
           spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\', False); // Shadows are already softened for interps
 
-        spritePack.SaveToRXAFile(fRXXSavePath + 'data\Sprites\' + RXInfo[RT].FileName + '.rxa', AddVersionHeader);
+        spritePack.SaveToRXAFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[RT].FileName + '.rxa', AddVersionHeader);
       end;
     end;
   finally

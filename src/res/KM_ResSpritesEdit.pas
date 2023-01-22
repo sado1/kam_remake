@@ -146,7 +146,7 @@ begin
         //Flagcolors in KaM are 24..30
         //We decode them according to visualization pipeline to greyscale
         //and make a color transparency mask
-        if RXInfo[fRT].TeamColors and (L in [24..30])
+        if RX_INFO[fRT].TeamColors and (L in [24..30])
         and (Palette <> fPalettes[pallin])
         and ((fRT <> rxHouses) or (H > 400))  //Skip the Inn Weapon Smithy and the rest
         and ((fRT <> rxGui) or InRange(H, 141, 154) or InRange(H, 521, 550)) then //Unit icons and scrolls

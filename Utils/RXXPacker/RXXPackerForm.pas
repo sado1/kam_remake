@@ -3,7 +3,7 @@ unit RXXPackerForm;
 interface
 uses
   Classes, Controls, Dialogs,
-  ExtCtrls, Forms, Graphics, Spin, StdCtrls, SysUtils, TypInfo,
+  ExtCtrls, Forms, Graphics, Spin, StdCtrls, SysUtils,
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF FPC} LResources, LCLIntf, {$ENDIF}
   RXXPackerProc, KM_Defaults, KM_Log, KM_Pics, KM_ResPalettes, KM_ResSprites;
@@ -63,8 +63,8 @@ begin
   ListBox1.Items.Clear;
   for RT := Low(TRXType) to High(TRXType) do
     if (RT = rxTiles) //Tiles are always in the list
-    or FileExists(fRXXPacker.SpritesSourcePath + 'SpriteResource\' + RXInfo[RT].FileName + '.rx') then
-      ListBox1.Items.AddObject(GetEnumName(TypeInfo(TRXType), Ord(RT)), TObject(RT));
+    or FileExists(fRXXPacker.SpritesSourcePath + 'SpriteResource\' + RX_INFO[RT].FileName + '.rx') then
+      ListBox1.Items.AddObject(RX_INFO[RT].FileName, TObject(RT));
 
   if ListBox1.Items.Count = 0 then
   begin

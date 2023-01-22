@@ -124,12 +124,12 @@ begin
       sprites := TKMResSprites.Create(nil, nil, True);
       try
         if sprites.LoadSprites(aRT, False) then
-          sprites[aRT].ExportAllSpritesFromRXData(ExeDir + 'Export' + PathDelim + RXInfo[aRT].FileName + '.rxx' + PathDelim);
+          sprites[aRT].ExportAllSpritesFromRXData(ExeDir + 'Export' + PathDelim + RX_INFO[aRT].FileName + '.rxx' + PathDelim);
       finally
         sprites.ClearTemp;
         sprites.Free;
       end;
-    end, aOnDone, 'Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)) + 'from ' + RXInfo[aRT].FileName + '.rxx');
+    end, aOnDone, 'Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)) + 'from ' + RX_INFO[aRT].FileName + '.rxx');
 end;
 
 
@@ -154,7 +154,7 @@ begin
 
           PrepareGFXPrepData(spritePack);
           
-          folderPath := ExeDir + 'Export' + PathDelim + RXInfo[aRT].FileName + '.rxa' + PathDelim;
+          folderPath := ExeDir + 'Export' + PathDelim + RX_INFO[aRT].FileName + '.rxa' + PathDelim;
           ForceDirectories(folderPath);
           for I := 1 to spritePack.RXData.Count do
             ExportFullImageDataFromGFXData(spritePack, I, folderPath, SL);
@@ -164,7 +164,7 @@ begin
         sprites.Free;
         SL.Free;
       end;
-    end, aOnDone, 'Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)) + 'from ' + RXInfo[aRT].FileName + '.rxa');
+    end, aOnDone, 'Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)) + 'from ' + RX_INFO[aRT].FileName + '.rxa');
 end;
 
 

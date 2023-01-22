@@ -162,17 +162,17 @@ begin
             begin
               tick := GetTickCount;
               lRxxPacker.Pack(RXX_TO_PACK[K], palettes);
-              writeln(RXInfo[RXX_TO_PACK[K]].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
+              writeln(RX_INFO[RXX_TO_PACK[K]].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
             end;
             Exit;
           end;
 
           for rxType := Low(TRXType) to High(TRXType) do
-            if (LowerCase(paramString) = LowerCase(RXInfo[rxType].FileName)) then
+            if (LowerCase(paramString) = LowerCase(RX_INFO[rxType].FileName)) then
             begin
               tick := GetTickCount;
               lRxxPacker.Pack(rxType, palettes);
-              writeln(RXInfo[rxType].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
+              writeln(RX_INFO[rxType].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
             end;
         end;
       finally
