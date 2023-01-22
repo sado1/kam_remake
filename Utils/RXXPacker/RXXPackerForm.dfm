@@ -5,7 +5,7 @@ object RXXForm1: TRXXForm1
   BorderStyle = bsSingle
   Caption = 'RXX Packer'
   ClientHeight = 401
-  ClientWidth = 289
+  ClientWidth = 705
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,12 +18,6 @@ object RXXForm1: TRXXForm1
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 14
-  object lpProgress: TLabel
-    Left = 16
-    Top = 176
-    Width = 3
-    Height = 13
-  end
   object Label2: TLabel
     Left = 16
     Top = 232
@@ -110,5 +104,12 @@ object RXXForm1: TRXXForm1
     Height = 21
     TabOrder = 7
     OnChange = edSpritesLoadDirChange
+  end
+  object meLog: TMemo
+    Left = 280
+    Top = 16
+    Width = 409
+    Height = 369
+    TabOrder = 8
   end
 end

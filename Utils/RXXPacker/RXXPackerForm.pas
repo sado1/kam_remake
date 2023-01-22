@@ -13,7 +13,6 @@ type
   TRXXForm1 = class(TForm)
     btnPackRXX: TButton;
     ListBox1: TListBox;
-    lpProgress: TLabel;
     btnUpdateList: TButton;
     edSpritesLoadDir: TEdit;
     Label2: TLabel;
@@ -22,6 +21,7 @@ type
     chkPackToRXX: TCheckBox;
     Label3: TLabel;
     edSpritesSaveDir: TEdit;
+    meLog: TMemo;
     procedure btnPackRXXClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -186,14 +186,14 @@ procedure TRXXForm1.btnPackRXXClick(Sender: TObject);
 var
   RT: TRXType;
   I: Integer;
-  tick: Cardinal;
+  tickTotal, tick: Cardinal;
 begin
   btnPackRXX.Enabled := False;
   chkPackToRXX.Enabled := False;
   chkPackToRXA.Enabled := False;
   chkAddRXXHeader.Enabled := False;
   try
-    tick := GetTickCount;
+    tickTotal := GetTickCount;
 
     fRXXPacker.SpritesSourcePath := edSpritesLoadDir.Text;
     fRXXPacker.RXXSavePath    := edSpritesSaveDir.Text;
@@ -212,15 +212,20 @@ begin
       for I := 0 to ListBox1.Items.Count - 1 do
         if ListBox1.Selected[I] then
         begin
+          tick := GetTickCount;
+          meLog.Lines.Append('Packing ' + ListBox1.Items[I] + ' ...');
+
           RT := TRXType(ListBox1.Items.Objects[I]);
 
           fRxxPacker.Pack(RT, fPalettes);
 
           ListBox1.Selected[I] := False;
           ListBox1.Refresh;
+
+          meLog.Lines.Append(ListBox1.Items[I] + ' packed in ' + IntToStr(GetTickCount - tick) + ' ms');
         end;
 
-      lpProgress.Caption := 'Packed in: ' + IntToStr(GetTickCount - tick) + ' ms';
+      meLog.Lines.Append('Everything packed in ' + IntToStr(GetTickCount - tickTotal) + ' ms');
     except
       on E: Exception do
         MessageBox(Handle, PWideChar(E.Message), 'Error', MB_ICONEXCLAMATION + MB_OK);
