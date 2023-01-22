@@ -60,6 +60,7 @@ type
 
 implementation
 uses
+  Math,
   KM_ResTypes;
 
 {$R *.dfm}
@@ -89,16 +90,16 @@ end;
 
 
 procedure TfmRXXEditor.lbSpritesListClick(Sender: TObject);
-  procedure ToggleImageButtons(aState: Boolean);
+  procedure ToggleImageButtons(aEnabled: Boolean);
   begin
-    edtPivotX.Enabled := aState;
-    edtPivotY.Enabled := aState;
-    btnDelete.Enabled := aState;
-    btnReplace.Enabled := aState;
-    btnExport.Enabled := aState;
-    {chkHasMask.Enabled := aState;
-    btnMaskReplace.Enabled := aState;
-    btnMaskExport.Enabled := aState;}
+    edtPivotX.Enabled := aEnabled;
+    edtPivotY.Enabled := aEnabled;
+    btnDelete.Enabled := aEnabled;
+    btnReplace.Enabled := aEnabled;
+    btnExport.Enabled := aEnabled;
+    {chkHasMask.Enabled := aEnabled;
+    btnMaskReplace.Enabled := aEnabled;
+    btnMaskExport.Enabled := aEnabled;}
   end;
 var
   ID: Integer;
