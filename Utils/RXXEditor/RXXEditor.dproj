@@ -94,7 +94,7 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="RXXEditorForm.pas">
-            <Form>RXXForm1</Form>
+            <Form>fmRXXEditor</Form>
         </DCCReference>
         <DCCReference Include="..\..\src\res\KM_ResSprites.pas"/>
         <DCCReference Include="..\..\src\res\KM_ResSpritesEdit.pas"/>

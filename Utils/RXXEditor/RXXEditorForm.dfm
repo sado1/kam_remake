@@ -1,9 +1,10 @@
-object RXXForm1: TRXXForm1
+object fmRXXEditor: TfmRXXEditor
   Left = 72
   Top = 90
+  BorderStyle = bsSingle
   Caption = 'RXX Editor'
-  ClientHeight = 505
-  ClientWidth = 473
+  ClientHeight = 521
+  ClientWidth = 489
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,47 +17,54 @@ object RXXForm1: TRXXForm1
   PixelsPerInch = 96
   TextHeight = 14
   object Label1: TLabel
-    Left = 8
-    Top = 40
-    Width = 54
+    Left = 16
+    Top = 48
+    Width = 48
     Height = 13
     Caption = 'Contents:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
   object Label2: TLabel
-    Left = 224
-    Top = 40
-    Width = 65
+    Left = 232
+    Top = 48
+    Width = 57
     Height = 13
     Caption = 'Main image'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
   object Label3: TLabel
-    Left = 224
-    Top = 288
-    Width = 68
+    Left = 232
+    Top = 296
+    Width = 57
     Height = 13
     Caption = 'Mask image'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
+    Font.Style = []
     ParentFont = False
   end
+  object Label4: TLabel
+    Left = 360
+    Top = 24
+    Width = 24
+    Height = 13
+    Caption = 'Pivot'
+  end
   object btnAdd: TButton
-    Left = 8
-    Top = 472
+    Left = 16
+    Top = 480
     Width = 81
     Height = 25
     Caption = 'Add Image ...'
@@ -65,8 +73,8 @@ object RXXForm1: TRXXForm1
     OnClick = btnAddClick
   end
   object btnSaveRXX: TButton
-    Left = 96
-    Top = 8
+    Left = 104
+    Top = 16
     Width = 81
     Height = 25
     Caption = 'Save RXX ...'
@@ -75,17 +83,17 @@ object RXXForm1: TRXXForm1
     OnClick = btnSaveRXXClick
   end
   object lbSpritesList: TListBox
-    Left = 8
-    Top = 56
+    Left = 16
+    Top = 64
     Width = 209
-    Height = 412
+    Height = 409
     ItemHeight = 14
     TabOrder = 2
     OnClick = lbSpritesListClick
   end
   object btnLoadRXX: TButton
-    Left = 8
-    Top = 8
+    Left = 16
+    Top = 16
     Width = 81
     Height = 25
     Caption = 'Load RXX ...'
@@ -93,8 +101,8 @@ object RXXForm1: TRXXForm1
     OnClick = btnLoadRXXClick
   end
   object btnDelete: TButton
-    Left = 96
-    Top = 472
+    Left = 104
+    Top = 480
     Width = 81
     Height = 25
     Caption = 'Delete image'
@@ -103,8 +111,8 @@ object RXXForm1: TRXXForm1
     OnClick = btnDeleteClick
   end
   object btnReplace: TButton
-    Left = 224
-    Top = 248
+    Left = 232
+    Top = 256
     Width = 105
     Height = 25
     Caption = 'Replace image ...'
@@ -113,8 +121,8 @@ object RXXForm1: TRXXForm1
     OnClick = btnReplaceClick
   end
   object btnExport: TButton
-    Left = 336
-    Top = 248
+    Left = 344
+    Top = 256
     Width = 97
     Height = 25
     Caption = 'Export image ...'
@@ -123,8 +131,8 @@ object RXXForm1: TRXXForm1
     OnClick = btnExportClick
   end
   object Panel1: TPanel
-    Left = 224
-    Top = 56
+    Left = 232
+    Top = 64
     Width = 242
     Height = 162
     BevelOuter = bvLowered
@@ -143,8 +151,8 @@ object RXXForm1: TRXXForm1
     end
   end
   object Panel2: TPanel
-    Left = 224
-    Top = 304
+    Left = 232
+    Top = 312
     Width = 242
     Height = 162
     BevelOuter = bvLowered
@@ -163,8 +171,8 @@ object RXXForm1: TRXXForm1
     end
   end
   object btnMaskReplace: TButton
-    Left = 224
-    Top = 472
+    Left = 232
+    Top = 480
     Width = 105
     Height = 25
     Caption = 'Replace mask ...'
@@ -173,8 +181,8 @@ object RXXForm1: TRXXForm1
     OnClick = btnMaskReplaceClick
   end
   object btnMaskExport: TButton
-    Left = 336
-    Top = 472
+    Left = 344
+    Top = 480
     Width = 97
     Height = 25
     Caption = 'Export mask ...'
@@ -183,8 +191,8 @@ object RXXForm1: TRXXForm1
     OnClick = btnMaskExportClick
   end
   object edtPivotX: TSpinEdit
-    Left = 352
-    Top = 32
+    Left = 360
+    Top = 40
     Width = 57
     Height = 22
     MaxValue = 0
@@ -194,8 +202,8 @@ object RXXForm1: TRXXForm1
     OnChange = PivotChange
   end
   object edtPivotY: TSpinEdit
-    Left = 408
-    Top = 32
+    Left = 416
+    Top = 40
     Width = 57
     Height = 22
     MaxValue = 0
@@ -205,8 +213,8 @@ object RXXForm1: TRXXForm1
     OnChange = PivotChange
   end
   object chkHasMask: TCheckBox
-    Left = 400
-    Top = 288
+    Left = 408
+    Top = 296
     Width = 65
     Height = 15
     Caption = 'Has mask'
@@ -215,8 +223,8 @@ object RXXForm1: TRXXForm1
     OnClick = chkHasMaskClick
   end
   object chbImageStretch: TCheckBox
-    Left = 224
-    Top = 224
+    Left = 232
+    Top = 232
     Width = 241
     Height = 18
     Cursor = crHandPoint
@@ -231,16 +239,16 @@ object RXXForm1: TRXXForm1
     Filter = 'Supported images (*.bmp;*.png)|*.bmp;*.png'
     Options = [ofAllowMultiSelect, ofPathMustExist, ofFileMustExist, ofEnableSizing]
     Title = 'Select images'
-    Left = 32
-    Top = 72
+    Left = 40
+    Top = 80
   end
   object SaveDialog1: TSaveDialog
     OnShow = SaveDialog1Show
     DefaultExt = '*.rxx'
     Filter = 'RXX packages (*.rxx)|*.rxx'
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
-    Left = 32
-    Top = 128
+    Left = 40
+    Top = 136
   end
   object SelectDirectoryDialog1: TFileOpenDialog
     FavoriteLinks = <>
@@ -248,7 +256,7 @@ object RXXForm1: TRXXForm1
     OkButtonLabel = 'Select'
     Options = [fdoPickFolders, fdoForceFileSystem, fdoPathMustExist]
     Title = 'Select Directory'
-    Left = 136
-    Top = 72
+    Left = 144
+    Top = 80
   end
 end

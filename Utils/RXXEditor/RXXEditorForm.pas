@@ -9,7 +9,7 @@ uses
 
 
 type
-  TRXXForm1 = class(TForm)
+  TfmRXXEditor = class(TForm)
     btnAdd: TButton;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
@@ -33,6 +33,7 @@ type
     edtPivotY: TSpinEdit;
     chkHasMask: TCheckBox;
     chbImageStretch: TCheckBox;
+    Label4: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure OpenDialog1Show(Sender: TObject);
     procedure SaveDialog1Show(Sender: TObject);
@@ -63,7 +64,7 @@ uses
 
 {$R *.dfm}
 
-procedure TRXXForm1.FormCreate(Sender: TObject);
+procedure TfmRXXEditor.FormCreate(Sender: TObject);
 begin
   ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
 
@@ -79,7 +80,7 @@ begin
 end;
 
 
-procedure TRXXForm1.FormDestroy(Sender: TObject);
+procedure TfmRXXEditor.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(fSprites);
   FreeAndNil(fPalettes);
@@ -87,7 +88,7 @@ begin
 end;
 
 
-procedure TRXXForm1.lbSpritesListClick(Sender: TObject);
+procedure TfmRXXEditor.lbSpritesListClick(Sender: TObject);
   procedure ToggleImageButtons(aState: Boolean);
   begin
     edtPivotX.Enabled := aState;
@@ -142,21 +143,21 @@ begin
 end;
 
 
-procedure TRXXForm1.OpenDialog1Show(Sender: TObject);
+procedure TfmRXXEditor.OpenDialog1Show(Sender: TObject);
 begin
   //Win7 needs InitialDir to be set OnShow after Execute
   OpenDialog1.InitialDir := ExeDir;
 end;
 
 
-procedure TRXXForm1.SaveDialog1Show(Sender: TObject);
+procedure TfmRXXEditor.SaveDialog1Show(Sender: TObject);
 begin
   //Win7 needs InitialDir to be set OnShow after Execute
   SaveDialog1.InitialDir := ExtractFilePath(OpenDialog1.FileName);
 end;
 
 
-procedure TRXXForm1.btnLoadRXXClick(Sender: TObject);
+procedure TfmRXXEditor.btnLoadRXXClick(Sender: TObject);
 var
   RT: TRXType;
 begin
@@ -197,19 +198,19 @@ begin
 end;
 
 
-procedure TRXXForm1.btnMaskExportClick(Sender: TObject);
+procedure TfmRXXEditor.btnMaskExportClick(Sender: TObject);
 begin
   //
 end;
 
 
-procedure TRXXForm1.btnMaskReplaceClick(Sender: TObject);
+procedure TfmRXXEditor.btnMaskReplaceClick(Sender: TObject);
 begin
   //
 end;
 
 
-procedure TRXXForm1.btnAddClick(Sender: TObject);
+procedure TfmRXXEditor.btnAddClick(Sender: TObject);
 var
   I: Integer;
 begin
@@ -227,7 +228,7 @@ begin
 end;
 
 
-procedure TRXXForm1.btnReplaceClick(Sender: TObject);
+procedure TfmRXXEditor.btnReplaceClick(Sender: TObject);
 var
   ID: Integer;
 begin
@@ -247,7 +248,7 @@ begin
 end;
 
 
-procedure TRXXForm1.btnDeleteClick(Sender: TObject);
+procedure TfmRXXEditor.btnDeleteClick(Sender: TObject);
 var
   ID: Integer;
 begin
@@ -260,7 +261,7 @@ begin
 end;
 
 
-procedure TRXXForm1.btnExportClick(Sender: TObject);
+procedure TfmRXXEditor.btnExportClick(Sender: TObject);
 var
   I: Integer;
 begin
@@ -285,7 +286,7 @@ begin
 end;
 
 
-procedure TRXXForm1.ImageExport(aID: Integer; const aFileName: string);
+procedure TfmRXXEditor.ImageExport(aID: Integer; const aFileName: string);
 var
   maskFileName: string;
 begin
@@ -298,7 +299,7 @@ begin
 end;
 
 
-procedure TRXXForm1.btnSaveRXXClick(Sender: TObject);
+procedure TfmRXXEditor.btnSaveRXXClick(Sender: TObject);
 begin
   if not SaveDialog1.Execute then Exit;
   gLog.AddTime('Trimmed ' + IntToStr(fSprites.TrimSprites));
@@ -306,20 +307,20 @@ begin
 end;
 
 
-procedure TRXXForm1.chbImageStretchClick(Sender: TObject);
+procedure TfmRXXEditor.chbImageStretchClick(Sender: TObject);
 begin
   imgMain.Stretch := chbImageStretch.Checked;
   imgMain.Center := not chbImageStretch.Checked;
 end;
 
 
-procedure TRXXForm1.chkHasMaskClick(Sender: TObject);
+procedure TfmRXXEditor.chkHasMaskClick(Sender: TObject);
 begin
   //
 end;
 
 
-procedure TRXXForm1.PivotChange(Sender: TObject);
+procedure TfmRXXEditor.PivotChange(Sender: TObject);
 var
   ID: Integer;
 begin
@@ -335,7 +336,7 @@ begin
 end;
 
 
-procedure TRXXForm1.UpdateList;
+procedure TfmRXXEditor.UpdateList;
 var
   I: Integer;
   aIndexList : Integer;

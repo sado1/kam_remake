@@ -2,7 +2,7 @@ program RXXEditor;
 {$I ..\..\KaM_Remake.inc}
 uses
   Forms,
-  RXXEditorForm in 'RXXEditorForm.pas' {RXXForm1},
+  RXXEditorForm in 'RXXEditorForm.pas' {fmRXXEditor},
   KM_ResSprites in '..\..\src\res\KM_ResSprites.pas',
   KM_ResSpritesEdit in '..\..\src\res\KM_ResSpritesEdit.pas';
 
@@ -11,10 +11,10 @@ uses
 {$ENDIF}
 
 var
-  RXXForm1: TRXXForm1;
+  fmRXXEditor: TfmRXXEditor;
 
 begin
   Application.Initialize;
-  Application.CreateForm(TRXXForm1, RXXForm1);
+  Application.CreateForm(TfmRXXEditor, fmRXXEditor);
   Application.Run;
 end.
