@@ -104,7 +104,8 @@ procedure TKMSpritePackEdit.Expand;
   const
     // These are sprites with house building steps
     HOUSES_BUILDING_STAGES: array [0..55] of Word = (
-      3,4,25,43,44,116,118,119,120,121,123,126,127,136,137,140,141,144,145,148,149,213,214,237,238,241,242,243,246,247,252,253,257,258,275,276,336,338,360,361,365,366,370,371,380,381,399,400,665,666,670,671,1658,1660,1682,1684);
+      3,4,25,43,44,116,118,119,120,121,123,126,127,136,137,140,141,144,145,148,149,213,214,237,238,241,242,243,246,
+      247,252,253,257,258,275,276,336,338,360,361,365,366,370,371,380,381,399,400,665,666,670,671,1658,1660,1682,1684);
   var
     I: Byte;
   begin
@@ -718,7 +719,7 @@ begin
       InputStream.Write(fRXData.Pivot[I].X, SizeOf(fRXData.Pivot[I]));
       if fRT = rxUnits then
       begin
-        // Protection from incorect values
+        // Protection from incorrect values
         fRXData.SizeNoShadow[I].Left    := EnsureRange(fRXData.SizeNoShadow[I].Left,   -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
         fRXData.SizeNoShadow[I].Top     := EnsureRange(fRXData.SizeNoShadow[I].Top,    -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
         fRXData.SizeNoShadow[I].Right   := EnsureRange(fRXData.SizeNoShadow[I].Right,  -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
