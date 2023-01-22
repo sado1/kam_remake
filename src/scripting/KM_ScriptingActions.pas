@@ -3790,8 +3790,8 @@ function TKMScriptActions.MapTileSet(X, Y, aType, aRotation: Integer): Boolean;
 begin
   try
     if gTerrain.TileInMapCoords(X, Y)
-      and InRange(aType, 0, TILES_CNT - 1)
-      and InRange(aRotation, 0, 3) then
+    and InRange(aType, 0, TILES_CNT - 1)
+    and InRange(aRotation, 0, 3) then
       Result := gTerrain.ScriptTrySetTile(X, Y, aType, aRotation)
     else
     begin

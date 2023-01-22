@@ -188,8 +188,8 @@ begin
   fTileset := TKMResTileset.Create;
   if not SKIP_RENDER then
   begin
-    tileColors := fSprites.Sprites[rxTiles].GetSpriteColors(TILES_CNT);
-    fTileset.SetTilesColor(tileColors);
+    tileColors := fSprites.Sprites[rxTiles].GetAverageSpriteColors(TILES_CNT);
+    fTileset.SetTileColors(tileColors);
   end;
 
   fMapElements := TKMResMapElements.Create;

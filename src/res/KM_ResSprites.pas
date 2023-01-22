@@ -89,7 +89,7 @@ type
     procedure RemoveSnowHouseShadows(aResHouses: TKMResHouses);
     procedure RemoveHouseWorkBackgrounds(aResHouses: TKMResHouses);
 
-    function GetSpriteColors(aCount: Integer): TKMColor3bArray;
+    function GetAverageSpriteColors(aCount: Integer): TKMColor3bArray;
 
     function IsEmpty: Boolean;
 
@@ -1194,30 +1194,32 @@ begin
 end;
 
 
-function TKMSpritePack.GetSpriteColors(aCount: Integer): TKMColor3bArray;
+function TKMSpritePack.GetAverageSpriteColors(aCount: Integer): TKMColor3bArray;
 var
   I, L, M: Integer;
-  pixelCount: Word;
-  R,G,B: Integer;
+  pixelCount: Cardinal;
+  accR, accG, accB: Cardinal;
 begin
   SetLength(Result, Min(fRXData.Count, aCount));
 
   for I := 1 to Min(fRXData.Count, aCount) do
   begin
-    R := 0;
-    G := 0;
-    B := 0;
+    accR := 0;
+    accG := 0;
+    accB := 0;
+
     for L := 0 to fRXData.Size[I].Y - 1 do
     for M := 0 to fRXData.Size[I].X - 1 do
     begin
-      Inc(R, fRXData.RGBA[I, L * fRXData.Size[I].X + M] and $FF);
-      Inc(G, fRXData.RGBA[I, L * fRXData.Size[I].X + M] shr 8 and $FF);
-      Inc(B, fRXData.RGBA[I, L * fRXData.Size[I].X + M] shr 16 and $FF);
+      Inc(accR, fRXData.RGBA[I, L * fRXData.Size[I].X + M] and $FF);
+      Inc(accG, fRXData.RGBA[I, L * fRXData.Size[I].X + M] shr 8 and $FF);
+      Inc(accB, fRXData.RGBA[I, L * fRXData.Size[I].X + M] shr 16 and $FF);
     end;
+
     pixelCount := Max(1, fRXData.Size[I].X * fRXData.Size[I].Y);
-    Result[I-1].R := Round(R / pixelCount);
-    Result[I-1].G := Round(G / pixelCount);
-    Result[I-1].B := Round(B / pixelCount);
+    Result[I-1].R := Round(accR / pixelCount);
+    Result[I-1].G := Round(accG / pixelCount);
+    Result[I-1].B := Round(accB / pixelCount);
   end;
 end;
 

@@ -62,7 +62,7 @@ type
 //    procedure ExportPatternDat(const aFilename: string);
 
     property Tile[aIndex: Word]: TKMTileParams read GetTileParams; default;
-    procedure SetTilesColor(var aTilesColor: TKMColor3bArray);
+    procedure SetTileColors(var aTileColors: TKMColor3bArray);
 
     function TileIsWater(aTile: Word): Boolean;
     function TileHasWater(aTile: Word): Boolean;
@@ -328,14 +328,14 @@ end;
 //end;
 
 
-procedure TKMResTileset.SetTilesColor(var aTilesColor: TKMColor3bArray);
+procedure TKMResTileset.SetTileColors(var aTileColors: TKMColor3bArray);
 var
   I: Integer;
 begin
-  Assert(Length(aTilesColor) = Length(fTiles));
+  Assert(Length(aTileColors) = Length(fTiles));
 
-  for I := Low(aTilesColor) to High(aTilesColor) do
-    fTiles[I].MainColor := aTilesColor[I];
+  for I := 0 to High(aTileColors) do
+    fTiles[I].MainColor := aTileColors[I];
 end;
 
 
