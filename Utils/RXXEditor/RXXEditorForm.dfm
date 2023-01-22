@@ -88,6 +88,7 @@ object fmRXXEditor: TfmRXXEditor
     Width = 209
     Height = 409
     ItemHeight = 14
+    MultiSelect = True
     TabOrder = 2
     OnClick = lbSpritesListClick
   end

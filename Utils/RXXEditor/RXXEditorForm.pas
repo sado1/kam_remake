@@ -339,26 +339,25 @@ end;
 procedure TfmRXXEditor.UpdateList;
 var
   I: Integer;
-  aIndexList : Integer;
+  prevIndex: Integer;
 begin
-  aIndexList := lbSpritesList.ItemIndex;
-  lbSpritesList.Items.BeginUpdate;
-  lbSpritesList.Items.Clear;
-  lbSpritesList.MultiSelect := True;
+  prevIndex := lbSpritesList.ItemIndex;
 
-  for I := 1 to fSprites.RXData.Count do
-  begin
+  lbSpritesList.Items.BeginUpdate;
+  try
+    lbSpritesList.Items.Clear;
+
+    for I := 1 to fSprites.RXData.Count do
     if fSprites.RXData.Flag[I] = 0 then
-      lbSpritesList.Items.Add(IntToStr(I)+'.')
+      lbSpritesList.Items.Add(IntToStr(I) + '.')
     else
       lbSpritesList.Items.Add(Format('%d. %dx%d', [I, fSprites.RXData.Size[I].X, fSprites.RXData.Size[I].Y]));
+  finally
+    lbSpritesList.Items.EndUpdate;
   end;
 
-  lbSpritesList.Items.EndUpdate;
-  if lbSpritesList.Items.Count > aIndexList + 1 then
-    lbSpritesList.ItemIndex := aIndexList
-  else
-    lbSpritesList.ItemIndex := lbSpritesList.Items.Count-1;
+  lbSpritesList.ItemIndex := Min(prevIndex, lbSpritesList.Items.Count - 1);
+
   lbSpritesListClick(Self);
 end;
 
