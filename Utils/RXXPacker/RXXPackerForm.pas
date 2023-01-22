@@ -10,11 +10,6 @@ uses
 
 
 type
-  TRXXPackData = record
-    Name: String;
-    Id: Integer;
-  end;
-
   TRXXForm1 = class(TForm)
     btnPackRXX: TButton;
     ListBox1: TListBox;
@@ -37,14 +32,11 @@ type
   private
     fPalettes: TKMResPalettes;
     fRxxPacker: TKMRXXPacker;
-    fPacksData: array of TRXXPackData;
-    fPacksCnt: Integer;
+
     fSettingsPath: string;
     fUpdating: Boolean;
 
     procedure UpdateUI;
-    function AddPackData(aName: String; aId: Integer): TRXXPackData;
-
     procedure UpdateList;
 
     procedure LoadSettings;
@@ -62,33 +54,17 @@ uses
 
 
 { TRXXForm1 }
-function TRXXForm1.AddPackData(aName: String; aId: Integer): TRXXPackData;
-begin
-  Result.Name := aName;
-  Result.Id := aId;
-  Inc(fPacksCnt);
-  SetLength(fPacksData, fPacksCnt);
-  fPacksData[fPacksCnt - 1] := Result;
-end;
-
-
 procedure TRXXForm1.UpdateList;
 var
   RT: TRXType;
-  packData: TRXXPackData;
 begin
   fRXXPacker.SpritesSourcePath := edSpritesLoadDir.Text;
 
   ListBox1.Items.Clear;
-  fPacksCnt := 0;
-  SetLength(fPacksData, fPacksCnt);
   for RT := Low(TRXType) to High(TRXType) do
     if (RT = rxTiles) //Tiles are always in the list
     or FileExists(fRXXPacker.SpritesSourcePath + 'SpriteResource\' + RXInfo[RT].FileName + '.rx') then
-    begin
-      packData := AddPackData(GetEnumName(TypeInfo(TRXType), Integer(RT)), Integer(RT));
-      ListBox1.Items.Add(packData.Name);
-    end;
+      ListBox1.Items.AddObject(GetEnumName(TypeInfo(TRXType), Ord(RT)), TObject(RT));
 
   if ListBox1.Items.Count = 0 then
   begin
@@ -158,9 +134,6 @@ begin
 
   fSettingsPath := ExtractFilePath(ParamStr(0)) + 'RXXPacker.ini';
   LoadSettings;
-
-  fPacksCnt := 0;
-  SetLength(fPacksData, 0);
 
   UpdateList;
 end;
@@ -239,7 +212,7 @@ begin
       for I := 0 to ListBox1.Items.Count - 1 do
         if ListBox1.Selected[I] then
         begin
-          RT := TRXType(fPacksData[I].Id);
+          RT := TRXType(ListBox1.Items.Objects[I]);
 
           fRxxPacker.Pack(RT, fPalettes);
 
