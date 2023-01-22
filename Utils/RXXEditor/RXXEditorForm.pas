@@ -53,19 +53,15 @@ type
     fPalettes: TKMResPalettes;
     fSprites: TKMSpritePackEdit;
     procedure UpdateList;
-    procedure imgExport(ID: Integer; FileName: string);
+    procedure ImageExport(aID: Integer; const aFileName: string);
   end;
 
 
-var
-  RXXForm1: TRXXForm1;
-
-
 implementation
-{$R *.dfm}
 uses
   KM_ResTypes;
 
+{$R *.dfm}
 
 procedure TRXXForm1.FormCreate(Sender: TObject);
 begin
@@ -275,30 +271,30 @@ begin
     SaveDialog1.Options := SaveDialog1.Options - [ofAllowMultiSelect];
     if not SaveDialog1.Execute then Exit;
 
-    imgExport(lbSpritesList.ItemIndex + 1, SaveDialog1.FileName);
-  end
-  else if lbSpritesList.SelCount > 1 then
+    ImageExport(lbSpritesList.ItemIndex + 1, SaveDialog1.FileName);
+  end else
+  if lbSpritesList.SelCount > 1 then
   begin
     SelectDirectoryDialog1.DefaultFolder := ExeDir;
     if not SelectDirectoryDialog1.Execute then Exit;
 
-    for I := lbSpritesList.Items.Count downto 1 do
-      if lbSpritesList.Selected[I - 1] then
-        imgExport(I, SelectDirectoryDialog1.FileName + '\' + IntToStr(I) + '.png');
+    for I := 0 to lbSpritesList.Items.Count - 1 do
+      if lbSpritesList.Selected[I] then
+        ImageExport(I+1, SelectDirectoryDialog1.FileName + '\' + IntToStr(I+1) + '.png');
   end;
 end;
 
 
-procedure TRXXForm1.imgExport(ID: Integer; FileName: string);
+procedure TRXXForm1.ImageExport(aID: Integer; const aFileName: string);
 var
-  fileNameA: string;
+  maskFileName: string;
 begin
-  if fSprites.RXData.Flag[ID] = 0 then Exit;
+  if fSprites.RXData.Flag[aID] = 0 then Exit;
 
-  fileNameA := StringReplace(FileName, '.png', 'a.png', [rfReplaceAll, rfIgnoreCase]);
+  maskFileName := ChangeFileExt(aFileName, 'a.png');
 
-  fSprites.ExportImage(FileName, ID);
-  fSprites.ExportMask(fileNameA, ID);
+  fSprites.ExportImage(aFileName, aID);
+  fSprites.ExportMask(maskFileName, aID);
 end;
 
 

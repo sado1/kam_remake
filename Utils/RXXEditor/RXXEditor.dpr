@@ -10,6 +10,8 @@ uses
 {$R *.res}
 {$ENDIF}
 
+var
+  RXXForm1: TRXXForm1;
 
 begin
   Application.Initialize;
