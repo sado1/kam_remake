@@ -19,7 +19,7 @@ type
     PackToRXA: Boolean;
     AddVersionHeader: Boolean;
 
-    constructor Create(const aSpritesBaseDir: string);
+    constructor Create(const aSpritesSourcePath: string);
 
     property SpritesSourcePath: string read fSpritesSourcePath write SetSpritesSourcePath;
     property RXXSavePath: string read fRXXSavePath write SetRXXSavePath;
@@ -39,11 +39,11 @@ uses
 
 
 { TKMRXXPacker }
-constructor TKMRXXPacker.Create(const aSpritesBaseDir: string);
+constructor TKMRXXPacker.Create(const aSpritesSourcePath: string);
 begin
   inherited Create;
 
-  SpritesSourcePath := aSpritesBaseDir;
+  SpritesSourcePath := aSpritesSourcePath;
 
   PackToRXX := True;
   PackToRXA := False;
