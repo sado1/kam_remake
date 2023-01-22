@@ -578,71 +578,72 @@ begin
 end;
 
 
-//Cut off empty pixels on sides
+// Cut off empty pixels on sides
 function TKMSpritePackEdit.TrimSprites: Cardinal;
 var
   I,J,K: Integer;
-  Right,Left,Bottom,Top: Word;
-  OffX, OffY, NewX, NewY: Word;
+  newRight, newLeft, newBottom, newTop: Word;
+  offsetX, offsetY, newWidth, newHeight: Word;
   FoundPixel: Boolean;
 begin
   Result := 0;
 
   for I := 1 to fRXData.Count do
-  if (fRXData.Flag[I] <> 0) then
+  if fRXData.Flag[I] <> 0 then
+  if fRXData.Size[I].X * fRXData.Size[I].Y <> 0 then
   begin
-    if fRXData.Size[I].X * fRXData.Size[I].Y = 0 then Continue;
-    //Check bounds
-    Right  := 0;
-    Bottom := 0;
-    Left   := fRXData.Size[I].X - 1;
-    Top    := fRXData.Size[I].Y - 1;
+    // Check bounds
+    newRight  := 0;
+    newBottom := 0;
+    newLeft   := fRXData.Size[I].X - 1;
+    newTop    := fRXData.Size[I].Y - 1;
     FoundPixel := False;
     for J := 0 to fRXData.Size[I].Y - 1 do
     for K := 0 to fRXData.Size[I].X - 1 do
     if fRXData.RGBA[I, J * fRXData.Size[I].X + K] and $FF000000 <> 0 then
     begin
-      Right  := Max(Right,  K);
-      Bottom := Max(Bottom, J);
-      Left   := Min(Left,   K);
-      Top    := Min(Top,    J);
+      newRight  := Max(newRight,  K);
+      newBottom := Max(newBottom, J);
+      newLeft   := Min(newLeft,   K);
+      newTop    := Min(newTop,    J);
       FoundPixel := True;
     end;
 
-    if not FoundPixel then //Entire image is transparent
+    if not FoundPixel then
     begin
+      // Entire image is transparent
       fRXData.Size[I].X := 1;
       fRXData.Size[I].Y := 1;
       Continue;
     end;
 
-    Inc(Right);
-    Inc(Bottom);
-    Assert((Left <= Right) and (Top <= Bottom),'Left > Right or Top > Bottom');
-    OffX := Left;
-    OffY := Top;
-    NewX := Right  - Left;
-    NewY := Bottom - Top;
+    Inc(newRight);
+    Inc(newBottom);
+    Assert((newLeft <= newRight) and (newTop <= newBottom), 'Left > Right or Top > Bottom');
+    offsetX := newLeft;
+    offsetY := newTop;
+    newWidth := newRight - newLeft;
+    newHeight := newBottom - newTop;
 
-    Result := Result + (fRXData.Size[I].Y * fRXData.Size[I].X) - NewX * NewY;
+    Inc(Result, (fRXData.Size[I].X * fRXData.Size[I].Y) - newWidth * newHeight);
 
-    //Do the trimming
-    for J := 0 to NewY - 1 do
+    // Do the trimming
+    for J := 0 to newHeight - 1 do
     begin
       Move(
-        fRXData.RGBA[I, (J + OffY) * fRXData.Size[I].X + OffX],
-        fRXData.RGBA[I, J * NewX],
-        NewX * 4); //RGBA is 4 bytes per pixel
+        fRXData.RGBA[I, (J + offsetY) * fRXData.Size[I].X + offsetX],
+        fRXData.RGBA[I, J * newWidth],
+        newWidth * 4); //RGBA is 4 bytes per pixel
       Move(
-        fRXData.Mask[I, (J + OffY) * fRXData.Size[I].X + OffX],
-        fRXData.Mask[I, J * NewX],
-        NewX * 1); //Mask is 1 byte per pixel
+        fRXData.Mask[I, (J + offsetY) * fRXData.Size[I].X + offsetX],
+        fRXData.Mask[I, J * newWidth],
+        newWidth * 1); //Mask is 1 byte per pixel
     end;
 
-    fRXData.Size[I].X := NewX;
-    fRXData.Size[I].Y := NewY;
-    fRXData.Pivot[I].X := fRXData.Pivot[I].X + OffX;
-    fRXData.Pivot[I].Y := fRXData.Pivot[I].Y + OffY;
+    fRXData.Size[I].X := newWidth;
+    fRXData.Size[I].Y := newHeight;
+    fRXData.Pivot[I].X := fRXData.Pivot[I].X + offsetX;
+    fRXData.Pivot[I].Y := fRXData.Pivot[I].Y + offsetY;
   end;
 end;
 

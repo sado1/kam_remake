@@ -217,7 +217,7 @@ begin
 
           RT := TRXType(ListBox1.Items.Objects[I]);
 
-          fRxxPacker.Pack(RT, fPalettes);
+          fRxxPacker.Pack(RT, fPalettes, procedure (aMsg: string) begin meLog.Lines.Append(aMsg); end);
 
           ListBox1.Selected[I] := False;
           ListBox1.Refresh;

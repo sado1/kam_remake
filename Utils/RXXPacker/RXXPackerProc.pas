@@ -24,7 +24,7 @@ type
     property SpritesSourcePath: string read fSpritesSourcePath write SetSpritesSourcePath;
     property RXXSavePath: string read fRXXSavePath write SetRXXSavePath;
 
-    procedure Pack(RT: TRXType; fPalettes: TKMResPalettes);
+    procedure Pack(RT: TRXType; fPalettes: TKMResPalettes; aOnMessage: TProc<string>);
   end;
 
 
@@ -51,10 +51,11 @@ begin
 end;
 
 
-procedure TKMRXXPacker.Pack(RT: TRXType; fPalettes: TKMResPalettes);
+procedure TKMRXXPacker.Pack(RT: TRXType; fPalettes: TKMResPalettes; aOnMessage: TProc<string>);
 var
   deathAnimProcessed: TList<Integer>;
   spritePack: TKMSpritePackEdit;
+  trimmedAmount: Cardinal;
   step, spriteID: Integer;
   rxName: string;
   resHouses: TKMResHouses;
@@ -72,19 +73,19 @@ begin
 
   spritePack := TKMSpritePackEdit.Create(RT, fPalettes);
   try
-    // Load
+    // Load base sprites from original KaM RX packages
     if RT <> rxTiles then
     begin
       spritePack.LoadFromRXFile(rxName);
       spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
+      trimmedAmount := spritePack.TrimSprites;
+
+      aOnMessage('  trimmed ' + IntToStr(trimmedAmount) + ' bytes');
     end
     else
       if DirectoryExists(fSpritesSourcePath + SPRITES_RES_DIR + '\') then
         spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_RES_DIR + '\');
-
-    // Tiles must stay the same size as they can't use pivots
-    if (RT <> rxTiles) and (gLog <> nil) then
-      gLog.AddTime('Trimmed ' + IntToStr(spritePack.TrimSprites));
+      // Tiles don't need to be trimmed, as they can't use pivots
 
     // Houses need some special treatment to adapt to GL_ALPHA_TEST that we use for construction steps
     if RT = rxHouses then

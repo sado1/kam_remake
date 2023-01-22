@@ -102,7 +102,7 @@ begin
   begin
     if ParamCount >= 1 then
     begin
-      writeln(sLineBreak + 'KaM Remake RXX Packer' + sLineBreak);
+      Writeln(sLineBreak + 'KaM Remake RXX Packer' + sLineBreak);
 
       ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
       lRxxPacker := TKMRXXPacker.Create(ExeDir);
@@ -119,7 +119,7 @@ begin
           begin
             if (I >= ParamCount) then
             begin
-              writeln('spritesLoadDir directory not specified');
+              Writeln('spritesLoadDir directory not specified');
               Exit;
             end;
 
@@ -127,7 +127,7 @@ begin
 
             if not DirectoryExists(ParamStr(I)) then
             begin
-              writeln('spritesLoadDir directory does not exist: ' + ParamStr(I));
+              Writeln('spritesLoadDir directory does not exist: ' + ParamStr(I));
               Exit;
             end;
             lRxxPacker.SpritesSourcePath := ParamStr(I);
@@ -138,7 +138,7 @@ begin
           begin
             if (I >= ParamCount) then
             begin
-              writeln('spritesSaveDir directory not specified');
+              Writeln('spritesSaveDir directory not specified');
               Exit;
             end;
 
@@ -161,8 +161,8 @@ begin
             for K := Low(RXX_TO_PACK) to High(RXX_TO_PACK) do
             begin
               tick := GetTickCount;
-              lRxxPacker.Pack(RXX_TO_PACK[K], palettes);
-              writeln(RX_INFO[RXX_TO_PACK[K]].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
+              lRxxPacker.Pack(RXX_TO_PACK[K], palettes, procedure (aMsg: string) begin Writeln(aMsg); end);
+              Writeln(RX_INFO[RXX_TO_PACK[K]].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
             end;
             Exit;
           end;
@@ -171,8 +171,8 @@ begin
             if (LowerCase(paramString) = LowerCase(RX_INFO[rxType].FileName)) then
             begin
               tick := GetTickCount;
-              lRxxPacker.Pack(rxType, palettes);
-              writeln(RX_INFO[rxType].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
+              lRxxPacker.Pack(rxType, palettes, procedure (aMsg: string) begin Writeln(aMsg); end);
+              Writeln(RX_INFO[rxType].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
             end;
         end;
       finally
@@ -182,10 +182,10 @@ begin
     end else
     if ParamCount = 0 then
       begin
-        writeln('No rx packages were set');
-        writeln('Usage example 1: RxxPacker.exe gui guimain houses trees units tileset');
-        writeln('Usage example 2: RxxPacker.exe all');
-        writeln('Usage example 3: RxxPacker.exe spritesBaseDir "C:\kmr_sprites\" units');
+        Writeln('No rx packages were set');
+        Writeln('Usage example 1: RxxPacker.exe gui guimain houses trees units tileset');
+        Writeln('Usage example 2: RxxPacker.exe all');
+        Writeln('Usage example 3: RxxPacker.exe spritesBaseDir "C:\kmr_sprites\" units');
         Exit;
       end;
   end else
