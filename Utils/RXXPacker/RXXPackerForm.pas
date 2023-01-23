@@ -17,11 +17,12 @@ type
     edSpritesLoadDir: TEdit;
     Label2: TLabel;
     chkPackToRXA: TCheckBox;
-    chkAddRXXHeader: TCheckBox;
     chkPackToRXX: TCheckBox;
     Label3: TLabel;
     edSpritesSaveDir: TEdit;
     meLog: TMemo;
+    rbRXXFormat0: TRadioButton;
+    rbRXXFormat1: TRadioButton;
     procedure btnPackRXXClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -58,12 +59,12 @@ procedure TRXXForm1.UpdateList;
 var
   RT: TRXType;
 begin
-  fRXXPacker.SpritesSourcePath := edSpritesLoadDir.Text;
+  fRxxPacker.SpritesSourcePath := edSpritesLoadDir.Text;
 
   ListBox1.Items.Clear;
   for RT := Low(TRXType) to High(TRXType) do
     if (RT = rxTiles) //Tiles are always in the list
-    or FileExists(fRXXPacker.SpritesSourcePath + 'SpriteResource\' + RX_INFO[RT].FileName + '.rx') then
+    or FileExists(fRxxPacker.SpritesSourcePath + 'SpriteResource\' + RX_INFO[RT].FileName + '.rx') then
       ListBox1.Items.AddObject(RX_INFO[RT].FileName, TObject(RT));
 
   if ListBox1.Items.Count = 0 then
@@ -128,7 +129,7 @@ begin
   edSpritesLoadDir.Text := ExeDir;
   fUpdating := False;
 
-  fRXXPacker := TKMRXXPacker.Create(ExeDir);
+  fRxxPacker := TKMRXXPacker.Create(ExeDir);
   fPalettes := TKMResPalettes.Create;
   fPalettes.LoadPalettes(ExeDir + 'data\gfx\');
 
@@ -142,7 +143,7 @@ end;
 procedure TRXXForm1.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(fPalettes);
-  FreeAndNil(fRXXPacker);
+  FreeAndNil(fRxxPacker);
   FreeAndNil(gLog);
 end;
 
@@ -191,19 +192,21 @@ begin
   btnPackRXX.Enabled := False;
   chkPackToRXX.Enabled := False;
   chkPackToRXA.Enabled := False;
-  chkAddRXXHeader.Enabled := False;
+  rbRXXFormat0.Enabled := False;
+  rbRXXFormat1.Enabled := False;
   try
     tickTotal := GetTickCount;
 
-    fRXXPacker.SpritesSourcePath := edSpritesLoadDir.Text;
-    fRXXPacker.RXXSavePath    := edSpritesSaveDir.Text;
+    fRxxPacker.SpritesSourcePath := edSpritesLoadDir.Text;
+    fRxxPacker.RXXSavePath    := edSpritesSaveDir.Text;
     fRxxPacker.PackToRXX      := chkPackToRXX.Checked;
     fRxxPacker.PackToRXA      := chkPackToRXA.Checked;
-    fRxxPacker.AddVersionHeader := chkAddRXXHeader.Checked;
+    if rbRXXFormat0.Checked then fRxxPacker.RXXFormat := rxxZero;
+    if rbRXXFormat1.Checked then fRxxPacker.RXXFormat := rxxOne;
 
-    if not DirectoryExists(fRXXPacker.SpritesSourcePath + SPRITES_RES_DIR + '\') then
+    if not DirectoryExists(fRxxPacker.SpritesSourcePath + SPRITES_RES_DIR + '\') then
     begin
-      MessageBox(Handle, PWideChar('Cannot find ' + fRXXPacker.SpritesSourcePath + SPRITES_RES_DIR + '\ folder.' +
+      MessageBox(Handle, PWideChar('Cannot find ' + fRxxPacker.SpritesSourcePath + SPRITES_RES_DIR + '\ folder.' +
         sLineBreak + 'Please make sure this folder exists.'), 'Error', MB_ICONEXCLAMATION or MB_OK);
       Exit;
     end;
@@ -234,7 +237,8 @@ begin
     btnPackRXX.Enabled := True;
     chkPackToRXX.Enabled := True;
     chkPackToRXA.Enabled := True;
-    chkAddRXXHeader.Enabled := True;
+    rbRXXFormat0.Enabled := True;
+    rbRXXFormat1.Enabled := True;
   end;
 end;
 

@@ -288,7 +288,9 @@ procedure TfmRXXEditor.btnSaveRXXClick(Sender: TObject);
 begin
   if not SaveDialog1.Execute then Exit;
   gLog.AddTime('Trimmed ' + IntToStr(fSprites.TrimSprites));
-  fSprites.SaveToRXXFile(SaveDialog1.FileName, True);
+
+  // Always save as latest format for now. Later on we could allow format change in UI
+  fSprites.SaveToRXXFile(SaveDialog1.FileName, rxxOne);
 end;
 
 

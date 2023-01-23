@@ -3,7 +3,7 @@ unit RXXPackerProc;
 interface
 uses
   SysUtils, Generics.Collections,
-  KM_ResTypes, KM_ResPalettes;
+  KM_ResTypes, KM_ResPalettes, KM_ResSprites;
 
 
 type
@@ -17,7 +17,7 @@ type
   public
     PackToRXX: Boolean;
     PackToRXA: Boolean;
-    AddVersionHeader: Boolean;
+    RXXFormat: TKMRXXFormat;
 
     constructor Create(const aSpritesSourcePath: string);
 
@@ -35,7 +35,7 @@ const
 
 implementation
 uses
-  KM_ResHouses, KM_ResUnits, KM_ResSprites, KM_Points, KM_ResSpritesEdit, KM_Defaults, KM_Log;
+  KM_ResHouses, KM_ResUnits, KM_Points, KM_ResSpritesEdit, KM_Defaults, KM_Log;
 
 
 { TKMRXXPacker }
@@ -47,7 +47,7 @@ begin
 
   PackToRXX := True;
   PackToRXA := False;
-  AddVersionHeader := True;
+  RXXFormat := rxxOne; // Default to latest one
 end;
 
 
@@ -109,7 +109,7 @@ begin
 
     // Save
     if PackToRXX then
-      spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[RT].FileName + '.rxx', AddVersionHeader);
+      spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[RT].FileName + '.rxx', RXXFormat);
 
     // Generate alpha shadows for the following sprite packs
     if RT in [rxHouses, rxUnits, rxGui, rxTrees] then
@@ -156,14 +156,14 @@ begin
         spritePack.SoftenShadowsRange(1, spritePack.RXData.Count);
 
       if PackToRXX then
-        spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[RT].FileName + '_a.rxx', AddVersionHeader);
+        spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[RT].FileName + '_a.rxx', RXXFormat);
 
       if PackToRXA then
       begin
         if DirectoryExists(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\') then
           spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\', False); // Shadows are already softened for interps
 
-        spritePack.SaveToRXAFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[RT].FileName + '.rxa', AddVersionHeader);
+        spritePack.SaveToRXAFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[RT].FileName + '.rxa', RXXFormat);
       end;
     end;
   finally

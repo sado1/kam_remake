@@ -30,8 +30,8 @@ type
     procedure SoftWater(aTileset: TKMResTileset);
     procedure Delete(aIndex: Integer);
     procedure LoadFromRXFile(const aFileName: string);
-    procedure SaveToRXXFile(const aFileName: string; aAddHeader: Boolean);
-    procedure SaveToRXAFile(const aFileName: string; aAddHeader: Boolean);
+    procedure SaveToRXXFile(const aFileName: string; aFormat: TKMRXXFormat);
+    procedure SaveToRXAFile(const aFileName: string; aFormat: TKMRXXFormat);
     function TrimSprites: Cardinal; //For debug
     procedure ClearTemp; override;
     procedure GetImageToBitmap(aIndex: Integer; aBmp, aMask: TBitmap);
@@ -692,22 +692,23 @@ var
   metadataLen: Word;
 begin
   case aFormat of
-    rxxOne: begin
-              aStream.Write(RXX_VERSION_1[1], Length(RXX_VERSION_1));
+    rxxZero:  ;// No header, just straight ZLib data
+    rxxOne:   begin
+                aStream.Write(RXX_VERSION_1[1], Length(RXX_VERSION_1));
 
-              metadata := GAME_REVISION + ' ' + FormatDateTime('yyyy/mm/dd hh:nn:ss', Now);
-              metadataLen := Length(metadata);
+                metadata := GAME_REVISION + ' ' + FormatDateTime('yyyy/mm/dd hh:nn:ss', Now);
+                metadataLen := Length(metadata);
 
-              aStream.Write(metadataLen, 2);
-              aStream.Write(metadata[1], metadataLen);
-            end;
+                aStream.Write(metadataLen, 2);
+                aStream.Write(metadata[1], metadataLen);
+              end;
   else
-    raise Exception.Create('We support saving only in modern format');
+    raise Exception.Create('Saving in unsupported format');
   end;
 end;
 
 
-procedure TKMSpritePackEdit.SaveToRXAFile(const aFileName: string; aAddHeader: Boolean);
+procedure TKMSpritePackEdit.SaveToRXAFile(const aFileName: string; aFormat: TKMRXXFormat);
 const
   SNS_MAX_ABS_VAL = CELL_SIZE_PX*5; // Empirical value
 var
@@ -724,8 +725,7 @@ begin
   ForceDirectories(ExtractFilePath(aFileName));
 
   OutputStream := TFileStream.Create(aFileName, fmCreate);
-  if aAddHeader then
-    WriteRXZHeader(OutputStream, rxxOne);
+  WriteRXZHeader(OutputStream, aFormat);
   InputStream := TCompressionStream.Create(clMax, OutputStream);
 
   //Sprite info
@@ -775,7 +775,7 @@ begin
 end;
 
 
-procedure TKMSpritePackEdit.SaveToRXXFile(const aFileName: string; aAddHeader: Boolean);
+procedure TKMSpritePackEdit.SaveToRXXFile(const aFileName: string; aFormat: TKMRXXFormat);
 var
   I: Integer;
   InputStream: TMemoryStream;
@@ -807,8 +807,8 @@ begin
         InputStream.Write(fRXData.Mask[I, 0], fRXData.Size[I].X * fRXData.Size[I].Y);
     end;
   OutputStream := TFileStream.Create(aFileName, fmCreate);
-  if aAddHeader then
-    WriteRXZHeader(OutputStream, rxxOne);
+
+  WriteRXZHeader(OutputStream, aFormat);
 
   CompressionStream := TCompressionStream.Create(clMax, OutputStream);
   InputStream.Position := 0;

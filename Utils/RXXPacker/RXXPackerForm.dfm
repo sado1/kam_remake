@@ -68,7 +68,7 @@ object RXXForm1: TRXXForm1
     OnChange = edSpritesLoadDirChange
   end
   object chkPackToRXA: TCheckBox
-    Left = 160
+    Left = 16
     Top = 192
     Width = 73
     Height = 17
@@ -76,25 +76,15 @@ object RXXForm1: TRXXForm1
     TabOrder = 4
     OnClick = chkPackToRXAClick
   end
-  object chkAddRXXHeader: TCheckBox
-    Left = 160
-    Top = 208
-    Width = 113
-    Height = 17
-    Caption = 'Add Version header'
-    Checked = True
-    State = cbChecked
-    TabOrder = 5
-  end
   object chkPackToRXX: TCheckBox
-    Left = 160
+    Left = 16
     Top = 176
     Width = 73
     Height = 17
     Caption = 'Pack to RXX'
     Checked = True
     State = cbChecked
-    TabOrder = 6
+    TabOrder = 5
     OnClick = chkPackToRXXClick
   end
   object edSpritesSaveDir: TEdit
@@ -102,7 +92,7 @@ object RXXForm1: TRXXForm1
     Top = 296
     Width = 257
     Height = 21
-    TabOrder = 7
+    TabOrder = 6
     OnChange = edSpritesLoadDirChange
   end
   object meLog: TMemo
@@ -110,6 +100,24 @@ object RXXForm1: TRXXForm1
     Top = 16
     Width = 409
     Height = 369
+    TabOrder = 7
+  end
+  object rbRXXFormat0: TRadioButton
+    Left = 224
+    Top = 176
+    Width = 49
+    Height = 17
+    Caption = 'RXX'
     TabOrder = 8
+  end
+  object rbRXXFormat1: TRadioButton
+    Left = 224
+    Top = 192
+    Width = 49
+    Height = 17
+    Caption = 'RXX1'
+    Checked = True
+    TabOrder = 9
+    TabStop = True
   end
 end
