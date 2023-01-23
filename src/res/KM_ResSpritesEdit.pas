@@ -12,11 +12,12 @@ uses
 type
   TInterpExportType = (ietNormal, ietBase, ietBaseAlpha, ietBaseBlack, ietBaseWhite, ietShadows, ietTeamMask);
 
-  //Class with additional editing properties
+  // Class with additional editing properties
   TKMSpritePackEdit = class(TKMSpritePack)
   private
     fPalettes: TKMResPalettes;
     function GetLoaded: Boolean;
+    procedure WriteRXZHeader(aStream: TStream; aFormat: TKMRXXFormat);
   protected
     procedure Allocate(aCount: Integer); override; //Allocate space for data that is being loaded
     procedure Expand;
@@ -50,8 +51,6 @@ uses
 
 
 const
-  RXX_VERSION_1: AnsiString = 'RXX1';
-
   RX_GUIMAIN_PAL: array [1 .. 40] of TKMPal = (
     pal2_setup,   pal2_setup,   pal2_setup,   pal2_setup,   pal2_setup,
     pal2_setup,   palset2,     palset2,     palset2,     palmap,
@@ -687,6 +686,27 @@ begin
 end;
 
 
+procedure TKMSpritePackEdit.WriteRXZHeader(aStream: TStream; aFormat: TKMRXXFormat);
+var
+  metadata: AnsiString;
+  metadataLen: Word;
+begin
+  case aFormat of
+    rxxOne: begin
+              aStream.Write(RXX_VERSION_1[1], Length(RXX_VERSION_1));
+
+              metadata := GAME_REVISION + ' ' + FormatDateTime('yyyy/mm/dd hh:nn:ss', Now);
+              metadataLen := Length(metadata);
+
+              aStream.Write(metadataLen, 2);
+              aStream.Write(metadata[1], metadataLen);
+            end;
+  else
+    raise Exception.Create('We support saving only in modern format');
+  end;
+end;
+
+
 procedure TKMSpritePackEdit.SaveToRXAFile(const aFileName: string; aAddHeader: Boolean);
 const
   SNS_MAX_ABS_VAL = CELL_SIZE_PX*5; // Empirical value
@@ -705,7 +725,7 @@ begin
 
   OutputStream := TFileStream.Create(aFileName, fmCreate);
   if aAddHeader then
-    WriteBinaryHeader(OutputStream, RXX_VERSION_1);
+    WriteRXZHeader(OutputStream, rxxOne);
   InputStream := TCompressionStream.Create(clMax, OutputStream);
 
   //Sprite info
@@ -788,7 +808,7 @@ begin
     end;
   OutputStream := TFileStream.Create(aFileName, fmCreate);
   if aAddHeader then
-    WriteBinaryHeader(OutputStream, RXX_VERSION_1);
+    WriteRXZHeader(OutputStream, rxxOne);
 
   CompressionStream := TCompressionStream.Create(clMax, OutputStream);
   InputStream.Position := 0;

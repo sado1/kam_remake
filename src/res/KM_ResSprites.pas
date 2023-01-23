@@ -17,6 +17,12 @@ type
   // How do we want to soften the sprite
   TKMSpriteSoftening = (ssNone, ssOnlyShadow, ssWhole);
 
+  TKMRXXFormat = (
+    rxxUnknown, // Unknown header, probably not an RXX file at all
+    rxxZero,    // Legacy KMR format
+    rxxOne      // Same as previous, but with an explicit header and SizeNoShadow
+  );
+
   TTGameResourceLoader = class;
 
   TKMGFXPrepData =  array [TKMSpriteAtlasType] of // for each atlas type
@@ -29,6 +35,9 @@ type
 
   // Base class for Sprite loading
   TKMSpritePack = class
+  protected const
+    RXX_HEADER_LENGTH = 4;
+    RXX_VERSION_1: AnsiString = 'RXX1';
   private
     fTemp: Boolean;
     fPad: Byte; //Force padding between sprites to avoid neighbour edge visibility
@@ -44,7 +53,7 @@ type
     fGFXPrepData: TKMGFXPrepData;
     procedure Allocate(aCount: Integer); virtual; //Allocate space for data that is being loaded
     procedure AllocateTemp(aCount: Integer);
-    procedure ReadRXZHeader(aStream: TStream; out aVersionStr: AnsiString);
+    procedure ReadRXZHeader(aStream: TStream; out aFormat: TKMRXXFormat);
     procedure CollectSpriteFilesToOverloadInFolder(const aFolder: string; aFileList: TStringList);
     {$IFNDEF NO_OGL}
     procedure MakeGFX_BinPacking(aTexType: TKMTexFormat; aIDList: TList<Integer>; var aBaseRAM, aColorRAM, aTexCount: Cardinal;
@@ -722,25 +731,32 @@ end;
 
 
 // Read header of the RXX / RXA files
-procedure TKMSpritePack.ReadRXZHeader(aStream: TStream; out aVersionStr: AnsiString);
+procedure TKMSpritePack.ReadRXZHeader(aStream: TStream; out aFormat: TKMRXXFormat);
 const
-  ZLIB_HEADER: Word = $DA78; // Header of ZLIB archiver. We used for RXX before introducing RXX1 format version
+  ZLIB_HEADER: AnsiString = AnsiChar($78) + AnsiChar($DA); // Header of ZLIB archiver. We used for RXX before introducing RXX1 format version
 var
-  header: Word;
+  strFormat: AnsiString;
+  metadataLen: Word;
 begin
-  aStream.Read(header, SizeOf(header));
+  SetLength(strFormat, RXX_HEADER_LENGTH);
+  aStream.Read(strFormat[1], RXX_HEADER_LENGTH);
 
-  if header = ZLIB_HEADER then
+  if strFormat = RXX_VERSION_1 then
   begin
+    aFormat := rxxOne;
+
+    // For now we just skip metadata (but in the future we could show it in e.g. RXXEditor)
+    aStream.Read(metadataLen, SizeOf(metadataLen));
+    aStream.Seek(metadataLen, soFromCurrent);
+  end else
+  if strFormat[1] + strFormat[2] = ZLIB_HEADER then
+  begin
+    aFormat := rxxZero;
+    
     // Reset position
     aStream.Position := 0;
-    aVersionStr := '';
-    Exit;
-  end;
-
-  aStream.Position := 0;
-
-  ReadBinaryHeader(aStream, aVersionStr);
+  end else
+    aFormat := rxxUnknown;
 end;
 
 
@@ -750,7 +766,7 @@ var
   rxxCount: Integer;
   inputStream: TFileStream;
   decompressionStream: TDecompressionStream;
-  version: AnsiString;
+  rxxFormat: TKMRXXFormat;
 begin
   case fRT of
     rxTiles: if SKIP_RENDER and not DO_NOT_SKIP_LOAD_TILESET then Exit;
@@ -760,40 +776,46 @@ begin
   if not FileExists(aFileName) then Exit;
 
   inputStream := TFileStream.Create(aFileName, fmOpenRead or fmShareDenyNone);
-  ReadRXZHeader(inputStream, version);
-
-  decompressionStream := TDecompressionStream.Create(inputStream);
-
   try
-    decompressionStream.Read(rxxCount, 4);
+    ReadRXZHeader(inputStream, rxxFormat);
 
-    gLog.AddTime(RX_INFO[fRT].FileName + ' -', rxxCount);
-
-    if rxxCount = 0 then
+    // Not sure what to do yet, silently "fail" for now
+    if rxxFormat = rxxUnknown then
       Exit;
 
-    Allocate(aStartingIndex + rxxCount - 1);
+    decompressionStream := TDecompressionStream.Create(inputStream);
+    try
+      decompressionStream.Read(rxxCount, 4);
+          
+      gLog.AddTime(RX_INFO[fRT].FileName + ' -', rxxCount);
 
-    decompressionStream.Read(fRXData.Flag[aStartingIndex], rxxCount);
+      if rxxCount = 0 then
+        Exit;
 
-    for I := aStartingIndex to aStartingIndex + rxxCount - 1 do
-      if fRXData.Flag[I] = 1 then
-      begin
-        decompressionStream.Read(fRXData.Size[I].X, SizeOf(fRXData.Size[I]));
-        decompressionStream.Read(fRXData.Pivot[I].X, SizeOf(fRXData.Pivot[I]));
-        //SizeNoShadow is used only for Units
-        if fRT = rxUnits then
-          decompressionStream.Read(fRXData.SizeNoShadow[I].Left, SizeOf(fRXData.SizeNoShadow[I]));
-        //Data part of each sprite is 32BPP RGBA in Remake RXX files
-        SetLength(fRXData.RGBA[I], fRXData.Size[I].X * fRXData.Size[I].Y);
-        SetLength(fRXData.Mask[I], fRXData.Size[I].X * fRXData.Size[I].Y);
-        decompressionStream.Read(fRXData.RGBA[I, 0], 4 * fRXData.Size[I].X * fRXData.Size[I].Y);
-        decompressionStream.Read(fRXData.HasMask[I], 1);
-        if fRXData.HasMask[I] then
-          decompressionStream.Read(fRXData.Mask[I, 0], fRXData.Size[I].X * fRXData.Size[I].Y);
-      end;
+      Allocate(aStartingIndex + rxxCount - 1);
+
+      decompressionStream.Read(fRXData.Flag[aStartingIndex], rxxCount);
+
+      for I := aStartingIndex to aStartingIndex + rxxCount - 1 do
+        if fRXData.Flag[I] = 1 then
+        begin
+          decompressionStream.Read(fRXData.Size[I].X, SizeOf(fRXData.Size[I]));
+          decompressionStream.Read(fRXData.Pivot[I].X, SizeOf(fRXData.Pivot[I]));
+          //SizeNoShadow is used only for Units
+          if fRT = rxUnits then
+            decompressionStream.Read(fRXData.SizeNoShadow[I].Left, SizeOf(fRXData.SizeNoShadow[I]));
+          //Data part of each sprite is 32BPP RGBA in Remake RXX files
+          SetLength(fRXData.RGBA[I], fRXData.Size[I].X * fRXData.Size[I].Y);
+          SetLength(fRXData.Mask[I], fRXData.Size[I].X * fRXData.Size[I].Y);
+          decompressionStream.Read(fRXData.RGBA[I, 0], 4 * fRXData.Size[I].X * fRXData.Size[I].Y);
+          decompressionStream.Read(fRXData.HasMask[I], 1);
+          if fRXData.HasMask[I] then
+            decompressionStream.Read(fRXData.Mask[I, 0], fRXData.Size[I].X * fRXData.Size[I].Y);
+        end;
+    finally
+      decompressionStream.Free;
+    end;
   finally
-    decompressionStream.Free;
     inputStream.Free;
   end;
 end;
@@ -806,71 +828,78 @@ var
   rxxCount, atlasCount, spriteCount, dataCount: Integer;
   inputStream: TFileStream;
   decompressionStream: TDecompressionStream;
-  version: AnsiString;
+  rxxFormat: TKMRXXFormat;
 begin
+  if not FileExists(aFileName) then Exit;
+
   {$IFNDEF NO_OGL}
   case fRT of
     rxTiles: if SKIP_RENDER and not DO_NOT_SKIP_LOAD_TILESET then Exit;
     else     if SKIP_RENDER then Exit;
   end;
 
-  if not FileExists(aFileName) then Exit;
-
   inputStream := TFileStream.Create(aFileName, fmOpenRead or fmShareDenyNone);
-  ReadRXZHeader(inputStream, version);
-  decompressionStream := TDecompressionStream.Create(inputStream);
-
   try
-    decompressionStream.Read(rxxCount, 4);
+    ReadRXZHeader(inputStream, rxxFormat);
 
-    gLog.AddTime(RX_INFO[fRT].FileName + ' -', rxxCount);
-
-    if rxxCount = 0 then
+    // Not sure what to do yet, silently "fail" for now
+    if rxxFormat = rxxUnknown then
       Exit;
+    
+    decompressionStream := TDecompressionStream.Create(inputStream);
+    try
+      decompressionStream.Read(rxxCount, 4);
 
-    Allocate(rxxCount);
+      gLog.AddTime(RX_INFO[fRT].FileName + ' -', rxxCount);
 
-    decompressionStream.Read(fRXData.Flag[1], fRXData.Count);
+      if rxxCount = 0 then
+        Exit;
 
-    //Sprite info
-    for I := 1 to fRXData.Count do
-      if fRXData.Flag[I] = 1 then
-      begin
-        decompressionStream.Read(fRXData.Size[I].X, SizeOf(fRXData.Size[I]));
-        decompressionStream.Read(fRXData.Pivot[I].X, SizeOf(fRXData.Pivot[I]));
-        //SizeNoShadow is used only for Units
-        if fRT = rxUnits then
-          decompressionStream.Read(fRXData.SizeNoShadow[I].Left, SizeOf(fRXData.SizeNoShadow[I]));
-        decompressionStream.Read(fRXData.HasMask[I], 1);
+      Allocate(rxxCount);
 
-        // Check if our load resource thread was terminated
-        if TThread.CheckTerminated then Exit;
-      end;
+      decompressionStream.Read(fRXData.Flag[1], fRXData.Count);
 
-    //Atlases
-    for SAT := Low(TKMSpriteAtlasType) to High(TKMSpriteAtlasType) do
-    begin
-      decompressionStream.Read(atlasCount, 4);
-      SetLength(fGFXPrepData[SAT], atlasCount);
-      for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
-        with fGFXPrepData[SAT, I] do
+      //Sprite info
+      for I := 1 to fRXData.Count do
+        if fRXData.Flag[I] = 1 then
         begin
-          decompressionStream.Read(SpriteInfo.Width, 2);
-          decompressionStream.Read(SpriteInfo.Height, 2);
-          decompressionStream.Read(spriteCount, 4);
-          SetLength(SpriteInfo.Sprites, spriteCount);
-          decompressionStream.Read(SpriteInfo.Sprites[0], spriteCount*SizeOf(SpriteInfo.Sprites[0]));
-          decompressionStream.Read(TexType, SizeOf(TKMTexFormat));
-          decompressionStream.Read(dataCount, 4);
-          SetLength(Data, dataCount);
-          decompressionStream.Read(Data[0], dataCount*SizeOf(Data[0]));
+          decompressionStream.Read(fRXData.Size[I].X, SizeOf(fRXData.Size[I]));
+          decompressionStream.Read(fRXData.Pivot[I].X, SizeOf(fRXData.Pivot[I]));
+          //SizeNoShadow is used only for Units
+          if fRT = rxUnits then
+            decompressionStream.Read(fRXData.SizeNoShadow[I].Left, SizeOf(fRXData.SizeNoShadow[I]));
+          decompressionStream.Read(fRXData.HasMask[I], 1);
 
           // Check if our load resource thread was terminated
           if TThread.CheckTerminated then Exit;
         end;
+
+      //Atlases
+      for SAT := Low(TKMSpriteAtlasType) to High(TKMSpriteAtlasType) do
+      begin
+        decompressionStream.Read(atlasCount, 4);
+        SetLength(fGFXPrepData[SAT], atlasCount);
+        for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
+          with fGFXPrepData[SAT, I] do
+          begin
+            decompressionStream.Read(SpriteInfo.Width, 2);
+            decompressionStream.Read(SpriteInfo.Height, 2);
+            decompressionStream.Read(spriteCount, 4);
+            SetLength(SpriteInfo.Sprites, spriteCount);
+            decompressionStream.Read(SpriteInfo.Sprites[0], spriteCount*SizeOf(SpriteInfo.Sprites[0]));
+            decompressionStream.Read(TexType, SizeOf(TKMTexFormat));
+            decompressionStream.Read(dataCount, 4);
+            SetLength(Data, dataCount);
+            decompressionStream.Read(Data[0], dataCount*SizeOf(Data[0]));
+
+            // Check if our load resource thread was terminated
+            if TThread.CheckTerminated then Exit;
+          end;
+      end;
+    finally
+      decompressionStream.Free;
     end;
   finally
-    decompressionStream.Free;
     inputStream.Free;
   end;
   {$ENDIF}

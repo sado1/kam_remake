@@ -290,13 +290,24 @@ const
   FLAG_COLOR_LITE = $FFFFFFFF;   //White
 
 type
+  // Original KaM format for RX files
+  {
+  TRXData = record
+    Count: Integer;
+    Flag: array of Byte; // Sprite is valid
+    Size: array of record X,Y: Word; end;
+    Pivot: array of record x,y: Integer; end;
+    Data: array of array of Byte;
+  end;}
+
+  // RXX and RXX1 file format, with Pivot type changed and SizeNoShadow added
   TRXData = record
     Count: Integer;
     Flag: array of Byte; //Sprite is valid
     Size: array of record X,Y: Word; end;
     Pivot: array of record X,Y: SmallInt; end;
     SizeNoShadow: array of record Left, Top, Right, Bottom: SmallInt; end; //Image object (without shadow) rect in the image sizes
-    Data: array of array of Byte; //Used for RXX utils (Packer / Editor)
+    {unused in RXX} Data: array of array of Byte; //Used for RXX utils (Packer / Editor)
     RGBA: array {Index} of array {YX} of Cardinal; //Expanded image
     Mask: array of array of Byte; //Mask for team colors
     HasMask: array of Boolean; //Flag if Mask for team colors is used
