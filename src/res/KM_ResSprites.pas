@@ -766,8 +766,8 @@ begin
 
   try
     decompressionStream.Read(rxxCount, 4);
-
-    gLog.AddTime(RX_INFO[fRT].FileName + ' -', rxxCount);
+    if gLog <> nil then
+      gLog.AddTime(RX_INFO[fRT].FileName + ' -', rxxCount);
 
     if rxxCount = 0 then
       Exit;
@@ -822,8 +822,8 @@ begin
 
   try
     decompressionStream.Read(rxxCount, 4);
-
-    gLog.AddTime(RX_INFO[fRT].FileName + ' -', rxxCount);
+    if gLog <> nil then
+      gLog.AddTime(RX_INFO[fRT].FileName + ' -', rxxCount);
 
     if rxxCount = 0 then
       Exit;
