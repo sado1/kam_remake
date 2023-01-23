@@ -675,6 +675,8 @@ var
 begin
   if gRes.Sprites  = nil then Exit;
   
+  gLog.AddNoTime('Loading campaign images.rxx for ' + fShortName);
+
   SP := gRes.Sprites[rxCustom];
   firstSpriteIndex := SP.RXData.Count + 1;
 
