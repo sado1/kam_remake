@@ -111,6 +111,7 @@ type
     function MaxHealth: Word;
     function ProducesWares: Boolean;
     function IsWorkshop: Boolean;
+    function FlagPointTexId: Word;
     procedure Outline(aList: TKMPointList);
     function GetDoorwayOffset(aCheck: TKMCheckAxis): Single;
   end;
@@ -668,6 +669,18 @@ end;
 function TKMHouseSpec.IsWorkshop: Boolean;
 begin
   Result := fHouseType in [htWeaponSmithy, htArmorSmithy, htWeaponWorkshop, htArmorWorkshop];
+end;
+
+
+function TKMHouseSpec.FlagPointTexId: Word;
+begin
+  case fHouseType of
+    htBarracks:     Result := 249;
+    htTownHall:     Result := 249;
+    htWoodcutters:  Result := 660;
+  else
+    Result := 0; // Has no such thing
+  end;
 end;
 
 

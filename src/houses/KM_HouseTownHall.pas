@@ -31,7 +31,6 @@ type
     property GoldDeliveryCnt: Word read GetGoldDeliveryCnt write SetGoldDeliveryCnt;
     property GoldDemandsClosing: Word read GetGoldDemandsClosing write SetGoldDemandsClosing;
   protected
-    function GetFlagPointTexId: Word; override;
     procedure AddDemandsOnActivate(aWasBuilt: Boolean); override;
     function GetWareIn(aI: Byte): Word; override;
     procedure SetWareIn(aI: Byte; aValue: Word); override;
@@ -145,12 +144,6 @@ procedure TKMHouseTownHall.SetGoldMaxCnt(aValue: Word);
 begin
   fGoldMaxCnt := EnsureRange(aValue, 0, TH_MAX_GOLDMAX_VALUE);
   UpdateDemands;
-end;
-
-
-function TKMHouseTownHall.GetFlagPointTexId: Word;
-begin
-  Result := 249;
 end;
 
 

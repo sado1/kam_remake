@@ -60,6 +60,15 @@ uses
   KM_Points, KM_CommonTypes, KM_Log;
 
 
+{ TKMPrepGFXDataID }
+constructor TKMPrepGFXDataID.New(aAtlasType: TKMSpriteAtlasType; aAtlasID, aSpriteNum: Integer);
+begin
+  AtlasType := aAtlasType;
+  AtlasID := aAtlasID;
+  SpriteNum := aSpriteNum;
+end;
+
+
 { TKMResExporter }
 constructor TKMResExporter.Create;
 begin
@@ -853,14 +862,6 @@ begin
         sList.Free;
       end;
     end, aOnDone, 'Export tree anim');
-end;
-
-{ TKMPrepDataID }
-constructor TKMPrepGFXDataID.New(aAtlasType: TKMSpriteAtlasType; aAtlasID, aSpriteNum: Integer);
-begin
-  AtlasType := aAtlasType;
-  AtlasID := aAtlasID;
-  SpriteNum := aSpriteNum;
 end;
 
 

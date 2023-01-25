@@ -17,7 +17,6 @@ type
     procedure SetWoodcutterMode(aWoodcutterMode: TKMWoodcutterMode);
   protected
     procedure SetFlagPoint(aFlagPoint: TKMPoint); override;
-    function GetFlagPointTexId: Word; override;
     function GetMaxDistanceToPoint: Integer; override;
   public
     constructor Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
@@ -59,12 +58,6 @@ begin
 
   SaveStream.PlaceMarker('HouseWoodcutters');
   SaveStream.Write(fWoodcutterMode, SizeOf(fWoodcutterMode));
-end;
-
-
-function TKMHouseWoodcutters.GetFlagPointTexId: Word;
-begin
-  Result := 660;
 end;
 
 

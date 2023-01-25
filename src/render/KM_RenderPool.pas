@@ -557,18 +557,15 @@ end;
 
 procedure TKMRenderPool.PaintFlagPoints(aFirstPass: Boolean);
 var
-  HWFP: TKMHouseWFlagPoint;
+  house: TKMHouseWFlagPoint;
 begin
-  //Skip render if no house with flagpoint is chosen
-  if  not (gMySpectator.Selected is TKMHouseWFlagPoint) then
+  // Skip render if no house with flagpoint is chosen
+  if not (gMySpectator.Selected is TKMHouseWFlagPoint) then
     Exit;
 
-  if gMySpectator.Selected is TKMHouseWFlagPoint then
-  begin
-    HWFP := TKMHouseWFlagPoint(gMySpectator.Selected);
-    if HWFP.IsFlagPointSet then
-      PaintFlagPoint(HWFP.Entrance, HWFP.FlagPoint, gHands[HWFP.Owner].GameFlagColor, HWFP.FlagPointTexId, aFirstPass);
-  end;
+  house := TKMHouseWFlagPoint(gMySpectator.Selected);
+  if house.IsFlagPointSet then
+    PaintFlagPoint(house.Entrance, house.FlagPoint, gHands[house.Owner].GameFlagColor, gRes.Houses[house.HouseType].FlagPointTexId, aFirstPass);
 end;
 
 
@@ -1522,7 +1519,7 @@ end;
 procedure TKMRenderPool.RenderForegroundUI_Markers;
 var
   P: TKMPoint;
-  HWFP: TKMHouseWFlagPoint;
+  house: TKMHouseWFlagPoint;
 begin
   P := gCursor.Cell;
   case gCursor.Tag1 of
@@ -1548,8 +1545,8 @@ begin
     MARKER_AISTART:       RenderSpriteOnTile(P, 390, gMySpectator.Hand.FlagColor);
     MARKER_RALLY_POINT:   if gMySpectator.Selected is TKMHouseWFlagPoint then
                           begin
-                            HWFP := TKMHouseWFlagPoint(gMySpectator.Selected);
-                            PaintFlagPoint(HWFP.Entrance, P, gMySpectator.Hand.FlagColor, HWFP.FlagPointTexId, True, True);
+                            house := TKMHouseWFlagPoint(gMySpectator.Selected);
+                            PaintFlagPoint(house.Entrance, P, gMySpectator.Hand.FlagColor, gRes.Houses[house.HouseType].FlagPointTexId, True, True);
                           end;
   end;
 end;

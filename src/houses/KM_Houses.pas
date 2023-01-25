@@ -327,7 +327,6 @@ type
     fFlagPoint: TKMPoint;
   protected
     procedure SetFlagPoint(aFlagPoint: TKMPoint); virtual;
-    function GetFlagPointTexId: Word; virtual; abstract;
     function GetMaxDistanceToPoint: Integer; virtual;
   public
     constructor Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
@@ -335,7 +334,6 @@ type
     procedure Save(SaveStream: TKMemoryStream); override;
 
     property FlagPoint: TKMPoint read fFlagPoint write SetFlagPoint;
-    property FlagPointTexId: Word read GetFlagPointTexId;
     property MaxDistanceToPoint: Integer read GetMaxDistanceToPoint;
     function IsFlagPointSet: Boolean;
     procedure ValidateFlagPoint;

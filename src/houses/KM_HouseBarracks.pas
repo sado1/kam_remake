@@ -15,8 +15,6 @@ type
     fRecruitsList: TList;
     fResourceCount: array [WARFARE_MIN..WARFARE_MAX] of Word;
     procedure SetWareCnt(aWareType: TKMWareType; aValue: Word);
-  protected
-    function GetFlagPointTexId: Word; override;
   public
     MapEdRecruitCount: Word; //Only used by MapEd
     NotAcceptFlag: array [WARFARE_MIN .. WARFARE_MAX] of Boolean;
@@ -260,12 +258,6 @@ begin
   Assert(aWare in [WARFARE_MIN .. WARFARE_MAX]);
 
   NotAllowTakeOutFlag[aWare] := not NotAllowTakeOutFlag[aWare];
-end;
-
-
-function TKMHouseBarracks.GetFlagPointTexId: Word;
-begin
-  Result := 249;
 end;
 
 
