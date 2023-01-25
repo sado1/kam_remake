@@ -40,7 +40,7 @@ type
     procedure SetResOrder(aId: Byte; aValue: Integer); override;
     procedure CheckTakeOutDeliveryMode; override;
 
-    function TryDecResourceDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean; override;
+    function TryDecWareDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean; override;
   public
     constructor Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
     constructor Load(LoadStream: TKMemoryStream); override;
@@ -418,7 +418,7 @@ begin
 end;
 
 
-function TKMHouseMarket.TryDecResourceDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean;
+function TKMHouseMarket.TryDecWareDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean;
 begin
   Assert(fMarketDemandsClosing[aWare] > 0);
 

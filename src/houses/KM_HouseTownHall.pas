@@ -36,7 +36,7 @@ type
     function GetResIn(aI: Byte): Word; override;
     procedure SetResIn(aI: Byte; aValue: Word); override;
 
-    function TryDecResourceDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean; override;
+    function TryDecWareDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean; override;
   public
     constructor Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
     constructor Load(LoadStream: TKMemoryStream); override;
@@ -129,7 +129,7 @@ begin
 end;
 
 
-function TKMHouseTownHall.TryDecResourceDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean;
+function TKMHouseTownHall.TryDecWareDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean;
 begin
   Assert(GoldDemandsClosing > 0);
 
@@ -290,25 +290,25 @@ end;
 
 function TKMHouseTownHall.GetGoldDeliveryCnt: Word;
 begin
-  Result := ResDeliveryCnt[1];
+  Result := WareDeliveryCnt[1];
 end;
 
 
 procedure TKMHouseTownHall.SetGoldDeliveryCnt(aCount: Word);
 begin
-  ResDeliveryCnt[1] := aCount;
+  WareDeliveryCnt[1] := aCount;
 end;
 
 
 function TKMHouseTownHall.GetGoldDemandsClosing: Word;
 begin
-  Result := ResDemandsClosing[1];
+  Result := WareDemandsClosing[1];
 end;
 
 
 procedure TKMHouseTownHall.SetGoldDemandsClosing(aCount: Word);
 begin
-  ResDemandsClosing[1] := aCount;
+  WareDemandsClosing[1] := aCount;
 end;
 
 

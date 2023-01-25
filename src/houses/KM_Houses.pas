@@ -115,7 +115,7 @@ type
     // Delivery mode set with small delay (couple of ticks), to avoid occasional clicks on delivery mode button
     fUpdateDeliveryModeOnTick: Cardinal; // Tick, on which we have to update real delivery mode with its NEW value
 
-    fResourceIn: array [1..4] of Byte; //Resource count in input
+    fWareIn: array [1..4] of Byte; // Ware count in input
 
 
     // Count of the resources we have ordered for the input (used for ware distribution)
@@ -124,15 +124,15 @@ type
     // But when demand is deleted it should be considered as well.
     // It could be deleted or not (if serf is entering demanded house)
     // F.e. when serf is walkin he can't close demand immidiately, he will close demand when he reach the next tile
-    // Demand is marked as Deleted and fResourceDemandsClosing is increased by 1
-    // Then we will need to reduce fResourceDeliveryCount and fResourceDemandsClosing when demand will notify this house on its close
-    // If serf is entering the house then we will not need to reduce fResourceDeliveryCount, since ware is already delivered
-    fResourceDeliveryCount: array[1..4] of Word; // = fResourceIn + Demands count (including closing demands)
-    fResourceDemandsClosing: array[1..4] of Word; // Number of closing demands at the moment
+    // Demand is marked as Deleted and fWareDemandsClosing is increased by 1
+    // Then we will need to reduce fWareDeliveryCount and fWareDemandsClosing when demand will notify this house on its close
+    // If serf is entering the house then we will not need to reduce fWareDeliveryCount, since ware is already delivered
+    fWareDeliveryCount: array[1..4] of Word; // = fWareIn + Demands count (including closing demands)
+    fWareDemandsClosing: array[1..4] of Word; // Number of closing demands at the moment
 
-    fResourceOut: array [1..4] of Byte; //Resource count in output
-    fResourceOrder: array [1..4] of Word; //If HousePlaceOrders=True then here are production orders
-    fResourceOutPool: array[0..19] of Byte;
+    fWareOut: array [1..4] of Byte; //Resource count in output
+    fWareOrder: array [1..4] of Word; //If HousePlaceOrders=True then here are production orders
+    fWareOutPool: array[0..19] of Byte;
     fLastOrderProduced: Byte;
 //    fResOrderDesired: array [1..4] of Single;
 
@@ -182,14 +182,14 @@ type
     procedure CheckTakeOutDeliveryMode; virtual;
     function GetDeliveryModeForCheck(aImmidiate: Boolean): TKMDeliveryMode;
 
-    procedure SetResourceDeliveryCount(aIndex: Integer; aCount: Word);
-    function GetResourceDeliveryCount(aIndex: Integer): Word;
+    procedure SetWareDeliveryCount(aIndex: Integer; aCount: Word);
+    function GetWareDeliveryCount(aIndex: Integer): Word;
 
-    procedure SetResourceDemandsClosing(aIndex: Integer; aCount: Word);
-    function GetResourceDemandsClosing(aIndex: Integer): Word;
+    procedure SetWareDemandsClosing(aIndex: Integer; aCount: Word);
+    function GetWareDemandsClosing(aIndex: Integer): Word;
 
-    property ResDeliveryCnt[aIndex: Integer]: Word read GetResourceDeliveryCount write SetResourceDeliveryCount;
-    property ResDemandsClosing[aIndex: Integer]: Word read GetResourceDemandsClosing write SetResourceDemandsClosing;
+    property WareDeliveryCnt[aIndex: Integer]: Word read GetWareDeliveryCount write SetWareDeliveryCount;
+    property WareDemandsClosing[aIndex: Integer]: Word read GetWareDemandsClosing write SetWareDemandsClosing;
 
     function GetInstance: TKMHouse; override;
     function GetPositionForDisplayF: TKMPointF; override;
@@ -197,7 +197,7 @@ type
 
     function GetIsSelectable: Boolean; override;
 
-    function TryDecResourceDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean; virtual;
+    function TryDecWareDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean; virtual;
 
     procedure MakeSound; virtual; //Swine/stables make extra sounds
   public
@@ -530,15 +530,15 @@ begin
 
   for I := 1 to 4 do
   begin
-    fResourceIn[I] := 0;
-    fResourceDeliveryCount[I] := 0;
-    fResourceDemandsClosing[I] := 0;
-    fResourceOut[I] := 0;
-    fResourceOrder[I] := 0;
+    fWareIn[I] := 0;
+    fWareDeliveryCount[I] := 0;
+    fWareDemandsClosing[I] := 0;
+    fWareOut[I] := 0;
+    fWareOrder[I] := 0;
   end;
 
   for I := 0 to 19 do
-    fResourceOutPool[I] := 0;
+    fWareOutPool[I] := 0;
 
   fIsDestroyed := False;
 //  fPointerCount := 0;
@@ -590,15 +590,15 @@ begin
   LoadStream.Read(Byte(fNewDeliveryMode));
   LoadStream.Read(fUpdateDeliveryModeOnTick);
   LoadStream.Read(fIsClosedForWorker);
-  for I:=1 to 4 do LoadStream.Read(fResourceIn[I]);
-  for I:=1 to 4 do LoadStream.Read(fResourceDeliveryCount[I]);
-  for I:=1 to 4 do LoadStream.Read(fResourceDemandsClosing[I]);
-  for I:=1 to 4 do LoadStream.Read(fResourceOut[I]);
-  for I:=1 to 4 do LoadStream.Read(fResourceOrder[I], SizeOf(fResourceOrder[I]));
+  for I:=1 to 4 do LoadStream.Read(fWareIn[I]);
+  for I:=1 to 4 do LoadStream.Read(fWareDeliveryCount[I]);
+  for I:=1 to 4 do LoadStream.Read(fWareDemandsClosing[I]);
+  for I:=1 to 4 do LoadStream.Read(fWareOut[I]);
+  for I:=1 to 4 do LoadStream.Read(fWareOrder[I], SizeOf(fWareOrder[I]));
 //  for I:=1 to 4 do LoadStream.Read(fResOrderDesired[I], SizeOf(fResOrderDesired[I]));
 
   if gRes.Houses[fType].IsWorkshop then
-    LoadStream.Read(fResourceOutPool, 20); //todo: Should be SizeOf()
+    LoadStream.Read(fWareOutPool, 20); //todo: Should be SizeOf()
 
   LoadStream.Read(fLastOrderProduced);
   LoadStream.Read(FlagAnimStep);
@@ -654,7 +654,7 @@ begin
       else        begin
                     demandsCnt := GetResDistribution(I);
                     AddDemand(Self, nil, W, demandsCnt, dtOnce, diNorm); //Every new house needs 5 resource units
-                    ResDeliveryCnt[I] := ResDeliveryCnt[I] + demandsCnt; //Keep track of how many resources we have on order (for distribution of wares)
+                    WareDeliveryCnt[I] := WareDeliveryCnt[I] + demandsCnt; //Keep track of how many resources we have on order (for distribution of wares)
                   end;
     end;
   end;
@@ -752,7 +752,7 @@ begin
       gHands[Owner].Stats.WareConsumed(W, ResIn[I]);
     W := gRes.Houses[fType].ResOutput[I];
     if W in [WARE_MIN..WARE_MAX] then
-      gHands[Owner].Stats.WareConsumed(W, fResourceOut[I]);
+      gHands[Owner].Stats.WareConsumed(W, fWareOut[I]);
   end;
 
   gTerrain.SetHouse(fPosition, fType, hsNone, HAND_NONE);
@@ -857,27 +857,27 @@ begin
 end;
 
 
-procedure TKMHouse.SetResourceDeliveryCount(aIndex: Integer; aCount: Word);
+procedure TKMHouse.SetWareDeliveryCount(aIndex: Integer; aCount: Word);
 begin
-  fResourceDeliveryCount[aIndex] := EnsureRange(aCount, 0, High(Word));
+  fWareDeliveryCount[aIndex] := EnsureRange(aCount, 0, High(Word));
 end;
 
 
-function TKMHouse.GetResourceDeliveryCount(aIndex: Integer): Word;
+function TKMHouse.GetWareDeliveryCount(aIndex: Integer): Word;
 begin
-  Result := fResourceDeliveryCount[aIndex];
+  Result := fWareDeliveryCount[aIndex];
 end;
 
 
-procedure TKMHouse.SetResourceDemandsClosing(aIndex: Integer; aCount: Word);
+procedure TKMHouse.SetWareDemandsClosing(aIndex: Integer; aCount: Word);
 begin
-  fResourceDemandsClosing[aIndex] := EnsureRange(aCount, 0, High(Word));
+  fWareDemandsClosing[aIndex] := EnsureRange(aCount, 0, High(Word));
 end;
 
 
-function TKMHouse.GetResourceDemandsClosing(aIndex: Integer): Word;
+function TKMHouse.GetWareDemandsClosing(aIndex: Integer): Word;
 begin
-  Result := fResourceDemandsClosing[aIndex];
+  Result := fWareDemandsClosing[aIndex];
 end;
 
 
@@ -1423,10 +1423,10 @@ function TKMHouse.GetResourceInArray: TKMByteArray;
 var
   I, iOffset: Integer;
 begin
-  SetLength(Result, Length(fResourceIn));
-  iOffset := Low(fResourceIn) - Low(Result);
+  SetLength(Result, Length(fWareIn));
+  iOffset := Low(fWareIn) - Low(Result);
   for I := Low(Result) to High(Result) do
-    Result[I] := fResourceIn[I + iOffset];
+    Result[I] := fWareIn[I + iOffset];
 end;
 
 
@@ -1434,10 +1434,10 @@ function TKMHouse.GetResourceOutArray: TKMByteArray;
 var
   I, iOffset: Integer;
 begin
-  SetLength(Result, Length(fResourceOut));
-  iOffset := Low(fResourceOut) - Low(Result);
+  SetLength(Result, Length(fWareOut));
+  iOffset := Low(fWareOut) - Low(Result);
   for I := Low(Result) to High(Result) do
-    Result[I] := fResourceOut[I + iOffset];
+    Result[I] := fWareOut[I + iOffset];
 end;
 
 
@@ -1445,9 +1445,9 @@ function TKMHouse.GetResourceOutPoolArray: TKMByteArray;
 var
   I: Integer;
 begin
-  SetLength(Result, Length(fResourceOutPool));
+  SetLength(Result, Length(fWareOutPool));
   for I := Low(Result) to High(Result) do
-    Result[I] := fResourceOutPool[I];
+    Result[I] := fWareOutPool[I];
 end;
 
 
@@ -1496,14 +1496,14 @@ begin
   Result := 0;
   for I := 1 to 4 do
     if (aWare = gRes.Houses[fType].ResOutput[I]) or (aWare = wtAll) then
-      Inc(Result, fResourceOut[I]);
+      Inc(Result, fWareOut[I]);
 end;
 
 
 // Check amount of placed order for given ID
 function TKMHouse.GetResOrder(aID: Byte): Integer;
 begin
-  Result := fResourceOrder[aID];
+  Result := fWareOrder[aID];
 end;
 
 
@@ -1514,12 +1514,12 @@ procedure TKMHouse.SetResOrder(aID: Byte; aValue: Integer);
 //  I: Integer;
 //  TotalDesired: Integer;
 begin
-  fResourceOrder[aID] := EnsureRange(aValue, 0, MAX_WARES_ORDER);
+  fWareOrder[aID] := EnsureRange(aValue, 0, MAX_WARES_ORDER);
 
-  //Calculate desired production ratio (so that we are not affected by fResourceOrder which decreases till 0)
-//  TotalDesired := fResourceOrder[1] + fResourceOrder[2] + fResourceOrder[3] + fResourceOrder[4];
+  //Calculate desired production ratio (so that we are not affected by fWareOrder which decreases till 0)
+//  TotalDesired := fWareOrder[1] + fWareOrder[2] + fWareOrder[3] + fWareOrder[4];
 //  for I := 1 to 4 do
-//    fResOrderDesired[I] := fResourceOrder[I] / TotalDesired;
+//    fResOrderDesired[I] := fWareOrder[I] / TotalDesired;
 
   fNeedIssueOrderCompletedMsg := False;
   fOrderCompletedMsgIssued := False;
@@ -1560,9 +1560,9 @@ begin
 //  if WARFARE_ORDER_PROPORTIONAL then
 //  begin
 //    //See the ratio between items that were made (since last order amount change)
-//    TotalLeft := fResourceOrder[1] + fResourceOrder[2] + fResourceOrder[3] + fResourceOrder[4];
+//    TotalLeft := fWareOrder[1] + fWareOrder[2] + fWareOrder[3] + fWareOrder[4];
 //    for I := 1 to 4 do
-//      LeftRatio[I] := fResourceOrder[I] / TotalLeft;
+//      LeftRatio[I] := fWareOrder[I] / TotalLeft;
 //
 //    //Left   Desired
 //    //0.5    0.6
@@ -1591,7 +1591,7 @@ begin
 
   if Result <> 0 then
   begin
-    Dec(fResourceOrder[Result]);
+    Dec(fWareOrder[Result]);
     fNeedIssueOrderCompletedMsg := True;
     fOrderCompletedMsgIssued := False;
   end
@@ -1632,14 +1632,14 @@ procedure TKMHouse.HouseDemandWasClosed(aWare: TKMWareType; aDeleteCanceled: Boo
 begin
   if Self = nil then Exit;
 
-  if TryDecResourceDelivery(aWare, aDeleteCanceled) then
+  if TryDecWareDelivery(aWare, aDeleteCanceled) then
     // Update demands, since our DeliveryCount was changed
     // Maybe we need more wares to order
     UpdateDemands;
 end;
 
 
-function TKMHouse.TryDecResourceDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean;
+function TKMHouse.TryDecWareDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean;
 var
   I: Integer;
 begin
@@ -1653,9 +1653,9 @@ begin
       // thus serf brought ware to the house and we should not decrease delivery count in that case here
       // (but it will be decreased anyway in the ResAddToIn for market)
       if not aDeleteCanceled then
-        ResDeliveryCnt[I] := ResDeliveryCnt[I] - 1;
+        WareDeliveryCnt[I] := WareDeliveryCnt[I] - 1;
 
-      ResDemandsClosing[I] := ResDemandsClosing[I] - 1;
+      WareDemandsClosing[I] := WareDemandsClosing[I] - 1;
       Exit(True);
     end;
 end;
@@ -1674,14 +1674,14 @@ begin
     begin
       //Don't allow the static script to overfill houses
       if aFromStaticScript then
-        aCount := EnsureRange(aCount, 0, GetMaxInRes - fResourceIn[I]);
-      //ResDeliveryCnt stay same, because corresponding demand will be closed
+        aCount := EnsureRange(aCount, 0, GetMaxInRes - fWareIn[I]);
+      //WareDeliveryCnt stay same, because corresponding demand will be closed
       ResIn[I] := ResIn[I] + aCount;
       if aFromStaticScript then
       begin
-        ResDeliveryCnt[I] := ResDeliveryCnt[I] + aCount;
+        WareDeliveryCnt[I] := WareDeliveryCnt[I] + aCount;
         ordersRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, aWare, aCount);
-        ResDeliveryCnt[I] := ResDeliveryCnt[I] - ordersRemoved;
+        WareDeliveryCnt[I] := WareDeliveryCnt[I] - ordersRemoved;
       end;
     end;
 end;
@@ -1703,9 +1703,9 @@ begin
       begin
         count := aCount;
         for p := 0 to 19 do
-          if fResourceOutPool[p] = 0 then
+          if fWareOutPool[p] = 0 then
           begin
-            fResourceOutPool[p] := I;
+            fWareOutPool[p] := I;
             Dec(count);
             if count = 0 then
               Break;
@@ -1732,9 +1732,9 @@ begin
     end;
     //Don't allow output to be overfilled from script. This is not checked
     //in ResAddToOut because e.g. stonemason is allowed to overfill it slightly)
-    if (aWare = gRes.Houses[fType].ResOutput[I]) and (fResourceOut[I] < 5) then
+    if (aWare = gRes.Houses[fType].ResOutput[I]) and (fWareOut[I] < 5) then
     begin
-      aCount := Min(aCount, 5 - fResourceOut[I]);
+      aCount := Min(aCount, 5 - fWareOut[I]);
       ResAddToOut(aWare, aCount);
       Exit;
     end;
@@ -1784,13 +1784,13 @@ end;
 
 function TKMHouse.GetResIn(aI: Byte): Word;
 begin
-  Result := fResourceIn[aI];
+  Result := fWareIn[aI];
 end;
 
 
 function TKMHouse.GetResOut(aI: Byte): Word;
 begin
-  Result := fResourceOut[aI];
+  Result := fWareOut[aI];
 end;
 
 
@@ -1821,11 +1821,11 @@ var
   W: TKMWareType;
 begin
   W := gRes.Houses[fType].ResInput[aI];
-  cntChange := aValue - fResourceIn[aI];
+  cntChange := aValue - fWareIn[aI];
 
   SetResInManageTakeOutDeliveryMode(W, cntChange);
 
-  fResourceIn[aI] := aValue;
+  fWareIn[aI] := aValue;
 
   if not (W in [wtNone, wtAll, wtWarfare]) and (cntChange <> 0) then
     gScriptEvents.ProcHouseWareCountChanged(Self, W, aValue, cntChange);
@@ -1838,9 +1838,9 @@ var
   W: TKMWareType;
 begin
   W := gRes.Houses[fType].ResOutput[aI];
-  cntChange := aValue - fResourceOut[aI];
+  cntChange := aValue - fWareOut[aI];
 
-  fResourceOut[aI] := aValue;
+  fWareOut[aI] := aValue;
 
   if not (W in [wtNone, wtAll, wtWarfare]) and (cntChange <> 0) then
     gScriptEvents.ProcHouseWareCountChanged(Self, W, aValue, cntChange);
@@ -1854,7 +1854,7 @@ begin
   Result := False;
   for I := 1 to 4 do
     if aWare = gRes.Houses[fType].ResOutput[I] then
-      Result := fResourceOut[I] >= aCount;
+      Result := fWareOut[I] >= aCount;
 
   if not Result and (fNewDeliveryMode = dmTakeOut) then
     for I := 1 to 4 do
@@ -1890,16 +1890,16 @@ begin
     end;
 
     //Keep track of how many are ordered
-    ResDeliveryCnt[I] := EnsureRange(ResDeliveryCnt[I] - aCount, 0, High(Word));
+    WareDeliveryCnt[I] := EnsureRange(WareDeliveryCnt[I] - aCount, 0, High(Word));
 
     Assert(ResIn[I] >= aCount, 'fResourceIn[i] < 0');
     ResIn[I] := ResIn[I] - aCount;
     //Only request a new resource if it is allowed by the distribution of wares for our parent player
     for K := 1 to aCount do
-      if ResDeliveryCnt[I] < GetResDistribution(I) then
+      if WareDeliveryCnt[I] < GetResDistribution(I) then
       begin
         gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, aWare, 1, dtOnce, diNorm);
-        ResDeliveryCnt[I] := ResDeliveryCnt[I] + 1;
+        WareDeliveryCnt[I] := WareDeliveryCnt[I] + 1;
       end;
     Exit;
   end;
@@ -1917,22 +1917,22 @@ begin
   begin
     if aFromScript then
     begin
-      aCount := Min(aCount, fResourceOut[I]);
+      aCount := Min(aCount, fWareOut[I]);
       if aCount > 0 then
       begin
         gHands[Owner].Stats.WareConsumed(aWare, aCount);
         gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
       end;
     end;
-    Assert(aCount <= fResourceOut[I]);
+    Assert(aCount <= fWareOut[I]);
 
     if gRes.Houses[fType].IsWorkshop and (aCount > 0) then
     begin
       count := aCount;
       for p := 0 to 19 do
-        if fResourceOutPool[p] = I then
+        if fWareOutPool[p] = I then
           begin
-            fResourceOutPool[p] := 0;
+            fWareOutPool[p] := 0;
             Dec(count);
             if count = 0 then
               Break;
@@ -1959,16 +1959,16 @@ begin
     end;
 
     //Keep track of how many are ordered
-    ResDeliveryCnt[I] := ResDeliveryCnt[I] - aCount;
+    WareDeliveryCnt[I] := WareDeliveryCnt[I] - aCount;
 
     Assert(ResIn[I] >= aCount, 'fResourceIn[i] < 0');
     ResIn[I] := ResIn[I] - aCount;
     //Only request a new resource if it is allowed by the distribution of wares for our parent player
     for K := 1 to aCount do
-      if ResDeliveryCnt[I] < GetResDistribution(I) then
+      if WareDeliveryCnt[I] < GetResDistribution(I) then
       begin
         gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, aWare, 1, dtOnce, diNorm);
-        ResDeliveryCnt[I] := ResDeliveryCnt[I] + 1;
+        WareDeliveryCnt[I] := WareDeliveryCnt[I] + 1;
       end;
     Exit;
   end;
@@ -2073,15 +2073,15 @@ begin
   SaveStream.Write(Byte(fNewDeliveryMode));
   SaveStream.Write(fUpdateDeliveryModeOnTick);
   SaveStream.Write(fIsClosedForWorker);
-  for I := 1 to 4 do SaveStream.Write(fResourceIn[I]);
-  for I := 1 to 4 do SaveStream.Write(fResourceDeliveryCount[I]);
-  for I := 1 to 4 do SaveStream.Write(fResourceDemandsClosing[I]);
-  for I := 1 to 4 do SaveStream.Write(fResourceOut[I]);
-  for I := 1 to 4 do SaveStream.Write(fResourceOrder[I], SizeOf(fResourceOrder[I]));
+  for I := 1 to 4 do SaveStream.Write(fWareIn[I]);
+  for I := 1 to 4 do SaveStream.Write(fWareDeliveryCount[I]);
+  for I := 1 to 4 do SaveStream.Write(fWareDemandsClosing[I]);
+  for I := 1 to 4 do SaveStream.Write(fWareOut[I]);
+  for I := 1 to 4 do SaveStream.Write(fWareOrder[I], SizeOf(fWareOrder[I]));
 //  for I:=1 to 4 do SaveStream.Write(fResOrderDesired[I], SizeOf(fResOrderDesired[I]));
 
   if gRes.Houses[fType].IsWorkshop then
-    SaveStream.Write(fResourceOutPool, 20); //todo: Should be SizeOf()
+    SaveStream.Write(fWareOutPool, 20); //todo: Should be SizeOf()
 
   SaveStream.Write(fLastOrderProduced);
   SaveStream.Write(FlagAnimStep);
@@ -2162,14 +2162,14 @@ begin
 
     resDistribution := GetResDistribution(I);
 
-    demandsToChange := resDistribution - (ResDeliveryCnt[I] - ResDemandsClosing[I]);
+    demandsToChange := resDistribution - (WareDeliveryCnt[I] - WareDemandsClosing[I]);
 
     //Not enough resources ordered, add new demand
     if demandsToChange > 0 then
     begin
       gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, gRes.Houses[fType].ResInput[I], demandsToChange, dtOnce, diNorm);
 
-      ResDeliveryCnt[I] := ResDeliveryCnt[I] + demandsToChange;
+      WareDeliveryCnt[I] := WareDeliveryCnt[I] + demandsToChange;
     end;
 
     //Too many resources ordered, attempt to remove demand if nobody has taken it yet
@@ -2177,8 +2177,8 @@ begin
     begin
       demandsRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, gRes.Houses[fType].ResInput[I], -demandsToChange, plannedToRemove);
 
-      ResDeliveryCnt[I] := ResDeliveryCnt[I] - demandsRemoved; //Only reduce it by the number that were actually removed
-      ResDemandsClosing[I] := ResDemandsClosing[I] + plannedToRemove;
+      WareDeliveryCnt[I] := WareDeliveryCnt[I] - demandsRemoved; //Only reduce it by the number that were actually removed
+      WareDemandsClosing[I] := WareDemandsClosing[I] + plannedToRemove;
     end;
   end;
 end;
@@ -2200,13 +2200,13 @@ begin
     actStr := CurrentAction.ClassName;
 
   resOutPoolStr := '';
-  for I := Low(fResourceOutPool) to High(fResourceOutPool) do
+  for I := Low(fWareOutPool) to High(fWareOutPool) do
   begin
     if resOutPoolStr <> '' then
       resOutPoolStr := resOutPoolStr + ',';
     if I = 10 then
       resOutPoolStr := resOutPoolStr + aSeparator;
-    resOutPoolStr := resOutPoolStr + IntToStr(fResourceOutPool[I]);
+    resOutPoolStr := resOutPoolStr + IntToStr(fWareOutPool[I]);
   end;
 
 
@@ -2229,11 +2229,11 @@ begin
                     fBuildSupplyStone, aSeparator,
                     fBuildingProgress, aSeparator,
                     DoorwayUse, aSeparator,
-                    fResourceIn[1], fResourceIn[2], fResourceIn[3], fResourceIn[4], aSeparator,
-                    fResourceDeliveryCount[1], fResourceDeliveryCount[2], fResourceDeliveryCount[3], fResourceDeliveryCount[4], aSeparator,
-                    fResourceDemandsClosing[1], fResourceDemandsClosing[2], fResourceDemandsClosing[3], fResourceDemandsClosing[4], aSeparator,
-                    fResourceOut[1], fResourceOut[2], fResourceOut[3], fResourceOut[4], aSeparator,
-                    fResourceOrder[1], fResourceOrder[2], fResourceOrder[3], fResourceOrder[4], aSeparator,
+                    fWareIn[1], fWareIn[2], fWareIn[3], fWareIn[4], aSeparator,
+                    fWareDeliveryCount[1], fWareDeliveryCount[2], fWareDeliveryCount[3], fWareDeliveryCount[4], aSeparator,
+                    fWareDemandsClosing[1], fWareDemandsClosing[2], fWareDemandsClosing[3], fWareDemandsClosing[4], aSeparator,
+                    fWareOut[1], fWareOut[2], fWareOut[3], fWareOut[4], aSeparator,
+                    fWareOrder[1], fWareOrder[2], fWareOrder[3], fWareOrder[4], aSeparator,
                     resOutPoolStr]);
 end;
 
@@ -2317,7 +2317,7 @@ begin
                       gRenderPool.AddHouse(fType, fPosition, 1, 1, fSnowStep)
                     else
                       gRenderPool.AddHouse(fType, fPosition, 1, 1, 0);
-                    gRenderPool.AddHouseSupply(fType, fPosition, fResourceIn, fResourceOut, fResourceOutPool);
+                    gRenderPool.AddHouseSupply(fType, fPosition, fWareIn, fWareOut, fWareOutPool);
                     if CurrentAction <> nil then
                       gRenderPool.AddHouseWork(fType, fPosition, CurrentAction.SubAction, WorkAnimStep, WorkAnimStepPrev, gHands[Owner].GameFlagColor);
                   end
