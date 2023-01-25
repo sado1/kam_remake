@@ -3594,10 +3594,7 @@ begin
       if (H <> nil) then
         for I := 1 to 4 do
           if gRes.Houses[H.HouseType].ResOutput[I] = W then
-          begin
-            Result := H.ResOrder[I];
-            Exit;
-          end;
+            Exit(H.WareOrder[I]);
     end
     else
       LogIntParamWarn('States.HouseWeaponsOrdered', [aHouseID, aWareType]);
@@ -3624,10 +3621,7 @@ begin
       if (H <> nil) then
         for I := 1 to 4 do
           if gRes.Houses[H.HouseType].ResOutput[I] = aWareType then
-          begin
-            Result := H.ResOrder[I];
-            Exit;
-          end;
+            Exit(H.WareOrder[I]);
     end
     else
       LogParamWarn('States.HouseWeaponsOrdered', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType))]);
@@ -4796,11 +4790,11 @@ begin
     begin
       H := fIDCache.GetHouse(aMarketID);
       if (H is TKMHouseMarket)
-        and (not H.IsDestroyed)
-        and (TKMHouseMarket(H).ResFrom <> TKMHouseMarket(H).ResTo)
-        and (TKMHouseMarket(H).ResFrom in WARES_VALID)
-        and (TKMHouseMarket(H).ResTo in WARES_VALID) then
-        Result := TKMHouseMarket(H).ResOrder[0];
+      and (not H.IsDestroyed)
+      and (TKMHouseMarket(H).ResFrom <> TKMHouseMarket(H).ResTo)
+      and (TKMHouseMarket(H).ResFrom in WARES_VALID)
+      and (TKMHouseMarket(H).ResTo in WARES_VALID) then
+        Result := TKMHouseMarket(H).WareOrder[0];
     end
     else
       LogIntParamWarn('States.MarketOrderAmount', [aMarketID]);
@@ -4825,10 +4819,10 @@ begin
     begin
       H := fIDCache.GetHouse(aMarketID);
       if (H is TKMHouseMarket)
-        and (not H.IsDestroyed)
-        and (TKMHouseMarket(H).ResFrom <> TKMHouseMarket(H).ResTo)
-        and (TKMHouseMarket(H).ResFrom in WARES_VALID)
-        and (TKMHouseMarket(H).ResTo in WARES_VALID) then
+      and (not H.IsDestroyed)
+      and (TKMHouseMarket(H).ResFrom <> TKMHouseMarket(H).ResTo)
+      and (TKMHouseMarket(H).ResFrom in WARES_VALID)
+      and (TKMHouseMarket(H).ResTo in WARES_VALID) then
       begin
         resTo := TKMHouseMarket(H).ResTo;
         Result := WARE_TY_TO_ID[resTo];
@@ -4856,10 +4850,10 @@ begin
     begin
       H := fIDCache.GetHouse(aMarketID);
       if (H is TKMHouseMarket)
-        and (not H.IsDestroyed)
-        and (TKMHouseMarket(H).ResFrom <> TKMHouseMarket(H).ResTo)
-        and (TKMHouseMarket(H).ResFrom in WARES_VALID)
-        and (TKMHouseMarket(H).ResTo in WARES_VALID) then
+      and (not H.IsDestroyed)
+      and (TKMHouseMarket(H).ResFrom <> TKMHouseMarket(H).ResTo)
+      and (TKMHouseMarket(H).ResFrom in WARES_VALID)
+      and (TKMHouseMarket(H).ResTo in WARES_VALID) then
         Result := TKMHouseMarket(H).ResTo;
     end
     else

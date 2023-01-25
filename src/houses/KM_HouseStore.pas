@@ -7,7 +7,7 @@ uses
   KM_Defaults, KM_CommonClasses;
 
 type
-  // Storehouse keeps all the resources and flags for them
+  // Storehouse keeps all the wares and flags for them
   TKMHouseStore = class(TKMHouse)
   private
     fWaresCount: array [WARE_MIN .. WARE_MAX] of Word;
@@ -19,8 +19,10 @@ type
     NotAllowTakeOutFlag: array [WARE_MIN .. WARE_MAX] of Boolean;
     constructor Load(LoadStream: TKMemoryStream); override;
     procedure Demolish(aFrom: TKMHandID; IsSilent: Boolean = False); override;
+
     function ShouldAbandonDeliveryTo(aWareType: TKMWareType): Boolean; override;
     function ShouldAbandonDeliveryFromTo(aToHouse: TKMHouse; aWareType: TKMWareType; aImmidiateCheck: Boolean): Boolean; override;
+
     procedure ToggleNotAcceptFlag(aWare: TKMWareType);
     procedure ToggleNotAcceptTakeOutFlag(aWare: TKMWareType);
     procedure WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
@@ -28,6 +30,7 @@ type
     procedure WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
     function WareCanAddToIn(aWare: TKMWareType): Boolean; override;
     function WareOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; override;
+
     procedure Save(SaveStream: TKMemoryStream); override;
   end;
 

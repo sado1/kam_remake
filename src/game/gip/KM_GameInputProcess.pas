@@ -990,7 +990,7 @@ begin
       gicHouseDeliveryModePrev:   //Delivery mode has to be delayed, to avoid occasional delivery mode button clicks
                                   srcHouse.SetPrevDeliveryMode;
       gicHouseClosedForWorkerTgl: srcHouse.IsClosedForWorker := not srcHouse.IsClosedForWorker;
-      gicHouseOrderProduct:      srcHouse.ResOrder[IntParams[1]] := srcHouse.ResOrder[IntParams[1]] + IntParams[2];
+      gicHouseOrderProduct:      srcHouse.WareOrder[IntParams[1]] := srcHouse.WareOrder[IntParams[1]] + IntParams[2];
       gicHouseMarketFrom:        TKMHouseMarket(srcHouse).ResFrom := TKMWareType(IntParams[1]);
       gicHouseMarketTo:          TKMHouseMarket(srcHouse).ResTo := TKMWareType(IntParams[1]);
       gicHouseStoreNotAcceptFlag:   TKMHouseStore(srcHouse).ToggleNotAcceptFlag(TKMWareType(IntParams[1]));

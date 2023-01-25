@@ -841,7 +841,7 @@ begin
         WareOrderRow_Order[I].WareRow.Caption := gRes.Wares[W].Title;
         WareOrderRow_Order[I].Hint := gRes.Wares[W].Title;
         WareOrderRow_Order[I].WareRow.WareCount := aHouse.CheckWareOut(W);
-        WareOrderRow_Order[I].OrderCount := aHouse.ResOrder[I];
+        WareOrderRow_Order[I].OrderCount := aHouse.WareOrder[I];
         WareOrderRow_Order[I].Show;
         WareOrderRow_Order[I].Top := Base + Line * LINE_HEIGHT;
         Inc(Line);
@@ -1583,8 +1583,8 @@ begin
 
   Button_Market_Remove.Enabled := (aMarket.ResFrom <> wtNone) and (aMarket.ResTo <> wtNone);
   Button_Market_Add.Enabled := Button_Market_Remove.Enabled;
-  Label_Market_FromAmount.Caption := IntToStr(aMarket.RatioFrom * aMarket.ResOrder[1]);
-  Label_Market_ToAmount.Caption := IntToStr(aMarket.RatioTo * aMarket.ResOrder[1]);
+  Label_Market_FromAmount.Caption := IntToStr(aMarket.RatioFrom * aMarket.WareOrder[1]);
+  Label_Market_ToAmount.Caption := IntToStr(aMarket.RatioTo * aMarket.WareOrder[1]);
 end;
 
 

@@ -472,9 +472,9 @@ var
         AND (Houses[K].HouseType = htMarket) then
       begin
         HM := TKMHouseMarket(Houses[K]);
-        if (HM.ResOrder[0] > 0)
-          AND (gHands[fOwner].Stats.GetWareBalance(HM.ResFrom) < HM.ResOrder[0] * HM.RatioFrom + WARE_RESERVE) then
-          HM.ResOrder[0] := 0; // Cancel the trade
+        if (HM.WareOrder[0] > 0)
+          AND (gHands[fOwner].Stats.GetWareBalance(HM.ResFrom) < HM.WareOrder[0] * HM.RatioFrom + WARE_RESERVE) then
+          HM.WareOrder[0] := 0; // Cancel the trade
       end;
   end;
 
@@ -496,7 +496,7 @@ var
       begin
         HM := TKMHouseMarket(Houses[K]);
         // Market have an order
-        if (HM.ResOrder[0] > 0) then
+        if (HM.WareOrder[0] > 0) then
         begin
           if (HM.ResTo = aResTo) then
             Exit;
@@ -507,10 +507,10 @@ var
       end;
     if (Market <> nil) then
     begin
-      Market.ResOrder[0] := 0; //First we must cancel the current trade
+      Market.WareOrder[0] := 0; //First we must cancel the current trade
       Market.ResFrom := aResFrom;
       Market.ResTo := aResTo;
-      Market.ResOrder[0] := TRADE_QUANTITY; //Set the new trade
+      Market.WareOrder[0] := TRADE_QUANTITY; //Set the new trade
     end;
   end;
 const
@@ -1084,8 +1084,8 @@ begin
           if (H.HouseType <> HT) then
             Continue;
           for K := 1 to 4 do
-            H.ResOrder[K] := 0;
-          H.ResOrder[MaxIdx] := WEAPONS_PER_A_UPDATE; // With update each 1-2 minutes there is not need to calculate something more
+            H.WareOrder[K] := 0;
+          H.WareOrder[MaxIdx] := WEAPONS_PER_A_UPDATE; // With update each 1-2 minutes there is not need to calculate something more
           if (HT = htArmorWorkshop) then
           begin
             for K := 1 to 4 do
@@ -1093,7 +1093,7 @@ begin
               WT := gRes.Houses[HT].ResOutput[K];
               if (WT = wtLeatherArmor) then
               begin
-                H.ResOrder[K] := 100;
+                H.WareOrder[K] := 100;
                 Break;
               end;
             end;

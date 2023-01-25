@@ -2935,7 +2935,7 @@ begin
         if H.CanHaveWareType(W) then
         begin
           if aCount > 0 then
-            H.ResTake(W, aCount, True);
+            H.WareTake(W, aCount, True);
         end
         else
           LogIntParamWarn('Actions.HouseTakeWaresFrom wrong ware type', [aHouseID, aType, aCount]);
@@ -2966,7 +2966,7 @@ begin
         if H.CanHaveWareType(aType) then
         begin
           if aCount > 0 then
-            H.ResTake(aType, aCount, True);
+            H.WareTake(aType, aCount, True);
         end
         else
           LogParamWarn('Actions.HouseTakeWaresFromEx wrong ware type', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aType)), aCount]);
@@ -3317,7 +3317,7 @@ begin
         for I := 1 to 4 do
           if gRes.Houses[H.HouseType].ResOutput[I] = W then
           begin
-            H.ResOrder[I] := aAmount;
+            H.WareOrder[I] := aAmount;
             Exit;
           end;
     end
@@ -3348,7 +3348,7 @@ begin
         for I := 1 to 4 do
           if gRes.Houses[H.HouseType].ResOutput[I] = aWareType then
           begin
-            H.ResOrder[I] := aAmount;
+            H.WareOrder[I] := aAmount;
             Exit;
           end;
     end
@@ -4113,18 +4113,18 @@ begin
       resFrom := WARE_ID_TO_TYPE[aFrom];
       resTo := WARE_ID_TO_TYPE[aTo];
       if (H is TKMHouseMarket)
-        and not H.IsDestroyed
-        and H.IsComplete
-        and TKMHouseMarket(H).AllowedToTrade(resFrom)
-        and TKMHouseMarket(H).AllowedToTrade(resTo) then
+      and not H.IsDestroyed
+      and H.IsComplete
+      and TKMHouseMarket(H).AllowedToTrade(resFrom)
+      and TKMHouseMarket(H).AllowedToTrade(resTo) then
       begin
         if (TKMHouseMarket(H).ResFrom <> resFrom) or (TKMHouseMarket(H).ResTo <> resTo) then
         begin
-          TKMHouseMarket(H).ResOrder[0] := 0; //First we must cancel the current trade
+          TKMHouseMarket(H).WareOrder[0] := 0; //First we must cancel the current trade
           TKMHouseMarket(H).ResFrom := resFrom;
           TKMHouseMarket(H).ResTo := resTo;
         end;
-        TKMHouseMarket(H).ResOrder[0] := aAmount; //Set the new trade
+        TKMHouseMarket(H).WareOrder[0] := aAmount; //Set the new trade
       end;
     end
     else
@@ -4149,18 +4149,18 @@ begin
     begin
       H := fIDCache.GetHouse(aMarketID);
       if (H is TKMHouseMarket)
-        and not H.IsDestroyed
-        and H.IsComplete
-        and TKMHouseMarket(H).AllowedToTrade(aFrom)
-        and TKMHouseMarket(H).AllowedToTrade(aTo) then
+      and not H.IsDestroyed
+      and H.IsComplete
+      and TKMHouseMarket(H).AllowedToTrade(aFrom)
+      and TKMHouseMarket(H).AllowedToTrade(aTo) then
       begin
         if (TKMHouseMarket(H).ResFrom <> aFrom) or (TKMHouseMarket(H).ResTo <> aTo) then
         begin
-          TKMHouseMarket(H).ResOrder[0] := 0; //First we must cancel the current trade
+          TKMHouseMarket(H).WareOrder[0] := 0; //First we must cancel the current trade
           TKMHouseMarket(H).ResFrom := aFrom;
           TKMHouseMarket(H).ResTo := aTo;
         end;
-        TKMHouseMarket(H).ResOrder[0] := aAmount; //Set the new trade
+        TKMHouseMarket(H).WareOrder[0] := aAmount; //Set the new trade
       end;
     end
     else

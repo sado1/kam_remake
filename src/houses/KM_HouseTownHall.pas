@@ -52,7 +52,7 @@ type
     procedure PostLoadMission; override;
     procedure UpdateDemands; override;
 
-    procedure ResTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
+    procedure WareTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
     procedure WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
     procedure WareTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
     procedure WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
@@ -328,7 +328,7 @@ begin
 end;
 
 
-procedure TKMHouseTownHall.ResTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
+procedure TKMHouseTownHall.WareTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
 begin
   if DeliveryMode = dmTakeOut then
     WareTakeFromOut(aWare, aCount, aFromScript)

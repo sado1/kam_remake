@@ -134,7 +134,7 @@ type
     fWareOrder: array [1..4] of Word; //If HousePlaceOrders=True then here are production orders
     fWareOutPool: array[0..19] of Byte;
     fLastOrderProduced: Byte;
-//    fResOrderDesired: array [1..4] of Single;
+//    fWareOrderDesired: array [1..4] of Single;
 
     fIsOnSnow: Boolean;
     fSnowStep: Single;
@@ -299,17 +299,17 @@ type
     procedure WareAddToOut(aWare: TKMWareType; const aCount: Integer = 1);
     procedure WareAddToEitherFromScript(aWare: TKMWareType; aCount: Integer);
     procedure WareAddToBuild(aWare: TKMWareType; aCount: Integer = 1);
-    procedure ResTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
+    procedure WareTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
     procedure WareTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
     procedure WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
     function WareCanAddToIn(aWare: TKMWareType): Boolean; virtual;
     function WareCanAddToOut(aWare: TKMWareType): Boolean;
     function CanHaveWareType(aWare: TKMWareType): Boolean; virtual;
     function WareOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; virtual;
-    property ResOrder[aId: Byte]: Integer read GetWareOrder write SetWareOrder;
+    property WareOrder[aId: Byte]: Integer read GetWareOrder write SetWareOrder;
     property ResIn[aId: Byte]: Word read GetWareIn write SetWareIn;
     property ResOut[aId: Byte]: Word read GetWareOut write SetWareOut;
-    property ResInLocked[aId: Byte]: Word read GetWareInLocked;
+    property WareInLocked[aId: Byte]: Word read GetWareInLocked;
 
     procedure UpdateDemands; virtual;
     procedure PostLoadMission; virtual;
@@ -593,7 +593,7 @@ begin
   for I:=1 to 4 do LoadStream.Read(fWareDemandsClosing[I]);
   for I:=1 to 4 do LoadStream.Read(fWareOut[I]);
   for I:=1 to 4 do LoadStream.Read(fWareOrder[I], SizeOf(fWareOrder[I]));
-//  for I:=1 to 4 do LoadStream.Read(fResOrderDesired[I], SizeOf(fResOrderDesired[I]));
+//  for I:=1 to 4 do LoadStream.Read(fWareOrderDesired[I], SizeOf(fWareOrderDesired[I]));
 
   if gRes.Houses[fType].IsWorkshop then
     LoadStream.Read(fWareOutPool, 20); //todo: Should be SizeOf()
@@ -834,7 +834,7 @@ begin
     for I := 1 to 4 do
     begin
       W := gRes.Houses[fType].ResInput[I];
-      resCnt := ResIn[I] - ResInLocked[I];
+      resCnt := ResIn[I] - WareInLocked[I];
       if (W <> wtNone) and (resCnt > 0) then
         gHands[Owner].Deliveries.Queue.RemOffer(Self, W, resCnt);
     end;
@@ -846,7 +846,7 @@ begin
     for I := 1 to 4 do
     begin
       W := gRes.Houses[fType].ResInput[I];
-      resCnt := ResIn[I] - ResInLocked[I];
+      resCnt := ResIn[I] - WareInLocked[I];
 
       if not (W in [wtNone, wtAll, wtWarfare]) and (resCnt > 0) then
         gHands[Owner].Deliveries.Queue.AddOffer(Self, W, resCnt);
@@ -1517,7 +1517,7 @@ begin
   //Calculate desired production ratio (so that we are not affected by fWareOrder which decreases till 0)
 //  TotalDesired := fWareOrder[1] + fWareOrder[2] + fWareOrder[3] + fWareOrder[4];
 //  for I := 1 to 4 do
-//    fResOrderDesired[I] := fWareOrder[I] / TotalDesired;
+//    fWareOrderDesired[I] := fWareOrder[I] / TotalDesired;
 
   fNeedIssueOrderCompletedMsg := False;
   fOrderCompletedMsgIssued := False;
@@ -1542,7 +1542,7 @@ begin
     begin
       resI := ((fLastOrderProduced + I) mod 4) + 1; //1..4
       ware := gRes.Houses[fType].ResOutput[resI];
-      if (ResOrder[resI] > 0) //Player has ordered some of this
+      if (WareOrder[resI] > 0) //Player has ordered some of this
       and (CheckWareOut(ware) < MAX_WARES_IN_HOUSE) //Output of this is not full
       //Check we have wares to produce this weapon. If both are the same type check > 1 not > 0
       and ((WARFARE_COSTS[ware,1] <> WARFARE_COSTS[ware,2]) or (CheckWareIn(WARFARE_COSTS[ware,1]) > 1))
@@ -1570,7 +1570,7 @@ begin
 //    //Find order that which production ratio is the smallest
 //    BestBid := -MaxSingle;
 //    for I := 1 to 4 do
-//    if (ResOrder[I] > 0) then //Player has ordered some of this
+//    if (WareOrder[I] > 0) then //Player has ordered some of this
 //    begin
 //      Ware := gRes.Houses[fType].ResOutput[I];
 //
@@ -1579,10 +1579,10 @@ begin
 //      and ((WarfareCosts[Ware,1] <> WarfareCosts[Ware,2]) or (CheckWareIn(WarfareCosts[Ware,1]) > 1))
 //      and ((WarfareCosts[Ware,1] = wtNone) or (CheckWareIn(WarfareCosts[Ware,1]) > 0))
 //      and ((WarfareCosts[Ware,2] = wtNone) or (CheckWareIn(WarfareCosts[Ware,2]) > 0))
-//      and (LeftRatio[I] - fResOrderDesired[I] > BestBid) then
+//      and (LeftRatio[I] - fWareOrderDesired[I] > BestBid) then
 //      begin
 //        Result := I;
-//        BestBid := LeftRatio[Result] - fResOrderDesired[Result];
+//        BestBid := LeftRatio[Result] - fWareOrderDesired[Result];
 //      end;
 //    end;
 //  end;
@@ -1595,8 +1595,8 @@ begin
   end
   else
     //Check all orders are actually finished (input resources might be empty)
-    if  (ResOrder[1] = 0) and (ResOrder[2] = 0)
-    and (ResOrder[3] = 0) and (ResOrder[4] = 0) then
+    if  (WareOrder[1] = 0) and (WareOrder[2] = 0)
+    and (WareOrder[3] = 0) and (WareOrder[4] = 0) then
       if fNeedIssueOrderCompletedMsg then
       begin
         fNeedIssueOrderCompletedMsg := False;
@@ -1859,11 +1859,11 @@ begin
   if not Result and (fNewDeliveryMode = dmTakeOut) then
     for I := 1 to 4 do
       if aWare = gRes.Houses[fType].ResInput[I] then
-        Result := ResIn[I] - ResInLocked[I] >= aCount;
+        Result := ResIn[I] - WareInLocked[I] >= aCount;
 end;
 
 
-procedure TKMHouse.ResTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
+procedure TKMHouse.WareTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
 begin
   //Range checking is done within WareTakeFromIn and WareTakeFromOut when aFromScript=True
   //Only one will succeed, we don't care which one it is
@@ -2078,7 +2078,7 @@ begin
   for I := 1 to 4 do SaveStream.Write(fWareDemandsClosing[I]);
   for I := 1 to 4 do SaveStream.Write(fWareOut[I]);
   for I := 1 to 4 do SaveStream.Write(fWareOrder[I], SizeOf(fWareOrder[I]));
-//  for I:=1 to 4 do SaveStream.Write(fResOrderDesired[I], SizeOf(fResOrderDesired[I]));
+//  for I:=1 to 4 do SaveStream.Write(fWareOrderDesired[I], SizeOf(fWareOrderDesired[I]));
 
   if gRes.Houses[fType].IsWorkshop then
     SaveStream.Write(fWareOutPool, 20); //todo: Should be SizeOf()
@@ -2215,7 +2215,7 @@ begin
                    'NewDeliveryMode = %s%sDamage = %d%s' +
                    'BuildState = %s%sBuildSupplyWood = %d%sBuildSupplyStone = %d%sBuildingProgress = %d%sDoorwayUse = %d%s' +
                    'ResIn = %d,%d,%d,%d%sResDeliveryCnt = %d,%d,%d,%d%sResDemandsClosing = %d,%d,%d,%d%sResOut = %d,%d,%d,%d%s' +
-                   'ResOrder = %d,%d,%d,%d%sResOutPool = %s',
+                   'WareOrder = %d,%d,%d,%d%sResOutPool = %s',
                    [aSeparator,
                     workerStr, aSeparator,
                     actStr, aSeparator,

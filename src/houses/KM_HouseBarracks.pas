@@ -28,6 +28,7 @@ type
 
     procedure Activate(aWasBuilt: Boolean); override;
     procedure Demolish(aFrom: TKMHandID; IsSilent: Boolean = False); override;
+
     procedure WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
     procedure WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
     function CheckWareIn(aWare: TKMWareType): Word; override;
