@@ -50,7 +50,7 @@ uses
   KM_UnitsCollection, KM_UnitWarrior,
   KM_HouseCollection, KM_HouseBarracks, KM_HouseStore,
   KM_AI,
-  KM_Resource, KM_ResHouses, KM_ResUnits, KM_ResWares, KM_ResPalettes,
+  KM_Resource, KM_ResHouses, KM_ResUnits, KM_ResWares,
   KM_CommonClasses, KM_CommonTypes, KM_Terrain,
   KM_HandTypes,
   KM_CommonExceptions,
@@ -762,7 +762,7 @@ begin
 
     ctSetMapColor:      if fLastHand <> HAND_NONE then
                           //For now simply use the minimap color for all color, it is too hard to load all 8 shades from ctSetNewRemap
-                          gHands[fLastHand].FlagColor := gResPalettes.DefaultPalette.Color32(P[0]);
+                          gHands[fLastHand].FlagColor := gRes.Palettes.DefaultPalette.Color32(P[0]);
 
     ctSetRGBColor:      if fLastHand <> HAND_NONE then
                           gHands[fLastHand].FlagColor := P[0] or $FF000000;

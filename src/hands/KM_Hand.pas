@@ -275,7 +275,7 @@ uses
   KM_Entity,
   KM_Cursor, KM_Game, KM_GameParams, KM_Terrain,
   KM_HandsCollection, KM_Sound, KM_AIFields, KM_MapEdTypes,
-  KM_Resource, KM_ResSound, KM_ResTexts, KM_ResMapElements, KM_ScriptingEvents, KM_ResUnits, KM_ResPalettes,
+  KM_Resource, KM_ResSound, KM_ResTexts, KM_ResMapElements, KM_ScriptingEvents, KM_ResUnits,
   KM_CommonUtils, KM_GameSettings,
   KM_UnitGroupTypes,
   KM_MapTypes;
@@ -1642,7 +1642,7 @@ var
 begin
   Result := 3; //3 = Black which can be the default when a non-palette 32 bit color value is used
   for I := 0 to 255 do
-    if gResPalettes.DefaultPalette.Color32(I) = fFlagColor then
+    if gRes.Palettes.DefaultPalette.Color32(I) = fFlagColor then
       Result := I;
 end;
 

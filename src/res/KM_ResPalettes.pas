@@ -43,9 +43,6 @@ type
     function DefaultPalette: TKMPaletteSpec; //Default palette for the game
   end;
 
-var
-  gResPalettes: TKMResPalettes;
-
 
 implementation
 

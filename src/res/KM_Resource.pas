@@ -29,6 +29,7 @@ type
 
     fCursors: TKMResCursors;
     fFonts: TKMResFonts;
+    fPalettes: TKMResPalettes;
     fUnits: TKMResUnits;
     fSounds: TKMResSounds;
     fSprites: TKMResSprites;
@@ -41,7 +42,6 @@ type
 
     function GetHouses: TKMResHouses;
     function GetWares: TKMResWares;
-    function GetPalettes: TKMResPalettes;
   public
     OnLoadingStep: TEvent;
     OnLoadingText: TUnicodeStringEvent;
@@ -58,7 +58,7 @@ type
     procedure LoadLocaleFonts(const aLocale: AnsiString; aLoadFullFonts: Boolean);
 
     property DataState: TResourceLoadState read fDataState;
-    property Palettes: TKMResPalettes read GetPalettes;
+    property Palettes: TKMResPalettes read fPalettes;
     property Cursors: TKMResCursors read fCursors;
     property MapElements: TKMResMapElements read fMapElements;
     property Fonts: TKMResFonts read fFonts;
@@ -109,7 +109,7 @@ begin
   FreeAndNil(gResHouses);
   FreeAndNil(gResLocales);
   FreeAndNil(fMapElements);
-  FreeAndNil(gResPalettes);
+  FreeAndNil(fPalettes);
   FreeAndNil(fFonts);
   FreeAndNil(gResWares);
   FreeAndNil(fSprites);
@@ -163,9 +163,9 @@ var
   tileColors: TKMColor3bArray;
 begin
   StepCaption('Reading palettes ...');
-  gResPalettes := TKMResPalettes.Create;
+  fPalettes := TKMResPalettes.Create;
   //We are using only default palette in the game for now, so no need to load all palettes
-  gResPalettes.LoadDefaultPalette(ExeDir + 'data' + PathDelim + 'gfx' + PathDelim);
+  fPalettes.LoadDefaultPalette(ExeDir + 'data' + PathDelim + 'gfx' + PathDelim);
   gLog.AddTime('Reading palettes', True);
 
   fSprites := TKMResSprites.Create(StepRefresh, StepCaption);
@@ -276,12 +276,6 @@ end;
 function TKMResource.IsMsgHouseUnnocupied(aMsgId: Word): Boolean;
 begin
   Result := (aMsgId >= TX_MSG_HOUSE_UNOCCUPIED__22) and (aMsgId <= TX_MSG_HOUSE_UNOCCUPIED__22 + 22);
-end;
-
-
-function TKMResource.GetPalettes: TKMResPalettes;
-begin
-  Result := gResPalettes;
 end;
 
 
