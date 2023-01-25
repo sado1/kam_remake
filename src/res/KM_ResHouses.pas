@@ -10,7 +10,6 @@ const
   HOUSE_MIN = htArmorSmithy;
   HOUSE_MAX = htWoodcutters;
   HOUSES_VALID = [HOUSE_MIN..HOUSE_MAX];
-  HOUSE_WORKSHOP = [htWeaponSmithy, htArmorSmithy, htWeaponWorkshop, htArmorWorkshop];
 
   HOUSES_CNT = Integer(HOUSE_MAX) - Integer(HOUSE_MIN) + 1;
 
@@ -69,8 +68,9 @@ type
   public
     constructor Create(aHouseType: TKMHouseType);
     procedure LoadFromStream(Stream: TMemoryStream);
-    //Property accessors:
-    //Derived from KaM
+
+    // Property accessors:
+    // Derived from KaM
     property StonePic: Smallint read fHouseDat.StonePic;
     property WoodPic: Smallint read fHouseDat.WoodPic;
     property WoodPal: Smallint read fHouseDat.WoodPal;
@@ -91,7 +91,8 @@ type
     property Sight: Smallint read fHouseDat.Sight;
     property WorkerType: TKMUnitType read GetWorkerType;
     function CanHasWorker: Boolean;
-    //Additional properties added by Remake
+
+    // Additional properties added by Remake
     property BuildArea: THouseArea read GetArea;
     property GroundVisibleArea: THouseArea read GetGroundVisibleArea;
     property DoesOrders: Boolean read GetDoesOrders;
@@ -104,10 +105,12 @@ type
     property TabletIcon: Word read GetTabletIcon;
     property UnoccupiedMsgId: SmallInt read GetUnoccupiedMsgId;
     property SnowPic: SmallInt read GetSnowPic;
-    //Functions
+
+    // Functions
     function AcceptsWares: Boolean;
     function MaxHealth: Word;
     function ProducesWares: Boolean;
+    function IsWorkshop: Boolean;
     procedure Outline(aList: TKMPointList);
     function GetDoorwayOffset(aCheck: TKMCheckAxis): Single;
   end;
@@ -659,6 +662,12 @@ begin
     Result := UNIT_ID_TO_TYPE[fHouseDat.WorkerType]
   else
     Result := utNone;
+end;
+
+
+function TKMHouseSpec.IsWorkshop: Boolean;
+begin
+  Result := fHouseType in [htWeaponSmithy, htArmorSmithy, htWeaponWorkshop, htArmorWorkshop];
 end;
 
 

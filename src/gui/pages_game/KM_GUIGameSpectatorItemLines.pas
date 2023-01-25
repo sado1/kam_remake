@@ -144,9 +144,9 @@ end;
 function TKMGUIGameSpectatorItemLineResources.GetTag(AIndex: Integer): Integer;
 begin
   if AIndex = 0 then
-    Result := Integer(wtFish)
+    Result := Ord(wtFish)
   else
-    Result := Integer(StoreResType[Length(StoreResType) - AIndex - WARFARE_CNT]); //opposite order, we draw items from the right
+    Result := Ord(StoreResType[Length(StoreResType) - AIndex - WARFARE_CNT]); //opposite order, we draw items from the right
 end;
 
 

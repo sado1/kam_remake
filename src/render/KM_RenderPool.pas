@@ -930,7 +930,7 @@ begin
     AddHouseSupplySprite(id);
   end;
 
-  if aHouse in HOUSE_WORKSHOP then
+  if gRes.Houses[aHouse].IsWorkshop then
   begin
     for K := 0 to 19 do
       if R3[K] > 0 then

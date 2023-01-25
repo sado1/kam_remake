@@ -649,9 +649,9 @@ begin
           fTask := TKMTaskGoHome.Create(Self)
         else
           SetActionStay(60, uaWalk) //Home can't be reached
-      end else begin
-
-        if not (fHome.HouseType in HOUSE_WORKSHOP)
+      end else
+      begin
+        if not gRes.Houses[fHome.HouseType].IsWorkshop
         or (fHome.CheckResOut(wtAll) < MAX_WARES_OUT_WORKSHOP) then //Do not do anything if we have too many ready resources
           TaskGetWork; //Unit is at home, so go get a job
 

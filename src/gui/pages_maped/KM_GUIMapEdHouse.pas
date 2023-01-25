@@ -593,7 +593,7 @@ begin
     if (Sender = ResRow_Ware_Output[I]) and (aValue > 0) then
     begin
       newCountAdd := Math.Min(aValue, MAX_WARES_IN_HOUSE - fHouse.CheckResOut(ware));
-      if fHouse.HouseType in HOUSE_WORKSHOP then
+      if gRes.Houses[fHouse.HouseType].IsWorkshop then
         newCountAdd := Math.Min(newCountAdd, MAX_WARES_OUT_WORKSHOP - fHouse.CheckResOut(wtAll));
       fHouse.ResAddToOut(ware, newCountAdd);
     end;

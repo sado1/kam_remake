@@ -597,8 +597,8 @@ begin
   for I:=1 to 4 do LoadStream.Read(fResourceOrder[I], SizeOf(fResourceOrder[I]));
 //  for I:=1 to 4 do LoadStream.Read(fResOrderDesired[I], SizeOf(fResOrderDesired[I]));
 
-  if fType in HOUSE_WORKSHOP then
-    LoadStream.Read(fResourceOutPool, 20);
+  if gRes.Houses[fType].IsWorkshop then
+    LoadStream.Read(fResourceOutPool, 20); //todo: Should be SizeOf()
 
   LoadStream.Read(fLastOrderProduced);
   LoadStream.Read(FlagAnimStep);
@@ -1699,7 +1699,7 @@ begin
     begin
       ResOut[I] := ResOut[I] + aCount;
 
-      if (fType in HOUSE_WORKSHOP) and (aCount > 0) then
+      if gRes.Houses[fType].IsWorkshop and (aCount > 0) then
       begin
         count := aCount;
         for p := 0 to 19 do
@@ -1926,7 +1926,7 @@ begin
     end;
     Assert(aCount <= fResourceOut[I]);
 
-    if (fType in HOUSE_WORKSHOP) and (aCount > 0) then
+    if gRes.Houses[fType].IsWorkshop and (aCount > 0) then
     begin
       count := aCount;
       for p := 0 to 19 do
@@ -2080,8 +2080,8 @@ begin
   for I := 1 to 4 do SaveStream.Write(fResourceOrder[I], SizeOf(fResourceOrder[I]));
 //  for I:=1 to 4 do SaveStream.Write(fResOrderDesired[I], SizeOf(fResOrderDesired[I]));
 
-  if fType in HOUSE_WORKSHOP then
-    SaveStream.Write(fResourceOutPool, 20);
+  if gRes.Houses[fType].IsWorkshop then
+    SaveStream.Write(fResourceOutPool, 20); //todo: Should be SizeOf()
 
   SaveStream.Write(fLastOrderProduced);
   SaveStream.Write(FlagAnimStep);
