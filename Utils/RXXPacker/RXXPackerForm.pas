@@ -83,11 +83,7 @@ end;
 
 procedure TRXXForm1.btnUpdateListClick(Sender: TObject);
 begin
-  btnUpdateList.Enabled := False;
-
   UpdateList;
-
-  btnUpdateList.Enabled := True;
 end;
 
 

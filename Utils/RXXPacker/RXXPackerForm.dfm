@@ -37,7 +37,7 @@ object RXXForm1: TRXXForm1
     Top = 360
     Width = 257
     Height = 25
-    Caption = 'Pack'
+    Caption = 'Pack selected'
     TabOrder = 0
     OnClick = btnPackRXXClick
   end
