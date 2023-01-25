@@ -735,9 +735,9 @@ end;
 function TKMHouseSpec.GetDoorwayOffset(aCheck: TKMCheckAxis): Single;
 begin
   if aCheck = axX then
-    Result := gResHouses[fHouseType].EntranceOffsetXpx - CELL_SIZE_PX div 2
+    Result := EntranceOffsetXpx - CELL_SIZE_PX div 2
   else
-    Result := gResHouses[fHouseType].EntranceOffsetYpx;
+    Result := EntranceOffsetYpx;
 
   Result := Result / CELL_SIZE_PX;
 end;
