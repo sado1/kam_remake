@@ -290,22 +290,22 @@ type
 
     procedure HouseDemandWasClosed(aWare: TKMWareType; aDeleteCanceled: Boolean);
 
-    function CheckResIn(aWare: TKMWareType): Word; virtual;
-    function CheckResOut(aWare: TKMWareType): Word; virtual;
+    function CheckWareIn(aWare: TKMWareType): Word; virtual;
+    function CheckWareOut(aWare: TKMWareType): Word; virtual;
     function PickOrder: Byte;
     function CheckResToBuild: Boolean;
-    function GetMaxInRes: Word;
-    procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromStaticScript: Boolean = False); virtual; //override for School and etc..
-    procedure ResAddToOut(aWare: TKMWareType; const aCount: Integer = 1);
-    procedure ResAddToEitherFromScript(aWare: TKMWareType; aCount: Integer);
-    procedure ResAddToBuild(aWare: TKMWareType; aCount: Integer = 1);
+    function GetMaxInWare: Word;
+    procedure WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromStaticScript: Boolean = False); virtual; //override for School and etc..
+    procedure WareAddToOut(aWare: TKMWareType; const aCount: Integer = 1);
+    procedure WareAddToEitherFromScript(aWare: TKMWareType; aCount: Integer);
+    procedure WareAddToBuild(aWare: TKMWareType; aCount: Integer = 1);
     procedure ResTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
-    procedure ResTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
-    procedure ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
-    function ResCanAddToIn(aWare: TKMWareType): Boolean; virtual;
-    function ResCanAddToOut(aWare: TKMWareType): Boolean;
+    procedure WareTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
+    procedure WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
+    function WareCanAddToIn(aWare: TKMWareType): Boolean; virtual;
+    function WareCanAddToOut(aWare: TKMWareType): Boolean;
     function CanHaveWareType(aWare: TKMWareType): Boolean; virtual;
-    function ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; virtual;
+    function WareOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; virtual;
     property ResOrder[aId: Byte]: Integer read GetWareOrder write SetWareOrder;
     property ResIn[aId: Byte]: Word read GetWareIn write SetWareIn;
     property ResOut[aId: Byte]: Word read GetWareOut write SetWareOut;
@@ -994,7 +994,7 @@ end;
 //Check if we should abandon delivery from this house
 function TKMHouse.ShouldAbandonDeliveryFrom(aWareType: TKMWareType; aImmidiateCheck: Boolean = False): Boolean;
 begin
-  Result := not ResOutputAvailable(aWareType, 1);
+  Result := not WareOutputAvailable(aWareType, 1);
 end;
 
 
@@ -1475,7 +1475,7 @@ end;
 
 
 // How much resources house has in Input
-function TKMHouse.CheckResIn(aWare: TKMWareType): Word;
+function TKMHouse.CheckWareIn(aWare: TKMWareType): Word;
 var
   I: Integer;
 begin
@@ -1487,7 +1487,7 @@ end;
 
 
 // How much resources house has in Output
-function TKMHouse.CheckResOut(aWare: TKMWareType): Word;
+function TKMHouse.CheckWareOut(aWare: TKMWareType): Word;
 var
   I: Integer;
 begin
@@ -1543,11 +1543,11 @@ begin
       resI := ((fLastOrderProduced + I) mod 4) + 1; //1..4
       ware := gRes.Houses[fType].ResOutput[resI];
       if (ResOrder[resI] > 0) //Player has ordered some of this
-      and (CheckResOut(ware) < MAX_WARES_IN_HOUSE) //Output of this is not full
+      and (CheckWareOut(ware) < MAX_WARES_IN_HOUSE) //Output of this is not full
       //Check we have wares to produce this weapon. If both are the same type check > 1 not > 0
-      and ((WARFARE_COSTS[ware,1] <> WARFARE_COSTS[ware,2]) or (CheckResIn(WARFARE_COSTS[ware,1]) > 1))
-      and ((WARFARE_COSTS[ware,1] = wtNone) or (CheckResIn(WARFARE_COSTS[ware,1]) > 0))
-      and ((WARFARE_COSTS[ware,2] = wtNone) or (CheckResIn(WARFARE_COSTS[ware,2]) > 0)) then
+      and ((WARFARE_COSTS[ware,1] <> WARFARE_COSTS[ware,2]) or (CheckWareIn(WARFARE_COSTS[ware,1]) > 1))
+      and ((WARFARE_COSTS[ware,1] = wtNone) or (CheckWareIn(WARFARE_COSTS[ware,1]) > 0))
+      and ((WARFARE_COSTS[ware,2] = wtNone) or (CheckWareIn(WARFARE_COSTS[ware,2]) > 0)) then
       begin
         Result := resI;
         fLastOrderProduced := resI;
@@ -1574,11 +1574,11 @@ begin
 //    begin
 //      Ware := gRes.Houses[fType].ResOutput[I];
 //
-//      if (CheckResOut(Ware) < MAX_WARES_IN_HOUSE) //Output of this is not full
+//      if (CheckWareOut(Ware) < MAX_WARES_IN_HOUSE) //Output of this is not full
 //      //Check we have enough wares to produce this weapon. If both are the same type check > 1 not > 0
-//      and ((WarfareCosts[Ware,1] <> WarfareCosts[Ware,2]) or (CheckResIn(WarfareCosts[Ware,1]) > 1))
-//      and ((WarfareCosts[Ware,1] = wtNone) or (CheckResIn(WarfareCosts[Ware,1]) > 0))
-//      and ((WarfareCosts[Ware,2] = wtNone) or (CheckResIn(WarfareCosts[Ware,2]) > 0))
+//      and ((WarfareCosts[Ware,1] <> WarfareCosts[Ware,2]) or (CheckWareIn(WarfareCosts[Ware,1]) > 1))
+//      and ((WarfareCosts[Ware,1] = wtNone) or (CheckWareIn(WarfareCosts[Ware,1]) > 0))
+//      and ((WarfareCosts[Ware,2] = wtNone) or (CheckWareIn(WarfareCosts[Ware,2]) > 0))
 //      and (LeftRatio[I] - fResOrderDesired[I] > BestBid) then
 //      begin
 //        Result := I;
@@ -1612,13 +1612,15 @@ begin
   case fBuildState of
     hbsWood:   Result := (fBuildSupplyWood > 0) or (fBuildReserve > 0);
     hbsStone:  Result := (fBuildSupplyStone > 0) or (fBuildReserve > 0);
-    else        Result := False;
+  else
+    Result := False;
   end;
 end;
 
 
-function TKMHouse.GetMaxInRes: Word;
+function TKMHouse.GetMaxInWare: Word;
 begin
+  //todo: This belongs to gRes.Houses[]
   if fType in [htStore, htBarracks, htMarket] then
     Result := High(Word)
   else
@@ -1649,7 +1651,7 @@ begin
     begin
       // Do not decrease DeliveryCount, if demand delete was cancelled (demand closing was not possible, f.e. when serf enters the house)
       // thus serf brought ware to the house and we should not decrease delivery count in that case here
-      // (but it will be decreased anyway in the ResAddToIn for market)
+      // (but it will be decreased anyway in the WareAddToIn for market)
       if not aDeleteCanceled then
         WareDeliveryCnt[I] := WareDeliveryCnt[I] - 1;
 
@@ -1661,7 +1663,7 @@ end;
 
 //Maybe it's better to rule out In/Out? No, it is required to separate what can be taken out of the house and what not.
 //But.. if we add "Evacuate" button to all house the separation becomes artificial..
-procedure TKMHouse.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromStaticScript: Boolean = False);
+procedure TKMHouse.WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromStaticScript: Boolean = False);
 var
   I, ordersRemoved: Integer;
 begin
@@ -1672,7 +1674,7 @@ begin
     begin
       //Don't allow the static script to overfill houses
       if aFromStaticScript then
-        aCount := EnsureRange(aCount, 0, GetMaxInRes - fWareIn[I]);
+        aCount := EnsureRange(aCount, 0, GetMaxInWare - fWareIn[I]);
       //WareDeliveryCnt stay same, because corresponding demand will be closed
       ResIn[I] := ResIn[I] + aCount;
       if aFromStaticScript then
@@ -1685,7 +1687,7 @@ begin
 end;
 
 
-procedure TKMHouse.ResAddToOut(aWare: TKMWareType; const aCount:integer=1);
+procedure TKMHouse.WareAddToOut(aWare: TKMWareType; const aCount:integer=1);
 var
   I, p, count: Integer;
 begin
@@ -1715,25 +1717,25 @@ begin
 end;
 
 
-procedure TKMHouse.ResAddToEitherFromScript(aWare: TKMWareType; aCount: Integer);
+procedure TKMHouse.WareAddToEitherFromScript(aWare: TKMWareType; aCount: Integer);
 var
   I: Integer;
 begin
   for I := 1 to 4 do
   begin
-    //No range checking required as ResAddToIn does that
-    //If ResCanAddToIn, add it immediately and exit (e.g. store)
-    if ResCanAddToIn(aWare) or (aWare = gRes.Houses[fType].ResInput[I]) then
+    //No range checking required as WareAddToIn does that
+    //If WareCanAddToIn, add it immediately and exit (e.g. store)
+    if WareCanAddToIn(aWare) or (aWare = gRes.Houses[fType].ResInput[I]) then
     begin
-      ResAddToIn(aWare, aCount, True);
+      WareAddToIn(aWare, aCount, True);
       Exit;
     end;
     //Don't allow output to be overfilled from script. This is not checked
-    //in ResAddToOut because e.g. stonemason is allowed to overfill it slightly)
+    //in WareAddToOut because e.g. stonemason is allowed to overfill it slightly)
     if (aWare = gRes.Houses[fType].ResOutput[I]) and (fWareOut[I] < 5) then
     begin
       aCount := Min(aCount, 5 - fWareOut[I]);
-      ResAddToOut(aWare, aCount);
+      WareAddToOut(aWare, aCount);
       Exit;
     end;
   end;
@@ -1741,7 +1743,7 @@ end;
 
 
 // Add resources to building process
-procedure TKMHouse.ResAddToBuild(aWare: TKMWareType; aCount: Integer = 1);
+procedure TKMHouse.WareAddToBuild(aWare: TKMWareType; aCount: Integer = 1);
 begin
   case aWare of
     wtTimber:  fBuildSupplyWood := EnsureRange(fBuildSupplyWood + aCount, 0, gRes.Houses[fType].WoodCost);
@@ -1752,7 +1754,7 @@ begin
 end;
 
 
-function TKMHouse.ResCanAddToIn(aWare: TKMWareType): Boolean;
+function TKMHouse.WareCanAddToIn(aWare: TKMWareType): Boolean;
 var
   I: Integer;
 begin
@@ -1763,7 +1765,7 @@ begin
 end;
 
 
-function TKMHouse.ResCanAddToOut(aWare: TKMWareType): Boolean;
+function TKMHouse.WareCanAddToOut(aWare: TKMWareType): Boolean;
 var
   I: Integer;
 begin
@@ -1776,7 +1778,7 @@ end;
 
 function TKMHouse.CanHaveWareType(aWare: TKMWareType): Boolean;
 begin
-  Result := ResCanAddToIn(aWare) or ResCanAddToOut(aWare);
+  Result := WareCanAddToIn(aWare) or WareCanAddToOut(aWare);
 end;
 
 
@@ -1845,7 +1847,7 @@ begin
 end;
 
 
-function TKMHouse.ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean;
+function TKMHouse.WareOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean;
 var
   I: Integer;
 begin
@@ -1863,15 +1865,15 @@ end;
 
 procedure TKMHouse.ResTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
 begin
-  //Range checking is done within ResTakeFromIn and ResTakeFromOut when aFromScript=True
+  //Range checking is done within WareTakeFromIn and WareTakeFromOut when aFromScript=True
   //Only one will succeed, we don't care which one it is
-  ResTakeFromIn(aWare, aCount, aFromScript);
-  ResTakeFromOut(aWare, aCount, aFromScript);
+  WareTakeFromIn(aWare, aCount, aFromScript);
+  WareTakeFromOut(aWare, aCount, aFromScript);
 end;
 
 
 // Take resource from Input and order more of that kind if DistributionRatios allow
-procedure TKMHouse.ResTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
+procedure TKMHouse.WareTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
 var
   I, K: Integer;
 begin
@@ -1904,7 +1906,7 @@ begin
 end;
 
 
-procedure TKMHouse.ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
+procedure TKMHouse.WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
 var
   I, K, p, count: integer;
 begin

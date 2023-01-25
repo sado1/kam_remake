@@ -652,7 +652,7 @@ begin
       end else
       begin
         if not gRes.Houses[fHome.HouseType].IsWorkshop
-        or (fHome.CheckResOut(wtAll) < MAX_WARES_OUT_WORKSHOP) then //Do not do anything if we have too many ready resources
+        or (fHome.CheckWareOut(wtAll) < MAX_WARES_OUT_WORKSHOP) then //Do not do anything if we have too many ready resources
           TaskGetWork; //Unit is at home, so go get a job
 
         if fTask = nil then //We didn't find any job to do - rest at home
@@ -716,7 +716,7 @@ begin
   // Saves us time on Fishers/Stonecutters/Woodcutters when they calculate routes to nearby deposits
   // Other houses where workers walk out can choose between cut/plant
   if (fHome.HouseType in [htFishermans, htQuarry, htVineyard])
-  and (fHome.CheckResOut(gRes.Houses[fHome.HouseType].ResOutput[res]) >= MAX_WARES_IN_HOUSE) then
+  and (fHome.CheckWareOut(gRes.Houses[fHome.HouseType].ResOutput[res]) >= MAX_WARES_IN_HOUSE) then
     Exit;
 
   fTask := TKMTaskMining.Create(Self, gRes.Houses[fHome.HouseType].ResOutput[res]);
@@ -735,10 +735,10 @@ begin
   // Verify the task can be done
   if not ( //todo: Invert negation here
   tm.WorkPlan.IsIssued
-  and ((tm.WorkPlan.Resource1 = wtNone) or (fHome.CheckResIn(tm.WorkPlan.Resource1) >= tm.WorkPlan.Count1))
-  and ((tm.WorkPlan.Resource2 = wtNone) or (fHome.CheckResIn(tm.WorkPlan.Resource2) >= tm.WorkPlan.Count2))
-  and (fHome.CheckResOut(tm.WorkPlan.Product1) < MAX_WARES_IN_HOUSE)
-  and (fHome.CheckResOut(tm.WorkPlan.Product2) < MAX_WARES_IN_HOUSE)
+  and ((tm.WorkPlan.Resource1 = wtNone) or (fHome.CheckWareIn(tm.WorkPlan.Resource1) >= tm.WorkPlan.Count1))
+  and ((tm.WorkPlan.Resource2 = wtNone) or (fHome.CheckWareIn(tm.WorkPlan.Resource2) >= tm.WorkPlan.Count2))
+  and (fHome.CheckWareOut(tm.WorkPlan.Product1) < MAX_WARES_IN_HOUSE)
+  and (fHome.CheckWareOut(tm.WorkPlan.Product2) < MAX_WARES_IN_HOUSE)
   ) then
     // If task can't be done - discard it
     FreeAndNil(fTask);
@@ -753,7 +753,7 @@ begin
   fTask := nil;
 
   // See if we are in a tower and have something to throw
-  if not (fHome is TKMHouseTower) or (fHome.CheckResIn(wtStone) <= 0) then
+  if not (fHome is TKMHouseTower) or (fHome.CheckWareIn(wtStone) <= 0) then
     Exit;
 
   enemy := gTerrain.UnitsHitTestWithinRad(fPositionRound, RANGE_WATCHTOWER_MIN, RANGE_WATCHTOWER_MAX, Owner, atEnemy, dirNA, not RANDOM_TARGETS, False);

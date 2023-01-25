@@ -10,11 +10,12 @@ uses
 
 type
   TKMDeliverKind = (dkToHouse, dkToConstruction, dkToUnit);
-  TKMDeliverStage = (dsUnknown,
-                     dsToFromHouse,     //Serf is walking to the offer house
-                     dsAtFromHouse,     //Serf is getting in / out from offer house
-                     dsToDestination,   //Serf is walking to destination (unit/house)
-                     dsAtDestination);  //Serf is operating with destination
+  TKMDeliverStage = (
+    dsUnknown,
+    dsToFromHouse,     //Serf is walking to the offer house
+    dsAtFromHouse,     //Serf is getting in / out from offer house
+    dsToDestination,   //Serf is walking to destination (unit/house)
+    dsAtDestination);  //Serf is operating with destination
 
   TKMTaskDeliver = class(TKMUnitTask)
   private
@@ -381,7 +382,7 @@ begin
           end;
           SetActionLockedStay(5,uaWalk); //Wait a moment inside
           CheckForBetterDestination; //Must run before TakenOffer and before taking ware so Offer is still valid
-          fFrom.ResTakeFromOut(fWareType);
+          fFrom.WareTakeFromOut(fWareType);
           CarryGive(fWareType);
           gHands[Owner].Deliveries.Queue.TakenOffer(fDeliverID);
         end;
@@ -419,7 +420,7 @@ begin
     6:  SetActionGoIn(uaWalk, gdGoInside, fToHouse);
     7:  SetActionLockedStay(5, uaWalk); //wait a bit inside
     8:  begin
-          fToHouse.ResAddToIn(Carry);
+          fToHouse.WareAddToIn(Carry);
           CarryTake;
 
           gHands[Owner].Deliveries.Queue.GaveDemand(fDeliverID);
@@ -470,7 +471,7 @@ begin
         end;
     7:  begin
           Direction := KMGetDirection(PositionNext, fToHouse.Entrance);
-          fToHouse.ResAddToBuild(Carry);
+          fToHouse.WareAddToBuild(Carry);
           gHands[Owner].Stats.WareConsumed(Carry);
           CarryTake;
           gHands[Owner].Deliveries.Queue.GaveDemand(fDeliverID);

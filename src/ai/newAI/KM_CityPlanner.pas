@@ -427,7 +427,7 @@ end;
 procedure TKMCityPlanner.UpdateState(aTick: Cardinal);
   procedure ScanChopOnly(aW: TKMHouseWoodcutters);
   begin
-    if (aW.CheckResOut(wtAll) <> 0) then // There is still trunk
+    if (aW.CheckWareOut(wtAll) <> 0) then // There is still trunk
       Exit;
     if not gTerrain.CanFindTree(aW.FlagPoint, gRes.Units[utWoodcutter].MiningRange, True) then
     begin
@@ -763,7 +763,7 @@ begin
         else // There is house
         begin
           H := fPlannedHouses[aHT].Plans[Idx].House;
-          Bid := H.CheckResIn(wtAll) * RESOURCE_PRICE + H.CheckResOut(wtAll) * PRODUCT_PRICE;
+          Bid := H.CheckWareIn(wtAll) * RESOURCE_PRICE + H.CheckWareOut(wtAll) * PRODUCT_PRICE;
           if (Bid < BestBid) then // Select house with lowest amount of resources
           begin
             BestBid := Bid;

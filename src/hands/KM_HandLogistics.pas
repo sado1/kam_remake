@@ -1485,7 +1485,7 @@ begin
     if fDemand[dWT,iD].Loc_House.IsComplete
       and (gRes.Houses[fDemand[dWT,iD].Loc_House.HouseType].DoesOrders or (fDemand[dWT,iD].Loc_House.HouseType = htIronSmithy))
       and (aOfferCnt <= 2) //Little resources to share around
-      and (fDemand[dWT,iD].Loc_House.CheckResIn(dWT) <= 1) then //Few resources already delivered
+      and (fDemand[dWT,iD].Loc_House.CheckWareIn(dWT) <= 1) then //Few resources already delivered
     begin
       if aCalcKind = dckAccurate then
         Exit;
@@ -1584,13 +1584,13 @@ begin
       and (dWT <> wtAll)
       and (dWT <> wtWarfare) //Except Barracks and Store, where supply doesn't matter or matter less
       and (fDemand[dWT,iD].Loc_House.HouseType <> htTownHall) then //Except TownHall as well, where supply doesn't matter or matter less
-      aBidCost.IncAddition(20 * fDemand[dWT,iD].Loc_House.CheckResIn(dWT));
+      aBidCost.IncAddition(20 * fDemand[dWT,iD].Loc_House.CheckWareIn(dWT));
 
     if (fDemand[dWT,iD].Loc_House <> nil)
       and (fDemand[dWT,iD].Loc_House.HouseType = htTownHall) then
     begin
       //Delivering gold to TH - if there are already more then 500 gold, then make this delivery very low priority
-      if (fDemand[dWT,iD].Loc_House.CheckResIn(oWT) > 500) then
+      if (fDemand[dWT,iD].Loc_House.CheckWareIn(oWT) > 500) then
         aBidCost.IncAddition(5000)
       else
         aBidCost.IncAddition(2); //Add small value, so it will not have so big advantage above other houses
@@ -1602,7 +1602,7 @@ begin
     if (fDemand[dWT,iD].Loc_House <> nil)
       and (fDemand[dWT,iD].Loc_House.HouseType = htBarracks)
       and (fOffer[oWT,iO].Loc_House.HouseType = htStore)
-      and (fDemand[dWT,iD].Loc_House.CheckResIn(oWT) > 50) then
+      and (fDemand[dWT,iD].Loc_House.CheckWareIn(oWT) > 50) then
       aBidCost.IncAddition(10000);
 
     //When delivering food to warriors, add a random amount to bid to ensure that a variety of food is taken. Also prefer food which is more abundant.

@@ -689,7 +689,7 @@ begin
                         Panel_HouseStore.Show;
                       end;
     htSchool:         begin
-                        WaresRow_School_Gold.WareCount := aHouse.CheckResIn(wtGold) - Byte(TKMHouseSchool(aHouse).HideOneGold);
+                        WaresRow_School_Gold.WareCount := aHouse.CheckWareIn(wtGold) - Ord(TKMHouseSchool(aHouse).HideOneGold);
                         Button_School_UnitWIP.FlagColor := gHands[aHouse.Owner].FlagColor;
                         for I := 1 to 5 do
                           Button_School_UnitPlan[I].FlagColor := gHands[aHouse.Owner].FlagColor;
@@ -716,7 +716,7 @@ begin
                         Label_Common_Offer.Top := 8;
 
                         WaresRow_Common[1].TexID := gRes.Wares[gRes.Houses[aHouse.HouseType].ResOutput[1]].GUIIcon;
-                        WaresRow_Common[1].WareCount := aHouse.CheckResOut(gRes.Houses[aHouse.HouseType].ResOutput[1]);
+                        WaresRow_Common[1].WareCount := aHouse.CheckWareOut(gRes.Houses[aHouse.HouseType].ResOutput[1]);
                         WaresRow_Common[1].Caption := gRes.Wares[gRes.Houses[aHouse.HouseType].ResOutput[1]].Title;
                         WaresRow_Common[1].Hint := gRes.Wares[gRes.Houses[aHouse.HouseType].ResOutput[1]].Title;
                         WaresRow_Common[1].Show;
@@ -773,7 +773,7 @@ begin
         WaresRow_Common[RowRes].TexID := gRes.Wares[hSpec.ResInput[I]].GUIIcon;
         WaresRow_Common[RowRes].Caption := gRes.Wares[hSpec.ResInput[I]].Title;
         WaresRow_Common[RowRes].Hint := gRes.Wares[hSpec.ResInput[I]].Title;
-        WaresRow_Common[RowRes].WareCount := aHouse.CheckResIn(hSpec.ResInput[I]);
+        WaresRow_Common[RowRes].WareCount := aHouse.CheckWareIn(hSpec.ResInput[I]);
         WaresRow_Common[RowRes].Top := Base + Line * LINE_HEIGHT;
         WaresRow_Common[RowRes].Show;
         Inc(Line);
@@ -803,7 +803,7 @@ begin
       if gRes.Wares[hSpec.ResOutput[I]].IsValid then
       begin
         WaresRow_Common[RowRes].TexID     := gRes.Wares[hSpec.ResOutput[I]].GUIIcon;
-        WaresRow_Common[RowRes].WareCount := aHouse.CheckResOut(hSpec.ResOutput[I]);
+        WaresRow_Common[RowRes].WareCount := aHouse.CheckWareOut(hSpec.ResOutput[I]);
         WaresRow_Common[RowRes].Caption   := gRes.Wares[hSpec.ResOutput[I]].Title;
         WaresRow_Common[RowRes].Hint      := gRes.Wares[hSpec.ResOutput[I]].Title;
         WaresRow_Common[RowRes].Show;
@@ -840,7 +840,7 @@ begin
         WareOrderRow_Order[I].WareRow.TexID := gRes.Wares[W].GUIIcon;
         WareOrderRow_Order[I].WareRow.Caption := gRes.Wares[W].Title;
         WareOrderRow_Order[I].Hint := gRes.Wares[W].Title;
-        WareOrderRow_Order[I].WareRow.WareCount := aHouse.CheckResOut(W);
+        WareOrderRow_Order[I].WareRow.WareCount := aHouse.CheckWareOut(W);
         WareOrderRow_Order[I].OrderCount := aHouse.ResOrder[I];
         WareOrderRow_Order[I].Show;
         WareOrderRow_Order[I].Top := Base + Line * LINE_HEIGHT;
@@ -955,7 +955,7 @@ begin
       WaresRow_ArmorWS_Common[rowRes].TexID     := gRes.Wares[hSpec.ResInput[I]].GUIIcon;
       WaresRow_ArmorWS_Common[rowRes].Caption   := gRes.Wares[hSpec.ResInput[I]].Title;
       WaresRow_ArmorWS_Common[rowRes].Hint      := gRes.Wares[hSpec.ResInput[I]].Title;
-      WaresRow_ArmorWS_Common[rowRes].WareCount := aHouse.CheckResIn(hSpec.ResInput[I]);
+      WaresRow_ArmorWS_Common[rowRes].WareCount := aHouse.CheckWareIn(hSpec.ResInput[I]);
       WaresRow_ArmorWS_Common[rowRes].Top       := base + line * LINE_HEIGHT;
       WaresRow_ArmorWS_Common[rowRes].Show;
       Inc(line);
@@ -1239,7 +1239,7 @@ begin
   //Supply
   for I := 1 to BARRACKS_RES_COUNT do
   begin
-    tmp := barracks.CheckResIn(BarracksResType[I]);
+    tmp := barracks.CheckWareIn(BarracksResType[I]);
     Button_Barracks[I].Caption := IfThen(tmp = 0, '-', IntToKStr(tmp));
     //Set highlights
     Button_Barracks[I].Down := False;
@@ -1629,7 +1629,7 @@ begin
 
   for I := 1 to STORE_RES_COUNT do
   begin
-    tmp := TKMHouseStore(gMySpectator.Selected).CheckResIn(StoreResType[I]);
+    tmp := TKMHouseStore(gMySpectator.Selected).CheckWareIn(StoreResType[I]);
     Button_Store[I].Caption := IfThen(tmp = 0, '-', IntToKStr(tmp));
     Image_Store_NotAccept[I].Visible := TKMHouseStore(gMySpectator.Selected).NotAcceptFlag[StoreResType[I]];
     Image_Store_NotAllowTakeOut[I].Visible := TKMHouseStore(gMySpectator.Selected).NotAllowTakeOutFlag[StoreResType[I]];

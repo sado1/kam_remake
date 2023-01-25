@@ -86,7 +86,7 @@ begin
           SetActionStay(2, uaWalk); //pretend to be taking the stone
         end;
     1:  begin
-          Home.ResTakeFromIn(wtStone, 1);
+          Home.WareTakeFromIn(wtStone, 1);
           gHands[Owner].Stats.WareConsumed(wtStone);
           fFlightTime := gProjectiles.AimTarget(PositionF, fTarget, ptTowerRock, fUnit, RANGE_WATCHTOWER_MAX, RANGE_WATCHTOWER_MIN);
           gHands.CleanUpUnitPointer(fTarget); //We don't need it anymore

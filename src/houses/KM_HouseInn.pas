@@ -111,13 +111,13 @@ end;
 
 function TKMHouseInn.HasFood: Boolean;
 begin
-  Result := CheckResIn(wtSausage) + CheckResIn(wtBread) + CheckResIn(wtWine) + CheckResIn(wtFish) > 0;
+  Result := CheckWareIn(wtSausage) + CheckWareIn(wtBread) + CheckWareIn(wtWine) + CheckWareIn(wtFish) > 0;
 end;
 
 
 function TKMHouseInn.GetFoodCnt: Integer;
 begin
-  Result := CheckResIn(wtSausage) + CheckResIn(wtBread) + CheckResIn(wtWine) + CheckResIn(wtFish);
+  Result := CheckWareIn(wtSausage) + CheckWareIn(wtBread) + CheckWareIn(wtWine) + CheckWareIn(wtFish);
 end;
 
 

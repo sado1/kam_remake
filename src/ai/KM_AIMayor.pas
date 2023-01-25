@@ -646,9 +646,9 @@ begin
       S := TKMHouseStore(Houses[I]);
 
       //We like to always keep a supply of these
-      S.NotAcceptFlag[wtTimber] := S.CheckResIn(wtTimber) > 50;
-      S.NotAcceptFlag[wtStone] := S.CheckResIn(wtStone) > 50;
-      S.NotAcceptFlag[wtGold] := S.CheckResIn(wtGold) > 50;
+      S.NotAcceptFlag[wtTimber] := S.CheckWareIn(wtTimber) > 50;
+      S.NotAcceptFlag[wtStone] := S.CheckWareIn(wtStone) > 50;
+      S.NotAcceptFlag[wtGold] := S.CheckWareIn(wtGold) > 50;
 
       //Storing these causes lots of congestion with very little gain
       //Auto build AI aims for perfectly balanced village where these goods don't need storing
@@ -685,7 +685,7 @@ begin
   for I := 0 to Houses.Count - 1 do
   if not Houses[I].IsDestroyed
   and Houses[I].ResourceDepleted
-  and (Houses[I].CheckResOut(wtAll) = 0) then
+  and (Houses[I].CheckWareOut(wtAll) = 0) then
   begin
     //Set it so we can build over coal that was removed
     if Houses[I].HouseType = htCoalMine then

@@ -409,7 +409,7 @@ begin
        AND (P.Houses[K].HouseType = htSchool) then
     begin
       Schools[cnt] := TKMHouseSchool(P.Houses[K]);
-      if GoldShortage AND (Schools[cnt].CheckResIn(wtGold) = 0) then // Ignore empty schools when we are out of gold
+      if GoldShortage AND (Schools[cnt].CheckWareIn(wtGold) = 0) then // Ignore empty schools when we are out of gold
         Continue;
       for L := Schools[cnt].QueueLength - 1 downto 0 do
         if (Schools[cnt].Queue[L] <> utNone) then
@@ -607,9 +607,9 @@ begin
 
         // Materials
         S.NotAcceptFlag[wtTrunk] := (aTick > TRUNK_STORE_DELAY); // Trunk should not be blocked because of forest cleaning
-        S.NotAcceptFlag[wtTimber] := (S.CheckResIn(wtTimber) > 20) OR (aTick > WOOD_STORE_DELAY);// AND (Predictor.WareBalance[wtWood].Exhaustion > 40);
-        S.NotAcceptFlag[wtStone] := (aTick > STONE_STORE_DELAY) OR (S.CheckResIn(wtStone) * AI_Par[MANAGEMENT_CheckStoreWares_Stone] > Stats.GetUnitQty(utBuilder));
-        S.NotAcceptFlag[wtGold] := S.CheckResIn(wtGold) > 400; // Everyone needs as much gold as possible
+        S.NotAcceptFlag[wtTimber] := (S.CheckWareIn(wtTimber) > 20) OR (aTick > WOOD_STORE_DELAY);// AND (Predictor.WareBalance[wtWood].Exhaustion > 40);
+        S.NotAcceptFlag[wtStone] := (aTick > STONE_STORE_DELAY) OR (S.CheckWareIn(wtStone) * AI_Par[MANAGEMENT_CheckStoreWares_Stone] > Stats.GetUnitQty(utBuilder));
+        S.NotAcceptFlag[wtGold] := S.CheckWareIn(wtGold) > 400; // Everyone needs as much gold as possible
 
         // Food - don't store food when we have enough (it will cause trafic before storehouse)
         S.NotAcceptFlag[wtWine] := Stats.GetWareBalance(wtWine) > 100;
@@ -648,7 +648,7 @@ begin
       AND H.ResourceDepleted then
     begin
       H.IsClosedForWorker := True;
-      if (H.CheckResOut(wtAll) = 0) then
+      if (H.CheckWareOut(wtAll) = 0) then
       begin
         Loc := H.Entrance;
         // Remove avoid building around coal mine
@@ -709,7 +709,7 @@ procedure TKMCityManagement.CheckWareDistribution();
         begin
           Inc(HouseCnt);
           H := Plans[I].House;
-          Inc(Deficit, H.CheckResIn(wtGoldOre) + H.CheckResOut(wtGoldOre) - H.CheckResIn(wtCoal) - H.CheckResOut(wtCoal));
+          Inc(Deficit, H.CheckWareIn(wtGoldOre) + H.CheckWareOut(wtGoldOre) - H.CheckWareIn(wtCoal) - H.CheckWareOut(wtCoal));
         end;
     Result := (Deficit / HouseCnt) > MAX_DEFICIT;
   end;

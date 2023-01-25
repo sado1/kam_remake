@@ -53,11 +53,11 @@ type
     procedure UpdateDemands; override;
 
     procedure ResTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
-    procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
-    procedure ResTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
-    procedure ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
-    function CheckResIn(aWare: TKMWareType): Word; override;
-    function ResCanAddToIn(aWare: TKMWareType): Boolean; override;
+    procedure WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
+    procedure WareTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
+    procedure WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
+    function CheckWareIn(aWare: TKMWareType): Word; override;
+    function WareCanAddToIn(aWare: TKMWareType): Boolean; override;
     function CanHaveWareType(aWare: TKMWareType): Boolean; override;
   end;
 
@@ -188,7 +188,7 @@ begin
 
     //Take resources
     GoldDeliveryCnt := GoldDeliveryCnt - TH_TROOP_COST[thUnitIndex]; //Compensation for GoldDeliveryCnt
-    ResTakeFromIn(wtGold, TH_TROOP_COST[thUnitIndex]); //Do the goldtaking
+    WareTakeFromIn(wtGold, TH_TROOP_COST[thUnitIndex]); //Do the goldtaking
 
     gHands[Owner].Stats.WareConsumed(wtGold, TH_TROOP_COST[thUnitIndex]);
       
@@ -257,7 +257,7 @@ begin
 end;
 
 
-procedure TKMHouseTownHall.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
+procedure TKMHouseTownHall.WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
 var
   ordersRemoved, plannedToRemove: Integer;
 begin
@@ -331,13 +331,13 @@ end;
 procedure TKMHouseTownHall.ResTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
 begin
   if DeliveryMode = dmTakeOut then
-    ResTakeFromOut(aWare, aCount, aFromScript)
+    WareTakeFromOut(aWare, aCount, aFromScript)
   else
-    ResTakeFromIn(aWare, aCount, aFromScript);
+    WareTakeFromIn(aWare, aCount, aFromScript);
 end;
 
 
-procedure TKMHouseTownHall.ResTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
+procedure TKMHouseTownHall.WareTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
 begin
   Assert(aWare = wtGold, 'Invalid ware taken from TownHall');
 
@@ -353,7 +353,7 @@ begin
 end;
 
 
-procedure TKMHouseTownHall.ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
+procedure TKMHouseTownHall.WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
 begin
   Assert(aWare = wtGold, 'Invalid ware taken from TownHall');
 
@@ -376,7 +376,7 @@ begin
 end;
 
 
-function TKMHouseTownHall.CheckResIn(aWare: TKMWareType): Word;
+function TKMHouseTownHall.CheckWareIn(aWare: TKMWareType): Word;
 begin
   Result := 0; //Including Wood/stone in building stage
   if aWare = wtGold then
@@ -384,7 +384,7 @@ begin
 end;
 
 
-function TKMHouseTownHall.ResCanAddToIn(aWare: TKMWareType): Boolean;
+function TKMHouseTownHall.WareCanAddToIn(aWare: TKMWareType): Boolean;
 begin
   Result := (aWare = wtGold) and (fGoldCnt < fGoldMaxCnt);
 end;

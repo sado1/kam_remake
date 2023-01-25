@@ -57,12 +57,12 @@ type
     function AllowedToTrade(aWare: TKMWareType): Boolean;
     function TradeInProgress: Boolean;
     function GetResTotal(aWare: TKMWareType): Word; overload;
-    function CheckResIn(aWare: TKMWareType): Word; override;
-    function CheckResOut(aWare: TKMWareType): Word; override;
-    procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
-    procedure ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
-    function ResCanAddToIn(aWare: TKMWareType): Boolean; override;
-    function ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; override;
+    function CheckWareIn(aWare: TKMWareType): Word; override;
+    function CheckWareOut(aWare: TKMWareType): Word; override;
+    procedure WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
+    procedure WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
+    function WareCanAddToIn(aWare: TKMWareType): Boolean; override;
+    function WareOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; override;
 
     procedure UpdateDemands; override;
 
@@ -116,13 +116,13 @@ begin
 end;
 
 
-function TKMHouseMarket.CheckResIn(aWare: TKMWareType): Word;
+function TKMHouseMarket.CheckWareIn(aWare: TKMWareType): Word;
 begin
   Result := fMarketWareIn[aWare];
 end;
 
 
-function TKMHouseMarket.CheckResOut(aWare: TKMWareType): Word;
+function TKMHouseMarket.CheckWareOut(aWare: TKMWareType): Word;
 begin
   Result := fMarketWareOut[aWare];
 end;
@@ -170,7 +170,7 @@ begin
 end;
 
 
-procedure TKMHouseMarket.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
+procedure TKMHouseMarket.WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
 var
   ordersAllowed, ordersToDo: Integer;
 begin
@@ -206,13 +206,13 @@ begin
 end;
 
 
-function TKMHouseMarket.ResCanAddToIn(aWare: TKMWareType): Boolean;
+function TKMHouseMarket.WareCanAddToIn(aWare: TKMWareType): Boolean;
 begin
   Result := (aWare in [WARE_MIN..WARE_MAX]);
 end;
 
 
-function TKMHouseMarket.ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean;
+function TKMHouseMarket.WareOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean;
 begin
   Assert(aWare in [WARE_MIN..WARE_MAX]);
   Result := (fMarketWareOut[aWare] >= aCount);
@@ -252,7 +252,7 @@ begin
 end;
 
 
-procedure TKMHouseMarket.ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
+procedure TKMHouseMarket.WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
 begin
   if aFromScript then
   begin
@@ -424,7 +424,7 @@ begin
 
   // Do not decrease DeliveryCount, if demand delete was cancelled (demand closing was not possible, f.e. when serf enters the house)
   // thus serf brought ware to the house and we should not decrease delivery count in that case here
-  // (but it will be decreased anyway in the ResAddToIn for market)
+  // (but it will be decreased anyway in the WareAddToIn for market)
   if not aDeleteCanceled then
     fMarketDeliveryCount[aWare] := Max(0, fMarketDeliveryCount[aWare] - 1);
   fMarketDemandsClosing[aWare] := Max(0, fMarketDemandsClosing[aWare] - 1);

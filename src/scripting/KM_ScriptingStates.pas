@@ -3194,7 +3194,7 @@ begin
       W := WARE_ID_TO_TYPE[aResource];
       H := fIDCache.GetHouse(aHouseID);
       if H <> nil then
-        Result := H.CheckResIn(W) + H.CheckResOut(W); //Count both in and out
+        Result := H.CheckWareIn(W) + H.CheckWareOut(W); //Count both in and out
     end
     else
       LogIntParamWarn('States.HouseResourceAmount', [aHouseID, aResource]);
@@ -3218,7 +3218,7 @@ begin
     begin
       H := fIDCache.GetHouse(aHouseID);
       if H <> nil then
-        Result := H.CheckResIn(aWare) + H.CheckResOut(aWare); //Count both in and out
+        Result := H.CheckWareIn(aWare) + H.CheckWareOut(aWare); //Count both in and out
     end
     else
       LogParamWarn('States.HouseWareAmount', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aWare))]);

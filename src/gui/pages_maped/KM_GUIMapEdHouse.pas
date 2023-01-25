@@ -343,8 +343,8 @@ begin
       ResRow_Ware_Input[I].WareRow.TexID := gRes.Wares[ware].GUIIcon;
       ResRow_Ware_Input[I].WareRow.Caption := gRes.Wares[ware].Title;
       ResRow_Ware_Input[I].Hint := gRes.Wares[ware].Title;
-      ResRow_Ware_Input[I].WareRow.WareCount := fHouse.CheckResIn(ware);
-      ResRow_Ware_Input[I].OrderCount := fHouse.CheckResIn(ware);
+      ResRow_Ware_Input[I].WareRow.WareCount := fHouse.CheckWareIn(ware);
+      ResRow_Ware_Input[I].OrderCount := fHouse.CheckWareIn(ware);
       ResRow_Ware_Input[I].Show;
       Label_House_Input.Show;
     end
@@ -361,8 +361,8 @@ begin
       ResRow_Ware_Output[I].WareRow.TexID := gRes.Wares[ware].GUIIcon;
       ResRow_Ware_Output[I].WareRow.Caption := gRes.Wares[ware].Title;
       ResRow_Ware_Output[I].Hint := gRes.Wares[ware].Title;
-      ResRow_Ware_Output[I].WareRow.WareCount := fHouse.CheckResOut(ware);
-      ResRow_Ware_Output[I].OrderCount := fHouse.CheckResOut(ware);
+      ResRow_Ware_Output[I].WareRow.WareCount := fHouse.CheckWareOut(ware);
+      ResRow_Ware_Output[I].OrderCount := fHouse.CheckWareOut(ware);
       ResRow_Ware_Output[I].Show;
       Label_House_Output.Show;
     end
@@ -450,7 +450,7 @@ var
 begin
   for I := 1 to STORE_RES_COUNT do
   begin
-    tmp := TKMHouseStore(fHouse).CheckResIn(StoreResType[I]);
+    tmp := TKMHouseStore(fHouse).CheckWareIn(StoreResType[I]);
     Button_Store[I].Caption := IfThen(tmp = 0, '-', IntToKStr(tmp));
   end;
 end;
@@ -493,7 +493,7 @@ var
 begin
   for I := 1 to BARRACKS_RES_COUNT do
   begin
-    tmp := TKMHouseBarracks(fHouse).CheckResIn(BarracksResType[I]);
+    tmp := TKMHouseBarracks(fHouse).CheckWareIn(BarracksResType[I]);
     Button_Barracks[I].Caption := IfThen(tmp = 0, '-', IntToKStr(tmp));
   end;
   tmp := TKMHouseBarracks(fHouse).MapEdRecruitCount;
@@ -505,7 +505,7 @@ end;
 procedure TKMMapEdHouse.TownHallRefresh;
 begin
   Button_TownHall_RallyPoint.Down := (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_RALLY_POINT);
-  WaresRow_TH_Gold_Input.OrderCount := fHouse.CheckResIn(wtGold);
+  WaresRow_TH_Gold_Input.OrderCount := fHouse.CheckWareIn(wtGold);
   WaresRow_TH_Gold_Input.WareRow.WareCount := Min(MAX_WARES_IN_HOUSE, WaresRow_TH_Gold_Input.OrderCount);
 end;
 
@@ -540,16 +540,16 @@ begin
     if TH.GoldMaxCnt < aValue + TH.GoldCnt then
       TH.GoldMaxCnt := aValue + TH.GoldCnt;
     aValue := Min(aValue, TH.GoldMaxCnt - TH.GoldCnt);
-    fHouse.ResAddToIn(wtGold, aValue);
+    fHouse.WareAddToIn(wtGold, aValue);
   end else
   if aValue < 0 then
   begin
     if TH.GoldMaxCnt > aValue + TH.GoldCnt then
       TH.GoldMaxCnt := Max(0, aValue + TH.GoldCnt);
-    newCountAdd := Math.Min(Abs(aValue), fHouse.CheckResIn(wtGold));
-    fHouse.ResTakeFromIn(wtGold, newCountAdd);
+    newCountAdd := Math.Min(Abs(aValue), fHouse.CheckWareIn(wtGold));
+    fHouse.WareTakeFromIn(wtGold, newCountAdd);
   end;
-  WaresRow_TH_Gold_Input.OrderCount := fHouse.CheckResIn(wtGold);
+  WaresRow_TH_Gold_Input.OrderCount := fHouse.CheckWareIn(wtGold);
   WaresRow_TH_Gold_Input.WareRow.WareCount := Min(MAX_WARES_IN_HOUSE, WaresRow_TH_Gold_Input.OrderCount);
 end;
 
@@ -571,17 +571,17 @@ begin
 
     if (Sender = ResRow_Ware_Input[I]) and (aValue > 0) then
     begin
-      newCountAdd := Math.Min(aValue, MAX_WARES_IN_HOUSE - fHouse.CheckResIn(ware));
-      fHouse.ResAddToIn(ware, newCountAdd);
+      newCountAdd := Math.Min(aValue, MAX_WARES_IN_HOUSE - fHouse.CheckWareIn(ware));
+      fHouse.WareAddToIn(ware, newCountAdd);
     end;
 
     if (Sender = ResRow_Ware_Input[I]) and (aValue < 0) then
     begin
-      newCountAdd := Math.Min(Abs(aValue), fHouse.CheckResIn(ware));
-      fHouse.ResTakeFromIn(ware, newCountAdd);
+      newCountAdd := Math.Min(Abs(aValue), fHouse.CheckWareIn(ware));
+      fHouse.WareTakeFromIn(ware, newCountAdd);
     end;
 
-    ResRow_Ware_Input[I].OrderCount := fHouse.CheckResIn(ware);
+    ResRow_Ware_Input[I].OrderCount := fHouse.CheckWareIn(ware);
     ResRow_Ware_Input[I].WareRow.WareCount := ResRow_Ware_Input[I].OrderCount;
   end;
 
@@ -592,19 +592,19 @@ begin
 
     if (Sender = ResRow_Ware_Output[I]) and (aValue > 0) then
     begin
-      newCountAdd := Math.Min(aValue, MAX_WARES_IN_HOUSE - fHouse.CheckResOut(ware));
+      newCountAdd := Math.Min(aValue, MAX_WARES_IN_HOUSE - fHouse.CheckWareOut(ware));
       if gRes.Houses[fHouse.HouseType].IsWorkshop then
-        newCountAdd := Math.Min(newCountAdd, MAX_WARES_OUT_WORKSHOP - fHouse.CheckResOut(wtAll));
-      fHouse.ResAddToOut(ware, newCountAdd);
+        newCountAdd := Math.Min(newCountAdd, MAX_WARES_OUT_WORKSHOP - fHouse.CheckWareOut(wtAll));
+      fHouse.WareAddToOut(ware, newCountAdd);
     end;
 
     if (Sender = ResRow_Ware_Output[I]) and (aValue < 0) then
     begin
-      newCountAdd := Math.Min(Abs(aValue), fHouse.CheckResOut(ware));
-      fHouse.ResTakeFromOut(ware, newCountAdd);
+      newCountAdd := Math.Min(Abs(aValue), fHouse.CheckWareOut(ware));
+      fHouse.WareTakeFromOut(ware, newCountAdd);
     end;
 
-    ResRow_Ware_Output[I].OrderCount := fHouse.CheckResOut(ware);
+    ResRow_Ware_Output[I].OrderCount := fHouse.CheckWareOut(ware);
     ResRow_Ware_Output[I].WareRow.WareCount := ResRow_Ware_Output[I].OrderCount;
   end;
 end;
@@ -747,17 +747,17 @@ begin
 
     if (Sender = Button_BarracksDec100) or (Sender = Button_BarracksDec) then
     begin
-      newCount := Math.Min(barracks.CheckResIn(ware), GetMultiplicator(Shift) * TKMButton(Sender).Tag);
-      barracks.ResTakeFromOut(ware, newCount);
+      newCount := Math.Min(barracks.CheckWareIn(ware), GetMultiplicator(Shift) * TKMButton(Sender).Tag);
+      barracks.WareTakeFromOut(ware, newCount);
     end;
 
     if (Sender = Button_BarracksInc100) or (Sender = Button_BarracksInc) then
     begin
-      newCount := Math.Min(High(Word) - barracks.CheckResIn(ware), GetMultiplicator(Shift) * TKMButton(Sender).Tag);
-      barracks.ResAddToIn(ware, newCount);
+      newCount := Math.Min(High(Word) - barracks.CheckWareIn(ware), GetMultiplicator(Shift) * TKMButton(Sender).Tag);
+      barracks.WareAddToIn(ware, newCount);
     end;
 
-    Label_Barracks_WareCount.Caption := IntToStr(barracks.CheckResIn(ware));
+    Label_Barracks_WareCount.Caption := IntToStr(barracks.CheckWareIn(ware));
   end;
 
   BarracksRefresh;
@@ -775,15 +775,15 @@ begin
 
   //We need to take no more than it is there, thats part of bugtracking idea
   if (Sender = Button_StoreDec100) or (Sender = Button_StoreDec) then begin
-    newCount := Math.Min(store.CheckResIn(ware), GetMultiplicator(Shift) * TKMButton(Sender).Tag);
-    store.ResTakeFromOut(ware, newCount);
+    newCount := Math.Min(store.CheckWareIn(ware), GetMultiplicator(Shift) * TKMButton(Sender).Tag);
+    store.WareTakeFromOut(ware, newCount);
   end;
 
   //We can always add any amount of resource, it will be capped by Store
   if (Sender = Button_StoreInc100) or (Sender = Button_StoreInc) then
-    store.ResAddToIn(ware, GetMultiplicator(Shift) * TKMButton(Sender).Tag);
+    store.WareAddToIn(ware, GetMultiplicator(Shift) * TKMButton(Sender).Tag);
 
-  Label_Store_WareCount.Caption := inttostr(store.CheckResIn(ware));
+  Label_Store_WareCount.Caption := inttostr(store.CheckWareIn(ware));
   StoreRefresh;
 end;
 

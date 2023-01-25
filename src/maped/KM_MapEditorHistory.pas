@@ -498,24 +498,24 @@ constructor TKMCheckpointHouses.Create(const aCaption: string);
                     end;
       htStore:      begin
                       for WT := WARE_MIN to WARE_MAX do
-                        fHouses[aCount].WaresIn[Ord(WT) - Ord(WARE_MIN)] := TKMHouseStore(aHouse).CheckResIn(WT);
+                        fHouses[aCount].WaresIn[Ord(WT) - Ord(WARE_MIN)] := TKMHouseStore(aHouse).CheckWareIn(WT);
                     end;
       htBarracks:   begin
                       fHouses[aCount].WaresIn[0] := TKMHouseBarracks(aHouse).MapEdRecruitCount;
                       for WT := WARFARE_MIN to WARFARE_MAX do
-                        fHouses[aCount].WaresIn[Ord(WT) - Ord(WARFARE_MIN) + 1] := TKMHouseBarracks(aHouse).CheckResIn(WT);
+                        fHouses[aCount].WaresIn[Ord(WT) - Ord(WARFARE_MIN) + 1] := TKMHouseBarracks(aHouse).CheckWareIn(WT);
                     end;
       htMarket:     ;
       else          begin
                       for I := 1 to 4 do
                         if spec.ResInput[I] <> wtNone then
-                          fHouses[aCount].WaresIn[I-1] := aHouse.CheckResIn(spec.ResInput[I])
+                          fHouses[aCount].WaresIn[I-1] := aHouse.CheckWareIn(spec.ResInput[I])
                         else
                           fHouses[aCount].WaresIn[I-1] := 0;
 
                       for I := 1 to 4 do
                         if spec.ResOutput[I] <> wtNone then
-                          fHouses[aCount].WaresOut[I-1] := aHouse.CheckResOut(spec.ResOutput[I])
+                          fHouses[aCount].WaresOut[I-1] := aHouse.CheckWareOut(spec.ResOutput[I])
                         else
                           fHouses[aCount].WaresOut[I-1] := 0;
                     end;
@@ -581,22 +581,22 @@ begin
                     end;
       htStore:      begin
                       for WT := WARE_MIN to WARE_MAX do
-                        TKMHouseStore(H).ResAddToIn(WT, fHouses[I].WaresIn[Ord(WT) - Ord(WARE_MIN)]);
+                        TKMHouseStore(H).WareAddToIn(WT, fHouses[I].WaresIn[Ord(WT) - Ord(WARE_MIN)]);
                     end;
       htBarracks:   begin
                       TKMHouseBarracks(H).MapEdRecruitCount := fHouses[I].WaresIn[0];
                       for WT := WARFARE_MIN to WARFARE_MAX do
-                        TKMHouseBarracks(H).ResAddToIn(WT, fHouses[I].WaresIn[Ord(WT) - Ord(WARFARE_MIN) + 1]);
+                        TKMHouseBarracks(H).WareAddToIn(WT, fHouses[I].WaresIn[Ord(WT) - Ord(WARFARE_MIN) + 1]);
                     end;
       htMarket:     ;
       else          begin
                       for K := 1 to 4 do
                         if spec.ResInput[K] <> wtNone then
-                          H.ResAddToIn(spec.ResInput[K], fHouses[I].WaresIn[K-1]);
+                          H.WareAddToIn(spec.ResInput[K], fHouses[I].WaresIn[K-1]);
 
                       for K := 1 to 4 do
                         if spec.ResOutput[K] <> wtNone then
-                          H.ResAddToOut(spec.ResOutput[K], fHouses[I].WaresOut[K-1]);
+                          H.WareAddToOut(spec.ResOutput[K], fHouses[I].WaresOut[K-1]);
                     end;
     end;
   end;

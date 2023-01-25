@@ -29,7 +29,7 @@ type
     constructor Load(LoadStream: TKMemoryStream); override;
     procedure SyncLoad; override;
     procedure Demolish(aFrom: TKMHandID; IsSilent: Boolean = False); override;
-    procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
+    procedure WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
     function AddUnitToQueue(aUnit: TKMUnitType; aCount: Integer): Byte; //Should add unit to queue if there's a place
     procedure ChangeUnitTrainOrder(aNewPosition: Integer); overload; //Change last unit in queue training order
     procedure ChangeUnitTrainOrder(aOldPosition, aNewPosition: Integer); overload; //Change unit order in queue
@@ -100,7 +100,7 @@ end;
 
 
 //Add resource as usual and initiate unit training
-procedure TKMHouseSchool.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
+procedure TKMHouseSchool.WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
 begin
   inherited;
 
@@ -251,7 +251,7 @@ var
 begin
   if fQueue[0] <> utNone then exit; //If there's currently no unit in training
   if fQueue[1] = utNone then exit; //If there is a unit waiting to be trained
-  if CheckResIn(wtGold) = 0 then exit; //There must be enough gold to perform training
+  if CheckWareIn(wtGold) = 0 then exit; //There must be enough gold to perform training
 
   for I := 0 to High(fQueue) - 1 do
     PrivateQueue[I] := fQueue[I+1]; //Shift by one
@@ -269,9 +269,9 @@ begin
   fUnitWip := nil;
   PrivateQueue[0] := utNone; //Clear the unit in training
   //Script command might have taken the gold while we were training, in which case ignore it (either way, gold is consumed)
-  if CheckResIn(wtGold) > 0 then
+  if CheckWareIn(wtGold) > 0 then
   begin
-    ResTakeFromIn(wtGold); //Do the goldtaking
+    WareTakeFromIn(wtGold); //Do the goldtaking
     gHands[Owner].Stats.WareConsumed(wtGold);
   end;
   fHideOneGold := False;

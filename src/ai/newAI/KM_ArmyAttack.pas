@@ -1002,7 +1002,7 @@ var
       for K := 0 to Length(HA) - 1 do
         if (HA[K].HouseType = htWatchTower)
           AND (GroupAttackCnt[K] < MAX_ARCHERS_VS_TOWER)
-          AND (HA[K].CheckResIn(wtStone) > 1)
+          AND (HA[K].CheckWareIn(wtStone) > 1)
           AND HA[K].HasOwner then // Ignore towers without stone and without recruit inside
         begin
           Dist := KMDistanceSqr(AvailableSquads[GT].Squads[I].Position, HA[K].Position);

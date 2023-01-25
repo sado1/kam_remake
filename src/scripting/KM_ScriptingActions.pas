@@ -1245,8 +1245,8 @@ begin
         H.BuildingState := hbsWood;
         if aAddMaterials then
         begin
-          H.ResAddToBuild(wtTimber, gRes.Houses[H.HouseType].WoodCost);
-          H.ResAddToBuild(wtStone, gRes.Houses[H.HouseType].StoneCost);
+          H.WareAddToBuild(wtTimber, gRes.Houses[H.HouseType].WoodCost);
+          H.WareAddToBuild(wtStone, gRes.Houses[H.HouseType].StoneCost);
         end
         else
         begin
@@ -1306,12 +1306,12 @@ begin
 
         // Add wood
         aWoodAmount := EnsureRange(aWoodAmount, 0, gRes.Houses[aHouseType].WoodCost);
-        H.ResAddToBuild(wtTimber, aWoodAmount);
+        H.WareAddToBuild(wtTimber, aWoodAmount);
         gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtTimber, gRes.Houses[aHouseType].WoodCost - aWoodAmount, dtOnce, diHigh4);
 
         // Add stones
         aStoneAmount := EnsureRange(aStoneAmount, 0, gRes.Houses[aHouseType].StoneCost);
-        H.ResAddToBuild(wtStone, aStoneAmount);
+        H.WareAddToBuild(wtStone, aStoneAmount);
         gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtStone, gRes.Houses[aHouseType].StoneCost - aStoneAmount, dtOnce, diHigh4);
 
         gHands[aHand].Constructions.HouseList.AddHouse(H);
@@ -2082,7 +2082,7 @@ begin
       H := gHands[aHand].FindHouse(htStore, 1);
       if H <> nil then
       begin
-        H.ResAddToIn(WARE_ID_TO_TYPE[aType], aCount);
+        H.WareAddToIn(WARE_ID_TO_TYPE[aType], aCount);
         gHands[aHand].Stats.WareProduced(WARE_ID_TO_TYPE[aType], aCount);
         gScriptEvents.ProcWareProduced(H, WARE_ID_TO_TYPE[aType], aCount);
       end;
@@ -2112,7 +2112,7 @@ begin
       H := gHands[aHand].FindHouse(htStore, 1);
       if H <> nil then
       begin
-        H.ResAddToIn(aType, aCount);
+        H.WareAddToIn(aType, aCount);
         gHands[aHand].Stats.WareProduced(aType, aCount);
         gScriptEvents.ProcWareProduced(H, aType, aCount);
       end;
@@ -2143,7 +2143,7 @@ begin
       H := gHands[aHand].FindHouse(htBarracks, 1);
       if H <> nil then
       begin
-        H.ResAddToIn(WARE_ID_TO_TYPE[aType], aCount);
+        H.WareAddToIn(WARE_ID_TO_TYPE[aType], aCount);
         gHands[aHand].Stats.WareProduced(WARE_ID_TO_TYPE[aType], aCount);
         gScriptEvents.ProcWareProduced(H, WARE_ID_TO_TYPE[aType], aCount);
       end;
@@ -2173,7 +2173,7 @@ begin
       H := gHands[aHand].FindHouse(htBarracks, 1);
       if H <> nil then
       begin
-        H.ResAddToIn(aType, aCount);
+        H.WareAddToIn(aType, aCount);
         gHands[aHand].Stats.WareProduced(aType, aCount);
         gScriptEvents.ProcWareProduced(H, aType, aCount);
       end;
@@ -2647,12 +2647,12 @@ begin
           resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtTimber,
                          gRes.Houses[H.HouseType].WoodCost - H.GetBuildWoodDelivered, plannedToRemove);
           Inc(resNeeded, plannedToRemove);
-          H.ResAddToBuild(wtTimber, resNeeded);
+          H.WareAddToBuild(wtTimber, resNeeded);
 
           resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtStone,
                          gRes.Houses[H.HouseType].StoneCost - H.GetBuildStoneDelivered, plannedToRemove);
           Inc(resNeeded, plannedToRemove);
-          H.ResAddToBuild(wtStone, resNeeded);
+          H.WareAddToBuild(wtStone, resNeeded);
         end;
     end
     else
@@ -2687,11 +2687,11 @@ begin
           begin
             resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtTimber, aWoodAmount, plannedToRemove);
             Inc(resNeeded, plannedToRemove);
-            H.ResAddToBuild(wtTimber, resNeeded);
+            H.WareAddToBuild(wtTimber, resNeeded);
           end
           else
           begin
-            H.ResAddToBuild(wtTimber, aWoodAmount);
+            H.WareAddToBuild(wtTimber, aWoodAmount);
             gHands[H.Owner].Deliveries.Queue.AddDemand(H, nil, wtTimber, -aWoodAmount, dtOnce, diHigh4);
           end;
 
@@ -2701,11 +2701,11 @@ begin
           begin
             resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtStone, aStoneAmount, plannedToRemove);
             Inc(resNeeded, plannedToRemove);
-            H.ResAddToBuild(wtStone, resNeeded);
+            H.WareAddToBuild(wtStone, resNeeded);
           end
           else
           begin
-            H.ResAddToBuild(wtStone, aStoneAmount);
+            H.WareAddToBuild(wtStone, aStoneAmount);
             gHands[H.Owner].Deliveries.Queue.AddDemand(H, nil, wtStone, -aStoneAmount, dtOnce, diHigh4);
           end;
 
@@ -2866,7 +2866,7 @@ begin
         begin
           if aCount > 0 then
           begin
-            H.ResAddToEitherFromScript(W, aCount);
+            H.WareAddToEitherFromScript(W, aCount);
             gHands[H.Owner].Stats.WareProduced(W, aCount);
             gScriptEvents.ProcWareProduced(H, W, aCount);
           end;
@@ -2899,7 +2899,7 @@ begin
         begin
           if aCount > 0 then
           begin
-            H.ResAddToEitherFromScript(aType, aCount);
+            H.WareAddToEitherFromScript(aType, aCount);
             gHands[H.Owner].Stats.WareProduced(aType, aCount);
             gScriptEvents.ProcWareProduced(H, aType, aCount);
           end;

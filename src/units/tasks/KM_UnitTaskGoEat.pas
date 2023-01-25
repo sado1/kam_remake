@@ -131,9 +131,9 @@ begin
       //Order is Bread-Sausages-Wine-Fish
       //We allow unit to eat foods until he is over 90% condition
       if (Condition < UNIT_MAX_CONDITION * UNIT_STUFFED_CONDITION_LVL)
-        and (fInn.CheckResIn(wtBread) > 0) then
+        and (fInn.CheckWareIn(wtBread) > 0) then
       begin
-        fInn.ResTakeFromIn(wtBread);
+        fInn.WareTakeFromIn(wtBread);
         gHands[fUnit.Owner].Stats.WareConsumed(wtBread);
         SetActionLockedStay(29*4, uaEat);
         Feed(UNIT_MAX_CONDITION * BREAD_RESTORE);
@@ -142,9 +142,9 @@ begin
       end else
         SetActionLockedStay(0, uaWalk);
    5: if (Condition < UNIT_MAX_CONDITION * UNIT_STUFFED_CONDITION_LVL)
-        and (fInn.CheckResIn(wtSausage) > 0) then
+        and (fInn.CheckWareIn(wtSausage) > 0) then
       begin
-        fInn.ResTakeFromIn(wtSausage);
+        fInn.WareTakeFromIn(wtSausage);
         gHands[fUnit.Owner].Stats.WareConsumed(wtSausage);
         SetActionLockedStay(29*4, uaEat);
         Feed(UNIT_MAX_CONDITION * SAUSAGE_RESTORE);
@@ -154,9 +154,9 @@ begin
         SetActionLockedStay(0, uaWalk);
    6: if (fFeedCnt < MAX_FEED_CNT) //Limit max number of times to eat in the Inn
         and (Condition < UNIT_MAX_CONDITION * UNIT_STUFFED_CONDITION_LVL)
-        and (fInn.CheckResIn(wtWine) > 0) then
+        and (fInn.CheckWareIn(wtWine) > 0) then
       begin
-        fInn.ResTakeFromIn(wtWine);
+        fInn.WareTakeFromIn(wtWine);
         gHands[fUnit.Owner].Stats.WareConsumed(wtWine);
         SetActionLockedStay(29*4, uaEat);
         Feed(UNIT_MAX_CONDITION * WINE_RESTORE);
@@ -166,9 +166,9 @@ begin
         SetActionLockedStay(0, uaWalk);
    7: if (fFeedCnt < MAX_FEED_CNT) //Limit max number of times to eat in the Inn
         and (Condition < UNIT_MAX_CONDITION * UNIT_STUFFED_CONDITION_LVL)
-        and (fInn.CheckResIn(wtFish) > 0) then
+        and (fInn.CheckWareIn(wtFish) > 0) then
       begin
-        fInn.ResTakeFromIn(wtFish);
+        fInn.WareTakeFromIn(wtFish);
         gHands[fUnit.Owner].Stats.WareConsumed(wtFish);
         SetActionLockedStay(29*4, uaEat);
         Feed(UNIT_MAX_CONDITION * FISH_RESTORE);

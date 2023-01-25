@@ -480,9 +480,9 @@ begin
                           qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if qty = -1 then qty := High(Word); //-1 means maximum resources
                           H := gHands[fLastHand].FindHouse(htStore,1);
-                          if (H <> nil) and H.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
+                          if (H <> nil) and H.WareCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
                           begin
-                            H.ResAddToIn(WARE_ID_TO_TYPE[P[0]], qty, True);
+                            H.WareAddToIn(WARE_ID_TO_TYPE[P[0]], qty, True);
                             gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], qty);
                           end;
                         end;
@@ -493,9 +493,9 @@ begin
                           for I := 0 to gHands.Count - 1 do
                           begin
                             H := gHands[i].FindHouse(htStore, 1);
-                            if (H <> nil) and H.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
+                            if (H <> nil) and H.WareCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
                             begin
-                              H.ResAddToIn(WARE_ID_TO_TYPE[P[0]], qty, True);
+                              H.WareAddToIn(WARE_ID_TO_TYPE[P[0]], qty, True);
                               gHands[i].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], qty);
                             end;
                           end;
@@ -507,9 +507,9 @@ begin
                           if qty = -1 then qty := High(Word); //-1 means maximum resources
 
                           H := TKMHouseStore(gHands[fLastHand].FindHouse(htStore, 2));
-                          if (H <> nil) and H.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
+                          if (H <> nil) and H.WareCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
                           begin
-                            H.ResAddToIn(WARE_ID_TO_TYPE[P[0]], qty, True);
+                            H.WareAddToIn(WARE_ID_TO_TYPE[P[0]], qty, True);
                             gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], qty);
                           end;
                         end;
@@ -521,9 +521,9 @@ begin
                           if qty = -1 then qty := High(Word); //-1 means maximum resources
 
                           H := gHands[fLastHand].FindHouse(HOUSE_ID_TO_TYPE[P[0]], P[1]);
-                          if (H <> nil) and (H.ResCanAddToIn(WARE_ID_TO_TYPE[P[2]]) or H.ResCanAddToOut(WARE_ID_TO_TYPE[P[2]])) then
+                          if (H <> nil) and (H.WareCanAddToIn(WARE_ID_TO_TYPE[P[2]]) or H.WareCanAddToOut(WARE_ID_TO_TYPE[P[2]])) then
                           begin
-                            H.ResAddToEitherFromScript(WARE_ID_TO_TYPE[P[2]], qty);
+                            H.WareAddToEitherFromScript(WARE_ID_TO_TYPE[P[2]], qty);
                             gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[2]], qty);
                           end;
                         end;
@@ -533,11 +533,11 @@ begin
                           qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if qty = -1 then qty := High(Word); //-1 means maximum resources
 
-                          if (fLastHouse <> nil) and (fLastHouse.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) or fLastHouse.ResCanAddToOut(WARE_ID_TO_TYPE[P[0]])) then
+                          if (fLastHouse <> nil) and (fLastHouse.WareCanAddToIn(WARE_ID_TO_TYPE[P[0]]) or fLastHouse.WareCanAddToOut(WARE_ID_TO_TYPE[P[0]])) then
                           begin
                             if not fLastHouse.IsDestroyed then //Could be destroyed already by damage
                             begin
-                              fLastHouse.ResAddToEitherFromScript(WARE_ID_TO_TYPE[P[0]], qty);
+                              fLastHouse.WareAddToEitherFromScript(WARE_ID_TO_TYPE[P[0]], qty);
                               gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], qty);
                             end;
                           end
@@ -550,9 +550,9 @@ begin
                           qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if qty = -1 then qty := High(Word); //-1 means maximum weapons
                           H := gHands[fLastHand].FindHouse(htBarracks, 1);
-                          if (H <> nil) and H.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
+                          if (H <> nil) and H.WareCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
                           begin
-                            H.ResAddToIn(WARE_ID_TO_TYPE[P[0]], qty, True);
+                            H.WareAddToIn(WARE_ID_TO_TYPE[P[0]], qty, True);
                             gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], qty);
                           end;
                         end;
@@ -1115,10 +1115,10 @@ begin
         //Process any wares in this house
         for WT := WARE_MIN to WARE_MAX do
         begin
-          if H.CheckResIn(WT) > 0 then
-            AddCommand(ctAddWareToLast, [WARE_TY_TO_ID[WT], H.CheckResIn(WT)]);
-          if H.CheckResOut(WT) > 0 then
-            AddCommand(ctAddWareToLast, [WARE_TY_TO_ID[WT], H.CheckResOut(WT)]);
+          if H.CheckWareIn(WT) > 0 then
+            AddCommand(ctAddWareToLast, [WARE_TY_TO_ID[WT], H.CheckWareIn(WT)]);
+          if H.CheckWareOut(WT) > 0 then
+            AddCommand(ctAddWareToLast, [WARE_TY_TO_ID[WT], H.CheckWareOut(WT)]);
         end;
 
         //Set Delivery mode after Wares, so in case there are some wares and delivery mode TakeOut, then we will need to add proper Offers

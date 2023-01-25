@@ -23,11 +23,11 @@ type
     function ShouldAbandonDeliveryFromTo(aToHouse: TKMHouse; aWareType: TKMWareType; aImmidiateCheck: Boolean): Boolean; override;
     procedure ToggleNotAcceptFlag(aWare: TKMWareType);
     procedure ToggleNotAcceptTakeOutFlag(aWare: TKMWareType);
-    procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
-    function CheckResIn(aWare: TKMWareType): Word; override;
-    procedure ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
-    function ResCanAddToIn(aWare: TKMWareType): Boolean; override;
-    function ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; override;
+    procedure WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
+    function CheckWareIn(aWare: TKMWareType): Word; override;
+    procedure WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
+    function WareCanAddToIn(aWare: TKMWareType): Boolean; override;
+    function WareOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; override;
     procedure Save(SaveStream: TKMemoryStream); override;
   end;
 
@@ -88,7 +88,7 @@ begin
 end;
 
 
-procedure TKMHouseStore.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
+procedure TKMHouseStore.WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
 var
   W: TKMWareType;
 begin
@@ -107,20 +107,20 @@ begin
 end;
 
 
-function TKMHouseStore.ResCanAddToIn(aWare: TKMWareType): Boolean;
+function TKMHouseStore.WareCanAddToIn(aWare: TKMWareType): Boolean;
 begin
   Result := (aWare in [WARE_MIN..WARE_MAX]);
 end;
 
 
-function TKMHouseStore.ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean;
+function TKMHouseStore.WareOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean;
 begin
   Assert(aWare in [WARE_MIN..WARE_MAX]);
   Result := (fWaresCount[aWare] >= aCount);
 end;
 
 
-function TKMHouseStore.CheckResIn(aWare: TKMWareType): Word;
+function TKMHouseStore.CheckWareIn(aWare: TKMWareType): Word;
 begin
   if aWare in [WARE_MIN..WARE_MAX] then
     Result := fWaresCount[aWare]
@@ -140,7 +140,7 @@ begin
 end;
 
 
-procedure TKMHouseStore.ResTakeFromOut(aWare: TKMWareType; aCount: Word=1; aFromScript: Boolean = False);
+procedure TKMHouseStore.WareTakeFromOut(aWare: TKMWareType; aCount: Word=1; aFromScript: Boolean = False);
 begin
   if aFromScript then
   begin
@@ -185,7 +185,7 @@ begin
     if cheatPattern then
       case aWare of
         wtCrossbow: begin
-                      ResAddToIn(wtAll, 10);
+                      WareAddToIn(wtAll, 10);
                       gHands[Owner].Stats.WareProduced(wtAll, 10);
                       Exit;
                     end;

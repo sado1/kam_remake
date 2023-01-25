@@ -2213,10 +2213,10 @@ begin
   H := AddHouse(htStore, aEntrance.X, aEntrance.Y, True);
   // Add Wares
   for WT := Low(fChooseLocation.Resources) to High(fChooseLocation.Resources) do
-    if H.ResCanAddToIn(WT) OR H.ResCanAddToOut(WT) then
+    if H.WareCanAddToIn(WT) OR H.WareCanAddToOut(WT) then
     begin
       Stats.WareInitial(WT, fChooseLocation.Resources[WT]);
-      H.ResAddToEitherFromScript(WT, fChooseLocation.Resources[WT]);
+      H.WareAddToEitherFromScript(WT, fChooseLocation.Resources[WT]);
     end;
   // Add Roads
   AddRoad( KMPoint(aEntrance.X,  aEntrance.Y+1) );

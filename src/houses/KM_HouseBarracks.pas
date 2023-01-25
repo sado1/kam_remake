@@ -28,17 +28,17 @@ type
 
     procedure Activate(aWasBuilt: Boolean); override;
     procedure Demolish(aFrom: TKMHandID; IsSilent: Boolean = False); override;
-    procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
-    procedure ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
-    function CheckResIn(aWare: TKMWareType): Word; override;
-    function ResCanAddToIn(aWare: TKMWareType): Boolean; override;
+    procedure WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
+    procedure WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
+    function CheckWareIn(aWare: TKMWareType): Word; override;
+    function WareCanAddToIn(aWare: TKMWareType): Boolean; override;
 
     function ShouldAbandonDeliveryTo(aWareType: TKMWareType): Boolean; override;
     function ShouldAbandonDeliveryFrom(aWareType: TKMWareType; aImmidiateCheck: Boolean = False): Boolean; override;
     function ShouldAbandonDeliveryFromTo(aToHouse: TKMHouse; aWareType: TKMWareType; aImmidiateCheck: Boolean): Boolean; override;
 
     function GetTotalWaresCnt: Integer;
-    function ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; override;
+    function WareOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; override;
     function CanEquip(aUnitType: TKMUnitType): Boolean;
     function RecruitsCount: Integer;
     procedure RecruitsAdd(aUnit: Pointer);
@@ -185,7 +185,7 @@ begin
 end;
 
 
-procedure TKMHouseBarracks.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
+procedure TKMHouseBarracks.WareAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
 var
   oldCnt: Integer;
 begin
@@ -197,13 +197,13 @@ begin
 end;
 
 
-function TKMHouseBarracks.ResCanAddToIn(aWare: TKMWareType): Boolean;
+function TKMHouseBarracks.WareCanAddToIn(aWare: TKMWareType): Boolean;
 begin
   Result := (aWare in [WARFARE_MIN..WARFARE_MAX]);
 end;
 
 
-function TKMHouseBarracks.CheckResIn(aWare: TKMWareType): Word;
+function TKMHouseBarracks.CheckWareIn(aWare: TKMWareType): Word;
 begin
   if aWare in [WARFARE_MIN..WARFARE_MAX] then
     Result := fResourceCount[aWare]
@@ -212,7 +212,7 @@ begin
 end;
 
 
-procedure TKMHouseBarracks.ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
+procedure TKMHouseBarracks.WareTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
 begin
   if aFromScript then
   begin
@@ -228,7 +228,7 @@ begin
 end;
 
 
-function TKMHouseBarracks.ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean;
+function TKMHouseBarracks.WareOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean;
 begin
   Assert(aWare in [WARFARE_MIN .. WARFARE_MAX]);
   Result := (fResourceCount[aWare] >= aCount);

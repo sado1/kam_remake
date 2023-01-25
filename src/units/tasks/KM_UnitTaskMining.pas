@@ -95,12 +95,12 @@ begin
     htWoodcutters:  case TKMHouseWoodcutters(fUnit.Home).WoodcutterMode of
                       wmChop:         Result := taCut;
                       wmPlant:        Result := taPlant;
-                      wmChopAndPlant: if fUnit.Home.CheckResOut(wtTrunk) >= MAX_WARES_IN_HOUSE then
+                      wmChopAndPlant: if fUnit.Home.CheckWareOut(wtTrunk) >= MAX_WARES_IN_HOUSE then
                                         Result := taPlant
                                       else
                                         Result := taAny;
                     end;
-    htFarm:         if fUnit.Home.CheckResOut(wtCorn) >= MAX_WARES_IN_HOUSE then
+    htFarm:         if fUnit.Home.CheckWareOut(wtCorn) >= MAX_WARES_IN_HOUSE then
                       Result := taPlant
                     else
                       Result := taAny;
@@ -343,9 +343,9 @@ begin
 
             //Take required resources
             if WorkPlan.Resource1 <> wtNone then
-              Home.ResTakeFromIn(WorkPlan.Resource1, WorkPlan.Count1);
+              Home.WareTakeFromIn(WorkPlan.Resource1, WorkPlan.Count1);
             if WorkPlan.Resource2 <> wtNone then
-              Home.ResTakeFromIn(WorkPlan.Resource2, WorkPlan.Count2);
+              Home.WareTakeFromIn(WorkPlan.Resource2, WorkPlan.Count2);
 
             gHands[fUnit.Owner].Stats.WareConsumed(WorkPlan.Resource1, WorkPlan.Count1);
             gHands[fUnit.Owner].Stats.WareConsumed(WorkPlan.Resource2, WorkPlan.Count2);
@@ -415,8 +415,8 @@ begin
 
             if ResAcquired then
             begin
-              Home.ResAddToOut(WorkPlan.Product1, WorkPlan.ProdCount1);
-              Home.ResAddToOut(WorkPlan.Product2, WorkPlan.ProdCount2);
+              Home.WareAddToOut(WorkPlan.Product1, WorkPlan.ProdCount1);
+              Home.WareAddToOut(WorkPlan.Product2, WorkPlan.ProdCount2);
               gHands[fUnit.Owner].Stats.WareProduced(WorkPlan.Product1, WorkPlan.ProdCount1);
               gHands[fUnit.Owner].Stats.WareProduced(WorkPlan.Product2, WorkPlan.ProdCount2);
               gScriptEvents.ProcWareProduced(fUnit.Home, WorkPlan.Product1, WorkPlan.ProdCount1);
