@@ -295,34 +295,34 @@ begin
     if not H.IsDestroyed and (WareOrder = 0) then
     case H.HouseType of
       htArmorSmithy:     for K := 1 to 4 do
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtIronShield then
+                            if gRes.Houses[H.HouseType].WareOutput[K] = wtIronShield then
                               H.WareOrder[K] := Round(WarfareRatios[wtIronShield] * PORTIONS)
                             else
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtIronArmor then
+                            if gRes.Houses[H.HouseType].WareOutput[K] = wtIronArmor then
                               H.WareOrder[K] := Round(WarfareRatios[wtIronArmor] * PORTIONS);
       htArmorWorkshop:   for K := 1 to 4 do
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtWoodenShield then
+                            if gRes.Houses[H.HouseType].WareOutput[K] = wtWoodenShield then
                               H.WareOrder[K] := Round(WarfareRatios[wtWoodenShield] * PORTIONS)
                             else
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtLeatherArmor then
+                            if gRes.Houses[H.HouseType].WareOutput[K] = wtLeatherArmor then
                               H.WareOrder[K] := Round(WarfareRatios[wtLeatherArmor] * PORTIONS);
       htWeaponSmithy:    for K := 1 to 4 do
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtSword then
+                            if gRes.Houses[H.HouseType].WareOutput[K] = wtSword then
                               H.WareOrder[K] := Round(WarfareRatios[wtSword] * PORTIONS)
                             else
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtPike then
+                            if gRes.Houses[H.HouseType].WareOutput[K] = wtPike then
                               H.WareOrder[K] := Round(WarfareRatios[wtPike] * PORTIONS)
                             else
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtCrossbow then
+                            if gRes.Houses[H.HouseType].WareOutput[K] = wtCrossbow then
                               H.WareOrder[K] := Round(WarfareRatios[wtCrossbow] * PORTIONS);
       htWeaponWorkshop:  for K := 1 to 4 do
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtAxe then
+                            if gRes.Houses[H.HouseType].WareOutput[K] = wtAxe then
                               H.WareOrder[K] := Round(WarfareRatios[wtAxe] * PORTIONS)
                             else
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtLance then
+                            if gRes.Houses[H.HouseType].WareOutput[K] = wtLance then
                               H.WareOrder[K] := Round(WarfareRatios[wtLance] * PORTIONS)
                             else
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtBow then
+                            if gRes.Houses[H.HouseType].WareOutput[K] = wtBow then
                               H.WareOrder[K] := Round(WarfareRatios[wtBow] * PORTIONS);
     end;
   end;

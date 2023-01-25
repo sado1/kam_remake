@@ -715,10 +715,10 @@ begin
                         Label_Common_Offer.Caption := gResTexts[TX_HOUSE_DELIVERS]+'(x'+inttostr(gRes.Houses[aHouse.HouseType].ResProductionX)+'):';
                         Label_Common_Offer.Top := 8;
 
-                        WaresRow_Common[1].TexID := gRes.Wares[gRes.Houses[aHouse.HouseType].ResOutput[1]].GUIIcon;
-                        WaresRow_Common[1].WareCount := aHouse.CheckWareOut(gRes.Houses[aHouse.HouseType].ResOutput[1]);
-                        WaresRow_Common[1].Caption := gRes.Wares[gRes.Houses[aHouse.HouseType].ResOutput[1]].Title;
-                        WaresRow_Common[1].Hint := gRes.Wares[gRes.Houses[aHouse.HouseType].ResOutput[1]].Title;
+                        WaresRow_Common[1].TexID := gRes.Wares[gRes.Houses[aHouse.HouseType].WareOutput[1]].GUIIcon;
+                        WaresRow_Common[1].WareCount := aHouse.CheckWareOut(gRes.Houses[aHouse.HouseType].WareOutput[1]);
+                        WaresRow_Common[1].Caption := gRes.Wares[gRes.Houses[aHouse.HouseType].WareOutput[1]].Title;
+                        WaresRow_Common[1].Hint := gRes.Wares[gRes.Houses[aHouse.HouseType].WareOutput[1]].Title;
                         WaresRow_Common[1].Show;
                         WaresRow_Common[1].Top := 2 + LINE_HEIGHT;
 
@@ -768,12 +768,12 @@ begin
     Inc(Line);
 
     for I := 1 to 4 do
-      if gRes.Wares[hSpec.ResInput[I]].IsValid then
+      if gRes.Wares[hSpec.WareInput[I]].IsValid then
       begin
-        WaresRow_Common[RowRes].TexID := gRes.Wares[hSpec.ResInput[I]].GUIIcon;
-        WaresRow_Common[RowRes].Caption := gRes.Wares[hSpec.ResInput[I]].Title;
-        WaresRow_Common[RowRes].Hint := gRes.Wares[hSpec.ResInput[I]].Title;
-        WaresRow_Common[RowRes].WareCount := aHouse.CheckWareIn(hSpec.ResInput[I]);
+        WaresRow_Common[RowRes].TexID := gRes.Wares[hSpec.WareInput[I]].GUIIcon;
+        WaresRow_Common[RowRes].Caption := gRes.Wares[hSpec.WareInput[I]].Title;
+        WaresRow_Common[RowRes].Hint := gRes.Wares[hSpec.WareInput[I]].Title;
+        WaresRow_Common[RowRes].WareCount := aHouse.CheckWareIn(hSpec.WareInput[I]);
         WaresRow_Common[RowRes].Top := Base + Line * LINE_HEIGHT;
         WaresRow_Common[RowRes].Show;
         Inc(Line);
@@ -800,12 +800,12 @@ begin
       Inc(Line);
 
       for I := 1 to 4 do
-      if gRes.Wares[hSpec.ResOutput[I]].IsValid then
+      if gRes.Wares[hSpec.WareOutput[I]].IsValid then
       begin
-        WaresRow_Common[RowRes].TexID     := gRes.Wares[hSpec.ResOutput[I]].GUIIcon;
-        WaresRow_Common[RowRes].WareCount := aHouse.CheckWareOut(hSpec.ResOutput[I]);
-        WaresRow_Common[RowRes].Caption   := gRes.Wares[hSpec.ResOutput[I]].Title;
-        WaresRow_Common[RowRes].Hint      := gRes.Wares[hSpec.ResOutput[I]].Title;
+        WaresRow_Common[RowRes].TexID     := gRes.Wares[hSpec.WareOutput[I]].GUIIcon;
+        WaresRow_Common[RowRes].WareCount := aHouse.CheckWareOut(hSpec.WareOutput[I]);
+        WaresRow_Common[RowRes].Caption   := gRes.Wares[hSpec.WareOutput[I]].Title;
+        WaresRow_Common[RowRes].Hint      := gRes.Wares[hSpec.WareOutput[I]].Title;
         WaresRow_Common[RowRes].Show;
         WaresRow_Common[RowRes].Top       := Base + Line * LINE_HEIGHT;
         Inc(Line);
@@ -834,7 +834,7 @@ begin
     Inc(Line);
     for I := 1 to 4 do //Orders
     begin
-      W := gRes.Houses[aHouse.HouseType].ResOutput[I];
+      W := gRes.Houses[aHouse.HouseType].WareOutput[I];
       if gRes.Wares[W].IsValid then
       begin
         WareOrderRow_Order[I].WareRow.TexID := gRes.Wares[W].GUIIcon;
@@ -852,7 +852,7 @@ begin
     Inc(Line);
     for I := 1 to 4 do //Costs
     begin
-      W := gRes.Houses[aHouse.HouseType].ResOutput[I];
+      W := gRes.Houses[aHouse.HouseType].WareOutput[I];
       if gRes.Wares[W].IsValid then
       begin
         CostsRow_Costs[I].Caption := gRes.Wares[W].Title;
@@ -950,12 +950,12 @@ begin
   Inc(line);
 
   for I := 1 to 2 do
-    if gRes.Wares[gRes.Houses[aHouse.HouseType].ResInput[I]].IsValid then
+    if gRes.Wares[gRes.Houses[aHouse.HouseType].WareInput[I]].IsValid then
     begin
-      WaresRow_ArmorWS_Common[rowRes].TexID     := gRes.Wares[hSpec.ResInput[I]].GUIIcon;
-      WaresRow_ArmorWS_Common[rowRes].Caption   := gRes.Wares[hSpec.ResInput[I]].Title;
-      WaresRow_ArmorWS_Common[rowRes].Hint      := gRes.Wares[hSpec.ResInput[I]].Title;
-      WaresRow_ArmorWS_Common[rowRes].WareCount := aHouse.CheckWareIn(hSpec.ResInput[I]);
+      WaresRow_ArmorWS_Common[rowRes].TexID     := gRes.Wares[hSpec.WareInput[I]].GUIIcon;
+      WaresRow_ArmorWS_Common[rowRes].Caption   := gRes.Wares[hSpec.WareInput[I]].Title;
+      WaresRow_ArmorWS_Common[rowRes].Hint      := gRes.Wares[hSpec.WareInput[I]].Title;
+      WaresRow_ArmorWS_Common[rowRes].WareCount := aHouse.CheckWareIn(hSpec.WareInput[I]);
       WaresRow_ArmorWS_Common[rowRes].Top       := base + line * LINE_HEIGHT;
       WaresRow_ArmorWS_Common[rowRes].Show;
       Inc(line);
@@ -1473,9 +1473,9 @@ begin
   for I := 1 to 2 do
   begin
     if Sender = WaresRow_ArmorWS_Common[I] then
-      gGame.GameInputProcess.CmdHouse(gicHouseArmorWSDeliveryToggle, armorWS, gRes.Houses[htArmorWorkshop].ResInput[I]);
+      gGame.GameInputProcess.CmdHouse(gicHouseArmorWSDeliveryToggle, armorWS, gRes.Houses[htArmorWorkshop].WareInput[I]);
 
-    Image_ArmorWS_Accept[I].Visible := not armorWS.AcceptWareForDelivery(gRes.Houses[htArmorWorkshop].ResInput[I]);
+    Image_ArmorWS_Accept[I].Visible := not armorWS.AcceptWareForDelivery(gRes.Houses[htArmorWorkshop].WareInput[I]);
   end;
 end;
 

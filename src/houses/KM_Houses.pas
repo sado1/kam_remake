@@ -643,7 +643,7 @@ var
 begin
   for I := 1 to 4 do
   begin
-    W := gRes.Houses[fType].ResInput[I];
+    W := gRes.Houses[fType].WareInput[I];
     with gHands[Owner].Deliveries.Queue do
     case W of
       wtNone:    ;
@@ -745,10 +745,10 @@ begin
 
   for I := 1 to 4 do
   begin
-    W := gRes.Houses[fType].ResInput[I];
+    W := gRes.Houses[fType].WareInput[I];
     if W in [WARE_MIN..WARE_MAX] then
       gHands[Owner].Stats.WareConsumed(W, ResIn[I]);
-    W := gRes.Houses[fType].ResOutput[I];
+    W := gRes.Houses[fType].WareOutput[I];
     if W in [WARE_MIN..WARE_MAX] then
       gHands[Owner].Stats.WareConsumed(W, fWareOut[I]);
   end;
@@ -833,7 +833,7 @@ begin
   if fDeliveryMode = dmTakeOut then
     for I := 1 to 4 do
     begin
-      W := gRes.Houses[fType].ResInput[I];
+      W := gRes.Houses[fType].WareInput[I];
       resCnt := ResIn[I] - WareInLocked[I];
       if (W <> wtNone) and (resCnt > 0) then
         gHands[Owner].Deliveries.Queue.RemOffer(Self, W, resCnt);
@@ -845,7 +845,7 @@ begin
   begin
     for I := 1 to 4 do
     begin
-      W := gRes.Houses[fType].ResInput[I];
+      W := gRes.Houses[fType].WareInput[I];
       resCnt := ResIn[I] - WareInLocked[I];
 
       if not (W in [wtNone, wtAll, wtWarfare]) and (resCnt > 0) then
@@ -1481,7 +1481,7 @@ var
 begin
   Result := 0;
   for I := 1 to 4 do
-    if (aWare = gRes.Houses[fType].ResInput[I]) or (aWare = wtAll) then
+    if (aWare = gRes.Houses[fType].WareInput[I]) or (aWare = wtAll) then
       Inc(Result, ResIn[I]);
 end;
 
@@ -1493,7 +1493,7 @@ var
 begin
   Result := 0;
   for I := 1 to 4 do
-    if (aWare = gRes.Houses[fType].ResOutput[I]) or (aWare = wtAll) then
+    if (aWare = gRes.Houses[fType].WareOutput[I]) or (aWare = wtAll) then
       Inc(Result, fWareOut[I]);
 end;
 
@@ -1541,7 +1541,7 @@ begin
     for I := 0 to 3 do
     begin
       resI := ((fLastOrderProduced + I) mod 4) + 1; //1..4
-      ware := gRes.Houses[fType].ResOutput[resI];
+      ware := gRes.Houses[fType].WareOutput[resI];
       if (WareOrder[resI] > 0) //Player has ordered some of this
       and (CheckWareOut(ware) < MAX_WARES_IN_HOUSE) //Output of this is not full
       //Check we have wares to produce this weapon. If both are the same type check > 1 not > 0
@@ -1572,7 +1572,7 @@ begin
 //    for I := 1 to 4 do
 //    if (WareOrder[I] > 0) then //Player has ordered some of this
 //    begin
-//      Ware := gRes.Houses[fType].ResOutput[I];
+//      Ware := gRes.Houses[fType].WareOutput[I];
 //
 //      if (CheckWareOut(Ware) < MAX_WARES_IN_HOUSE) //Output of this is not full
 //      //Check we have enough wares to produce this weapon. If both are the same type check > 1 not > 0
@@ -1647,7 +1647,7 @@ begin
   if Self = nil then Exit;
 
   for I := 1 to 4 do
-    if aWare = gRes.Houses[fType].ResInput[I] then
+    if aWare = gRes.Houses[fType].WareInput[I] then
     begin
       // Do not decrease DeliveryCount, if demand delete was cancelled (demand closing was not possible, f.e. when serf enters the house)
       // thus serf brought ware to the house and we should not decrease delivery count in that case here
@@ -1670,7 +1670,7 @@ begin
   Assert(aWare <> wtNone);
 
   for I := 1 to 4 do
-    if aWare = gRes.Houses[fType].ResInput[I] then
+    if aWare = gRes.Houses[fType].WareInput[I] then
     begin
       //Don't allow the static script to overfill houses
       if aFromStaticScript then
@@ -1695,7 +1695,7 @@ begin
     exit;
 
   for I := 1 to 4 do
-    if aWare = gRes.Houses[fType].ResOutput[I] then
+    if aWare = gRes.Houses[fType].WareOutput[I] then
     begin
       ResOut[I] := ResOut[I] + aCount;
 
@@ -1725,14 +1725,14 @@ begin
   begin
     //No range checking required as WareAddToIn does that
     //If WareCanAddToIn, add it immediately and exit (e.g. store)
-    if WareCanAddToIn(aWare) or (aWare = gRes.Houses[fType].ResInput[I]) then
+    if WareCanAddToIn(aWare) or (aWare = gRes.Houses[fType].WareInput[I]) then
     begin
       WareAddToIn(aWare, aCount, True);
       Exit;
     end;
     //Don't allow output to be overfilled from script. This is not checked
     //in WareAddToOut because e.g. stonemason is allowed to overfill it slightly)
-    if (aWare = gRes.Houses[fType].ResOutput[I]) and (fWareOut[I] < 5) then
+    if (aWare = gRes.Houses[fType].WareOutput[I]) and (fWareOut[I] < 5) then
     begin
       aCount := Min(aCount, 5 - fWareOut[I]);
       WareAddToOut(aWare, aCount);
@@ -1760,7 +1760,7 @@ var
 begin
   Result := False;
   for I := 1 to 4 do
-    if aWare = gRes.Houses[fType].ResInput[I] then
+    if aWare = gRes.Houses[fType].WareInput[I] then
       Result := True;
 end;
 
@@ -1771,7 +1771,7 @@ var
 begin
   Result := False;
   for I := 1 to 4 do
-    if aWare = gRes.Houses[fType].ResOutput[I] then
+    if aWare = gRes.Houses[fType].WareOutput[I] then
       Result := True;
 end;
 
@@ -1820,7 +1820,7 @@ var
   cntChange: Integer;
   W: TKMWareType;
 begin
-  W := gRes.Houses[fType].ResInput[aI];
+  W := gRes.Houses[fType].WareInput[aI];
   cntChange := aValue - fWareIn[aI];
 
   SetWareInManageTakeOutDeliveryMode(W, cntChange);
@@ -1837,7 +1837,7 @@ var
   cntChange: Integer;
   W: TKMWareType;
 begin
-  W := gRes.Houses[fType].ResOutput[aI];
+  W := gRes.Houses[fType].WareOutput[aI];
   cntChange := aValue - fWareOut[aI];
 
   fWareOut[aI] := aValue;
@@ -1853,12 +1853,12 @@ var
 begin
   Result := False;
   for I := 1 to 4 do
-    if aWare = gRes.Houses[fType].ResOutput[I] then
+    if aWare = gRes.Houses[fType].WareOutput[I] then
       Result := fWareOut[I] >= aCount;
 
   if not Result and (fNewDeliveryMode = dmTakeOut) then
     for I := 1 to 4 do
-      if aWare = gRes.Houses[fType].ResInput[I] then
+      if aWare = gRes.Houses[fType].WareInput[I] then
         Result := ResIn[I] - WareInLocked[I] >= aCount;
 end;
 
@@ -1880,7 +1880,7 @@ begin
   Assert(aWare <> wtNone);
 
   for I := 1 to 4 do
-  if aWare = gRes.Houses[fType].ResInput[I] then
+  if aWare = gRes.Houses[fType].WareInput[I] then
   begin
     if aFromScript then
     begin
@@ -1913,7 +1913,7 @@ begin
   Assert(aWare <> wtNone);
   Assert(not(fType in [htStore,htBarracks,htTownHall]));
   for I := 1 to 4 do
-  if aWare = gRes.Houses[fType].ResOutput[I] then
+  if aWare = gRes.Houses[fType].WareOutput[I] then
   begin
     if aFromScript then
     begin
@@ -1948,7 +1948,7 @@ begin
 
   // Try to take ware from 'in' queue, if we are in take-out delivery mode
   for I := 1 to 4 do
-  if aWare = gRes.Houses[fType].ResInput[I] then
+  if aWare = gRes.Houses[fType].WareInput[I] then
   begin
     if aFromScript then
     begin
@@ -1977,7 +1977,7 @@ end;
 
 function TKMHouse.GetWareDistribution(aID: Byte): Byte;
 begin
-  Result := gHands[Owner].Stats.WareDistribution[gRes.Houses[fType].ResInput[aID],fType];
+  Result := gHands[Owner].Stats.WareDistribution[gRes.Houses[fType].WareInput[aID],fType];
 end;
 
 
@@ -2145,7 +2145,7 @@ begin
 end;
 
 
-//Request more resources (if distribution of wares has changed)
+//Request more wares (if distribution of wares has changed)
 //todo: Situation: I have timber set to 5 for the weapons workshop, and no timber in my village.
 //      I change timber to 0 for the weapons workshop. My woodcutter starts again and 5 timber is still
 //      taken to the weapons workshop because the request doesn't get canceled.
@@ -2158,7 +2158,7 @@ var
 begin
   for I := 1 to 4 do
   begin
-    if (fType = htTownHall) or (gRes.Houses[fType].ResInput[I] in [wtAll, wtWarfare, wtNone]) then Continue;
+    if (fType = htTownHall) or (gRes.Houses[fType].WareInput[I] in [wtAll, wtWarfare, wtNone]) then Continue;
 
     resDistribution := GetWareDistribution(I);
 
@@ -2167,7 +2167,7 @@ begin
     //Not enough resources ordered, add new demand
     if demandsToChange > 0 then
     begin
-      gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, gRes.Houses[fType].ResInput[I], demandsToChange, dtOnce, diNorm);
+      gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, gRes.Houses[fType].WareInput[I], demandsToChange, dtOnce, diNorm);
 
       WareDeliveryCnt[I] := WareDeliveryCnt[I] + demandsToChange;
     end;
@@ -2175,7 +2175,7 @@ begin
     //Too many resources ordered, attempt to remove demand if nobody has taken it yet
     if demandsToChange < 0 then
     begin
-      demandsRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, gRes.Houses[fType].ResInput[I], -demandsToChange, plannedToRemove);
+      demandsRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, gRes.Houses[fType].WareInput[I], -demandsToChange, plannedToRemove);
 
       WareDeliveryCnt[I] := WareDeliveryCnt[I] - demandsRemoved; //Only reduce it by the number that were actually removed
       WareDemandsClosing[I] := WareDemandsClosing[I] + plannedToRemove;

@@ -716,10 +716,10 @@ begin
   // Saves us time on Fishers/Stonecutters/Woodcutters when they calculate routes to nearby deposits
   // Other houses where workers walk out can choose between cut/plant
   if (fHome.HouseType in [htFishermans, htQuarry, htVineyard])
-  and (fHome.CheckWareOut(gRes.Houses[fHome.HouseType].ResOutput[res]) >= MAX_WARES_IN_HOUSE) then
+  and (fHome.CheckWareOut(gRes.Houses[fHome.HouseType].WareOutput[res]) >= MAX_WARES_IN_HOUSE) then
     Exit;
 
-  fTask := TKMTaskMining.Create(Self, gRes.Houses[fHome.HouseType].ResOutput[res]);
+  fTask := TKMTaskMining.Create(Self, gRes.Houses[fHome.HouseType].WareOutput[res]);
   tm := TKMTaskMining(fTask);
 
   if tm.WorkPlan.ResourceDepleted then

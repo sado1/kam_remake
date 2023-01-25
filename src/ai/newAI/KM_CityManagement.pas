@@ -1067,7 +1067,7 @@ begin
     MaxWT := wtNone;
     for I := 1 to 4 do
     begin
-      WT := gRes.Houses[HT].ResOutput[I];
+      WT := gRes.Houses[HT].WareOutput[I];
       if (WT <> wtNone) AND (fRequiredWeapons[WT].Fraction < MostRequired) then
       begin
         MostRequired := fRequiredWeapons[WT].Fraction;
@@ -1090,7 +1090,7 @@ begin
           begin
             for K := 1 to 4 do
             begin
-              WT := gRes.Houses[HT].ResOutput[K];
+              WT := gRes.Houses[HT].WareOutput[K];
               if (WT = wtLeatherArmor) then
               begin
                 H.WareOrder[K] := 100;

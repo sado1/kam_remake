@@ -337,7 +337,7 @@ begin
   Label_House_Input.Hide;
   for I := 0 to 3 do
   begin
-    ware := houseSpec.ResInput[I+1];
+    ware := houseSpec.WareInput[I+1];
     if gRes.Wares[ware].IsValid then
     begin
       ResRow_Ware_Input[I].WareRow.TexID := gRes.Wares[ware].GUIIcon;
@@ -355,7 +355,7 @@ begin
   Label_House_Output.Hide;
   for I := 0 to 3 do
   begin
-    ware := houseSpec.ResOutput[I+1];
+    ware := houseSpec.WareOutput[I+1];
     if gRes.Wares[ware].IsValid then
     begin
       ResRow_Ware_Output[I].WareRow.TexID := gRes.Wares[ware].GUIIcon;
@@ -566,7 +566,7 @@ begin
   houseSpec := gRes.Houses[fHouse.HouseType];
   for I := 0 to 3 do
   begin
-    ware := houseSpec.ResInput[I+1];
+    ware := houseSpec.WareInput[I+1];
     if not (ware in [WARE_MIN..WARE_MAX]) then Continue;
 
     if (Sender = ResRow_Ware_Input[I]) and (aValue > 0) then
@@ -587,7 +587,7 @@ begin
 
   for I := 0 to 3 do
   begin
-    ware := houseSpec.ResOutput[I+1];
+    ware := houseSpec.WareOutput[I+1];
     if not (ware in [WARE_MIN..WARE_MAX]) then Continue;
 
     if (Sender = ResRow_Ware_Output[I]) and (aValue > 0) then

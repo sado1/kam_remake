@@ -35,7 +35,7 @@ type
     a5,SizeArea: SmallInt;
     SizeX,SizeY,sx2,sy2: ShortInt;
     WorkerWork,WorkerRest: SmallInt;
-    ResInput,ResOutput: array [1..4] of ShortInt; //KaM_Remake will use its own tables for this matter
+    WareInput, WareOutput: array [1..4] of ShortInt; //KaM_Remake will use its own tables for this matter
     ResProductionX: ShortInt;
     MaxHealth,Sight: SmallInt;
     WorkerType: ShortInt;
@@ -57,8 +57,8 @@ type
     function GetDoesOrders: Boolean;
     function GetGUIIcon: Word;
     function GetHouseName: UnicodeString;
-    function GetResInput: THouseRes;
-    function GetResOutput: THouseRes;
+    function GetWareInput: THouseRes;
+    function GetWareOutput: THouseRes;
     function GetWorkerType: TKMUnitType;
     function GetReleasedBy: TKMHouseType;
     function GetTabletIcon: Word;
@@ -100,8 +100,8 @@ type
     property HouseName: UnicodeString read GetHouseName;
     property HouseNameTextID: Integer read fNameTextID;
     property ReleasedBy: TKMHouseType read GetReleasedBy;
-    property ResInput: THouseRes read GetResInput;
-    property ResOutput: THouseRes read GetResOutput;
+    property WareInput: THouseRes read GetWareInput;
+    property WareOutput: THouseRes read GetWareOutput;
     property TabletIcon: Word read GetTabletIcon;
     property UnoccupiedMsgId: SmallInt read GetUnoccupiedMsgId;
     property SnowPic: SmallInt read GetSnowPic;
@@ -592,7 +592,7 @@ end;
 
 function TKMHouseSpec.AcceptsWares: boolean;
 begin
-  Result := (ResInput[1] <> wtNone)          //Exclude houses that do not receive wares
+  Result := (WareInput[1] <> wtNone)          //Exclude houses that do not receive wares
             or (fHouseType = htMarket); //Marketplace also accepts wares
 end;
 
@@ -693,7 +693,7 @@ end;
 
 function TKMHouseSpec.ProducesWares: Boolean;
 begin
-  Result := not (ResOutput[1] in [wtNone, wtAll, wtWarfare]); //Exclude aggregate types
+  Result := not (WareOutput[1] in [wtNone, wtAll, wtWarfare]); //Exclude aggregate types
 end;
 
 
@@ -709,13 +709,13 @@ begin
 end;
 
 
-function TKMHouseSpec.GetResInput: THouseRes;
+function TKMHouseSpec.GetWareInput: THouseRes;
 begin
   Result := HOUSE_DAT_X[fHouseType].Input;
 end;
 
 
-function TKMHouseSpec.GetResOutput: THouseRes;
+function TKMHouseSpec.GetWareOutput: THouseRes;
 begin
   Result := HOUSE_DAT_X[fHouseType].Output;
 end;

@@ -3315,7 +3315,7 @@ begin
         and not H.IsDestroyed
         and H.IsComplete then
         for I := 1 to 4 do
-          if gRes.Houses[H.HouseType].ResOutput[I] = W then
+          if gRes.Houses[H.HouseType].WareOutput[I] = W then
           begin
             H.WareOrder[I] := aAmount;
             Exit;
@@ -3346,7 +3346,7 @@ begin
         and not H.IsDestroyed
         and H.IsComplete then
         for I := 1 to 4 do
-          if gRes.Houses[H.HouseType].ResOutput[I] = aWareType then
+          if gRes.Houses[H.HouseType].WareOutput[I] = aWareType then
           begin
             H.WareOrder[I] := aAmount;
             Exit;

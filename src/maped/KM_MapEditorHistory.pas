@@ -476,7 +476,7 @@ constructor TKMCheckpointHouses.Create(const aCaption: string);
   var
     I: Integer;
     WT: TKMWareType;
-    spec: TKMHouseSpec;
+    houseSpec: TKMHouseSpec;
   begin
     fHouses[aCount].HouseType := aHouse.HouseType;
     fHouses[aCount].Position := aHouse.Position;
@@ -490,7 +490,7 @@ constructor TKMCheckpointHouses.Create(const aCaption: string);
     if aHouse is TKMHouseWFlagPoint then
       fHouses[aCount].FlagPoint := TKMHouseWFlagPoint(aHouse).FlagPoint;
 
-    spec := gRes.Houses[aHouse.HouseType];
+    houseSpec := gRes.Houses[aHouse.HouseType];
 
     case aHouse.HouseType of
       htTownHall:   begin
@@ -508,14 +508,14 @@ constructor TKMCheckpointHouses.Create(const aCaption: string);
       htMarket:     ;
       else          begin
                       for I := 1 to 4 do
-                        if spec.ResInput[I] <> wtNone then
-                          fHouses[aCount].WaresIn[I-1] := aHouse.CheckWareIn(spec.ResInput[I])
+                        if houseSpec.WareInput[I] <> wtNone then
+                          fHouses[aCount].WaresIn[I-1] := aHouse.CheckWareIn(houseSpec.WareInput[I])
                         else
                           fHouses[aCount].WaresIn[I-1] := 0;
 
                       for I := 1 to 4 do
-                        if spec.ResOutput[I] <> wtNone then
-                          fHouses[aCount].WaresOut[I-1] := aHouse.CheckWareOut(spec.ResOutput[I])
+                        if houseSpec.WareOutput[I] <> wtNone then
+                          fHouses[aCount].WaresOut[I-1] := aHouse.CheckWareOut(houseSpec.WareOutput[I])
                         else
                           fHouses[aCount].WaresOut[I-1] := 0;
                     end;
@@ -550,7 +550,7 @@ procedure TKMCheckpointHouses.Apply(aArea: TKMCheckpointArea = caAll; aUpdateImm
 var
   I, K: Integer;
   H: TKMHouse;
-  spec: TKMHouseSpec;
+  houseSpec: TKMHouseSpec;
   WT: TKMWareType;
 begin
   // Remove all houses and apply them anew
@@ -566,7 +566,7 @@ begin
     H := gHands[fHouses[I].Owner].AddHouse(fHouses[I].HouseType, fHouses[I].Position.X, fHouses[I].Position.Y, False);
     H.AddDamage(H.MaxHealth - fHouses[I].Health, nil, True);
 
-    spec := gRes.Houses[fHouses[I].HouseType];
+    houseSpec := gRes.Houses[fHouses[I].HouseType];
     H.SetDeliveryModeInstantly(fHouses[I].DeliveryMode);
     H.BuildingRepair := fHouses[I].Repair;
     H.IsClosedForWorker := fHouses[I].ClosedForWorker;
@@ -589,15 +589,15 @@ begin
                         TKMHouseBarracks(H).WareAddToIn(WT, fHouses[I].WaresIn[Ord(WT) - Ord(WARFARE_MIN) + 1]);
                     end;
       htMarket:     ;
-      else          begin
-                      for K := 1 to 4 do
-                        if spec.ResInput[K] <> wtNone then
-                          H.WareAddToIn(spec.ResInput[K], fHouses[I].WaresIn[K-1]);
+    else
+      // I know, weird, but code within `case of else [..] end` does not need begin/else
+      for K := 1 to 4 do
+        if houseSpec.WareInput[K] <> wtNone then
+          H.WareAddToIn(houseSpec.WareInput[K], fHouses[I].WaresIn[K-1]);
 
-                      for K := 1 to 4 do
-                        if spec.ResOutput[K] <> wtNone then
-                          H.WareAddToOut(spec.ResOutput[K], fHouses[I].WaresOut[K-1]);
-                    end;
+      for K := 1 to 4 do
+        if houseSpec.WareOutput[K] <> wtNone then
+          H.WareAddToOut(houseSpec.WareOutput[K], fHouses[I].WaresOut[K-1]);
     end;
   end;
 end;

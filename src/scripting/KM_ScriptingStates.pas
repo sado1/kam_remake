@@ -3593,7 +3593,7 @@ begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) then
         for I := 1 to 4 do
-          if gRes.Houses[H.HouseType].ResOutput[I] = W then
+          if gRes.Houses[H.HouseType].WareOutput[I] = W then
             Exit(H.WareOrder[I]);
     end
     else
@@ -3620,7 +3620,7 @@ begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) then
         for I := 1 to 4 do
-          if gRes.Houses[H.HouseType].ResOutput[I] = aWareType then
+          if gRes.Houses[H.HouseType].WareOutput[I] = aWareType then
             Exit(H.WareOrder[I]);
     end
     else
