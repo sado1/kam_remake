@@ -19,11 +19,11 @@ type
 
   // Individual palette info
   TKMPaletteSpec = class
-  private
+  strict private
     fData: array [0..255, 1..3] of Byte;
+  public
     procedure GenerateBW;
     procedure GenerateLinear;
-  public
     procedure LoadFromFile(const aFileName: UnicodeString);
     function Color32(aIdx: Byte): Cardinal;
   end;
@@ -131,7 +131,7 @@ var
   I: TKMPal;
 begin
   for I := Low(TKMPal) to High(TKMPal) do
-    fPalettes[I].Free;
+    FreeAndNil(fPalettes[I]);
 
   inherited;
 end;
