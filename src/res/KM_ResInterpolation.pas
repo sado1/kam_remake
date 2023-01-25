@@ -3,7 +3,7 @@ unit KM_ResInterpolation;
 interface
 uses
   Classes, SysUtils, Math,
-  KM_Defaults, KM_Points, KM_ResTypes, KM_ResWares, KM_ResMapElements, KM_ResHouses;
+  KM_Defaults, KM_Points, KM_ResTypes, KM_ResMapElements, KM_ResHouses;
 
 const
   INTERP_LEVEL = 8;

@@ -122,7 +122,7 @@ uses
   TypInfo, Math,
   {$IFDEF FPC} Hash, {$ENDIF}
   {$IFDEF WDC} System.Hash, {$ENDIF}
-  KromUtils, KM_GameParams, KM_Resource, KM_ResUnits, KM_Log, KM_CommonUtils, KM_ResWares,
+  KromUtils, KM_GameParams, KM_Resource, KM_ResUnits, KM_Log, KM_CommonUtils,
   KM_ScriptingConsoleCommands, KM_ScriptPreProcessorGame,
   KM_ResTypes, KM_CampaignTypes;
 

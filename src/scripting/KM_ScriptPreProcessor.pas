@@ -56,17 +56,19 @@ type
     function PreProcessFile(const aFileName: UnicodeString; var aScriptCode: AnsiString): Boolean; overload;
   end;
 
+
 implementation
 uses
   SysUtils, Classes, TypInfo, Math,
   KromUtils,
   KM_GameParams,
-  KM_ResWares, KM_ResUnits, KM_ResTypes,
+  KM_Resource, KM_ResUnits, KM_ResTypes,
   KM_ScriptingTypes,
   KM_CampaignTypes,
   KM_CommonUtils,
   KM_Log, KM_FileIO,
   KM_Defaults;
+
 
 { TKMScriptingPreProcessor }
 constructor TKMScriptPreProcessor.Create(aSilent: Boolean);
@@ -350,8 +352,8 @@ const
           begin
             fCustomScriptParams[cspMarketGoldPrice].Added := True;
             fCustomScriptParams[cspMarketGoldPrice].Data :=
-              Format('%s: x%s %s: x%s', [gResWares[wtGoldOre].Title, FormatFloat('#0.#', goldOrePriceX),
-                                         gResWares[wtGold].Title,    FormatFloat('#0.#', goldPriceX)]);
+              Format('%s: x%s %s: x%s', [gRes.Wares[wtGoldOre].Title, FormatFloat('#0.#', goldOrePriceX),
+                                         gRes.Wares[wtGold].Title,    FormatFloat('#0.#', goldPriceX)]);
           end else
             Exit;
 
@@ -361,8 +363,8 @@ const
           if not AllowGameUpdate then Exit;
 
           //Update actual market prices
-          gResWares[wtGoldOre].MarketPriceMultiplier := goldOrePriceX;
-          gResWares[wtGold].MarketPriceMultiplier := goldPriceX;
+          gRes.Wares[wtGoldOre].MarketPriceMultiplier := goldOrePriceX;
+          gRes.Wares[wtGold].MarketPriceMultiplier := goldPriceX;
 
         finally
           directiveParamSL.Free;

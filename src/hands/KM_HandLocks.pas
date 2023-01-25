@@ -2,7 +2,7 @@ unit KM_HandLocks;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_ResHouses, KM_ResWares,
+  KM_ResHouses,
   KM_CommonClasses, KM_Defaults,
   KM_ResTypes, KM_HandTypes;
 

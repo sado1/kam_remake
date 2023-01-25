@@ -8,7 +8,7 @@ unit KM_CityManagement;
 interface
 uses
   Math, SysUtils, KM_Defaults, KM_CommonClasses, KM_Points,
-  KM_AISetup, KM_ResHouses, KM_ResWares, KM_ResUnits, KM_ResTypes, KM_HandStats, KM_HouseCollection,
+  KM_AISetup, KM_ResHouses, KM_ResUnits, KM_ResTypes, KM_HandStats, KM_HouseCollection,
   KM_CityPredictor, KM_CityBuilder, KM_CityPlanner, KM_AIArmyEvaluation, KM_AIParameters;
 
 type

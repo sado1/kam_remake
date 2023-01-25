@@ -5,7 +5,7 @@ uses
   Classes, Math, StrUtils, SysUtils,
   KM_GUIGameSpectator, KM_Controls,
   KM_HandsCollection, KM_Defaults, KM_Hand,
-  KM_ResWares, KM_ResHouses, KM_Pics, KM_CommonTypes, KM_Points, KM_Houses;
+  KM_ResHouses, KM_Pics, KM_CommonTypes, KM_Points, KM_Houses;
 
 
 type
@@ -129,7 +129,7 @@ uses
 { TKMGUIGameSpectatorItemLineResources }
 function TKMGUIGameSpectatorItemLineResources.CreateItem(aHandIndex: Integer; ATag: Integer; aOnItemClick: TIntBoolEvent): TKMGUIGameSpectatorItem;
 begin
-  Result := TKMGUIGameSpectatorItem.Create(Self, ATag, gResWares[TKMWareType(ATag)].GUIIcon, gResWares[TKmWareType(ATag)].Title,
+  Result := TKMGUIGameSpectatorItem.Create(Self, ATag, gRes.Wares[TKMWareType(ATag)].GUIIcon, gRes.Wares[TKmWareType(ATag)].Title,
                                            aHandIndex, icBarColorGreen, DontHighlight, aOnItemClick);
   Result.Visible := False;
 end;
@@ -179,9 +179,9 @@ begin
   if aTag = RECRUIT_TAG then
     Result := gRes.Units[utRecruit].GUIIcon
   else if aTag = TH_GOLD_CHEST_TAG then
-    Result := gResWares[wtGold].GUIIcon
+    Result := gRes.Wares[wtGold].GUIIcon
   else
-    Result := gResWares[TKMWareType(ATag)].GUIIcon;
+    Result := gRes.Wares[TKMWareType(ATag)].GUIIcon;
 end;
 
 
@@ -190,9 +190,9 @@ begin
   if aTag = RECRUIT_TAG then
     Result := gRes.Units[utRecruit].GUIName
   else if aTag = TH_GOLD_CHEST_TAG then
-    Result := gResWares[wtGold].Title
+    Result := gRes.Wares[wtGold].Title
   else
-    Result := gResWares[TKMWareType(ATag)].Title;
+    Result := gRes.Wares[TKMWareType(ATag)].Title;
 end;
 
 

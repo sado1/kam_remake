@@ -4888,7 +4888,7 @@ begin
     if aRes in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)] then
     begin
       res := WARE_ID_TO_TYPE[aRes];
-      Result := gResWares[res].MarketPrice;
+      Result := gRes.Wares[res].MarketPrice;
     end
     else
       LogIntParamWarn('States.MarketValue', [aRes]);
@@ -4912,7 +4912,7 @@ begin
   try
     Result := -1; //-1 if ware is invalid
     if aWareType in WARES_VALID then
-      Result := gResWares[aWareType].MarketPrice
+      Result := gRes.Wares[aWareType].MarketPrice
     else
       LogParamWarn('States.MarketValueEx', [GetEnumName(TypeInfo(TKMWareType), Integer(aWareType))]);
   except
@@ -5288,7 +5288,7 @@ function TKMScriptStates.WareTypeName(aWareType: Byte): AnsiString;
 begin
   try
     if (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
-      Result := '<%' + AnsiString(IntToStr(gResWares[WARE_ID_TO_TYPE[aWareType]].TextID)) + '>'
+      Result := '<%' + AnsiString(IntToStr(gRes.Wares[WARE_ID_TO_TYPE[aWareType]].TextID)) + '>'
     else
     begin
       Result := '';
@@ -5311,7 +5311,7 @@ function TKMScriptStates.WareTypeNameEx(aWareType: TKMWareType): AnsiString;
 begin
   try
     if (aWareType in WARES_VALID) then
-      Result := '<%' + AnsiString(IntToStr(gResWares[aWareType].TextID)) + '>'
+      Result := '<%' + AnsiString(IntToStr(gRes.Wares[aWareType].TextID)) + '>'
     else
     begin
       Result := '';

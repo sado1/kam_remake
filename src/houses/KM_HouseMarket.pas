@@ -3,7 +3,6 @@ unit KM_HouseMarket;
 interface
 uses
   KM_Houses,
-  KM_ResWares,
   KM_CommonClasses, KM_Defaults,
   KM_ResTypes;
 
@@ -80,7 +79,7 @@ uses
   KM_Entity,
   KM_RenderPool,
   KM_HandsCollection, KM_HandLogistics, KM_HandTypes, KM_HandEntity,
-  KM_Resource, KM_ResSound,
+  KM_Resource, KM_ResSound, KM_ResWares,
   KM_ScriptingEvents, KM_Sound,
   KM_CommonUtils;
 
@@ -142,8 +141,8 @@ begin
   if (fResFrom <> wtNone) and (fResTo <> wtNone) then
   begin
     //When trading target ware is priced higher
-    costFrom := gResWares[fResFrom].MarketPrice;
-    costTo := gResWares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
+    costFrom := gRes.Wares[fResFrom].MarketPrice;
+    costTo := gRes.Wares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
     Result := Round(costTo / Min(costFrom, costTo));
   end else
     Result := 1;
@@ -157,8 +156,8 @@ begin
   if (fResFrom <> wtNone) and (fResTo <> wtNone) then
   begin
     //When trading target ware is priced higher
-    costFrom := gResWares[fResFrom].MarketPrice;
-    costTo := gResWares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
+    costFrom := gRes.Wares[fResFrom].MarketPrice;
+    costTo := gRes.Wares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
     Result := Round(costFrom / Min(costFrom, costTo));
   end else
     Result := 1;

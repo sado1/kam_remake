@@ -46,9 +46,6 @@ type
     procedure LoadCustomData(aLoadStream: TKMemoryStream);
   end;
 
-var
-  gResWares: TKMResWares;
-
 
 const
   MARKET_TRADEOFF_FACTOR = 2.2; //X resources buys 1 resource of equal value

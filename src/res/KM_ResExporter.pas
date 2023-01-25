@@ -55,10 +55,9 @@ implementation
 uses
   TypInfo,
   KromUtils,
-  KM_Resource, KM_ResUnits, KM_ResHouses, KM_ResMapElements, KM_ResWares, KM_ResTexts, KM_ResInterpolation,
+  KM_Resource, KM_ResUnits, KM_ResHouses, KM_ResMapElements, KM_ResTexts, KM_ResInterpolation,
   KM_IoPNG,
   KM_Points, KM_CommonTypes, KM_Log;
-
 
 
 { TKMResExporter }

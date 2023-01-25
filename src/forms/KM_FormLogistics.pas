@@ -642,7 +642,7 @@ begin
     0:  CellText := IntToStr(Node.Index);
     1:  CellText := IntToStr(handID);
     2:  CellText := IntToStr(iQ);
-    3:  CellText := gResWares[del.DeliveryWare[iQ]].Title;
+    3:  CellText := gRes.Wares[del.DeliveryWare[iQ]].Title;
     4:  if (iO = DELIVERY_NO_ID) or (oWT = wtNone) or (del.Offer[oWT, iO].Loc_House = nil) then
           CellText := 'nil'
         else
@@ -702,7 +702,7 @@ begin
       0:  CellText := IntToStr(Node.Index);
       1:  CellText := IntToStr(handID);
       2:  CellText := IntToStr(iO);
-      3:  CellText := gResWares[oWT].Title;
+      3:  CellText := gRes.Wares[oWT].Title;
       4:  if Loc_House = nil then
             CellText := 'nil'
           else
@@ -743,7 +743,7 @@ begin
       0:  CellText := IntToStr(Node.Index);
       1:  CellText := IntToStr(handID);
       2:  CellText := IntToStr(iD);
-      3:  CellText := gResWares[dWT].Title;
+      3:  CellText := gRes.Wares[dWT].Title;
       4:  if Loc_House <> nil then
             CellText := 'H: ' + gResHouses[Loc_House.HouseType].HouseName
           else

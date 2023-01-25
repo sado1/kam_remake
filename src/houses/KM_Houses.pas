@@ -1747,8 +1747,9 @@ procedure TKMHouse.ResAddToBuild(aWare: TKMWareType; aCount: Integer = 1);
 begin
   case aWare of
     wtTimber:  fBuildSupplyWood := EnsureRange(fBuildSupplyWood + aCount, 0, gResHouses[fType].WoodCost);
-    wtStone: fBuildSupplyStone := EnsureRange(fBuildSupplyStone + aCount, 0, gResHouses[fType].StoneCost);
-    else     raise ELocError.Create('WIP house is not supposed to recieve ' + gResWares[aWare].Title + ', right?', fPosition);
+    wtStone:   fBuildSupplyStone := EnsureRange(fBuildSupplyStone + aCount, 0, gResHouses[fType].StoneCost);
+  else
+    raise ELocError.Create('WIP house is not supposed to recieve ' + gRes.Wares[aWare].Title + ', right?', fPosition);
   end;
 end;
 

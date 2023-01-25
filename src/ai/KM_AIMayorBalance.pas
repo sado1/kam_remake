@@ -2,7 +2,7 @@ unit KM_AIMayorBalance;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_ResWares, KM_ResHouses,
+  KM_ResHouses,
   KM_CommonClasses, KM_Defaults,
   KM_ResTypes;
 
@@ -149,7 +149,7 @@ type
 implementation
 uses
   SysUtils, StrUtils, Math, KromUtils,
-  KM_Hand, KM_HandsCollection, KM_Resource;
+  KM_Hand, KM_HandsCollection, KM_Resource, KM_ResWares;
 
 
 { TKMayorBalance }
@@ -757,9 +757,7 @@ begin
 
     for I := WARFARE_MIN to WARFARE_MAX do
     if WeaponUsed(I) then
-      S := S + Format('%s: %.2f - %.2f|', [gResWares[I].Title,
-                                                  Warfare[I].Production,
-                                                  Warfare[I].Demand]);
+      S := S + Format('%s: %.2f - %.2f|', [gRes.Wares[I].Title, Warfare[I].Production, Warfare[I].Demand]);
 
     fWarfareText := S;
   end;

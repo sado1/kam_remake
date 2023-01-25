@@ -3,7 +3,7 @@ unit KM_HouseStore;
 interface
 uses
   KM_Houses,
-  KM_ResWares, KM_ResTypes,
+  KM_ResTypes,
   KM_Defaults, KM_CommonClasses;
 
 type
@@ -31,13 +31,14 @@ type
     procedure Save(SaveStream: TKMemoryStream); override;
   end;
 
+
 implementation
 uses
   SysUtils, Math,
   KM_CommonExceptions,
   KM_Game,
   KM_GameParams,
-  KM_GameTypes,
+  KM_GameTypes, KM_Resource,
   KM_HandsCollection, KM_HandEntity, KM_HandTypes,
   KM_ScriptingEvents;
 
@@ -101,7 +102,7 @@ begin
                   SetWareCnt(aWare, EnsureRange(fWaresCount[aWare] + aCount, 0, High(Word)));
                   gHands[Owner].Deliveries.Queue.AddOffer(Self,aWare,aCount);
                 end;
-    else        raise ELocError.Create('Cant''t add ' + gResWares[aWare].Title, Position);
+    else        raise ELocError.Create('Cant''t add ' + gRes.Wares[aWare].Title, Position);
   end;
 end;
 

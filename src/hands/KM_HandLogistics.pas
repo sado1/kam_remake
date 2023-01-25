@@ -15,7 +15,7 @@ uses
   Math,
   KM_Units, KM_Houses, KM_ResHouses,
   KM_HandEntity, KM_HandTypes,
-  KM_ResWares, KM_CommonClasses, KM_Defaults, KM_Points,
+  KM_CommonClasses, KM_Defaults, KM_Points,
   BinaryHeapGen,
   KM_ResTypes;
 
@@ -2519,7 +2519,7 @@ begin
         tmpS := #9;
         if fDemand[WT,I].Loc_House <> nil then tmpS := tmpS + gResHouses[fDemand[WT,I].Loc_House.HouseType].HouseName + #9 + #9;
         if fDemand[WT,I].Loc_Unit  <> nil then tmpS := tmpS + gRes.Units[fDemand[WT,I].Loc_Unit.UnitType].GUIName + #9 + #9;
-        tmpS := tmpS + gResWares[WT].Title;
+        tmpS := tmpS + gRes.Wares[WT].Title;
         if fDemand[WT,I].Importance <> diNorm then
           tmpS := tmpS + '^';
 
@@ -2534,7 +2534,7 @@ begin
       begin
         tmpS := #9;
         if fOffer[WT,I].Loc_House <> nil then tmpS := tmpS + gResHouses[fOffer[WT,I].Loc_House.HouseType].HouseName + #9 + #9;
-        tmpS := tmpS + gResWares[WT].Title + #9;
+        tmpS := tmpS + gRes.Wares[WT].Title + #9;
         tmpS := tmpS + IntToStr(fOffer[WT,I].Count);
 
         SL.Append(tmpS);
@@ -2546,7 +2546,7 @@ begin
   if fQueue[I].OfferID <> DELIVERY_NO_ID then
   begin
     tmpS := 'id ' + IntToStr(I) + '.' + #9;
-    tmpS := tmpS + gResWares[fQueue[I].OfferWare].Title + #9;
+    tmpS := tmpS + gRes.Wares[fQueue[I].OfferWare].Title + #9;
 
     if fOffer[fQueue[I].OfferWare, fQueue[I].OfferID].Loc_House = nil then
       tmpS := tmpS + 'Destroyed' + ' >>> '

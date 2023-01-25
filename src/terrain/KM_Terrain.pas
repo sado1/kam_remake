@@ -5,13 +5,13 @@ uses
   Classes, KromUtils, Math, SysUtils,
   KM_CommonClasses, KM_Defaults, KM_Points, KM_CommonUtils, KM_ResTileset,
   KM_TerrainTypes,
-  KM_ResHouses, KM_ResWares, KM_TerrainFinder, KM_ResMapElements,
+  KM_ResHouses, KM_TerrainFinder, KM_ResMapElements,
   KM_CommonTypes,
   KM_ResTypes, KM_ResTilesetTypes;
 
 
 type
-  {Class to store all terrain data, aswell terrain routines}
+  // Class to store all terrain data, aswell terrain routines
   TKMTerrain = class
   private
     fLand: TKMLand; // Actual Land
@@ -342,7 +342,7 @@ uses
   KM_TerrainUtils, KM_TerrainWalkConnect,
   KM_Resource, KM_Units, KM_DevPerfLog,
   KM_ResSound, KM_Sound, KM_UnitActionStay, KM_UnitActionGoInOut, KM_UnitWarrior, KM_TerrainPainter, KM_Houses,
-  KM_ResUnits, KM_ResSprites,
+  KM_ResUnits, KM_ResSprites, KM_ResWares,
   KM_Game, KM_GameParams, KM_GameTypes, KM_GameSettings,
   KM_ScriptingEvents, KM_Utils, KM_DevPerfLogTypes,
   KM_CommonExceptions;

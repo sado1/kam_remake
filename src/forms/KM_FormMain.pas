@@ -412,10 +412,6 @@ type
 
 
 implementation
-//{$IFDEF WDC}
-  {$R *.dfm}
-//{$ENDIF}
-
 uses
   {$IFDEF WDC} UITypes, {$ENDIF}
   {$IFDEF FASTMM} FastMM4, {$ENDIF}
@@ -423,7 +419,7 @@ uses
   KromShellUtils,
   KM_Main,
   //Use these units directly to avoid pass-through methods in fMain
-  KM_Resource, KM_ResHouses, KM_ResWares,
+  KM_Resource, KM_ResHouses,
 
   KM_ResTexts,
   KM_GameApp, KM_GameParams,
@@ -443,6 +439,10 @@ uses
   KM_GameInputProcess,
   KM_ResTypes,
   KM_GameAppSettings;
+
+//{$IFDEF WDC}
+  {$R *.dfm}
+//{$ENDIF}
 
 
 procedure ExportDone(aResourceName: String);
@@ -2185,7 +2185,7 @@ end;
 
 procedure TFormMain.ResourceValues1Click(Sender: TObject);
 begin
-  gResWares.ExportCostsTable('ResourceValues.txt');
+  gRes.Wares.ExportCostsTable('ResourceValues.txt');
 end;
 
 

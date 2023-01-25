@@ -31,6 +31,7 @@ type
     fFonts: TKMResFonts;
     fPalettes: TKMResPalettes;
     fUnits: TKMResUnits;
+    fWares: TKMResWares;
     fSounds: TKMResSounds;
     fSprites: TKMResSprites;
     fTileset: TKMResTileset;
@@ -41,7 +42,6 @@ type
     procedure StepCaption(const aCaption: UnicodeString);
 
     function GetHouses: TKMResHouses;
-    function GetWares: TKMResWares;
   public
     OnLoadingStep: TEvent;
     OnLoadingText: TUnicodeStringEvent;
@@ -67,7 +67,7 @@ type
     property Tileset: TKMResTileset read fTileset;
     property Houses: TKMResHouses read GetHouses;
     property Units: TKMResUnits read fUnits;
-    property Wares: TKMResWares read GetWares;
+    property Wares: TKMResWares read fWares;
     property Interpolation: TKMResInterpolation read fInterpolation;
 
     procedure UpdateStateIdle;
@@ -111,7 +111,7 @@ begin
   FreeAndNil(fMapElements);
   FreeAndNil(fPalettes);
   FreeAndNil(fFonts);
-  FreeAndNil(gResWares);
+  FreeAndNil(fWares);
   FreeAndNil(fSprites);
   FreeAndNil(fSounds);
   FreeAndNil(gResTexts);
@@ -197,7 +197,7 @@ begin
 
   fSprites.ClearTemp;
 
-  gResWares := TKMResWares.Create;
+  fWares := TKMResWares.Create;
   gResHouses := TKMResHouses.Create;
 
   StepRefresh;
@@ -276,12 +276,6 @@ end;
 function TKMResource.IsMsgHouseUnnocupied(aMsgId: Word): Boolean;
 begin
   Result := (aMsgId >= TX_MSG_HOUSE_UNOCCUPIED__22) and (aMsgId <= TX_MSG_HOUSE_UNOCCUPIED__22 + 22);
-end;
-
-
-function TKMResource.GetWares: TKMResWares;
-begin
-  Result := gResWares;
 end;
 
 
