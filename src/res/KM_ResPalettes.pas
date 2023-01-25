@@ -41,7 +41,6 @@ type
     procedure LoadDefaultPalette(const aPath: UnicodeString);
     property Palettes[aIndex: TKMPal]: TKMPaletteSpec read GetPalette; default;
     function DefaultPalette: TKMPaletteSpec; //Default palette for the game
-    function PalFile(aIndex: TKMPal): UnicodeString;
   end;
 
 var
@@ -120,7 +119,7 @@ constructor TKMResPalettes.Create;
 var
   I: TKMPal;
 begin
-  inherited Create;
+  inherited;
 
   for I := Low(TKMPal) to High(TKMPal) do
     fPalettes[I] := TKMPaletteSpec.Create;
@@ -169,12 +168,6 @@ end;
 procedure TKMResPalettes.LoadDefaultPalette(const aPath: UnicodeString);
 begin
   fPalettes[pal0].LoadFromFile(aPath + PALETTE_FILENAME[pal0]);
-end;
-
-
-function TKMResPalettes.PalFile(aIndex: TKMPal): UnicodeString;
-begin
-  Result := PALETTE_FILENAME[aIndex];
 end;
 
 
