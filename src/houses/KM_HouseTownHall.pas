@@ -33,8 +33,8 @@ type
   protected
     function GetFlagPointTexId: Word; override;
     procedure AddDemandsOnActivate(aWasBuilt: Boolean); override;
-    function GetResIn(aI: Byte): Word; override;
-    procedure SetResIn(aI: Byte; aValue: Word); override;
+    function GetWareIn(aI: Byte): Word; override;
+    procedure SetWareIn(aI: Byte; aValue: Word); override;
 
     function TryDecWareDelivery(aWare: TKMWareType; aDeleteCanceled: Boolean): Boolean; override;
   public
@@ -122,7 +122,7 @@ begin
 
   fGoldCnt := EnsureRange(aValue, 0, IfThen(aLimitMaxGoldCnt, fGoldMaxCnt, High(Word)));
 
-  SetResInManageTakeOutDeliveryMode(wtGold, fGoldCnt - oldValue);
+  SetWareInManageTakeOutDeliveryMode(wtGold, fGoldCnt - oldValue);
 
   if oldValue <> fGoldCnt then
     gScriptEvents.ProcHouseWareCountChanged(Self, wtGold, fGoldCnt, fGoldCnt - oldValue);
@@ -241,7 +241,7 @@ begin
 end;
 
 
-function TKMHouseTownHall.GetResIn(aI: Byte): Word;
+function TKMHouseTownHall.GetWareIn(aI: Byte): Word;
 begin
   Result := 0;
   if aI = 1 then //Resources are 1 based
@@ -249,7 +249,7 @@ begin
 end;
 
 
-procedure TKMHouseTownHall.SetResIn(aI: Byte; aValue: Word);
+procedure TKMHouseTownHall.SetWareIn(aI: Byte; aValue: Word);
 begin
   if aI = 1 then
     GoldCnt := aValue;

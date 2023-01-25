@@ -23,7 +23,7 @@ type
     procedure SetQueue(aIndex: Integer; aValue: TKMUnitType);
     property PrivateQueue[aIndex: Integer]: TKMUnitType read GetQueue write SetQueue;
   protected
-    function GetResInLocked(aI: Byte): Word; override;
+    function GetWareInLocked(aI: Byte): Word; override;
   public
     constructor Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
     constructor Load(LoadStream: TKMemoryStream); override;
@@ -148,9 +148,10 @@ begin
 end;
 
 
-function TKMHouseSchool.GetResInLocked(aI: Byte): Word;
+function TKMHouseSchool.GetWareInLocked(aI: Byte): Word;
 begin
-  Result := inherited GetResInLocked(aI);
+  Result := inherited GetWareInLocked(aI);
+
   if aI = 1 then //for gold only (1 - based)
     Inc(Result, Byte(HideOneGold)); //We Lock 1 gold if its hidden (while unit training)
 end;

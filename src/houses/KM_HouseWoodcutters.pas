@@ -20,12 +20,13 @@ type
     function GetFlagPointTexId: Word; override;
     function GetMaxDistanceToPoint: Integer; override;
   public
-    property WoodcutterMode: TKMWoodcutterMode read fWoodcutterMode write SetWoodcutterMode;
     constructor Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
     constructor Load(LoadStream: TKMemoryStream); override;
     procedure Save(SaveStream: TKMemoryStream); override;
 
     function ObjToString(const aSeparator: String = '|'): String; override;
+
+    property WoodcutterMode: TKMWoodcutterMode read fWoodcutterMode write SetWoodcutterMode;
   end;
 
 

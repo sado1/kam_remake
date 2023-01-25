@@ -754,12 +754,12 @@ end;
 
 
 procedure TKMRenderPool.AddWholeHouse(H: TKMHouse; aFlagColor: Cardinal; aDoImmediateRender: Boolean = False;
-                                    aDoHighlight: Boolean = False; aHighlightColor: TColor4 = 0);
+  aDoHighlight: Boolean = False; aHighlightColor: TColor4 = 0);
 begin
   if H <> nil then
   begin
     AddHouse(H.HouseType, H.Position, 1, 1, 0, aDoImmediateRender, aDoHighlight, aHighlightColor);
-    AddHouseSupply(H.HouseType, H.Position, H.ResourceInArray, H.ResourceOutArray, H.ResourceOutPoolArray, aDoImmediateRender, aDoHighlight, aHighlightColor);
+    AddHouseSupply(H.HouseType, H.Position, H.WareInArray, H.WareOutArray, H.WareOutPoolArray, aDoImmediateRender, aDoHighlight, aHighlightColor);
     if H.CurrentAction <> nil then
       gRenderPool.AddHouseWork(H.HouseType, H.Position, H.CurrentAction.SubAction, H.WorkAnimStep, H.WorkAnimStepPrev, aFlagColor, aDoImmediateRender, aDoHighlight, aHighlightColor);
   end;

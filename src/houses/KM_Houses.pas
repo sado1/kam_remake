@@ -153,11 +153,11 @@ type
 
     procedure CheckOnSnow;
 
-    function GetResourceInArray: TKMByteArray;
-    function GetResourceOutArray: TKMByteArray;
-    function GetResourceOutPoolArray: TKMByteArray;
+    function GetWareInArray: TKMByteArray;
+    function GetWareOutArray: TKMByteArray;
+    function GetWareOutPoolArray: TKMByteArray;
 
-    function GetResDistribution(aID: Byte): Byte; //Will use GetRatio from mission settings to find distribution amount
+    function GetWareDistribution(aID: Byte): Byte; //Will use GetRatio from mission settings to find distribution amount
     procedure SetIsClosedForWorker(aIsClosed: Boolean);
     procedure UpdateDeliveryMode;
     function GetHasWorker: Boolean;
@@ -169,15 +169,15 @@ type
     //WorkAnimStep: Cardinal; //Used for Work and etc.. which is not in sync with Flags
     procedure Activate(aWasBuilt: Boolean); virtual;
     procedure AddDemandsOnActivate(aWasBuilt: Boolean); virtual;
-    function GetResOrder(aId: Byte): Integer; virtual;
-    function GetResIn(aI: Byte): Word; virtual;
-    function GetResOut(aI: Byte): Word; virtual;
-    function GetResInLocked(aI: Byte): Word; virtual;
-    procedure SetResInManageTakeOutDeliveryMode(aWare: TKMWareType; aCntChange: Integer);
-    procedure SetResIn(aI: Byte; aValue: Word); virtual;
-    procedure SetResOut(aI: Byte; aValue: Word); virtual;
+    function GetWareOrder(aId: Byte): Integer; virtual;
+    function GetWareIn(aI: Byte): Word; virtual;
+    function GetWareOut(aI: Byte): Word; virtual;
+    function GetWareInLocked(aI: Byte): Word; virtual;
+    procedure SetWareInManageTakeOutDeliveryMode(aWare: TKMWareType; aCntChange: Integer);
+    procedure SetWareIn(aI: Byte; aValue: Word); virtual;
+    procedure SetWareOut(aI: Byte; aValue: Word); virtual;
     procedure SetBuildingRepair(aValue: Boolean);
-    procedure SetResOrder(aId: Byte; aValue: Integer); virtual;
+    procedure SetWareOrder(aId: Byte; aValue: Integer); virtual;
     procedure SetNewDeliveryMode(aValue: TKMDeliveryMode); virtual;
     procedure CheckTakeOutDeliveryMode; virtual;
     function GetDeliveryModeForCheck(aImmidiate: Boolean): TKMDeliveryMode;
@@ -265,9 +265,9 @@ type
     function GetBuildResourceDelivered: Byte;
     function GetBuildResDeliveredPercent: Single;
 
-    property ResourceInArray: TKMByteArray read GetResourceInArray;
-    property ResourceOutArray: TKMByteArray read GetResourceOutArray;
-    property ResourceOutPoolArray: TKMByteArray read GetResourceOutPoolArray;
+    property WareInArray: TKMByteArray read GetWareInArray;
+    property WareOutArray: TKMByteArray read GetWareOutArray;
+    property WareOutPoolArray: TKMByteArray read GetWareOutPoolArray;
 
     property BuildingState: TKMHouseBuildState read fBuildState write fBuildState;
     property BuildSupplyWood: Byte read fBuildSupplyWood;
@@ -306,10 +306,10 @@ type
     function ResCanAddToOut(aWare: TKMWareType): Boolean;
     function CanHaveWareType(aWare: TKMWareType): Boolean; virtual;
     function ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; virtual;
-    property ResOrder[aId: Byte]: Integer read GetResOrder write SetResOrder;
-    property ResIn[aId: Byte]: Word read GetResIn write SetResIn;
-    property ResOut[aId: Byte]: Word read GetResOut write SetResOut;
-    property ResInLocked[aId: Byte]: Word read GetResInLocked;
+    property ResOrder[aId: Byte]: Integer read GetWareOrder write SetWareOrder;
+    property ResIn[aId: Byte]: Word read GetWareIn write SetWareIn;
+    property ResOut[aId: Byte]: Word read GetWareOut write SetWareOut;
+    property ResInLocked[aId: Byte]: Word read GetWareInLocked;
 
     procedure UpdateDemands; virtual;
     procedure PostLoadMission; virtual;
@@ -652,7 +652,7 @@ begin
       wtWarfare: AddDemand(Self, nil, W, 1, dtAlways, diNorm);
       wtAll:     AddDemand(Self, nil, W, 1, dtAlways, diNorm);
       else        begin
-                    demandsCnt := GetResDistribution(I);
+                    demandsCnt := GetWareDistribution(I);
                     AddDemand(Self, nil, W, demandsCnt, dtOnce, diNorm); //Every new house needs 5 resource units
                     WareDeliveryCnt[I] := WareDeliveryCnt[I] + demandsCnt; //Keep track of how many resources we have on order (for distribution of wares)
                   end;
@@ -1419,7 +1419,7 @@ begin
 end;
 
 
-function TKMHouse.GetResourceInArray: TKMByteArray;
+function TKMHouse.GetWareInArray: TKMByteArray;
 var
   I, iOffset: Integer;
 begin
@@ -1430,7 +1430,7 @@ begin
 end;
 
 
-function TKMHouse.GetResourceOutArray: TKMByteArray;
+function TKMHouse.GetWareOutArray: TKMByteArray;
 var
   I, iOffset: Integer;
 begin
@@ -1441,7 +1441,7 @@ begin
 end;
 
 
-function TKMHouse.GetResourceOutPoolArray: TKMByteArray;
+function TKMHouse.GetWareOutPoolArray: TKMByteArray;
 var
   I: Integer;
 begin
@@ -1501,7 +1501,7 @@ end;
 
 
 // Check amount of placed order for given ID
-function TKMHouse.GetResOrder(aID: Byte): Integer;
+function TKMHouse.GetWareOrder(aID: Byte): Integer;
 begin
   Result := fWareOrder[aID];
 end;
@@ -1509,7 +1509,7 @@ end;
 
 //Input value is integer because we might get a -100 order from outside and need to fit it to range
 //properly
-procedure TKMHouse.SetResOrder(aID: Byte; aValue: Integer);
+procedure TKMHouse.SetWareOrder(aID: Byte; aValue: Integer);
 //var
 //  I: Integer;
 //  TotalDesired: Integer;
@@ -1782,25 +1782,25 @@ begin
 end;
 
 
-function TKMHouse.GetResIn(aI: Byte): Word;
+function TKMHouse.GetWareIn(aI: Byte): Word;
 begin
   Result := fWareIn[aI];
 end;
 
 
-function TKMHouse.GetResOut(aI: Byte): Word;
+function TKMHouse.GetWareOut(aI: Byte): Word;
 begin
   Result := fWareOut[aI];
 end;
 
 
-function TKMHouse.GetResInLocked(aI: Byte): Word;
+function TKMHouse.GetWareInLocked(aI: Byte): Word;
 begin
   Result := 0; //By default we do not lock any In res
 end;
 
 
-procedure TKMHouse.SetResInManageTakeOutDeliveryMode(aWare: TKMWareType; aCntChange: Integer);
+procedure TKMHouse.SetWareInManageTakeOutDeliveryMode(aWare: TKMWareType; aCntChange: Integer);
 begin
   //In case we brought smth to house with TakeOut delivery mode,
   //then we need to add it to offer
@@ -1815,7 +1815,7 @@ begin
 end;
 
 
-procedure TKMHouse.SetResIn(aI: Byte; aValue: Word);
+procedure TKMHouse.SetWareIn(aI: Byte; aValue: Word);
 var
   cntChange: Integer;
   W: TKMWareType;
@@ -1823,7 +1823,7 @@ begin
   W := gRes.Houses[fType].ResInput[aI];
   cntChange := aValue - fWareIn[aI];
 
-  SetResInManageTakeOutDeliveryMode(W, cntChange);
+  SetWareInManageTakeOutDeliveryMode(W, cntChange);
 
   fWareIn[aI] := aValue;
 
@@ -1832,7 +1832,7 @@ begin
 end;
 
 
-procedure TKMHouse.SetResOut(aI: Byte; aValue: Word);
+procedure TKMHouse.SetWareOut(aI: Byte; aValue: Word);
 var
   cntChange: Integer;
   W: TKMWareType;
@@ -1896,7 +1896,7 @@ begin
     ResIn[I] := ResIn[I] - aCount;
     //Only request a new resource if it is allowed by the distribution of wares for our parent player
     for K := 1 to aCount do
-      if WareDeliveryCnt[I] < GetResDistribution(I) then
+      if WareDeliveryCnt[I] < GetWareDistribution(I) then
       begin
         gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, aWare, 1, dtOnce, diNorm);
         WareDeliveryCnt[I] := WareDeliveryCnt[I] + 1;
@@ -1965,7 +1965,7 @@ begin
     ResIn[I] := ResIn[I] - aCount;
     //Only request a new resource if it is allowed by the distribution of wares for our parent player
     for K := 1 to aCount do
-      if WareDeliveryCnt[I] < GetResDistribution(I) then
+      if WareDeliveryCnt[I] < GetWareDistribution(I) then
       begin
         gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, aWare, 1, dtOnce, diNorm);
         WareDeliveryCnt[I] := WareDeliveryCnt[I] + 1;
@@ -1975,7 +1975,7 @@ begin
 end;
 
 
-function TKMHouse.GetResDistribution(aID: Byte): Byte;
+function TKMHouse.GetWareDistribution(aID: Byte): Byte;
 begin
   Result := gHands[Owner].Stats.WareDistribution[gRes.Houses[fType].ResInput[aID],fType];
 end;
@@ -2160,7 +2160,7 @@ begin
   begin
     if (fType = htTownHall) or (gRes.Houses[fType].ResInput[I] in [wtAll, wtWarfare, wtNone]) then Continue;
 
-    resDistribution := GetResDistribution(I);
+    resDistribution := GetWareDistribution(I);
 
     demandsToChange := resDistribution - (WareDeliveryCnt[I] - WareDemandsClosing[I]);
 
