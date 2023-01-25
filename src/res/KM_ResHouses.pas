@@ -44,7 +44,7 @@ type
   end;
 
   THouseArea = array [1..4, 1..4] of Byte;
-  THouseRes = array [1..4] of TKMWareType; //todo: Rename to TKMHouseWares4
+  TKMWareType4 = array [1..4] of TKMWareType;
 
   // This class wraps KaM House info
   // it hides unused fields and adds new ones
@@ -57,8 +57,8 @@ type
     function GetDoesOrders: Boolean;
     function GetGUIIcon: Word;
     function GetHouseName: UnicodeString;
-    function GetWareInput: THouseRes;
-    function GetWareOutput: THouseRes;
+    function GetWareInput: TKMWareType4;
+    function GetWareOutput: TKMWareType4;
     function GetWorkerType: TKMUnitType;
     function GetReleasedBy: TKMHouseType;
     function GetTabletIcon: Word;
@@ -100,8 +100,8 @@ type
     property HouseName: UnicodeString read GetHouseName;
     property HouseNameTextID: Integer read fNameTextID;
     property ReleasedBy: TKMHouseType read GetReleasedBy;
-    property WareInput: THouseRes read GetWareInput;
-    property WareOutput: THouseRes read GetWareOutput;
+    property WareInput: TKMWareType4 read GetWareInput;
+    property WareOutput: TKMWareType4 read GetWareOutput;
     property TabletIcon: Word read GetTabletIcon;
     property UnoccupiedMsgId: SmallInt read GetUnoccupiedMsgId;
     property SnowPic: SmallInt read GetSnowPic;
@@ -223,8 +223,8 @@ type
     NeedsPlayerOrder: Boolean; //Does house output needs to be ordered by Player or it's producing by itself
     BuildIcon: Word;  //Icon in GUI
     TabletSpriteId: Word; //House area WIP tablet
-    Input: THouseRes;
-    Output: THouseRes;
+    Input: TKMWareType4;
+    Output: TKMWareType4;
     UnlockedByHouse: TKMHouseType; //Which house type allows to build this house type
     SnowSpriteId: SmallInt;
     GroundArea: THouseArea; //Ground that is visible on house tiles (and a bit near). With weight of 'how much' is ground visible
@@ -709,13 +709,13 @@ begin
 end;
 
 
-function TKMHouseSpec.GetWareInput: THouseRes;
+function TKMHouseSpec.GetWareInput: TKMWareType4;
 begin
   Result := HOUSE_DAT_X[fHouseType].Input;
 end;
 
 
-function TKMHouseSpec.GetWareOutput: THouseRes;
+function TKMHouseSpec.GetWareOutput: TKMWareType4;
 begin
   Result := HOUSE_DAT_X[fHouseType].Output;
 end;
