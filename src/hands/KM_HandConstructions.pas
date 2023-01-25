@@ -877,7 +877,7 @@ procedure TKMHousePlanList.GetOutlines(aList: TKMPointDirList; const aRect: TKMR
 var
   I, J, K: Integer;
   rect: TKMRect;
-  HA: THouseArea;
+  HA: TKMHouseArea;
 begin
   //Expand the Rect by 2 to include plans near Rect borders
   rect := KMRectGrow(aRect, 2);

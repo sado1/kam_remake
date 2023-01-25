@@ -43,7 +43,7 @@ type
     Foot2: array [1..12] of SmallInt; //vs sprite ID
   end;
 
-  THouseArea = array [1..4, 1..4] of Byte;
+  TKMHouseArea = array [1..4, 1..4] of Byte;
   TKMWareType4 = array [1..4] of TKMWareType;
 
   // This class wraps KaM House info
@@ -53,7 +53,7 @@ type
     fHouseType: TKMHouseType; //Our class
     fNameTextID: Integer;
     fHouseDat: TKMHouseDat;
-    function GetArea: THouseArea;
+    function GetArea: TKMHouseArea;
     function GetDoesOrders: Boolean;
     function GetGUIIcon: Word;
     function GetHouseName: UnicodeString;
@@ -64,7 +64,7 @@ type
     function GetTabletIcon: Word;
     function GetSnowPic: SmallInt;
     function GetUnoccupiedMsgId: SmallInt;
-    function GetGroundVisibleArea: THouseArea;
+    function GetGroundVisibleArea: TKMHouseArea;
   public
     constructor Create(aHouseType: TKMHouseType);
     procedure LoadFromStream(Stream: TMemoryStream);
@@ -93,8 +93,8 @@ type
     function CanHasWorker: Boolean;
 
     // Additional properties added by Remake
-    property BuildArea: THouseArea read GetArea;
-    property GroundVisibleArea: THouseArea read GetGroundVisibleArea;
+    property BuildArea: TKMHouseArea read GetArea;
+    property GroundVisibleArea: TKMHouseArea read GetGroundVisibleArea;
     property DoesOrders: Boolean read GetDoesOrders;
     property GUIIcon: Word read GetGUIIcon;
     property HouseName: UnicodeString read GetHouseName;
@@ -219,7 +219,7 @@ uses
 type
   //Additional house info appended to classic format
   THouseInfo = record
-    PlanYX: THouseArea;
+    PlanYX: TKMHouseArea;
     NeedsPlayerOrder: Boolean; //Does house output needs to be ordered by Player or it's producing by itself
     BuildIcon: Word;  //Icon in GUI
     TabletSpriteId: Word; //House area WIP tablet
@@ -227,7 +227,7 @@ type
     Output: TKMWareType4;
     UnlockedByHouse: TKMHouseType; //Which house type allows to build this house type
     SnowSpriteId: SmallInt;
-    GroundArea: THouseArea; //Ground that is visible on house tiles (and a bit near). With weight of 'how much' is ground visible
+    GroundArea: TKMHouseArea; //Ground that is visible on house tiles (and a bit near). With weight of 'how much' is ground visible
   end;
 
 const
@@ -597,7 +597,7 @@ begin
 end;
 
 
-function TKMHouseSpec.GetArea: THouseArea;
+function TKMHouseSpec.GetArea: TKMHouseArea;
 begin
   Result := HOUSE_DAT_X[fHouseType].PlanYX;
 end;
@@ -609,7 +609,7 @@ begin
 end;
 
 
-function TKMHouseSpec.GetGroundVisibleArea: THouseArea;
+function TKMHouseSpec.GetGroundVisibleArea: TKMHouseArea;
 begin
   Result := HOUSE_DAT_X[fHouseType].GroundArea;
 end;

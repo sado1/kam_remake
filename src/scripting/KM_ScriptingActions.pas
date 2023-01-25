@@ -1213,7 +1213,7 @@ function TKMScriptActions.GiveHouseSite(aHand, aHouseType, X, Y: Integer; aAddMa
 var
   H: TKMHouse;
   I, K: Integer;
-  HA: THouseArea;
+  HA: TKMHouseArea;
   nonEntranceX: Integer;
 begin
   try
@@ -1273,7 +1273,7 @@ function TKMScriptActions.GiveHouseSiteEx(aHand: Integer; aHouseType: TKMHouseTy
 var
   H: TKMHouse;
   I, K: Integer;
-  HA: THouseArea;
+  HA: TKMHouseArea;
   nonEntranceX: Integer;
 begin
   try

@@ -682,8 +682,8 @@ var
   end;
 
 var
-  I, X,Y,aX,aY, ActualIdx, Cnt: Integer;
-  HA: THouseArea;
+  I, X, Y, aX, aY, ActualIdx, Cnt: Integer;
+  HA: TKMHouseArea;
 begin
   for House := HOUSE_MIN to HOUSE_MAX do
   begin

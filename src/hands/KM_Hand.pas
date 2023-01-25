@@ -1095,7 +1095,7 @@ end;
 function TKMHand.CanAddHousePlan(const aLoc: TKMPoint; aHouseType: TKMHouseType): Boolean;
 var
   I, K, J, S, T, Tx, Ty: Integer;
-  HA: THouseArea;
+  HA: TKMHouseArea;
 begin
   Result := gTerrain.CanPlaceHouse(aLoc, aHouseType);
   if not Result then Exit;
@@ -1132,7 +1132,7 @@ end;
 function TKMHand.CanAddHousePlanAI(aX, aY: Word; aHouseType: TKMHouseType; aCheckInfluence: Boolean): Boolean;
 var
   I, K, J, S, T, Tx, Ty: Integer;
-  HA: THouseArea;
+  HA: TKMHouseArea;
   enterOff: ShortInt;
   terOwner: TKMHandID;
 begin
@@ -1904,7 +1904,7 @@ var
   I, K, J, S, T: Integer;
   P2: TKMPoint;
   allowBuild: Boolean;
-  HA: THouseArea;
+  HA: TKMHouseArea;
 begin
   //Get basic Marks
   gTerrain.GetHouseMarks(aLoc, aHouseType, aList);

@@ -3022,7 +3022,7 @@ var
   I,K,S,T: Integer;
   P2: TKMPoint;
   allowBuild: Boolean;
-  HA: THouseArea;
+  HA: TKMHouseArea;
 begin
   Assert(aList.Count = 0);
   HA := gRes.Houses[aHouseType].BuildArea;
@@ -4584,7 +4584,7 @@ procedure TKMTerrain.SetHouse(const aLoc: TKMPoint; aHouseType: TKMHouseType; aH
 var
   I, K, X, Y: Word;
   toFlatten: TKMPointList;
-  HA: THouseArea;
+  HA: TKMHouseArea;
   objectsEffected: Boolean; //UpdateWalkConnect cares about this for optimisation purposes
 begin
   objectsEffected := False;
@@ -4652,7 +4652,7 @@ end;
 procedure TKMTerrain.SetHouseAreaOwner(const aLoc: TKMPoint; aHouseType: TKMHouseType; aOwner: TKMHandID);
 var
   I, K: Integer;
-  HA: THouseArea;
+  HA: TKMHouseArea;
 begin
   HA := gRes.Houses[aHouseType].BuildArea;
   case aHouseType of
@@ -4704,7 +4704,7 @@ end;
 function TKMTerrain.CanPlaceHouse(aLoc: TKMPoint; aHouseType: TKMHouseType): Boolean;
 var
   I,K,X,Y: Integer;
-  HA: THouseArea;
+  HA: TKMHouseArea;
 begin
   Result := True;
   HA := gRes.Houses[aHouseType].BuildArea;
@@ -4732,7 +4732,7 @@ end;
 function TKMTerrain.CheckHouseBounds(aHouseType: TKMHouseType; const aLoc: TKMPoint; aInsetRect: TKMRect): Boolean;
 var
   I, K: Integer;
-  HA: THouseArea;
+  HA: TKMHouseArea;
   TX, TY: Integer;
   mapHouseInsetRect: TKMRect;
 begin
@@ -4756,7 +4756,7 @@ end;
 function TKMTerrain.CanPlaceHouseFromScript(aHouseType: TKMHouseType; const aLoc: TKMPoint): Boolean;
 var
   I, K, L, M: Integer;
-  HA: THouseArea;
+  HA: TKMHouseArea;
   TX, TY: Integer;
 begin
   Result := True;
@@ -4868,7 +4868,7 @@ end;
 procedure TKMTerrain.AddHouseRemainder(const aLoc: TKMPoint; aHouseType: TKMHouseType; aBuildState: TKMHouseBuildState);
 var
   I, K: Integer;
-  HA:   THouseArea;
+  HA: TKMHouseArea;
 begin
   HA := gRes.Houses[aHouseType].BuildArea;
 

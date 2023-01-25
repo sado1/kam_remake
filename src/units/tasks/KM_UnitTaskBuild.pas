@@ -553,7 +553,7 @@ end;
 constructor TKMTaskBuildHouseArea.Create(aWorker: TKMUnitWorker; aHouseType: TKMHouseType; const aLoc: TKMPoint; aID: Integer);
 var
   I,K: Integer;
-  HA: THouseArea;
+  HA: TKMHouseArea;
 begin
   inherited Create(aWorker);
   fType  := uttBuildHouseArea;

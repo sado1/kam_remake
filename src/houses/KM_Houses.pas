@@ -671,7 +671,7 @@ procedure TKMHouse.Activate(aWasBuilt: Boolean);
 var
   I, K: Integer;
   P1, P2: TKMPoint;
-  HA: THouseArea;
+  HA: TKMHouseArea;
 begin
   // Only activated houses count
   gHands[Owner].Locks.HouseCreated(fType);
@@ -1022,12 +1022,12 @@ begin
 end;
 
 
-{Return distance from aPos to the closest house tile}
+// Return distance from aPos to the closest house tile
 function TKMHouse.GetDistance(const aPos: TKMPoint): Single;
 var
   I, K: Integer;
   loc: TKMPoint;
-  HA: THouseArea;
+  HA: TKMHouseArea;
 begin
   Result := MaxSingle;
   loc := fPosition;
@@ -1057,7 +1057,7 @@ procedure TKMHouse.GetListOfCellsAround(aCells: TKMPointDirList; aPassability: T
 var
   I, K: Integer;
   loc: TKMPoint;
-  HA: THouseArea;
+  HA: TKMHouseArea;
 
   procedure AddLoc(X,Y: Word; Dir: TKMDirection);
   begin
@@ -1090,7 +1090,7 @@ procedure TKMHouse.GetListOfCellsWithin(aCells: TKMPointList);
 var
   I, K: Integer;
   loc: TKMPoint;
-  houseArea: THouseArea;
+  houseArea: TKMHouseArea;
 begin
   aCells.Clear;
   loc := fPosition;
@@ -1107,7 +1107,7 @@ procedure TKMHouse.GetListOfGroundVisibleCells(aCells: TKMPointTagList);
 var
   I, K, ground: Integer;
   loc: TKMPoint;
-  groundVisibleArea: THouseArea;
+  groundVisibleArea: TKMHouseArea;
 begin
   aCells.Clear;
   loc := fPosition;
@@ -2115,7 +2115,7 @@ const
 var
   I, K: Integer;
   wasOnSnow: Boolean;
-  HA: THouseArea;
+  HA: TKMHouseArea;
 begin
   Inc(FlagAnimStep);
   WorkAnimStepPrev := WorkAnimStep;
@@ -2244,7 +2244,7 @@ const
 var
   I, K: Integer;
   houseUnoccupiedMsgId: Integer;
-  HA: THouseArea;
+  HA: TKMHouseArea;
 begin
   if not IsComplete then
   begin

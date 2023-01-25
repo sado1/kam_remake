@@ -140,7 +140,7 @@ procedure TKMMissionParserPreview.ProcessCommand(CommandType: TKMCommandType; P:
 
 var
   I, K: Integer;
-  HA: THouseArea;
+  HA: TKMHouseArea;
   valid: Boolean;
   loc: TKMPoint;
 begin
@@ -153,7 +153,7 @@ begin
                           RevealCircle(P[1]+1, P[2]+1, gRes.Houses[HOUSE_ID_TO_TYPE[P[0]]].Sight);
                           HA := gRes.Houses[HOUSE_ID_TO_TYPE[P[0]]].BuildArea;
                           for i:=1 to 4 do for k:=1 to 4 do
-                            if HA[i,k]<>0 then
+                            if HA[i,k] <> 0 then
                               if InRange(P[1]+1+k-3, 1, fMapX) and InRange(P[2]+1+i-4, 1, fMapY) then
                                 SetOwner(P[1]+1+k-3, P[2]+1+i-4);
                         end;
