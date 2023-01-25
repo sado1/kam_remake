@@ -100,6 +100,14 @@ begin
 
   if forcedConsoleMode or IsConsoleMode then
   begin
+    if ParamCount = 0 then
+    begin
+      Writeln('No rx packages were set');
+      Writeln('Usage example 1: RxxPacker.exe gui guimain houses trees units tileset');
+      Writeln('Usage example 2: RxxPacker.exe all');
+      Writeln('Usage example 3: RxxPacker.exe spritesBaseDir "C:\kmr_sprites\" units');
+      Exit;
+    end else
     if ParamCount >= 1 then
     begin
       Writeln(sLineBreak + 'KaM Remake RXX Packer' + sLineBreak);
@@ -179,15 +187,7 @@ begin
         lRxxPacker.Free;
         palettes.Free;
       end;
-    end else
-    if ParamCount = 0 then
-      begin
-        Writeln('No rx packages were set');
-        Writeln('Usage example 1: RxxPacker.exe gui guimain houses trees units tileset');
-        Writeln('Usage example 2: RxxPacker.exe all');
-        Writeln('Usage example 3: RxxPacker.exe spritesBaseDir "C:\kmr_sprites\" units');
-        Exit;
-      end;
+    end;
   end else
   begin
     FreeConsole; // Used to hide the console

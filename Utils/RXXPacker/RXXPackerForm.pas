@@ -71,8 +71,7 @@ begin
   begin
     ShowMessage('No .RX files were found in' + sLineBreak + ExeDir + 'SpriteResource\');
     btnPackRXX.Enabled := False;
-  end
-  else
+  end else
   begin
     btnPackRXX.Enabled := True;
     ListBox1.ItemIndex := 0;
