@@ -7,8 +7,9 @@ uses
   {$IFDEF FPC}Interfaces,{$ENDIF}
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF FPC} LResources, LCLIntf, {$ENDIF}
+  RXXPackerConsole in 'RXXPackerConsole.pas',
   RXXPackerForm in 'RXXPackerForm.pas' {RXXForm1},
-	RXXPackerProc in 'RXXPackerProc.pas',
+  RXXPackerProc in 'RXXPackerProc.pas',
   KM_IoPNG in '..\..\src\utils\io\KM_IoPNG.pas',
   KM_Pics in '..\..\src\res\KM_Pics.pas',
   KM_ResSprites in '..\..\src\res\KM_ResSprites.pas',
@@ -55,25 +56,8 @@ uses
 {$ENDIF}
 
 var
-  I, K, cnt: Integer;
-  paramString: string;
   forcedConsoleMode: Boolean;
-  rxType: TRXType;
-  lRxxPacker: TKMRXXPacker;
-  palettes: TKMResPalettes;
-  tick: Cardinal;
-
-var
   RXXForm1: TRXXForm1;
-
-const
-  RXX_TO_PACK: array [0..5] of TRXType = (
-    rxTrees,
-    rxHouses,
-    rxUnits,
-    rxGui,
-    rxGuiMain,
-    rxTiles);
 
 
 function IsConsoleMode: Boolean;
@@ -99,96 +83,8 @@ begin
     ;
 
   if forcedConsoleMode or IsConsoleMode then
-  begin
-    if ParamCount = 0 then
-    begin
-      Writeln('No rx packages were set');
-      Writeln('Usage example 1: RxxPacker.exe gui guimain houses trees units tileset');
-      Writeln('Usage example 2: RxxPacker.exe all');
-      Writeln('Usage example 3: RxxPacker.exe spritesBaseDir "C:\kmr_sprites\" units');
-      Exit;
-    end else
-    if ParamCount >= 1 then
-    begin
-      Writeln(sLineBreak + 'KaM Remake RXX Packer' + sLineBreak);
-
-      ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
-      lRxxPacker := TKMRXXPacker.Create(ExeDir);
-      palettes := TKMResPalettes.Create;
-      palettes.LoadPalettes(ExeDir + 'data\gfx\');
-      try
-        I := 0;
-        cnt := ParamCount;
-        while I < cnt do // Skip 0, as this is the EXE-path
-        begin
-          Inc(I);
-          paramString := ParamStr(I);
-          if ((LowerCase(paramString) = 'sld') or (LowerCase(paramString) = 'spritesloaddir')) then
-          begin
-            if (I >= ParamCount) then
-            begin
-              Writeln('spritesLoadDir directory not specified');
-              Exit;
-            end;
-
-            Inc(I);
-
-            if not DirectoryExists(ParamStr(I)) then
-            begin
-              Writeln('spritesLoadDir directory does not exist: ' + ParamStr(I));
-              Exit;
-            end;
-            lRxxPacker.SpritesSourcePath := ParamStr(I);
-            Continue;
-          end;
-
-          if ((LowerCase(paramString) = 'ssd') or (LowerCase(paramString) = 'spritessavedir')) then
-          begin
-            if (I >= ParamCount) then
-            begin
-              Writeln('spritesSaveDir directory not specified');
-              Exit;
-            end;
-
-            Inc(I);
-            lRxxPacker.RXXSavePath := ParamStr(I);
-            Continue;
-          end;
-
-          if ((LowerCase(paramString) = 'packtorxa') or (LowerCase(paramString) = 'rxa')) then
-          begin
-            lRxxPacker.PackToRXA := True;
-
-            Continue;
-          end;
-
-          paramString := ParamStr(I);
-
-          if LowerCase(paramString) = 'all' then
-          begin
-            for K := Low(RXX_TO_PACK) to High(RXX_TO_PACK) do
-            begin
-              tick := GetTickCount;
-              lRxxPacker.Pack(RXX_TO_PACK[K], palettes, procedure (aMsg: string) begin Writeln(aMsg); end);
-              Writeln(RX_INFO[RXX_TO_PACK[K]].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
-            end;
-            Exit;
-          end;
-
-          for rxType := Low(TRXType) to High(TRXType) do
-            if (LowerCase(paramString) = LowerCase(RX_INFO[rxType].FileName)) then
-            begin
-              tick := GetTickCount;
-              lRxxPacker.Pack(rxType, palettes, procedure (aMsg: string) begin Writeln(aMsg); end);
-              Writeln(RX_INFO[rxType].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
-            end;
-        end;
-      finally
-        lRxxPacker.Free;
-        palettes.Free;
-      end;
-    end;
-  end else
+    TKMRXXPackerConsole.Execute
+  else
   begin
     FreeConsole; // Used to hide the console
     Application.Initialize;

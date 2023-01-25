@@ -89,6 +89,7 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <DCCReference Include="RXXPackerConsole.pas"/>
         <DCCReference Include="RXXPackerForm.pas">
             <Form>RXXForm1</Form>
         </DCCReference>
