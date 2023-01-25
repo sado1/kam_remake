@@ -54,15 +54,15 @@ type
     function ShouldAbandonDeliveryFrom(aWareType: TKMWareType; aImmidiateCheck: Boolean = False): Boolean; override;
     function ShouldAbandonDeliveryTo(aWareType: TKMWareType): Boolean; override;
 
-    function AllowedToTrade(aRes: TKMWareType): Boolean;
+    function AllowedToTrade(aWare: TKMWareType): Boolean;
     function TradeInProgress: Boolean;
     function GetResTotal(aWare: TKMWareType): Word; overload;
     function CheckResIn(aWare: TKMWareType): Word; override;
     function CheckResOut(aWare: TKMWareType): Word; override;
-    procedure ResAddToIn(aResource: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
+    procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
     procedure ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
-    function ResCanAddToIn(aRes: TKMWareType): Boolean; override;
-    function ResOutputAvailable(aRes: TKMWareType; const aCount: Word): Boolean; override;
+    function ResCanAddToIn(aWare: TKMWareType): Boolean; override;
+    function ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; override;
 
     procedure UpdateDemands; override;
 
@@ -170,7 +170,7 @@ begin
 end;
 
 
-procedure TKMHouseMarket.ResAddToIn(aResource: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
+procedure TKMHouseMarket.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
 var
   ordersAllowed, ordersToDo: Integer;
 begin
@@ -178,11 +178,11 @@ begin
   //then incoming resourced should be added to Offer list immediately
   //We don't want Marketplace to act like a Store
   if not aFromScript then
-    Dec(fMarketDeliveryCount[aResource], aCount); //We must keep track of the number ordered, which is less now because this has arrived
+    Dec(fMarketDeliveryCount[aWare], aCount); //We must keep track of the number ordered, which is less now because this has arrived
 
-  if (aResource = fResFrom) and TradeInProgress then
+  if (aWare = fResFrom) and TradeInProgress then
   begin
-    SetResInCnt(aResource, fMarketResIn[aResource] + aCount); //Place the new resource in the IN list
+    SetResInCnt(aWare, fMarketResIn[aWare] + aCount); //Place the new resource in the IN list
 
     //As we only order 10 resources at one time, we might need to order another now to fill the gap made by the one delivered
     ordersAllowed := MAX_RES_ORDERED - (fMarketDeliveryCount[fResFrom] - fMarketDemandsClosing[fResFrom]);
@@ -193,29 +193,29 @@ begin
 
     if ordersToDo > 0 then
     begin
-      Inc(fMarketDeliveryCount[aResource], ordersToDo);
+      Inc(fMarketDeliveryCount[aWare], ordersToDo);
       gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, fResFrom, ordersToDo, dtOnce, diNorm);
     end;
     AttemptExchange;
   end
   else
   begin
-    SetResOutCnt(aResource, fMarketResOut[aResource] + aCount); //Place the new resource in the OUT list
-    gHands[Owner].Deliveries.Queue.AddOffer(Self, aResource, aCount);
+    SetResOutCnt(aWare, fMarketResOut[aWare] + aCount); //Place the new resource in the OUT list
+    gHands[Owner].Deliveries.Queue.AddOffer(Self, aWare, aCount);
   end;
 end;
 
 
-function TKMHouseMarket.ResCanAddToIn(aRes: TKMWareType): Boolean;
+function TKMHouseMarket.ResCanAddToIn(aWare: TKMWareType): Boolean;
 begin
-  Result := (aRes in [WARE_MIN..WARE_MAX]);
+  Result := (aWare in [WARE_MIN..WARE_MAX]);
 end;
 
 
-function TKMHouseMarket.ResOutputAvailable(aRes: TKMWareType; const aCount: Word): Boolean;
+function TKMHouseMarket.ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean;
 begin
-  Assert(aRes in [WARE_MIN..WARE_MAX]);
-  Result := (fMarketResOut[aRes] >= aCount);
+  Assert(aWare in [WARE_MIN..WARE_MAX]);
+  Result := (fMarketResOut[aWare] >= aCount);
 end;
 
 
@@ -293,9 +293,9 @@ begin
 end;
 
 
-function TKMHouseMarket.AllowedToTrade(aRes: TKMWareType): Boolean;
+function TKMHouseMarket.AllowedToTrade(aWare: TKMWareType): Boolean;
 begin
-  Result := gHands[Owner].Locks.AllowToTrade[aRes];
+  Result := gHands[Owner].Locks.AllowToTrade[aWare];
 end;
 
 

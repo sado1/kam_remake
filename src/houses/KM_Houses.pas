@@ -173,7 +173,7 @@ type
     function GetResIn(aI: Byte): Word; virtual;
     function GetResOut(aI: Byte): Word; virtual;
     function GetResInLocked(aI: Byte): Word; virtual;
-    procedure SetResInManageTakeOutDeliveryMode(aRes: TKMWareType; aCntChange: Integer);
+    procedure SetResInManageTakeOutDeliveryMode(aWare: TKMWareType; aCntChange: Integer);
     procedure SetResIn(aI: Byte; aValue: Word); virtual;
     procedure SetResOut(aI: Byte; aValue: Word); virtual;
     procedure SetBuildingRepair(aValue: Boolean);
@@ -1800,7 +1800,7 @@ begin
 end;
 
 
-procedure TKMHouse.SetResInManageTakeOutDeliveryMode(aRes: TKMWareType; aCntChange: Integer);
+procedure TKMHouse.SetResInManageTakeOutDeliveryMode(aWare: TKMWareType; aCntChange: Integer);
 begin
   //In case we brought smth to house with TakeOut delivery mode,
   //then we need to add it to offer
@@ -1809,8 +1809,8 @@ begin
   //then it was not offered to other houses
   if fDeliveryMode = dmTakeOut then
   begin
-    if not (aRes in [wtNone, wtAll, wtWarfare]) and (aCntChange > 0) then
-      gHands[Owner].Deliveries.Queue.AddOffer(Self, aRes, aCntChange);
+    if not (aWare in [wtNone, wtAll, wtWarfare]) and (aCntChange > 0) then
+      gHands[Owner].Deliveries.Queue.AddOffer(Self, aWare, aCntChange);
   end;
 end;
 

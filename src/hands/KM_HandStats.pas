@@ -76,9 +76,9 @@ type
     destructor Destroy; override;
 
     //Input reported by Player
-    procedure WareInitial(aRes: TKMWareType; aCount: Cardinal);
-    procedure WareProduced(aRes: TKMWareType; aCount: Cardinal);
-    procedure WareConsumed(aRes: TKMWareType; aCount: Cardinal = 1);
+    procedure WareInitial(aWare: TKMWareType; aCount: Cardinal);
+    procedure WareProduced(aWare: TKMWareType; aCount: Cardinal);
+    procedure WareConsumed(aWare: TKMWareType; aCount: Cardinal = 1);
     procedure HousePlanned(aType: TKMHouseType);
     procedure HousePlanRemoved(aType: TKMHouseType);
     procedure HouseStarted(aType: TKMHouseType);
@@ -291,33 +291,33 @@ begin
 end;
 
 
-procedure TKMHandStats.WareInitial(aRes: TKMWareType; aCount: Cardinal);
+procedure TKMHandStats.WareInitial(aWare: TKMWareType; aCount: Cardinal);
 begin
-  if aRes <> wtNone then
-    Inc(Wares[aRes].Initial, aCount);
+  if aWare <> wtNone then
+    Inc(Wares[aWare].Initial, aCount);
 end;
 
 
-procedure TKMHandStats.WareProduced(aRes: TKMWareType; aCount: Cardinal);
+procedure TKMHandStats.WareProduced(aWare: TKMWareType; aCount: Cardinal);
 var
   WT: TKMWareType;
 begin
-  case aRes of
+  case aWare of
     wtNone:     ;
     wtAll:      for WT := WARE_MIN to WARE_MAX do
                   Inc(Wares[WT].Produced, aCount);
     WARE_MIN..
-    WARE_MAX:   Inc(Wares[aRes].Produced, aCount);
+    WARE_MAX:   Inc(Wares[aWare].Produced, aCount);
   else
-    raise Exception.Create('Cant''t add produced ware ' + gRes.Wares[aRes].Title);
+    raise Exception.Create('Cant''t add produced ware ' + gRes.Wares[aWare].Title);
   end;
 end;
 
 
-procedure TKMHandStats.WareConsumed(aRes: TKMWareType; aCount: Cardinal = 1);
+procedure TKMHandStats.WareConsumed(aWare: TKMWareType; aCount: Cardinal = 1);
 begin
-  if aRes <> wtNone then
-    Inc(Wares[aRes].Consumed, aCount);
+  if aWare <> wtNone then
+    Inc(Wares[aWare].Consumed, aCount);
 end;
 
 

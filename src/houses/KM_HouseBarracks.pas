@@ -33,20 +33,20 @@ type
     procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); override;
     procedure ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
     function CheckResIn(aWare: TKMWareType): Word; override;
-    function ResCanAddToIn(aRes: TKMWareType): Boolean; override;
+    function ResCanAddToIn(aWare: TKMWareType): Boolean; override;
 
     function ShouldAbandonDeliveryTo(aWareType: TKMWareType): Boolean; override;
     function ShouldAbandonDeliveryFrom(aWareType: TKMWareType; aImmidiateCheck: Boolean = False): Boolean; override;
     function ShouldAbandonDeliveryFromTo(aToHouse: TKMHouse; aWareType: TKMWareType; aImmidiateCheck: Boolean): Boolean; override;
 
     function GetTotalWaresCnt: Integer;
-    function ResOutputAvailable(aRes: TKMWareType; const aCount: Word): Boolean; override;
+    function ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; override;
     function CanEquip(aUnitType: TKMUnitType): Boolean;
     function RecruitsCount: Integer;
     procedure RecruitsAdd(aUnit: Pointer);
     procedure RecruitsRemove(aUnit: Pointer);
-    procedure ToggleNotAcceptFlag(aRes: TKMWareType);
-    procedure ToggleNotAllowTakeOutFlag(aRes: TKMWareType);
+    procedure ToggleNotAcceptFlag(aWare: TKMWareType);
+    procedure ToggleNotAllowTakeOutFlag(aWare: TKMWareType);
     procedure ToggleAcceptRecruits;
     function EquipWarrior(aUnitType: TKMUnitType): Pointer;
     function Equip(aUnitType: TKMUnitType; aCount: Integer): Integer;
@@ -199,9 +199,9 @@ begin
 end;
 
 
-function TKMHouseBarracks.ResCanAddToIn(aRes: TKMWareType): Boolean;
+function TKMHouseBarracks.ResCanAddToIn(aWare: TKMWareType): Boolean;
 begin
-  Result := (aRes in [WARFARE_MIN..WARFARE_MAX]);
+  Result := (aWare in [WARFARE_MIN..WARFARE_MAX]);
 end;
 
 
@@ -230,10 +230,10 @@ begin
 end;
 
 
-function TKMHouseBarracks.ResOutputAvailable(aRes: TKMWareType; const aCount: Word): Boolean;
+function TKMHouseBarracks.ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean;
 begin
-  Assert(aRes in [WARFARE_MIN .. WARFARE_MAX]);
-  Result := (fResourceCount[aRes] >= aCount);
+  Assert(aWare in [WARFARE_MIN .. WARFARE_MAX]);
+  Result := (fResourceCount[aWare] >= aCount);
 end;
 
 
@@ -247,19 +247,19 @@ begin
 end;
 
 
-procedure TKMHouseBarracks.ToggleNotAcceptFlag(aRes: TKMWareType);
+procedure TKMHouseBarracks.ToggleNotAcceptFlag(aWare: TKMWareType);
 begin
-  Assert(aRes in [WARFARE_MIN .. WARFARE_MAX]);
+  Assert(aWare in [WARFARE_MIN .. WARFARE_MAX]);
 
-  NotAcceptFlag[aRes] := not NotAcceptFlag[aRes];
+  NotAcceptFlag[aWare] := not NotAcceptFlag[aWare];
 end;
 
 
-procedure TKMHouseBarracks.ToggleNotAllowTakeOutFlag(aRes: TKMWareType);
+procedure TKMHouseBarracks.ToggleNotAllowTakeOutFlag(aWare: TKMWareType);
 begin
-  Assert(aRes in [WARFARE_MIN .. WARFARE_MAX]);
+  Assert(aWare in [WARFARE_MIN .. WARFARE_MAX]);
 
-  NotAllowTakeOutFlag[aRes] := not NotAllowTakeOutFlag[aRes];
+  NotAllowTakeOutFlag[aWare] := not NotAllowTakeOutFlag[aWare];
 end;
 
 

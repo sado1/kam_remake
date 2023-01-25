@@ -58,7 +58,7 @@ type
     procedure ResTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
     procedure ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); override;
     function CheckResIn(aWare: TKMWareType): Word; override;
-    function ResCanAddToIn(aRes: TKMWareType): Boolean; override;
+    function ResCanAddToIn(aWare: TKMWareType): Boolean; override;
     function CanHaveWareType(aWare: TKMWareType): Boolean; override;
   end;
 
@@ -389,9 +389,9 @@ begin
 end;
 
 
-function TKMHouseTownHall.ResCanAddToIn(aRes: TKMWareType): Boolean;
+function TKMHouseTownHall.ResCanAddToIn(aWare: TKMWareType): Boolean;
 begin
-  Result := (aRes = wtGold) and (fGoldCnt < fGoldMaxCnt);
+  Result := (aWare = wtGold) and (fGoldCnt < fGoldMaxCnt);
 end;
 
 

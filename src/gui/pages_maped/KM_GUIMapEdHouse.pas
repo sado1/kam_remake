@@ -725,14 +725,14 @@ end;
 
 procedure TKMMapEdHouse.BarracksChange(Sender: TObject; Shift: TShiftState);
 var
-  res: TKMWareType;
+  ware: TKMWareType;
   barracks: TKMHouseBarracks;
   newCount: Word;
 begin
   barracks := TKMHouseBarracks(fHouse);
   if fBarracksItem = -1 then
   begin
-    //Recruits
+    // Recruits
     if (Sender = Button_BarracksDec100) or (Sender = Button_BarracksDec) then
       barracks.MapEdRecruitCount := Math.Max(0, barracks.MapEdRecruitCount - GetMultiplicator(Shift) * TKMButton(Sender).Tag);
 
@@ -740,50 +740,50 @@ begin
       barracks.MapEdRecruitCount := Math.Min(High(Word), barracks.MapEdRecruitCount + GetMultiplicator(Shift) * TKMButton(Sender).Tag);
 
     Label_Barracks_WareCount.Caption := IntToStr(barracks.MapEdRecruitCount);
-  end
-  else
+  end else
   begin
-    //Wares
-    res := BarracksResType[fBarracksItem];
+    // Wares
+    ware := BarracksResType[fBarracksItem];
 
     if (Sender = Button_BarracksDec100) or (Sender = Button_BarracksDec) then
     begin
-      newCount := Math.Min(barracks.CheckResIn(res), GetMultiplicator(Shift) * TKMButton(Sender).Tag);
-      barracks.ResTakeFromOut(res, newCount);
+      newCount := Math.Min(barracks.CheckResIn(ware), GetMultiplicator(Shift) * TKMButton(Sender).Tag);
+      barracks.ResTakeFromOut(ware, newCount);
     end;
 
     if (Sender = Button_BarracksInc100) or (Sender = Button_BarracksInc) then
     begin
-      newCount := Math.Min(High(Word) - barracks.CheckResIn(res), GetMultiplicator(Shift) * TKMButton(Sender).Tag);
-      barracks.ResAddToIn(res, newCount);
+      newCount := Math.Min(High(Word) - barracks.CheckResIn(ware), GetMultiplicator(Shift) * TKMButton(Sender).Tag);
+      barracks.ResAddToIn(ware, newCount);
     end;
 
-    Label_Barracks_WareCount.Caption := IntToStr(barracks.CheckResIn(res));
+    Label_Barracks_WareCount.Caption := IntToStr(barracks.CheckResIn(ware));
   end;
+
   BarracksRefresh;
 end;
 
 
 procedure TKMMapEdHouse.StoreChange(Sender: TObject; Shift: TShiftState);
 var
-  res: TKMWareType;
+  ware: TKMWareType;
   store: TKMHouseStore;
   newCount: Word;
 begin
   store := TKMHouseStore(fHouse);
-  res := StoreResType[fStorehouseItem];
+  ware := StoreResType[fStorehouseItem];
 
   //We need to take no more than it is there, thats part of bugtracking idea
   if (Sender = Button_StoreDec100) or (Sender = Button_StoreDec) then begin
-    newCount := Math.Min(store.CheckResIn(res), GetMultiplicator(Shift) * TKMButton(Sender).Tag);
-    store.ResTakeFromOut(res, newCount);
+    newCount := Math.Min(store.CheckResIn(ware), GetMultiplicator(Shift) * TKMButton(Sender).Tag);
+    store.ResTakeFromOut(ware, newCount);
   end;
 
   //We can always add any amount of resource, it will be capped by Store
   if (Sender = Button_StoreInc100) or (Sender = Button_StoreInc) then
-    store.ResAddToIn(res, GetMultiplicator(Shift) * TKMButton(Sender).Tag);
+    store.ResAddToIn(ware, GetMultiplicator(Shift) * TKMButton(Sender).Tag);
 
-  Label_Store_WareCount.Caption := inttostr(store.CheckResIn(res));
+  Label_Store_WareCount.Caption := inttostr(store.CheckResIn(ware));
   StoreRefresh;
 end;
 
