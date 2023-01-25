@@ -161,7 +161,7 @@ type
     constructor Create(const aDir, aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind = mkUnknown; aSilent: Boolean = False); overload;
     destructor Destroy; override;
 
-    procedure AddGoal(aType: TKMGoalType; aPlayer: TKMHandID; aCondition: TKMGoalCondition; aStatus: TKMGoalStatus; aPlayerIndex: TKMHandID);
+    procedure AddGoal(aGoalType: TKMGoalType; aPlayer: TKMHandID; aCondition: TKMGoalCondition; aStatus: TKMGoalStatus; aPlayerIndex: TKMHandID);
     procedure LoadExtra(aAddDefailtGoals: Boolean = False);
 
     property TxtInfo: TKMMapTxtInfo read GetTxtInfo;
@@ -473,7 +473,7 @@ begin
 end;
 
 
-procedure TKMMapInfo.AddGoal(aType: TKMGoalType; aPlayer: TKMHandID; aCondition: TKMGoalCondition; aStatus: TKMGoalStatus; aPlayerIndex: TKMHandID);
+procedure TKMMapInfo.AddGoal(aGoalType: TKMGoalType; aPlayer: TKMHandID; aCondition: TKMGoalCondition; aStatus: TKMGoalStatus; aPlayerIndex: TKMHandID);
 var
   G: TKMMapGoalInfo;
 begin
@@ -481,7 +481,7 @@ begin
   G.Play := aPlayerIndex;
   G.Stat := aStatus;
 
-  case aType of
+  case aGoalType of
     gltVictory: begin
                   SetLength(GoalsVictory[aPlayer], GoalsVictoryCount[aPlayer] + 1);
                   GoalsVictory[aPlayer, GoalsVictoryCount[aPlayer]] := G;
@@ -492,7 +492,6 @@ begin
                   GoalsSurvive[aPlayer, GoalsSurviveCount[aPlayer]] := G;
                   Inc(GoalsSurviveCount[aPlayer]);
                 end;
-    else        ;
   end;
 end;
 

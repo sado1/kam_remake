@@ -32,7 +32,7 @@ type
     function GetHouseByUID(aUID: Integer): TKMHouse;
     procedure GetHousesInRect(const aRect: TKMRect; aList: TList<TKMHouse>);
     function FindEmptyHouse(aUnitType: TKMUnitType; const aLoc: TKMPoint): TKMHouse;
-    function FindHouse(aType: TKMHouseType; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse; overload;
+    function FindHouse(aHouseType: TKMHouseType; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse; overload;
     function FindHouse(const aTypes: TKMHouseTypeSet; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse; overload;
     function FindHousesInRadius(aLoc: TKMPoint; aSqrRadius: Single; aTypes: TKMHouseTypeSet; aOnlyCompleted: Boolean = True): TKMHouseArray;
     function GetTotalPointers: Cardinal;
@@ -279,14 +279,14 @@ begin
 end;
 
 
-function TKMHousesCollection.FindHouse(aType: TKMHouseType; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse;
+function TKMHousesCollection.FindHouse(aHouseType: TKMHouseType; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse;
 var
   HT: TKMHouseTypeSet;
 begin
-  if aType = htAny then
+  if aHouseType = htAny then
     HT := [Low(TKMHouseType)..High(TKMHouseType)]
   else
-    HT := [aType];
+    HT := [aHouseType];
   Result := FindHouse(HT, X, Y, aIndex, aOnlyCompleted);
 end;
 

@@ -189,7 +189,7 @@ procedure TKMHouseBarracks.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; a
 var
   oldCnt: Integer;
 begin
-  Assert(aWare in [WARFARE_MIN..WARFARE_MAX], 'Invalid resource added to barracks');
+  Assert(aWare in [WARFARE_MIN..WARFARE_MAX], 'Invalid ware added to barracks');
 
   oldCnt := fResourceCount[aWare];
   SetWareCnt(aWare, EnsureRange(fResourceCount[aWare] + aCount, 0, High(Word)));

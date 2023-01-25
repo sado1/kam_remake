@@ -237,7 +237,7 @@ end;
 function TKMHouseTownHall.GetWareIn(aI: Byte): Word;
 begin
   Result := 0;
-  if aI = 1 then //Resources are 1 based
+  if aI = 1 then // Wares are 1 based
     Result := fGoldCnt;
 end;
 
@@ -261,7 +261,7 @@ procedure TKMHouseTownHall.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; a
 var
   ordersRemoved, plannedToRemove: Integer;
 begin
-  Assert(aWare = wtGold, 'Invalid resource added to TownHall');
+  Assert(aWare = wtGold, 'Invalid ware added to TownHall');
 
   // Allow to enlarge GoldMaxCnt from script (either from .dat or from .script)
   if aFromScript and (fGoldMaxCnt < fGoldCnt + aCount) then
@@ -339,7 +339,8 @@ end;
 
 procedure TKMHouseTownHall.ResTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
 begin
-  Assert(aWare = wtGold, 'Invalid resource taken from TownHall');
+  Assert(aWare = wtGold, 'Invalid ware taken from TownHall');
+
   aCount := EnsureRange(aCount, 0, fGoldCnt);
   if aFromScript then
   begin
@@ -354,7 +355,8 @@ end;
 
 procedure TKMHouseTownHall.ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
 begin
-  Assert(aWare = wtGold, 'Invalid resource taken from TownHall');
+  Assert(aWare = wtGold, 'Invalid ware taken from TownHall');
+
   if aFromScript then
   begin
     aCount := EnsureRange(aCount, 0, fGoldCnt);
