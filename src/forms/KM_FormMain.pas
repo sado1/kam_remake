@@ -418,9 +418,8 @@ uses
   KromUtils,
   KromShellUtils,
   KM_Main,
-  //Use these units directly to avoid pass-through methods in fMain
-  KM_Resource, KM_ResHouses,
-
+  // Use these units directly to avoid pass-through methods in fMain
+  KM_Resource,
   KM_ResTexts,
   KM_GameApp, KM_GameParams,
   KM_HandsCollection,
@@ -964,7 +963,7 @@ end;
 
 procedure TFormMain.mnExportHousesDatClick(Sender: TObject);
 begin
-  gResHouses.ExportCSV(ExeDir + 'Export' + PathDelim + 'houses.dat.csv')
+  gRes.Houses.ExportCSV(ExeDir + 'Export' + PathDelim + 'houses.dat.csv')
 end;
 
 

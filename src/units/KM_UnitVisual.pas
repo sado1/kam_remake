@@ -104,8 +104,8 @@ begin
     and (fPrev.InHouseType <> htNone) then
   begin
     // Just add doorway offset to the fPrev.Slide then
-    prevSlideX := prevSlideX + gResHouses[fPrev.InHouseType].GetDoorwayOffset(axX);
-    prevSlideY := prevSlideY + gResHouses[fPrev.InHouseType].GetDoorwayOffset(axY);
+    prevSlideX := prevSlideX + gRes.Houses[fPrev.InHouseType].GetDoorwayOffset(axX);
+    prevSlideY := prevSlideY + gRes.Houses[fPrev.InHouseType].GetDoorwayOffset(axY);
   end;
 
   Result.PositionF := KMLerp(fCurr.PositionF, fPrev.PositionF, aLag);

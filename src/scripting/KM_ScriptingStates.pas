@@ -3361,7 +3361,7 @@ begin
   try
     Result := 0;
     if HouseTypeValid(aHouseType) then
-      Result := gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].MaxHealth
+      Result := gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].MaxHealth
     else
       LogIntParamWarn('States.HouseTypeMaxHealth', [aHouseType]);
   except
@@ -3379,7 +3379,7 @@ begin
   try
     Result := 0;
     if aHouseType in HOUSES_VALID then
-      Result := gResHouses[aHouseType].MaxHealth
+      Result := gRes.Houses[aHouseType].MaxHealth
     else
       LogParamWarn('States.HouseTypeMaxHealthEx', [GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
   except
@@ -3399,7 +3399,7 @@ function TKMScriptStates.HouseTypeName(aHouseType: Byte): AnsiString;
 begin
   try
     if HouseTypeValid(aHouseType) then
-      Result := '<%' + AnsiString(IntToStr(gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].HouseNameTextID)) + '>'
+      Result := '<%' + AnsiString(IntToStr(gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].HouseNameTextID)) + '>'
     else
     begin
       Result := '';
@@ -3422,7 +3422,7 @@ function TKMScriptStates.HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString;
 begin
   try
     if aHouseType in HOUSES_VALID then
-      Result := '<%' + AnsiString(IntToStr(gResHouses[aHouseType].HouseNameTextID)) + '>'
+      Result := '<%' + AnsiString(IntToStr(gRes.Houses[aHouseType].HouseNameTextID)) + '>'
     else
     begin
       Result := '';
@@ -3446,7 +3446,7 @@ begin
     Result := -1;
     if HouseTypeValid(aHouseType) then
     begin
-      Result := UNIT_TYPE_TO_ID[gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].WorkerType];
+      Result := UNIT_TYPE_TO_ID[gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].WorkerType];
     end
     else
       LogIntParamWarn('States.HouseTypeToOccupantType', [aHouseType]);
@@ -3465,7 +3465,7 @@ begin
   Result := utNone;
   try
     if aHouseType in HOUSES_VALID then
-      Result := gResHouses[aHouseType].WorkerType
+      Result := gRes.Houses[aHouseType].WorkerType
     else
       LogParamWarn('States.HouseTypeToWorkerType', [GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
   except
@@ -3593,7 +3593,7 @@ begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) then
         for I := 1 to 4 do
-          if gResHouses[H.HouseType].ResOutput[I] = res then
+          if gRes.Houses[H.HouseType].ResOutput[I] = res then
           begin
             Result := H.ResOrder[I];
             Exit;
@@ -3623,7 +3623,7 @@ begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) then
         for I := 1 to 4 do
-          if gResHouses[H.HouseType].ResOutput[I] = aWareType then
+          if gRes.Houses[H.HouseType].ResOutput[I] = aWareType then
           begin
             Result := H.ResOrder[I];
             Exit;

@@ -2,7 +2,6 @@ unit KM_AIMayorBalance;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_ResHouses,
   KM_CommonClasses, KM_Defaults,
   KM_ResTypes;
 
@@ -203,9 +202,9 @@ begin
   //ArmorWorkshop is needed to produce Shields before Tannery is made
   //Handle in generic way since in custom missions it might apply to other houses
   if not gHands[fOwner].Locks.HouseCanBuild(aHouse)
-  and (gResHouses[aHouse].ReleasedBy <> htNone) //Storehouse might be blocked
-  and (gHands[fOwner].Stats.GetHouseTotal(gResHouses[aHouse].ReleasedBy) = 0) then
-    Append(gResHouses[aHouse].ReleasedBy);
+  and (gRes.Houses[aHouse].ReleasedBy <> htNone) //Storehouse might be blocked
+  and (gHands[fOwner].Stats.GetHouseTotal(gRes.Houses[aHouse].ReleasedBy) = 0) then
+    Append(gRes.Houses[aHouse].ReleasedBy);
 
   //If the same house is asked for independently then don't add it again, since f.e. gold and iron
   //might both ask for a coal mine, when only 1 extra is needed.
@@ -994,7 +993,7 @@ begin
   finally
     fAdviceText := 'Advice: ';
     for I := 0 to High(fAdvice) do
-      fAdviceText := fAdviceText + gResHouses[fAdvice[I]].HouseName + IfThen(I < High(fAdvice), ', ', '.');
+      fAdviceText := fAdviceText + gRes.Houses[fAdvice[I]].HouseName + IfThen(I < High(fAdvice), ', ', '.');
   end;
 end;
 

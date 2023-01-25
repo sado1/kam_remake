@@ -1707,7 +1707,7 @@ var
         + #9#9 + 'FlatAr'
         + #9#9 + 'AllInf'
         + #9#9 + 'EnmInf'
-        + #9#9 + 'FreeEntr',[gResHouses[aHT].HouseName, Sum, Peak, SumFF, PeakFF]);
+        + #9#9 + 'FreeEntr',[gRes.Houses[aHT].HouseName, Sum, Peak, SumFF, PeakFF]);
     Coef := 1;
     if (BestGainArr[0] <> 0) then
       Coef := (100 / BestGainArr[0]);

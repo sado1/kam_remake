@@ -1707,9 +1707,9 @@ begin
         P := gTerrain.EnsureTileInMapCoords(hand.CenterScreen + TKMPoint.New(KaMRandomWSeedI2(fRunSeed, 30), KaMRandomWSeedI2(fRunSeed, 30)));
         ht := TKMHouseType(KaMRandomWSeed(fRunSeed, Ord(HOUSE_MAX) - Ord(HOUSE_MIN) + 1) + 2);
         if (ht <> htSiegeWorkshop)
-          and gResHouses.IsValid(ht)
-          {and gResHouses[ht].HouseEnabled
-          and gResHouses[ht].Buildable} then
+          and gRes.Houses.IsValid(ht)
+          {and gRes.Houses[ht].HouseEnabled
+          and gRes.Houses[ht].Buildable} then
           gGameApp.Game.GameInputProcess.CmdBuild(gicBuildHousePlan, P, ht);
       end;
     end;
@@ -1731,7 +1731,7 @@ begin
       //gicHouseOrderProduct, gicHouseSchoolTrainChOrder
       if KaMRandomWSeed(fRunSeed, FREQ) = 0 then
         if house.IsComplete then
-          if gResHouses[house.HouseType].DoesOrders then
+          if gRes.Houses[house.HouseType].DoesOrders then
             gGameApp.Game.GameInputProcess.CmdHouse(gicHouseOrderProduct, house, KaMRandomWSeed(fRunSeed, 4), KaMRandomWSeed(fRunSeed, 9));
 
       //gicHouseRemoveTrain gicHouseSchoolTrainChOrder gicHouseRemoveTrain gicHouseSchoolTrain gicHouseSchoolTrainChLastUOrder
@@ -1747,10 +1747,10 @@ begin
 
 
 //      if KaMRandomWSeed(fRunSeed, FREQ) = 0 then
-//        if gResHouses[house.HouseType].IsSpacious then
-//          if (gResHouses[house.HouseType].WareInCount > 0) then
+//        if gRes.Houses[house.HouseType].IsSpacious then
+//          if (gRes.Houses[house.HouseType].WareInCount > 0) then
 //            gGameApp.Game.GameInputProcess.CmdHouseWareBlock(
-//              house, gResHouses[house.HouseType].WareInType[KaMRandomWSeed(fRunSeed, gResHouses[house.HouseType].WareInCount)]);
+//              house, gRes.Houses[house.HouseType].WareInType[KaMRandomWSeed(fRunSeed, gRes.Houses[house.HouseType].WareInCount)]);
 //
 //    //procedure CmdHouseMarketFrom(aHouse: TKMHouse; aItem: TKMWareType);
 //    //procedure CmdHouseMarketTo(aHouse: TKMHouse; aItem: TKMWareType);
@@ -1761,13 +1761,13 @@ begin
 //
 //      if KaMRandomWSeed(fRunSeed, FREQ) = 0 then
 //      if house.IsComplete then
-//        if gResHouses[house.HouseType].TrainCount > 0 then
+//        if gRes.Houses[house.HouseType].TrainCount > 0 then
 //          gGameApp.Game.GameInputProcess.CmdHouseTrainQueueAdd(
-//            house, gResHouses[house.HouseType].Trains[KaMRandomWSeed(fRunSeed, gResHouses[house.HouseType].TrainCount)], KaMRandomWSeed(fRunSeed, 3));
+//            house, gRes.Houses[house.HouseType].Trains[KaMRandomWSeed(fRunSeed, gRes.Houses[house.HouseType].TrainCount)], KaMRandomWSeed(fRunSeed, 3));
 //
 //      if KaMRandomWSeed(fRunSeed, FREQ) = 0 then
 //      if house.IsComplete then
-//        if gResHouses[house.HouseType].TrainCount > 0 then
+//        if gRes.Houses[house.HouseType].TrainCount > 0 then
 //          gGameApp.Game.GameInputProcess.CmdHouseTrainQueueRemoveIndex(
 //            house, KaMRandomWSeed(fRunSeed, 3), KaMRandomWSeed(fRunSeed, 3));
     end;

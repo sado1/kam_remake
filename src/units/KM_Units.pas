@@ -656,7 +656,7 @@ begin
           TaskGetWork; //Unit is at home, so go get a job
 
         if fTask = nil then //We didn't find any job to do - rest at home
-          SetActionStay(Max(gResHouses[fHome.HouseType].WorkerRest,1)*10, uaWalk); //By default it's 0, don't scan that often
+          SetActionStay(Max(gRes.Houses[fHome.HouseType].WorkerRest,1)*10, uaWalk); //By default it's 0, don't scan that often
       end;
 
   if fAction = nil then
@@ -706,7 +706,7 @@ begin
   res := 1;
   // Check if House has production orders
   // Ask the house what order we should make
-  if gResHouses[fHome.HouseType].DoesOrders then
+  if gRes.Houses[fHome.HouseType].DoesOrders then
   begin
     res := fHome.PickOrder;
     if res = 0 then Exit;
@@ -716,10 +716,10 @@ begin
   // Saves us time on Fishers/Stonecutters/Woodcutters when they calculate routes to nearby deposits
   // Other houses where workers walk out can choose between cut/plant
   if (fHome.HouseType in [htFishermans, htQuarry, htVineyard])
-  and (fHome.CheckResOut(gResHouses[fHome.HouseType].ResOutput[res]) >= MAX_WARES_IN_HOUSE) then
+  and (fHome.CheckResOut(gRes.Houses[fHome.HouseType].ResOutput[res]) >= MAX_WARES_IN_HOUSE) then
     Exit;
 
-  fTask := TKMTaskMining.Create(Self, gResHouses[fHome.HouseType].ResOutput[res]);
+  fTask := TKMTaskMining.Create(Self, gRes.Houses[fHome.HouseType].ResOutput[res]);
   tm := TKMTaskMining(fTask);
 
   if tm.WorkPlan.ResourceDepleted then

@@ -875,7 +875,7 @@ var
   SimpleAlpha, SimpleShadows: Boolean;
   I, Step, SubStep: Integer;
 begin
-  A := fResHouses.HouseDat[aHT].Anim[aHouseAct];
+  A := fResHouses[aHT].Anim[aHouseAct];
 
   if (A.Count <= 1) or (A.Step[1] = -1) then
   begin
@@ -897,7 +897,7 @@ begin
   ABase.MoveX := 0;
   ABase.MoveY := 0;
   for I := Low(ABase.Step) to High(ABase.Step) do
-    ABase.Step[I] := fResHouses.HouseDat[aHT].StonePic;
+    ABase.Step[I] := fResHouses[aHT].StonePic;
 
   UseBase := aHouseAct in [haIdle, haWork1..haWork5];
   SimpleAlpha := aHouseAct in [haSmoke, haFire1..haFire8];
@@ -936,7 +936,7 @@ begin
   ABase.MoveX := 0;
   ABase.MoveY := 0;
   for I := Low(ABase.Step) to High(ABase.Step) do
-    ABase.Step[I] := fResHouses.HouseDat[HOUSE_LOOKUP[beastHouse]].StonePic;
+    ABase.Step[I] := fResHouses[HOUSE_LOOKUP[beastHouse]].StonePic;
 
   if (A.Count <= 1) or (A.Step[1] = -1) then
   begin

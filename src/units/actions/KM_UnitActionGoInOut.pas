@@ -328,7 +328,7 @@ begin
     Result := 0
   else
   begin
-    offset := gResHouses[fHouse.HouseType].GetDoorwayOffset(aCheck);
+    offset := gRes.Houses[fHouse.HouseType].GetDoorwayOffset(aCheck);
 
     Result := Mix(0, offset, fStep);
   end;
@@ -341,8 +341,8 @@ begin
     Result := KMPointF(0, 0)
   else
   begin
-    Result.X := Mix(0, gResHouses[fHouse.HouseType].GetDoorwayOffset(axX), fStep);
-    Result.Y := Mix(0, gResHouses[fHouse.HouseType].GetDoorwayOffset(axY), fStep);
+    Result.X := Mix(0, gRes.Houses[fHouse.HouseType].GetDoorwayOffset(axX), fStep);
+    Result.Y := Mix(0, gRes.Houses[fHouse.HouseType].GetDoorwayOffset(axY), fStep);
   end;
 end;
 

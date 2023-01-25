@@ -813,8 +813,8 @@ end;
 
 procedure TKMScriptEvents.EventHousePlanPlaced(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
 begin
-  ProcHousePlanPlaced(aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1);
-  ProcHousePlanPlacedEx(aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, aType);
+  ProcHousePlanPlaced(aPlayer, aX + gRes.Houses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1);
+  ProcHousePlanPlacedEx(aPlayer, aX + gRes.Houses[aType].EntranceOffsetX, aY, aType);
 end;
 
 
@@ -840,8 +840,8 @@ end;
 
 procedure TKMScriptEvents.EventHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
 begin
-  ProcHousePlanRemoved(aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1);
-  ProcHousePlanRemovedEx(aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, aType);
+  ProcHousePlanRemoved(aPlayer, aX + gRes.Houses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1);
+  ProcHousePlanRemovedEx(aPlayer, aX + gRes.Houses[aType].EntranceOffsetX, aY, aType);
 end;
 
 

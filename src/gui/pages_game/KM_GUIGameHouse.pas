@@ -591,7 +591,7 @@ begin
   end;
 
   {Common data}
-  Label_House.Caption        := gResHouses[aHouse.HouseType].HouseName;
+  Label_House.Caption        := gRes.Houses[aHouse.HouseType].HouseName;
   //Calc House caption position
   hLabelWidth := gRes.Fonts[fntOutline].GetTextSize(Label_House.Caption).X;
   if hLabelWidth <= TB_WIDTH - 2*Image_PlayerFlag.Width then
@@ -605,18 +605,18 @@ begin
 
   Image_PlayerFlag.FlagColor := gHands[aHouse.Owner].FlagColor;
   Image_PlayerFlag.Hint      := Format(gResTexts[TX_PLAYER_FLAG_HINT], [gHands[aHouse.Owner].OwnerName]);
-  Image_House_Logo.TexID     := gResHouses[aHouse.HouseType].GUIIcon;
-  Image_House_Worker.TexID   := gRes.Units[gResHouses[aHouse.HouseType].WorkerType].GUIIcon;
-  Image_House_Worker.Hint    := gRes.Units[gResHouses[aHouse.HouseType].WorkerType].GUIName;
+  Image_House_Logo.TexID     := gRes.Houses[aHouse.HouseType].GUIIcon;
+  Image_House_Worker.TexID   := gRes.Units[gRes.Houses[aHouse.HouseType].WorkerType].GUIIcon;
+  Image_House_Worker.Hint    := gRes.Units[gRes.Houses[aHouse.HouseType].WorkerType].GUIName;
   Image_House_Worker.FlagColor := gHands[aHouse.Owner].FlagColor;
 
-  Button_House_Worker.TexID  := gRes.Units[gResHouses[aHouse.HouseType].WorkerType].GUIIcon;
+  Button_House_Worker.TexID  := gRes.Units[gRes.Houses[aHouse.HouseType].WorkerType].GUIIcon;
   HandleHouseClosedForWorker(aHouse);
   Button_House_Worker.Hint := Format(gResTexts[TX_HOUSES_CLOSED_FOR_WORKER_HINT], [gRes.Units[gRes.Houses[aHouse.HouseType].WorkerType].GUIName]);
   Button_House_Worker.FlagColor := gHands[aHouse.Owner].FlagColor;
 
-  HealthBar_House.Caption   := IntToStr(round(aHouse.GetHealth)) + '/' + IntToStr(gResHouses[aHouse.HouseType].MaxHealth);
-  HealthBar_House.Position  := aHouse.GetHealth / gResHouses[aHouse.HouseType].MaxHealth;
+  HealthBar_House.Caption   := IntToStr(round(aHouse.GetHealth)) + '/' + IntToStr(gRes.Houses[aHouse.HouseType].MaxHealth);
+  HealthBar_House.Position  := aHouse.GetHealth / gRes.Houses[aHouse.HouseType].MaxHealth;
 
   if AskDemolish then
   begin
@@ -644,12 +644,12 @@ begin
     Image_HouseConstructionStone.Show;
     Label_HouseConstructionWood.Show;
     Label_HouseConstructionStone.Show;
-    Label_HouseConstructionWood.Caption := IntToStr(aHouse.GetBuildWoodDelivered) + ' / ' + IntToStr(gResHouses[aHouse.HouseType].WoodCost);
-    Label_HouseConstructionStone.Caption := IntToStr(aHouse.GetBuildStoneDelivered) + ' / ' + IntToStr(gResHouses[aHouse.HouseType].StoneCost);
+    Label_HouseConstructionWood.Caption := IntToStr(aHouse.GetBuildWoodDelivered) + ' / ' + IntToStr(gRes.Houses[aHouse.HouseType].WoodCost);
+    Label_HouseConstructionStone.Caption := IntToStr(aHouse.GetBuildStoneDelivered) + ' / ' + IntToStr(gRes.Houses[aHouse.HouseType].StoneCost);
     Label_House.Show;
     Image_PlayerFlag.Show;
     Image_House_Logo.Show;
-    Image_House_Worker.Visible := gResHouses[aHouse.HouseType].CanHasWorker;
+    Image_House_Worker.Visible := gRes.Houses[aHouse.HouseType].CanHasWorker;
     Button_House_Worker.Hide;
     HealthBar_House.Show;
     Panel_House.Show;
@@ -657,7 +657,7 @@ begin
   end;
 
   Image_House_Worker.Hide;
-  Button_House_Worker.Visible := gResHouses[aHouse.HouseType].CanHasWorker;
+  Button_House_Worker.Visible := gRes.Houses[aHouse.HouseType].CanHasWorker;
 
   Button_HouseDeliveryMode.Enabled := aHouse.AllowDeliveryModeChange;
   Button_HouseDeliveryMode.Show;
@@ -712,13 +712,13 @@ begin
                           Panel_House_Common.Childs[I].Hide;
 
                         Label_Common_Offer.Show;
-                        Label_Common_Offer.Caption := gResTexts[TX_HOUSE_DELIVERS]+'(x'+inttostr(gResHouses[aHouse.HouseType].ResProductionX)+'):';
+                        Label_Common_Offer.Caption := gResTexts[TX_HOUSE_DELIVERS]+'(x'+inttostr(gRes.Houses[aHouse.HouseType].ResProductionX)+'):';
                         Label_Common_Offer.Top := 8;
 
-                        WaresRow_Common[1].TexID := gRes.Wares[gResHouses[aHouse.HouseType].ResOutput[1]].GUIIcon;
-                        WaresRow_Common[1].WareCount := aHouse.CheckResOut(gResHouses[aHouse.HouseType].ResOutput[1]);
-                        WaresRow_Common[1].Caption := gRes.Wares[gResHouses[aHouse.HouseType].ResOutput[1]].Title;
-                        WaresRow_Common[1].Hint := gRes.Wares[gResHouses[aHouse.HouseType].ResOutput[1]].Title;
+                        WaresRow_Common[1].TexID := gRes.Wares[gRes.Houses[aHouse.HouseType].ResOutput[1]].GUIIcon;
+                        WaresRow_Common[1].WareCount := aHouse.CheckResOut(gRes.Houses[aHouse.HouseType].ResOutput[1]);
+                        WaresRow_Common[1].Caption := gRes.Wares[gRes.Houses[aHouse.HouseType].ResOutput[1]].Title;
+                        WaresRow_Common[1].Hint := gRes.Wares[gRes.Houses[aHouse.HouseType].ResOutput[1]].Title;
                         WaresRow_Common[1].Show;
                         WaresRow_Common[1].Top := 2 + LINE_HEIGHT;
 
@@ -758,7 +758,7 @@ var
   I: Integer;
   hSpec: TKMHouseSpec;
 begin
-  hSpec := gResHouses[aHouse.HouseType];
+  hSpec := gRes.Houses[aHouse.HouseType];
 
   //Show Demand
   if hSpec.AcceptsWares then
@@ -788,7 +788,7 @@ var
   I: Integer;
   hSpec: TKMHouseSpec;
 begin
-  hSpec := gResHouses[aHouse.HouseType];
+  hSpec := gRes.Houses[aHouse.HouseType];
 
   //Show Output
   if not hSpec.DoesOrders then
@@ -826,15 +826,15 @@ var
   W: TKMWareType;
 begin
   //Show Orders
-  if gResHouses[aHouse.HouseType].DoesOrders then
+  if gRes.Houses[aHouse.HouseType].DoesOrders then
   begin
     Label_Common_Offer.Show;
-    Label_Common_Offer.Caption := gResTexts[TX_HOUSE_DELIVERS] + '(x' + IntToStr(gResHouses[aHouse.HouseType].ResProductionX) + '):';
+    Label_Common_Offer.Caption := gResTexts[TX_HOUSE_DELIVERS] + '(x' + IntToStr(gRes.Houses[aHouse.HouseType].ResProductionX) + '):';
     Label_Common_Offer.Top:=Base + Line * LINE_HEIGHT + 6;
     Inc(Line);
     for I := 1 to 4 do //Orders
     begin
-      W := gResHouses[aHouse.HouseType].ResOutput[I];
+      W := gRes.Houses[aHouse.HouseType].ResOutput[I];
       if gRes.Wares[W].IsValid then
       begin
         WareOrderRow_Order[I].WareRow.TexID := gRes.Wares[W].GUIIcon;
@@ -852,7 +852,7 @@ begin
     Inc(Line);
     for I := 1 to 4 do //Costs
     begin
-      W := gResHouses[aHouse.HouseType].ResOutput[I];
+      W := gRes.Houses[aHouse.HouseType].ResOutput[I];
       if gRes.Wares[W].IsValid then
       begin
         CostsRow_Costs[I].Caption := gRes.Wares[W].Title;
@@ -930,7 +930,7 @@ var
   I, rowRes, base, line: Integer;
   hSpec: TKMHouseSpec;
 begin
-  hSpec := gResHouses[aHouse.HouseType];
+  hSpec := gRes.Houses[aHouse.HouseType];
 
   House_ArmorWSDeliveryToggle(nil);
   Panel_HouseArmorWorkshop.Show;
@@ -950,7 +950,7 @@ begin
   Inc(line);
 
   for I := 1 to 2 do
-    if gRes.Wares[gResHouses[aHouse.HouseType].ResInput[I]].IsValid then
+    if gRes.Wares[gRes.Houses[aHouse.HouseType].ResInput[I]].IsValid then
     begin
       WaresRow_ArmorWS_Common[rowRes].TexID     := gRes.Wares[hSpec.ResInput[I]].GUIIcon;
       WaresRow_ArmorWS_Common[rowRes].Caption   := gRes.Wares[hSpec.ResInput[I]].Title;
@@ -1473,9 +1473,9 @@ begin
   for I := 1 to 2 do
   begin
     if Sender = WaresRow_ArmorWS_Common[I] then
-      gGame.GameInputProcess.CmdHouse(gicHouseArmorWSDeliveryToggle, armorWS, gResHouses[htArmorWorkshop].ResInput[I]);
+      gGame.GameInputProcess.CmdHouse(gicHouseArmorWSDeliveryToggle, armorWS, gRes.Houses[htArmorWorkshop].ResInput[I]);
 
-    Image_ArmorWS_Accept[I].Visible := not armorWS.AcceptWareForDelivery(gResHouses[htArmorWorkshop].ResInput[I]);
+    Image_ArmorWS_Accept[I].Visible := not armorWS.AcceptWareForDelivery(gRes.Houses[htArmorWorkshop].ResInput[I]);
   end;
 end;
 

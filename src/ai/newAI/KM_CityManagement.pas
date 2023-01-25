@@ -305,8 +305,8 @@ var
     aUnitReq[utBuilder] := aUnitReq[utBuilder] * Byte(fPredictor.CityCompleted);
     // Convert planned houses to units
     for HT := HOUSE_MIN to HOUSE_MAX do
-      if gResHouses[HT].CanHasWorker AND (HT <> htBarracks) then
-        Inc(aUnitReq[gResHouses[HT].WorkerType], fBuilder.Planner.PlannedHouses[HT].Count);
+      if gRes.Houses[HT].CanHasWorker AND (HT <> htBarracks) then
+        Inc(aUnitReq[gRes.Houses[HT].WorkerType], fBuilder.Planner.PlannedHouses[HT].Count);
     // Dismiss units
     for UT in DISMISS_UNITS do
     begin
@@ -375,8 +375,8 @@ begin
 
     // Convert houses to required units
     for HT := HOUSE_MIN to HOUSE_MAX do
-      if gResHouses[HT].CanHasWorker AND (HT <> htBarracks) then
-        Inc(UnitTrain[gResHouses[HT].WorkerType], Houses[HT]);
+      if gRes.Houses[HT].CanHasWorker AND (HT <> htBarracks) then
+        Inc(UnitTrain[gRes.Houses[HT].WorkerType], Houses[HT]);
 
     UnitReq[utRecruit] := 0;
     UnitReq[utSerf] := 0;
@@ -1067,7 +1067,7 @@ begin
     MaxWT := wtNone;
     for I := 1 to 4 do
     begin
-      WT := gResHouses[HT].ResOutput[I];
+      WT := gRes.Houses[HT].ResOutput[I];
       if (WT <> wtNone) AND (fRequiredWeapons[WT].Fraction < MostRequired) then
       begin
         MostRequired := fRequiredWeapons[WT].Fraction;
@@ -1090,7 +1090,7 @@ begin
           begin
             for K := 1 to 4 do
             begin
-              WT := gResHouses[HT].ResOutput[K];
+              WT := gRes.Houses[HT].ResOutput[K];
               if (WT = wtLeatherArmor) then
               begin
                 H.ResOrder[K] := 100;

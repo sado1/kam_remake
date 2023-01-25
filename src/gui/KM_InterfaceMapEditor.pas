@@ -1401,7 +1401,7 @@ begin
 
   if newPos then
     gGame.MapEditor.History.MakeCheckpoint(caHouses, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH],
-                                                            [gResHouses[aHouse.HouseType].HouseName, aPos.ToString]));
+                                                            [gRes.Houses[aHouse.HouseType].HouseName, aPos.ToString]));
 end;
 
 

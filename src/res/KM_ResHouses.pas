@@ -4,7 +4,6 @@ interface
 uses
   Classes, Math, SysUtils,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults,
-
   KM_ResTypes;
 
 const
@@ -48,8 +47,8 @@ type
   THouseArea = array [1..4, 1..4] of Byte;
   THouseRes = array [1..4] of TKMWareType; //todo: Rename to TKMHouseWares4
 
-  //This class wraps KaM House info
-  //it hides unused fields and adds new ones
+  // This class wraps KaM House info
+  // it hides unused fields and adds new ones
   TKMHouseSpec = class
   private
     fHouseType: TKMHouseType; //Our class
@@ -122,7 +121,7 @@ type
     fBeastAnim: array [1..2,1..5,1..3] of TKMAnimLoop;
     fMarketBeastAnim: array [1..3] of TKMAnimLoop;
     function LoadHouseDat(const aPath: string): Cardinal;
-    function GetHouseDat(aType: TKMHouseType): TKMHouseSpec; inline;
+    function GetHouse(aType: TKMHouseType): TKMHouseSpec; inline;
     function GetBeastAnim(aType: TKMHouseType; aBeast, aAge:integer): TKMAnimLoop;
   public
     constructor Create;
@@ -130,15 +129,12 @@ type
 
     function IsValid(aType: TKMHouseType): Boolean;
 
-    property HouseDat[aType: TKMHouseType]: TKMHouseSpec read GetHouseDat; default;
+    property Houses[aType: TKMHouseType]: TKMHouseSpec read GetHouse; default;
     property BeastAnim[aType: TKMHouseType; aBeast, aAge: Integer]: TKMAnimLoop read GetBeastAnim;
     property CRC: Cardinal read fCRC; //Return hash of all values
 
     procedure ExportCSV(const aPath: string);
   end;
-
-var
-  gResHouses: TKMResHouses;
 
 
 const
@@ -212,7 +208,8 @@ const
 
 implementation
 uses
-  TypInfo, KromUtils, KM_Outline, KM_Points, KM_PolySimplify, KM_ResTexts, KM_ResUnits;
+  TypInfo, KromUtils,
+  KM_Outline, KM_Points, KM_PolySimplify, KM_ResTexts, KM_ResUnits;
 
 
 type
@@ -854,7 +851,7 @@ begin
 end;
 
 
-function TKMResHouses.GetHouseDat(aType: TKMHouseType): TKMHouseSpec;
+function TKMResHouses.GetHouse(aType: TKMHouseType): TKMHouseSpec;
 begin
   Result := fItems[aType];
 end;
@@ -872,9 +869,9 @@ begin
   Assert(InRange(aBeast, 1, 5));
   Assert(InRange(aAge, 1, 3));
   case aType of
-    htSwine:       Result := fBeastAnim[1, aBeast, aAge];
-    htStables:     Result := fBeastAnim[2, aBeast, aAge];
-    htMarket: Result := fMarketBeastAnim[aBeast];
+    htSwine:    Result := fBeastAnim[1, aBeast, aAge];
+    htStables:  Result := fBeastAnim[2, aBeast, aAge];
+    htMarket:   Result := fMarketBeastAnim[aBeast];
   end;
 end;
 

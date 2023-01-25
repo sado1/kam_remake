@@ -332,7 +332,7 @@ var
   ware: TKMWareType; //todo: Change to wareSpec
   houseSpec: TKMHouseSpec;
 begin
-  houseSpec := gResHouses[fHouse.HouseType];
+  houseSpec := gRes.Houses[fHouse.HouseType];
 
   Label_House_Input.Hide;
   for I := 0 to 3 do
@@ -392,7 +392,7 @@ begin
   fHouse := aHouse;
   if fHouse = nil then Exit;
 
-  houseSpec := gResHouses[fHouse.HouseType];
+  houseSpec := gRes.Houses[fHouse.HouseType];
 
   {Common data}
   Label_House.Caption := houseSpec.HouseName;
@@ -467,7 +467,7 @@ procedure TKMMapEdHouse.House_RefreshCommon;
 var
   houseSpec: TKMHouseSpec;
 begin
-  houseSpec := gResHouses[fHouse.HouseType];
+  houseSpec := gRes.Houses[fHouse.HouseType];
 
   House_UpdateDeliveryMode(fHouse.DeliveryMode);
   Button_HouseDeliveryMode.Enabled := fHouse.AllowDeliveryModeChange;
@@ -479,7 +479,7 @@ begin
   HandleHouseClosedForWorker(fHouse);
   Button_House_Worker.Hint := Format(gResTexts[TX_HOUSES_CLOSED_FOR_WORKER_HINT], [gRes.Units[houseSpec.WorkerType].GUIName]);
   Button_House_Worker.FlagColor := gHands[fHouse.Owner].FlagColor;
-  Button_House_Worker.Visible := gResHouses[fHouse.HouseType].CanHasWorker;
+  Button_House_Worker.Visible := gRes.Houses[fHouse.HouseType].CanHasWorker;
   Image_House_Worker.TexID := gRes.Units[houseSpec.WorkerType].GUIIcon;
   Image_House_Worker.FlagColor := gHands[fHouse.Owner].FlagColor;
   Image_House_Worker.Hint := gRes.Units[houseSpec.WorkerType].GUIName;
@@ -523,7 +523,7 @@ begin
   if Sender = Button_HouseHealthDec then fHouse.AddDamage(GetMultiplicator(Shift), nil, True);
   if Sender = Button_HouseHealthInc then fHouse.AddRepair(GetMultiplicator(Shift));
 
-  houseSpec := gResHouses[fHouse.HouseType];
+  houseSpec := gRes.Houses[fHouse.HouseType];
   HealthBar_House.Caption := IntToStr(Round(fHouse.GetHealth)) + '/' + IntToStr(houseSpec.MaxHealth);
   HealthBar_House.Position := fHouse.GetHealth / houseSpec.MaxHealth;
 end;
@@ -563,7 +563,7 @@ var
 begin
   House_RefreshCommon;
 
-  houseSpec := gResHouses[fHouse.HouseType];
+  houseSpec := gRes.Houses[fHouse.HouseType];
   for I := 0 to 3 do
   begin
     ware := houseSpec.ResInput[I+1];

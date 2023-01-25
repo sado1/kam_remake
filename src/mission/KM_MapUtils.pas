@@ -16,7 +16,8 @@ uses
 implementation
 uses
   SysUtils,
-  KM_ResTexts, KM_ResHouses, KM_ResTypes, KM_CommonUtils;
+  KM_ResTexts, KM_Resource, KM_ResTypes, KM_CommonUtils;
+
 
 function GuessMPPathRel(const aName, aExt: string; aCRC: Cardinal): string;
 var
@@ -102,7 +103,7 @@ begin
           if housesStr <> '' then
             housesStr := housesStr + ', ';
 
-          housesStr := housesStr + gResHouses[GOAL_BUILDINGS_HOUSES[I]].HouseName;
+          housesStr := housesStr + gRes.Houses[GOAL_BUILDINGS_HOUSES[I]].HouseName;
         end;
         goalCondStr := Format(gResTexts[TX_GOAL_CONDITION_COND_DESC_BUILDINGS], [WrapWrappedColor(housesStr, aColBld)]);
       end;

@@ -1160,7 +1160,7 @@ begin
     and HouseTypeValid(aHouseType)
     and gTerrain.TileInMapCoords(X, Y) then
     begin
-      if gTerrain.CanPlaceHouseFromScript(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(X - gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].EntranceOffsetX, Y)) then
+      if gTerrain.CanPlaceHouseFromScript(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(X - gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].EntranceOffsetX, Y)) then
       begin
         H := gHands[aHand].AddHouse(HOUSE_ID_TO_TYPE[aHouseType], X, Y, True);
         if H = nil then Exit;
@@ -1190,7 +1190,7 @@ begin
       and (aHouseType in HOUSES_VALID)
       and gTerrain.TileInMapCoords(X, Y) then
     begin
-      if gTerrain.CanPlaceHouseFromScript(aHouseType, KMPoint(X - gResHouses[aHouseType].EntranceOffsetX, Y)) then
+      if gTerrain.CanPlaceHouseFromScript(aHouseType, KMPoint(X - gRes.Houses[aHouseType].EntranceOffsetX, Y)) then
       begin
         H := gHands[aHand].AddHouse(aHouseType, X, Y, True);
         if H = nil then Exit;
@@ -1223,7 +1223,7 @@ begin
     and HouseTypeValid(aHouseType)
     and gTerrain.TileInMapCoords(X,Y) then
     begin
-      nonEntranceX := X - gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].EntranceOffsetX;
+      nonEntranceX := X - gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].EntranceOffsetX;
       if gTerrain.CanPlaceHouseFromScript(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(nonEntranceX, Y)) then
       begin
         H := gHands[aHand].AddHouseWIP(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(nonEntranceX, Y));
@@ -1231,7 +1231,7 @@ begin
           Exit;
 
         Result := H.UID;
-        HA := gResHouses[H.HouseType].BuildArea;
+        HA := gRes.Houses[H.HouseType].BuildArea;
         for I := 1 to 4 do
         for K := 1 to 4 do
           if HA[I, K] <> 0 then
@@ -1245,13 +1245,13 @@ begin
         H.BuildingState := hbsWood;
         if aAddMaterials then
         begin
-          H.ResAddToBuild(wtTimber, gResHouses[H.HouseType].WoodCost);
-          H.ResAddToBuild(wtStone, gResHouses[H.HouseType].StoneCost);
+          H.ResAddToBuild(wtTimber, gRes.Houses[H.HouseType].WoodCost);
+          H.ResAddToBuild(wtStone, gRes.Houses[H.HouseType].StoneCost);
         end
         else
         begin
-          gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtTimber, gResHouses[H.HouseType].WoodCost, dtOnce, diHigh4);
-          gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtStone, gResHouses[H.HouseType].StoneCost, dtOnce, diHigh4);
+          gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtTimber, gRes.Houses[H.HouseType].WoodCost, dtOnce, diHigh4);
+          gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtStone, gRes.Houses[H.HouseType].StoneCost, dtOnce, diHigh4);
         end;
         gHands[aHand].Constructions.HouseList.AddHouse(H);
       end;
@@ -1283,7 +1283,7 @@ begin
       and (aHouseType in HOUSES_VALID)
       and gTerrain.TileInMapCoords(X,Y) then
     begin
-      nonEntranceX := X - gResHouses[aHouseType].EntranceOffsetX;
+      nonEntranceX := X - gRes.Houses[aHouseType].EntranceOffsetX;
       if gTerrain.CanPlaceHouseFromScript(aHouseType, KMPoint(nonEntranceX, Y)) then
       begin
         H := gHands[aHand].AddHouseWIP(aHouseType, KMPoint(nonEntranceX, Y));
@@ -1291,7 +1291,7 @@ begin
           Exit;
 
         Result := H.UID;
-        HA := gResHouses[aHouseType].BuildArea;
+        HA := gRes.Houses[aHouseType].BuildArea;
         for I := 1 to 4 do
         for K := 1 to 4 do
           if HA[I, K] <> 0 then
@@ -1305,14 +1305,14 @@ begin
         H.BuildingState := hbsWood;
 
         // Add wood
-        aWoodAmount := EnsureRange(aWoodAmount, 0, gResHouses[aHouseType].WoodCost);
+        aWoodAmount := EnsureRange(aWoodAmount, 0, gRes.Houses[aHouseType].WoodCost);
         H.ResAddToBuild(wtTimber, aWoodAmount);
-        gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtTimber, gResHouses[aHouseType].WoodCost - aWoodAmount, dtOnce, diHigh4);
+        gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtTimber, gRes.Houses[aHouseType].WoodCost - aWoodAmount, dtOnce, diHigh4);
 
         // Add stones
-        aStoneAmount := EnsureRange(aStoneAmount, 0, gResHouses[aHouseType].StoneCost);
+        aStoneAmount := EnsureRange(aStoneAmount, 0, gRes.Houses[aHouseType].StoneCost);
         H.ResAddToBuild(wtStone, aStoneAmount);
-        gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtStone, gResHouses[aHouseType].StoneCost - aStoneAmount, dtOnce, diHigh4);
+        gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtStone, gRes.Houses[aHouseType].StoneCost - aStoneAmount, dtOnce, diHigh4);
 
         gHands[aHand].Constructions.HouseList.AddHouse(H);
       end;
@@ -2645,12 +2645,12 @@ begin
         if not H.IsComplete then
         begin
           resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtTimber,
-                         gResHouses[H.HouseType].WoodCost - H.GetBuildWoodDelivered, plannedToRemove);
+                         gRes.Houses[H.HouseType].WoodCost - H.GetBuildWoodDelivered, plannedToRemove);
           Inc(resNeeded, plannedToRemove);
           H.ResAddToBuild(wtTimber, resNeeded);
 
           resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtStone,
-                         gResHouses[H.HouseType].StoneCost - H.GetBuildStoneDelivered, plannedToRemove);
+                         gRes.Houses[H.HouseType].StoneCost - H.GetBuildStoneDelivered, plannedToRemove);
           Inc(resNeeded, plannedToRemove);
           H.ResAddToBuild(wtStone, resNeeded);
         end;
@@ -2681,7 +2681,7 @@ begin
       if H <> nil then
         if not H.IsComplete then
         begin
-          aWoodAmount := EnsureRange(aWoodAmount, -H.BuildSupplyWood, gResHouses[H.HouseType].WoodCost - H.GetBuildWoodDelivered);
+          aWoodAmount := EnsureRange(aWoodAmount, -H.BuildSupplyWood, gRes.Houses[H.HouseType].WoodCost - H.GetBuildWoodDelivered);
 
           if aWoodAmount > 0 then
           begin
@@ -2695,7 +2695,7 @@ begin
             gHands[H.Owner].Deliveries.Queue.AddDemand(H, nil, wtTimber, -aWoodAmount, dtOnce, diHigh4);
           end;
 
-          aStoneAmount := EnsureRange(aStoneAmount, -H.BuildSupplyStone, gResHouses[H.HouseType].StoneCost - H.GetBuildStoneDelivered);
+          aStoneAmount := EnsureRange(aStoneAmount, -H.BuildSupplyStone, gRes.Houses[H.HouseType].StoneCost - H.GetBuildStoneDelivered);
 
           if aStoneAmount > 0 then
           begin
@@ -3087,7 +3087,7 @@ begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
         and not H.IsDestroyed //Allow to change delivery mode for not completed houses
-        and gResHouses[H.HouseType].AcceptsWares then
+        and gRes.Houses[H.HouseType].AcceptsWares then
       begin
         if aDeliveryBlocked then
           H.SetDeliveryModeInstantly(dmClosed)
@@ -3116,7 +3116,7 @@ begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
         and not H.IsDestroyed //Allow to change delivery mode for not completed houses
-        and gResHouses[H.HouseType].AcceptsWares then
+        and gRes.Houses[H.HouseType].AcceptsWares then
         H.SetDeliveryModeInstantly(aDeliveryMode);
     end
     else
@@ -3315,7 +3315,7 @@ begin
         and not H.IsDestroyed
         and H.IsComplete then
         for I := 1 to 4 do
-          if gResHouses[H.HouseType].ResOutput[I] = res then
+          if gRes.Houses[H.HouseType].ResOutput[I] = res then
           begin
             H.ResOrder[I] := aAmount;
             Exit;
@@ -3346,7 +3346,7 @@ begin
         and not H.IsDestroyed
         and H.IsComplete then
         for I := 1 to 4 do
-          if gResHouses[H.HouseType].ResOutput[I] = aWareType then
+          if gRes.Houses[H.HouseType].ResOutput[I] = aWareType then
           begin
             H.ResOrder[I] := aAmount;
             Exit;

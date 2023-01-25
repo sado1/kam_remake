@@ -1483,7 +1483,7 @@ begin
     //evenly between places rather than caring about route length.
     //This means weapon and armour smiths should get same amount of iron, even if one is closer to the smelter.
     if fDemand[dWT,iD].Loc_House.IsComplete
-      and (gResHouses[fDemand[dWT,iD].Loc_House.HouseType].DoesOrders or (fDemand[dWT,iD].Loc_House.HouseType = htIronSmithy))
+      and (gRes.Houses[fDemand[dWT,iD].Loc_House.HouseType].DoesOrders or (fDemand[dWT,iD].Loc_House.HouseType = htIronSmithy))
       and (aOfferCnt <= 2) //Little resources to share around
       and (fDemand[dWT,iD].Loc_House.CheckResIn(dWT) <= 1) then //Few resources already delivered
     begin
@@ -2517,7 +2517,7 @@ begin
       if fDemand[WT,I].IsActive then
       begin
         tmpS := #9;
-        if fDemand[WT,I].Loc_House <> nil then tmpS := tmpS + gResHouses[fDemand[WT,I].Loc_House.HouseType].HouseName + #9 + #9;
+        if fDemand[WT,I].Loc_House <> nil then tmpS := tmpS + gRes.Houses[fDemand[WT,I].Loc_House.HouseType].HouseName + #9 + #9;
         if fDemand[WT,I].Loc_Unit  <> nil then tmpS := tmpS + gRes.Units[fDemand[WT,I].Loc_Unit.UnitType].GUIName + #9 + #9;
         tmpS := tmpS + gRes.Wares[WT].Title;
         if fDemand[WT,I].Importance <> diNorm then
@@ -2533,7 +2533,7 @@ begin
       if fOffer[WT,I].IsActive then
       begin
         tmpS := #9;
-        if fOffer[WT,I].Loc_House <> nil then tmpS := tmpS + gResHouses[fOffer[WT,I].Loc_House.HouseType].HouseName + #9 + #9;
+        if fOffer[WT,I].Loc_House <> nil then tmpS := tmpS + gRes.Houses[fOffer[WT,I].Loc_House.HouseType].HouseName + #9 + #9;
         tmpS := tmpS + gRes.Wares[WT].Title + #9;
         tmpS := tmpS + IntToStr(fOffer[WT,I].Count);
 
@@ -2551,12 +2551,12 @@ begin
     if fOffer[fQueue[I].OfferWare, fQueue[I].OfferID].Loc_House = nil then
       tmpS := tmpS + 'Destroyed' + ' >>> '
     else
-      tmpS := tmpS + gResHouses[fOffer[fQueue[I].OfferWare, fQueue[I].OfferID].Loc_House.HouseType].HouseName + ' >>> ';
+      tmpS := tmpS + gRes.Houses[fOffer[fQueue[I].OfferWare, fQueue[I].OfferID].Loc_House.HouseType].HouseName + ' >>> ';
 
     if fDemand[fQueue[I].DemandWare, fQueue[I].DemandID].Loc_House = nil then
       tmpS := tmpS + 'Destroyed'
     else
-      tmpS := tmpS + gResHouses[fDemand[fQueue[I].DemandWare, fQueue[I].DemandID].Loc_House.HouseType].HouseName;
+      tmpS := tmpS + gRes.Houses[fDemand[fQueue[I].DemandWare, fQueue[I].DemandID].Loc_House.HouseType].HouseName;
 
     SL.Append(tmpS);
   end;

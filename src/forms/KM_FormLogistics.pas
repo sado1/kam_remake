@@ -646,7 +646,7 @@ begin
     4:  if (iO = DELIVERY_NO_ID) or (oWT = wtNone) or (del.Offer[oWT, iO].Loc_House = nil) then
           CellText := 'nil'
         else
-          CellText := gResHouses[del.Offer[oWT, iO].Loc_House.HouseType].HouseName;
+          CellText := gRes.Houses[del.Offer[oWT, iO].Loc_House.HouseType].HouseName;
 
     5:  if (iO = DELIVERY_NO_ID) or (oWT = wtNone) or (del.Offer[oWT, iO].Loc_House = nil) then
           CellText := '-'
@@ -656,7 +656,7 @@ begin
     6:  if (id <> DELIVERY_NO_ID) and (dWT <> wtNone) then
         begin
           if del.Demand[dWT, iD].Loc_House <> nil then
-            CellText := 'H: ' + gResHouses[del.Demand[dWT, iD].Loc_House.HouseType].HouseName
+            CellText := 'H: ' + gRes.Houses[del.Demand[dWT, iD].Loc_House.HouseType].HouseName
           else
           if del.Demand[dWT, iD].Loc_Unit <> nil then
             CellText := 'U: ' + gRes.Units[del.Demand[dWT, iD].Loc_Unit.UnitType].GUIName;
@@ -706,7 +706,7 @@ begin
       4:  if Loc_House = nil then
             CellText := 'nil'
           else
-            CellText := gResHouses[Loc_House.HouseType].HouseName;
+            CellText := gRes.Houses[Loc_House.HouseType].HouseName;
 
       5:  if Loc_House = nil then
             CellText := '-'
@@ -745,7 +745,7 @@ begin
       2:  CellText := IntToStr(iD);
       3:  CellText := gRes.Wares[dWT].Title;
       4:  if Loc_House <> nil then
-            CellText := 'H: ' + gResHouses[Loc_House.HouseType].HouseName
+            CellText := 'H: ' + gRes.Houses[Loc_House.HouseType].HouseName
           else
           if Loc_Unit <> nil then
             CellText := 'U: ' + gRes.Units[Loc_Unit.UnitType].GUIName

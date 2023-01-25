@@ -712,7 +712,7 @@ var
   R: TRXData;
 begin
   R := fRXData[rxGui];
-  Id := gResHouses[aHouse].TabletIcon;
+  Id := gRes.Houses[aHouse].TabletIcon;
 
   gX := aLoc.X + (R.Pivot[Id].X + R.Size[Id].X / 2) / CELL_SIZE_PX - 0.5;
   gY := aLoc.Y + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 0.45;
@@ -731,7 +731,7 @@ var
   cornerX, cornerY: Single;
 begin
   rx := fRXData[rxHouses];
-  supply := gResHouses[aHouse].BuildSupply;
+  supply := gRes.Houses[aHouse].BuildSupply;
 
   if Wood <> 0 then
   begin
@@ -791,9 +791,9 @@ begin
 
   rxData := fRXData[rxHouses];
 
-  picWood := gResHouses[aHouse].WoodPic + 1;
-  picStone := gResHouses[aHouse].StonePic + 1;
-  picSnow := gResHouses[aHouse].SnowPic + 1;
+  picWood := gRes.Houses[aHouse].WoodPic + 1;
+  picStone := gRes.Houses[aHouse].StonePic + 1;
+  picSnow := gRes.Houses[aHouse].SnowPic + 1;
 
   groundWood := rxData.Pivot[picWood].Y + rxData.Size[picWood].Y;
   groundStone := rxData.Pivot[picStone].Y + rxData.Size[picStone].Y;
@@ -858,7 +858,7 @@ begin
   for AT := Low(TKMHouseActionType) to High(TKMHouseActionType) do
   if AT in aActSet then
   begin
-    A := gResHouses[aHouse].Anim[AT];
+    A := gRes.Houses[aHouse].Anim[AT];
     if A.Count > 0 then
     begin
       if AT in CONTINUOUS_ANIMS then
@@ -926,7 +926,7 @@ begin
     if (aHouse = htArmorWorkshop) and (I in [1,2]) then
       I2 := 3-I;
 
-    id := gResHouses[aHouse].SupplyIn[I2, count] + 1;
+    id := gRes.Houses[aHouse].SupplyIn[I2, count] + 1;
     AddHouseSupplySprite(id);
   end;
 
@@ -942,7 +942,7 @@ begin
 //        if (aHouse = htArmorWorkshop) and (I2 in [1,2]) then
 //          I2 := 3-R3[K];
 
-        id := gResHouses[aHouse].SupplyOut[I2, K mod MAX_WARES_IN_HOUSE + 1] + 1;
+        id := gRes.Houses[aHouse].SupplyOut[I2, K mod MAX_WARES_IN_HOUSE + 1] + 1;
         AddHouseSupplySprite(id);
       end;
   end
@@ -952,7 +952,7 @@ begin
       if R2[I - 1] > 0 then
       begin
         count := Min(R2[I - 1], MAX_WARES_IN_HOUSE);
-        id := gResHouses[aHouse].SupplyOut[I, count] + 1;
+        id := gRes.Houses[aHouse].SupplyOut[I, count] + 1;
         AddHouseSupplySprite(id);
       end;
   end;
@@ -992,7 +992,7 @@ var
 begin
   rxData := fRXData[aRX];
 
-  A := gResHouses.BeastAnim[aHouse,aBeastId,aBeastAge];
+  A := gRes.Houses.BeastAnim[aHouse,aBeastId,aBeastAge];
 
   id := gRes.Interpolation.Beast(aHouse, aBeastId, aBeastAge, aAnimStep, gGameParams.TickFrac);
 
@@ -1458,7 +1458,7 @@ begin
   fHouseOutline.Clear;
 
   loc := aHouseSketch.Position;
-  gResHouses[aHouseSketch.HouseType].Outline(fHouseOutline);
+  gRes.Houses[aHouseSketch.HouseType].Outline(fHouseOutline);
 
   TKMRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 //  glColor3f(0, 1, 1);

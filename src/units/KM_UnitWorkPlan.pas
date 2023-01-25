@@ -117,7 +117,7 @@ end;
 procedure TKMUnitWorkPlan.SubActAdd(aAct: TKMHouseActionType; aCycles: Single);
 begin
   HouseAct[ActCount].Act := aAct;
-  HouseAct[ActCount].TimeToWork := Round(gResHouses[fHome].Anim[aAct].Count * aCycles);
+  HouseAct[ActCount].TimeToWork := Round(gRes.Houses[fHome].Anim[aAct].Count * aCycles);
   Inc(ActCount);
 end;
 
@@ -126,9 +126,9 @@ procedure TKMUnitWorkPlan.ResourcePlan(Res1: TKMWareType; Qty1: Byte; Res2: TKMW
 begin
   Resource1 := Res1; Count1 := Qty1;
   Resource2 := Res2; Count2 := Qty2;
-  Product1 := Prod1; ProdCount1 := gResHouses[fHome].ResProductionX;
+  Product1 := Prod1; ProdCount1 := gRes.Houses[fHome].ResProductionX;
   if Prod2=wtNone then exit;
-  Product2 := Prod2; ProdCount2 := gResHouses[fHome].ResProductionX;
+  Product2 := Prod2; ProdCount2 := gRes.Houses[fHome].ResProductionX;
 end;
 
 
@@ -248,7 +248,7 @@ begin
   Clear;
 
   fHome := aHome;
-  AfterWorkIdle := gResHouses[aHome].WorkerRest * 10;
+  AfterWorkIdle := gRes.Houses[aHome].WorkerRest * 10;
 
   //Now we need to fill only specific properties
   case aUnit.UnitType of
@@ -609,7 +609,7 @@ begin
   else
     raise Exception.Create('No work plan for ' +
                   gRes.Units[aUnit.UnitType].GUIName + ' in ' +
-                  gResHouses[aHome].HouseName);
+                  gRes.Houses[aHome].HouseName);
   end;
 end;
 
