@@ -54,10 +54,12 @@ var
   I: Integer;
   rxType: TRXType;
 begin
+  Writeln('Supplied arguments:');
+
   // Take in all params for simpler parsing down below
   for I := 1 to ParamCount do
   begin
-    Writeln('Arguments: ' + ParamStr(I));
+    Writeln(' - ' + ParamStr(I));
     fParams.Append(ParamStr(I));
   end;
 
@@ -134,7 +136,6 @@ begin
 
     if fParams.Count = 0 then
     begin
-      Writeln('No rx packages were set');
       OutputInstructions;
       Exit;
     end;
