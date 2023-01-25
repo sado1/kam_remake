@@ -2854,21 +2854,21 @@ end;
 procedure TKMScriptActions.HouseAddWaresTo(aHouseID: Integer; aType, aCount: Integer);
 var
   H: TKMHouse;
-  res: TKMWareType;
+  W: TKMWareType;
 begin
   try
     if (aHouseID > 0) and (aType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
-      res := WARE_ID_TO_TYPE[aType];
+      W := WARE_ID_TO_TYPE[aType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) and not H.IsDestroyed and H.IsComplete then
-        if H.CanHaveWareType(res) then
+        if H.CanHaveWareType(W) then
         begin
           if aCount > 0 then
           begin
-            H.ResAddToEitherFromScript(res, aCount);
-            gHands[H.Owner].Stats.WareProduced(res, aCount);
-            gScriptEvents.ProcWareProduced(H, res, aCount);
+            H.ResAddToEitherFromScript(W, aCount);
+            gHands[H.Owner].Stats.WareProduced(W, aCount);
+            gScriptEvents.ProcWareProduced(H, W, aCount);
           end;
         end
         else
@@ -2923,19 +2923,19 @@ end;
 procedure TKMScriptActions.HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer);
 var
   H: TKMHouse;
-  res: TKMWareType;
+  W: TKMWareType;
 begin
   try
     if (aHouseID > 0) and (aType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
-      res := WARE_ID_TO_TYPE[aType];
+      W := WARE_ID_TO_TYPE[aType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) and not H.IsDestroyed and H.IsComplete then
         //Store/barracks mix input/output (add to input, take from output) so we must process them together
-        if H.CanHaveWareType(res) then
+        if H.CanHaveWareType(W) then
         begin
           if aCount > 0 then
-            H.ResTake(res, aCount, True);
+            H.ResTake(W, aCount, True);
         end
         else
           LogIntParamWarn('Actions.HouseTakeWaresFrom wrong ware type', [aHouseID, aType, aCount]);
@@ -3207,24 +3207,24 @@ end;
 procedure TKMScriptActions.HouseWareBlock(aHouseID, aWareType: Integer; aBlocked: Boolean);
 var
   H: TKMHouse;
-  res: TKMWareType;
+  W: TKMWareType;
 begin
   try
     if (aHouseID > 0)
     and (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
     begin
-      res := WARE_ID_TO_TYPE[aWareType];
+      W := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
         and (H is TKMHouseStore)
         and not H.IsDestroyed then
-        TKMHouseStore(H).NotAcceptFlag[res] := aBlocked;
+        TKMHouseStore(H).NotAcceptFlag[W] := aBlocked;
 
       if (H <> nil)
         and (H is TKMHouseBarracks)
         and not H.IsDestroyed
-        and (res in [WARFARE_MIN..WARFARE_MAX]) then
-        TKMHouseBarracks(H).NotAcceptFlag[res] := aBlocked;
+        and (W in [WARFARE_MIN..WARFARE_MAX]) then
+        TKMHouseBarracks(H).NotAcceptFlag[W] := aBlocked;
     end
     else
       LogIntParamWarn('Actions.HouseWareBlock', [aHouseID, aWareType, Byte(aBlocked)]);
@@ -3303,19 +3303,19 @@ procedure TKMScriptActions.HouseWeaponsOrderSet(aHouseID, aWareType, aAmount: In
 var
   I: Integer;
   H: TKMHouse;
-  res: TKMWareType;
+  W: TKMWareType;
 begin
   try
     if (aHouseID > 0) and InRange(aAmount, 0, MAX_WARES_ORDER)
     and (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
     begin
-      res := WARE_ID_TO_TYPE[aWareType];
+      W := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
         and not H.IsDestroyed
         and H.IsComplete then
         for I := 1 to 4 do
-          if gRes.Houses[H.HouseType].ResOutput[I] = res then
+          if gRes.Houses[H.HouseType].ResOutput[I] = W then
           begin
             H.ResOrder[I] := aAmount;
             Exit;

@@ -58,12 +58,12 @@ end;
 procedure TKMMapEdPlayerBlockTrade.Player_BlockTradeClick(Sender: TObject; Shift: TShiftState);
 var
   I: Integer;
-  R: TKMWareType;
+  WT: TKMWareType;
 begin
   I := TKMButtonFlat(Sender).Tag;
-  R := StoreResType[I];
+  WT := StoreResType[I];
 
-  gMySpectator.Hand.Locks.AllowToTrade[R] := not gMySpectator.Hand.Locks.AllowToTrade[R];
+  gMySpectator.Hand.Locks.AllowToTrade[WT] := not gMySpectator.Hand.Locks.AllowToTrade[WT];
 
   Player_BlockTradeRefresh;
 end;
@@ -72,12 +72,12 @@ end;
 procedure TKMMapEdPlayerBlockTrade.Player_BlockTradeRefresh;
 var
   I: Integer;
-  R: TKMWareType;
+  WT: TKMWareType;
 begin
   for I := 1 to STORE_RES_COUNT do
   begin
-    R := StoreResType[I];
-    if gMySpectator.Hand.Locks.AllowToTrade[R] then
+    WT := StoreResType[I];
+    if gMySpectator.Hand.Locks.AllowToTrade[WT] then
       Image_BlockTrade[I].TexID := 0
     else
       Image_BlockTrade[I].TexID := 32; //Red cross

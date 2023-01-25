@@ -129,7 +129,7 @@ uses
 { TKMGUIGameSpectatorItemLineResources }
 function TKMGUIGameSpectatorItemLineResources.CreateItem(aHandIndex: Integer; ATag: Integer; aOnItemClick: TIntBoolEvent): TKMGUIGameSpectatorItem;
 begin
-  Result := TKMGUIGameSpectatorItem.Create(Self, ATag, gRes.Wares[TKMWareType(ATag)].GUIIcon, gRes.Wares[TKmWareType(ATag)].Title,
+  Result := TKMGUIGameSpectatorItem.Create(Self, ATag, gRes.Wares[TKMWareType(ATag)].GUIIcon, gRes.Wares[TKMWareType(ATag)].Title,
                                            aHandIndex, icBarColorGreen, DontHighlight, aOnItemClick);
   Result.Visible := False;
 end;

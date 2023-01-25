@@ -21,8 +21,8 @@ type
     fMarketDemandsClosing: array [WARE_MIN..WARE_MAX] of Word;
     fTradeAmount: Word;
     procedure AttemptExchange;
-    procedure SetResFrom(aRes: TKMWareType);
-    procedure SetResTo(aRes: TKMWareType);
+    procedure SetResFrom(aWare: TKMWareType);
+    procedure SetResTo(aWare: TKMWareType);
 
     procedure SetResInCnt(aWareType: TKMWareType; aValue: Word);
     procedure SetResOutCnt(aWareType: TKMWareType; aValue: Word);
@@ -299,23 +299,23 @@ begin
 end;
 
 
-procedure TKMHouseMarket.SetResFrom(aRes: TKMWareType);
+procedure TKMHouseMarket.SetResFrom(aWare: TKMWareType);
 begin
-  if TradeInProgress or not AllowedToTrade(aRes) then
+  if TradeInProgress or not AllowedToTrade(aWare) then
     Exit;
 
-  fResFrom := aRes;
+  fResFrom := aWare;
   if fResTo = fResFrom then
     fResTo := wtNone;
 end;
 
 
-procedure TKMHouseMarket.SetResTo(aRes: TKMWareType);
+procedure TKMHouseMarket.SetResTo(aWare: TKMWareType);
 begin
-  if TradeInProgress or not AllowedToTrade(aRes) then
+  if TradeInProgress or not AllowedToTrade(aWare) then
     Exit;
 
-  fResTo := aRes;
+  fResTo := aWare;
   if fResFrom = fResTo then
     fResFrom := wtNone;
 end;
@@ -560,27 +560,27 @@ end;
 //Render special market wares display
 procedure TKMHouseMarket.Paint;
 var
-  R: TKMWareType;
-  maxCount: Word;
-  maxRes: TKMWareType;
+  WT: TKMWareType;
+  bestCount: Word;
+  bestWare: TKMWareType;
 begin
   inherited;
 
   if fBuildState < hbsDone then Exit;
 
   //Market can display only one ware at a time (lookup ware that has most count)
-  maxCount := 0;
-  maxRes := wtNone;
-  for R := WARE_MIN to WARE_MAX do
-  if fMarketResIn[R] + fMarketResOut[R] > maxCount then
+  bestCount := 0;
+  bestWare := wtNone;
+  for WT := WARE_MIN to WARE_MAX do
+  if fMarketResIn[WT] + fMarketResOut[WT] > bestCount then
   begin
-    maxCount := fMarketResIn[R] + fMarketResOut[R];
-    maxRes := R;
+    bestCount := fMarketResIn[WT] + fMarketResOut[WT];
+    bestWare := WT;
   end;
 
-  if maxCount > 0 then
+  if bestCount > 0 then
     //FlagAnimStep is required for horses animation
-    gRenderPool.AddHouseMarketSupply(fPosition, maxRes, maxCount, FlagAnimStep);
+    gRenderPool.AddHouseMarketSupply(fPosition, bestWare, bestCount, FlagAnimStep);
 end;
 
 

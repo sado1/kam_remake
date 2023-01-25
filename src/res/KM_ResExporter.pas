@@ -344,7 +344,7 @@ begin
       ACT: TKMUnitActionType;
       anim: TKMAnimLoop;
       DIR: TKMDirection;
-      R: TKMWareType;
+      WT: TKMWareType;
       T: TKMUnitThought;
       STEP, spriteID:integer;
       used: array of Boolean;
@@ -411,12 +411,12 @@ begin
 
       if utSerf in [aUnitFrom..aUnitTo] then
         //serfs carrying stuff
-        for R := WARE_MIN to WARE_MAX do
+        for WT := WARE_MIN to WARE_MAX do
         begin
           folderCreated := False;
           for DIR := dirN to dirNW do
           begin
-            anim := units.SerfCarry[R, DIR];
+            anim := units.SerfCarry[WT, DIR];
             for STEP := 1 to anim.Count do
             begin
               spriteID := anim.Step[STEP]+1;
@@ -429,7 +429,7 @@ begin
                   begin
                     //Use default locale for Unit GUIName, as translation could be not good for file system (like russian '����������/�������' with slash in it)
                     fullFolderPath := folderPath + resTexts.DefaultTexts[units[utSerf].GUITextID] + PathDelim + 'Delivery' + PathDelim
-                                    + GetEnumName(TypeInfo(TKMWareType), Integer(R)) + PathDelim;
+                                    + GetEnumName(TypeInfo(TKMWareType), Ord(WT)) + PathDelim;
                     ForceDirectories(fullFolderPath);
                     folderCreated := True;
                   end;

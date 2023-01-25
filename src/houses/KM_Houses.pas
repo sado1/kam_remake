@@ -641,19 +641,19 @@ end;
 procedure TKMHouse.AddDemandsOnActivate(aWasBuilt: Boolean);
 var
   I, demandsCnt: Integer;
-  res: TKMWareType;
+  W: TKMWareType;
 begin
   for I := 1 to 4 do
   begin
-    res := gRes.Houses[fType].ResInput[I];
+    W := gRes.Houses[fType].ResInput[I];
     with gHands[Owner].Deliveries.Queue do
-    case res of
+    case W of
       wtNone:    ;
-      wtWarfare: AddDemand(Self, nil, res, 1, dtAlways, diNorm);
-      wtAll:     AddDemand(Self, nil, res, 1, dtAlways, diNorm);
+      wtWarfare: AddDemand(Self, nil, W, 1, dtAlways, diNorm);
+      wtAll:     AddDemand(Self, nil, W, 1, dtAlways, diNorm);
       else        begin
                     demandsCnt := GetResDistribution(I);
-                    AddDemand(Self, nil, res, demandsCnt, dtOnce, diNorm); //Every new house needs 5 resource units
+                    AddDemand(Self, nil, W, demandsCnt, dtOnce, diNorm); //Every new house needs 5 resource units
                     ResDeliveryCnt[I] := ResDeliveryCnt[I] + demandsCnt; //Keep track of how many resources we have on order (for distribution of wares)
                   end;
     end;
@@ -828,17 +828,17 @@ procedure TKMHouse.CheckTakeOutDeliveryMode;
 var
   I: Integer;
   resCnt: Word;
-  res: TKMWareType;
+  W: TKMWareType;
 begin
   // House had dmTakeOut delivery mode
   // Remove offers from this house then
   if fDeliveryMode = dmTakeOut then
     for I := 1 to 4 do
     begin
-      res := gRes.Houses[fType].ResInput[I];
+      W := gRes.Houses[fType].ResInput[I];
       resCnt := ResIn[I] - ResInLocked[I];
-      if (res <> wtNone) and (resCnt > 0) then
-        gHands[Owner].Deliveries.Queue.RemOffer(Self, res, resCnt);
+      if (W <> wtNone) and (resCnt > 0) then
+        gHands[Owner].Deliveries.Queue.RemOffer(Self, W, resCnt);
     end;
 
   // House will get dmTakeOut delivery mode
@@ -847,11 +847,11 @@ begin
   begin
     for I := 1 to 4 do
     begin
-      res := gRes.Houses[fType].ResInput[I];
+      W := gRes.Houses[fType].ResInput[I];
       resCnt := ResIn[I] - ResInLocked[I];
 
-      if not (res in [wtNone, wtAll, wtWarfare]) and (resCnt > 0) then
-        gHands[Owner].Deliveries.Queue.AddOffer(Self, res, resCnt);
+      if not (W in [wtNone, wtAll, wtWarfare]) and (resCnt > 0) then
+        gHands[Owner].Deliveries.Queue.AddOffer(Self, W, resCnt);
     end;
   end;
 end;
@@ -1818,32 +1818,32 @@ end;
 procedure TKMHouse.SetResIn(aI: Byte; aValue: Word);
 var
   cntChange: Integer;
-  res: TKMWareType;
+  W: TKMWareType;
 begin
-  res := gRes.Houses[fType].ResInput[aI];
+  W := gRes.Houses[fType].ResInput[aI];
   cntChange := aValue - fResourceIn[aI];
 
-  SetResInManageTakeOutDeliveryMode(res, cntChange);
+  SetResInManageTakeOutDeliveryMode(W, cntChange);
 
   fResourceIn[aI] := aValue;
 
-  if not (res in [wtNone, wtAll, wtWarfare]) and (cntChange <> 0) then
-    gScriptEvents.ProcHouseWareCountChanged(Self, res, aValue, cntChange);
+  if not (W in [wtNone, wtAll, wtWarfare]) and (cntChange <> 0) then
+    gScriptEvents.ProcHouseWareCountChanged(Self, W, aValue, cntChange);
 end;
 
 
 procedure TKMHouse.SetResOut(aI: Byte; aValue: Word);
 var
   cntChange: Integer;
-  res: TKMWareType;
+  W: TKMWareType;
 begin
-  res := gRes.Houses[fType].ResOutput[aI];
+  W := gRes.Houses[fType].ResOutput[aI];
   cntChange := aValue - fResourceOut[aI];
 
   fResourceOut[aI] := aValue;
 
-  if not (res in [wtNone, wtAll, wtWarfare]) and (cntChange <> 0) then
-    gScriptEvents.ProcHouseWareCountChanged(Self, res, aValue, cntChange);
+  if not (W in [wtNone, wtAll, wtWarfare]) and (cntChange <> 0) then
+    gScriptEvents.ProcHouseWareCountChanged(Self, W, aValue, cntChange);
 end;
 
 

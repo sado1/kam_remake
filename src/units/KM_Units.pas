@@ -306,13 +306,13 @@ type
     constructor Load(LoadStream: TKMemoryStream); override;
     procedure Save(SaveStream: TKMemoryStream); override;
 
-    procedure Deliver(aFrom: TKMHouse; toHouse: TKMHouse; Res: TKMWareType; aID: integer); overload;
-    procedure Deliver(aFrom: TKMHouse; toUnit: TKMUnit; Res: TKMWareType; aID: integer); overload;
+    procedure Deliver(aFrom: TKMHouse; toHouse: TKMHouse; aWare: TKMWareType; aID: integer); overload;
+    procedure Deliver(aFrom: TKMHouse; toUnit: TKMUnit; aWare: TKMWareType; aID: integer); overload;
     function TryDeliverFrom(aFrom: TKMHouse): Boolean;
     procedure DelegateDelivery(aToSerf: TKMUnitSerf);
 
     property Carry: TKMWareType read GetCarry;
-    procedure CarryGive(Res: TKMWareType);
+    procedure CarryGive(aWare: TKMWareType);
     procedure CarryTake;
 
     function ObjToString(const aSeparator: String = '|'): String; override;
@@ -775,17 +775,17 @@ begin
 end;
 
 
-procedure TKMUnitSerf.Deliver(aFrom, toHouse: TKMHouse; Res: TKMWareType; aID: integer);
+procedure TKMUnitSerf.Deliver(aFrom, toHouse: TKMHouse; aWare: TKMWareType; aID: integer);
 begin
   fThought := thNone; //Clear ? thought
-  fTask := TKMTaskDeliver.Create(Self, aFrom, toHouse, Res, aID);
+  fTask := TKMTaskDeliver.Create(Self, aFrom, toHouse, aWare, aID);
 end;
 
 
-procedure TKMUnitSerf.Deliver(aFrom: TKMHouse; toUnit: TKMUnit; Res: TKMWareType; aID: integer);
+procedure TKMUnitSerf.Deliver(aFrom: TKMHouse; toUnit: TKMUnit; aWare: TKMWareType; aID: integer);
 begin
   fThought := thNone; //Clear ? thought
-  fTask := TKMTaskDeliver.Create(Self, aFrom, toUnit, Res, aID);
+  fTask := TKMTaskDeliver.Create(Self, aFrom, toUnit, aWare, aID);
 end;
 
 
@@ -924,10 +924,10 @@ begin
 end;
 
 
-procedure TKMUnitSerf.CarryGive(Res:TKMWareType);
+procedure TKMUnitSerf.CarryGive(aWare: TKMWareType);
 begin
   Assert(fCarry = wtNone, 'Giving Serf another Carry');
-  fCarry := Res;
+  fCarry := aWare;
 end;
 
 

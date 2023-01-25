@@ -35,8 +35,8 @@ type
     property ToUnit: TKMUnit read fToUnit write fToUnit;
     function CanAbandonWalk: Boolean;
   public
-    constructor Create(aSerf: TKMUnitSerf; aFrom: TKMHouse; aToHouse: TKMHouse; Res: TKMWareType; aID: Integer); overload;
-    constructor Create(aSerf: TKMUnitSerf; aFrom: TKMHouse; aToUnit: TKMUnit; Res: TKMWareType; aID: Integer); overload;
+    constructor Create(aSerf: TKMUnitSerf; aFrom: TKMHouse; aToHouse: TKMHouse; aWare: TKMWareType; aID: Integer); overload;
+    constructor Create(aSerf: TKMUnitSerf; aFrom: TKMHouse; aToUnit: TKMUnit; aWare: TKMWareType; aID: Integer); overload;
     constructor Load(LoadStream: TKMemoryStream); override;
     procedure SyncLoad; override;
     destructor Destroy; override;
@@ -65,12 +65,12 @@ uses
 
 
 { TTaskDeliver }
-constructor TKMTaskDeliver.Create(aSerf: TKMUnitSerf; aFrom: TKMHouse; aToHouse: TKMHouse; Res: TKMWareType; aID: Integer);
+constructor TKMTaskDeliver.Create(aSerf: TKMUnitSerf; aFrom: TKMHouse; aToHouse: TKMHouse; aWare: TKMWareType; aID: Integer);
 begin
   inherited Create(aSerf);
   fType := uttDeliver;
 
-  Assert((aFrom <> nil) and (aToHouse <> nil) and (Res <> wtNone), 'Serf ' + IntToStr(fUnit.UID) + ': invalid delivery task');
+  Assert((aFrom <> nil) and (aToHouse <> nil) and (aWare <> wtNone), 'Serf ' + IntToStr(fUnit.UID) + ': invalid delivery task');
 
   if gLog.CanLogDelivery then
     gLog.LogDelivery('Serf ' + IntToStr(fUnit.UID) + ' created delivery task ' + IntToStr(fDeliverID));
@@ -84,17 +84,17 @@ begin
   else
     fDeliverKind := dkToConstruction;
 
-  fWareType   := Res;
+  fWareType   := aWare;
   fDeliverID  := aID;
 end;
 
 
-constructor TKMTaskDeliver.Create(aSerf: TKMUnitSerf; aFrom: TKMHouse; aToUnit: TKMUnit; Res: TKMWareType; aID: Integer);
+constructor TKMTaskDeliver.Create(aSerf: TKMUnitSerf; aFrom: TKMHouse; aToUnit: TKMUnit; aWare: TKMWareType; aID: Integer);
 begin
   inherited Create(aSerf);
   fType := uttDeliver;
 
-  Assert((aFrom <> nil) and (aToUnit <> nil) and ((aToUnit is TKMUnitWarrior) or (aToUnit is TKMUnitWorker)) and (Res <> wtNone), 'Serf '+inttostr(fUnit.UID)+': invalid delivery task');
+  Assert((aFrom <> nil) and (aToUnit <> nil) and ((aToUnit is TKMUnitWarrior) or (aToUnit is TKMUnitWorker)) and (aWare <> wtNone), 'Serf '+inttostr(fUnit.UID)+': invalid delivery task');
 
   if gLog.CanLogDelivery then
     gLog.LogDelivery('Serf ' + IntToStr(fUnit.UID) + ' created delivery task ' + IntToStr(fDeliverID));
@@ -102,7 +102,7 @@ begin
   FromHouse := aFrom.GetPointer;
   ToUnit    := aToUnit.GetPointer;
   fDeliverKind := dkToUnit;
-  fWareType := Res;
+  fWareType := aWare;
   fDeliverID := aID;
 end;
 

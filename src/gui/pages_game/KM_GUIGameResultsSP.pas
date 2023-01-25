@@ -137,7 +137,7 @@ var
 
 var
   I: Integer;
-  R: TKMWareType;
+  WT: TKMWareType;
   G: TKMCardinalArray;
   humanId: TKMHandID;
   showAIResults: Boolean;
@@ -291,13 +291,13 @@ begin
       Chart_Houses.AddLine(tempGraphs[I].OwnerName, tempGraphs[I].Color, tempGraphs[I].G);
 
   //Wares
-  for R := WARE_MIN to WARE_MAX do
+  for WT := WARE_MIN to WARE_MAX do
   begin
-    G := gHands[humanId].Stats.ChartWares[R];
+    G := gHands[humanId].Stats.ChartWares[WT];
     for I := 0 to High(G) do
       if G[I] <> 0 then
       begin
-        Chart_Wares.AddLine(gRes.Wares[R].Title, gRes.Wares[R].GUIColor or $FF000000, G);
+        Chart_Wares.AddLine(gRes.Wares[WT].Title, gRes.Wares[WT].GUIColor or $FF000000, G);
         Break;
       end;
   end;

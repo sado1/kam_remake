@@ -37,7 +37,7 @@ type
     function TileHasParameter(X, Y: Word; aCheckTileFunc: TBooleanWordFunc; aAllow2CornerTiles: Boolean = False;
                               aStrictCheck: Boolean = False): Boolean;
 
-    function GetMiningRect(aRes: TKMWareType): TKMRect;
+    function GetMiningRect(aWare: TKMWareType): TKMRect;
 
     function ChooseCuttingDirection(const aLoc, aTree: TKMPoint; out aCuttingPoint: TKMPointDir): Boolean;
     procedure DoFlattenTerrain(const aLoc: TKMPoint; var aDepth: Byte; aUpdateWalkConnects: Boolean; aIgnoreCanElevate: Boolean);
@@ -129,9 +129,9 @@ type
                        out aStonePoint: TKMPointDir): Boolean;
     procedure FindStoneLocs(const aLoc: TKMPoint; aRadius: Byte; const aAvoidLoc: TKMPoint; aIgnoreWorkingUnits: Boolean;
                             aStoneLocs: TKMPointList);
-    function FindOre(const aLoc: TKMPoint; aRes: TKMWareType; out aOrePoint: TKMPoint): Boolean;
-    procedure FindOrePoints(const aLoc: TKMPoint; aRes: TKMWareType; var aPoints: TKMPointListArray);
-    procedure FindOrePointsByDistance(aLoc: TKMPoint; aRes: TKMWareType; var aPoints: TKMPointListArray);
+    function FindOre(const aLoc: TKMPoint; aWare: TKMWareType; out aOrePoint: TKMPoint): Boolean;
+    procedure FindOrePoints(const aLoc: TKMPoint; aWare: TKMWareType; var aPoints: TKMPointListArray);
+    procedure FindOrePointsByDistance(const aLoc: TKMPoint; aWare: TKMWareType; var aPoints: TKMPointListArray);
     function CanFindTree(const aLoc: TKMPoint; aRadius: Word; aOnlyAgeFull: Boolean = False):Boolean;
     procedure FindTree(const aLoc: TKMPoint; aRadius: Word; const aAvoidLoc: TKMPoint; aPlantAct: TKMPlantAct;
                        aTrees: TKMPointDirCenteredList; aBestToPlant,aSecondBestToPlant: TKMPointCenteredList);
@@ -2588,7 +2588,7 @@ begin
 end;
 
 
-function TKMTerrain.FindOre(const aLoc: TKMPoint; aRes: TKMWareType; out aOrePoint: TKMPoint): Boolean;
+function TKMTerrain.FindOre(const aLoc: TKMPoint; aWare: TKMWareType; out aOrePoint: TKMPoint): Boolean;
 var
   I: Integer;
   L: TKMPointListArray;
@@ -2598,7 +2598,7 @@ begin
   for I := 0 to Length(L) - 1 do
     L[I] := TKMPointList.Create;
 
-  FindOrePoints(aLoc, aRes, L);
+  FindOrePoints(aLoc, aWare, L);
 
   //Equation elements will be evalueated one by one until True is found
   Result := False;
@@ -2613,35 +2613,36 @@ begin
 end;
 
 
-function TKMTerrain.GetMiningRect(aRes: TKMWareType): TKMRect;
+function TKMTerrain.GetMiningRect(aWare: TKMWareType): TKMRect;
 begin
-  case aRes of
+  case aWare of
     wtGoldOre: Result := KMRect(7, 11, 6, 2);
     wtIronOre: Result := KMRect(7, 11, 5, 2);
     wtCoal:    Result := KMRect(4,  5, 5, 2);
-    else        Result := KMRECT_ZERO;
+  else
+    Result := KMRECT_ZERO;
   end;
 end;
 
 
-procedure TKMTerrain.FindOrePointsByDistance(aLoc: TKMPoint; aRes: TKMWareType; var aPoints: TKMPointListArray);
+procedure TKMTerrain.FindOrePointsByDistance(const aLoc: TKMPoint; aWare: TKMWareType; var aPoints: TKMPointListArray);
 var
   I,K: Integer;
   miningRect: TKMRect;
 begin
   Assert(Length(aPoints) = 3, 'Wrong length of Points array: ' + IntToStr(Length(aPoints)));
 
-  if not (aRes in [wtIronOre, wtGoldOre, wtCoal]) then
+  if not (aWare in [wtIronOre, wtGoldOre, wtCoal]) then
     raise ELocError.Create('Wrong resource as Ore', aLoc);
 
-  miningRect := GetMiningRect(aRes);
+  miningRect := GetMiningRect(aWare);
 
   for I := Max(aLoc.Y - miningRect.Top, 1) to Min(aLoc.Y + miningRect.Bottom, fMapY - 1) do
     for K := Max(aLoc.X - miningRect.Left, 1) to Min(aLoc.X + miningRect.Right, fMapX - 1) do
     begin
-      if ((aRes = wtIronOre)   and TileHasIron(K,I))
-        or ((aRes = wtGoldOre) and TileHasGold(K,I))
-        or ((aRes = wtCoal)    and TileHasCoal(K,I)) then
+      if ((aWare = wtIronOre)   and TileHasIron(K,I))
+      or ((aWare = wtGoldOre) and TileHasGold(K,I))
+      or ((aWare = wtCoal)    and TileHasCoal(K,I)) then
       begin
         //Poorest ore gets mined in range - 2
         if InRange(I - aLoc.Y, - miningRect.Top + 2, miningRect.Bottom - 2)
@@ -2660,21 +2661,21 @@ begin
 end;
 
 //Given aLoc the function return location of richest ore within predefined bounds
-procedure TKMTerrain.FindOrePoints(const aLoc: TKMPoint; aRes: TKMWareType; var aPoints: TKMPointListArray);
+procedure TKMTerrain.FindOrePoints(const aLoc: TKMPoint; aWare: TKMWareType; var aPoints: TKMPointListArray);
 var
   I,K: Integer;
   miningRect: TKMRect;
   R1,R2,R3,R3_2,R4,R5: Integer; //Ore densities
 begin
-  if not (aRes in [wtIronOre, wtGoldOre, wtCoal]) then
+  if not (aWare in [wtIronOre, wtGoldOre, wtCoal]) then
     raise ELocError.Create('Wrong resource as Ore', aLoc);
 
   Assert(Length(aPoints) = ORE_DENSITY_MAX_TYPES, 'Wrong length of Points array: ' + IntToStr(Length(aPoints)));
 
-  miningRect := GetMiningRect(aRes);
+  miningRect := GetMiningRect(aWare);
 
   //These values have been measured from KaM
-  case aRes of
+  case aWare of
     wtGoldOre: begin R1 := 144; R2 := 145; R3 := 146; R3_2 :=  -1; R4 := 147; R5 := 307; end;
     wtIronOre: begin R1 := 148; R2 := 149; R3 := 150; R3_2 := 259; R4 := 151; R5 := 260; end;
     wtCoal:    begin R1 := 152; R2 := 153; R3 := 154; R3_2 :=  -1; R4 := 155; R5 := 263; end;

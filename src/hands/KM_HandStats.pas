@@ -300,16 +300,17 @@ end;
 
 procedure TKMHandStats.WareProduced(aRes: TKMWareType; aCount: Cardinal);
 var
-  R: TKMWareType;
+  WT: TKMWareType;
 begin
-  if aRes <> wtNone then
-    case aRes of
-      wtAll:     for R := WARE_MIN to WARE_MAX do
-                    Inc(Wares[R].Produced, aCount);
-      WARE_MIN..
-      WARE_MAX:   Inc(Wares[aRes].Produced, aCount);
-      else        raise Exception.Create('Cant''t add produced ware ' + gRes.Wares[aRes].Title);
-    end;
+  case aRes of
+    wtNone:     ;
+    wtAll:      for WT := WARE_MIN to WARE_MAX do
+                  Inc(Wares[WT].Produced, aCount);
+    WARE_MIN..
+    WARE_MAX:   Inc(Wares[aRes].Produced, aCount);
+  else
+    raise Exception.Create('Cant''t add produced ware ' + gRes.Wares[aRes].Title);
+  end;
 end;
 
 

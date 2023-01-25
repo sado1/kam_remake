@@ -3185,16 +3185,16 @@ end;
 function TKMScriptStates.HouseResourceAmount(aHouseID, aResource: Integer): Integer;
 var
   H: TKMHouse;
-  res: TKMWareType;
+  W: TKMWareType;
 begin
   try
     Result := -1; //-1 if house id is invalid
     if (aHouseID > 0) and (aResource in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
-      res := WARE_ID_TO_TYPE[aResource];
+      W := WARE_ID_TO_TYPE[aResource];
       H := fIDCache.GetHouse(aHouseID);
       if H <> nil then
-        Result := H.CheckResIn(res) + H.CheckResOut(res); //Count both in and out
+        Result := H.CheckResIn(W) + H.CheckResOut(W); //Count both in and out
     end
     else
       LogIntParamWarn('States.HouseResourceAmount', [aHouseID, aResource]);
@@ -3502,18 +3502,18 @@ end;
 function TKMScriptStates.HouseWareBlocked(aHouseID, aWareType: Integer): Boolean;
 var
   H: TKMHouse;
-  res: TKMWareType;
+  W: TKMWareType;
 begin
   try
     Result := False;
     if (aHouseID > 0) and (aWareType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
-      res := WARE_ID_TO_TYPE[aWareType];
+      W := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H is TKMHouseStore) then
-        Result := TKMHouseStore(H).NotAcceptFlag[res];
-      if (H is TKMHouseBarracks) and (res in [WARFARE_MIN..WARFARE_MAX]) then
-        Result := TKMHouseBarracks(H).NotAcceptFlag[res];
+        Result := TKMHouseStore(H).NotAcceptFlag[W];
+      if (H is TKMHouseBarracks) and (W in [WARFARE_MIN..WARFARE_MAX]) then
+        Result := TKMHouseBarracks(H).NotAcceptFlag[W];
     end
     else
       LogIntParamWarn('States.HouseWareBlocked', [aHouseID, aWareType]);
@@ -3583,17 +3583,17 @@ function TKMScriptStates.HouseWeaponsOrdered(aHouseID, aWareType: Integer): Inte
 var
   I: Integer;
   H: TKMHouse;
-  res: TKMWareType;
+  W: TKMWareType;
 begin
   try
     Result := 0;
     if (aHouseID > 0) and (aWareType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
-      res := WARE_ID_TO_TYPE[aWareType];
+      W := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) then
         for I := 1 to 4 do
-          if gRes.Houses[H.HouseType].ResOutput[I] = res then
+          if gRes.Houses[H.HouseType].ResOutput[I] = W then
           begin
             Result := H.ResOrder[I];
             Exit;
@@ -4881,14 +4881,14 @@ end;
 //* Result: Value
 function TKMScriptStates.MarketValue(aRes: Integer): Single;
 var
-  res: TKMWareType;
+  W: TKMWareType;
 begin
   try
     Result := -1; //-1 if ware is invalid
     if aRes in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)] then
     begin
-      res := WARE_ID_TO_TYPE[aRes];
-      Result := gRes.Wares[res].MarketPrice;
+      W := WARE_ID_TO_TYPE[aRes];
+      Result := gRes.Wares[W].MarketPrice;
     end
     else
       LogIntParamWarn('States.MarketValue', [aRes]);
