@@ -45,9 +45,8 @@ begin
   Writeln(' - %s - pack specific RX library');
   Writeln('');
   Writeln('Usage examples:');
-  Writeln(' - RxxPacker.exe gui guimain houses trees units tileset');
-  Writeln(' - RxxPacker.exe all');
-  Writeln(' - RxxPacker.exe spritesBaseDir "C:\kmr_sprites\" units');
+  Writeln(' - RxxPacker.exe srx "C:\kmr_sprites\" sint "C:\kmr_sprites_interp\" d "C:\kmr_sprites\out\" all');
+  Writeln(' - RxxPacker.exe srx "C:\kmr_sprites\" sint "C:\kmr_sprites_interp\" d "C:\kmr_sprites\out\" rxa trees units');
 end;
 
 

@@ -272,9 +272,10 @@ type
     rxCustom, //Used for loading stuff like campaign maps (there is no main RXX file)
     rxTiles //Tiles
   );
+  TRXTypeSet = set of TRXType;
 
 const
-  EXPORT_SPRITE_ATLASES_LIST: set of TRXType = [
+  EXPORT_SPRITE_ATLASES_LIST: TRXTypeSet = [
     rxTrees,
     rxHouses,
     rxUnits,
