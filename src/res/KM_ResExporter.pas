@@ -672,7 +672,7 @@ end;
 
 procedure TKMResExporter.ExportImageFromGFXData(aSpritePack: TKMSpritePack; aSpriteID: Integer; const aFilePath: string; const aFileMaskPath: string = '');
 var
-  P, Q, dataX, dataY: Integer;
+  I, K, dataX, dataY: Integer;
   pngWidth, pngHeight: Word;
   pngData: TKMCardinalArray;
   prepGFXDataID: TKMPrepGFXDataID;
@@ -686,14 +686,14 @@ begin
   if fGFXPrepDataBySpriteID.TryGetValue(aSpriteID, prepGFXDataID) then
     with aSpritePack.GFXPrepData[prepGFXDataID.AtlasType, prepGFXDataID.AtlasID] do
     begin
-      for P := 0 to pngHeight - 1 do
-        for Q := 0 to pngWidth - 1 do
+      for I := 0 to pngHeight - 1 do
+        for K := 0 to pngWidth - 1 do
         begin
-          dataX := SpriteInfo.Sprites[prepGFXDataID.SpriteNum].PosX + Q;
-          dataY := SpriteInfo.Sprites[prepGFXDataID.SpriteNum].PosY + P;
+          dataX := SpriteInfo.Sprites[prepGFXDataID.SpriteNum].OriginX + K;
+          dataY := SpriteInfo.Sprites[prepGFXDataID.SpriteNum].OriginY + I;
 
-          pngData[P*pngWidth + Q] := Data[dataY*SpriteInfo.Width + dataX] and $FFFFFF;
-          pngData[P*pngWidth + Q] := pngData[P*pngWidth + Q] or (Data[dataY*SpriteInfo.Width + dataX] and $FF000000);
+          pngData[I*pngWidth + K] := Data[dataY*SpriteInfo.Width + dataX] and $FFFFFF;
+          pngData[I*pngWidth + K] := pngData[I*pngWidth + K] or (Data[dataY*SpriteInfo.Width + dataX] and $FF000000);
         end;
 
       SaveToPng(pngWidth, pngHeight, pngData, aFilePath);
@@ -702,14 +702,14 @@ begin
   if (aFileMaskPath <> '') and fGFXPrepMaskDataBySpriteID.TryGetValue(aSpriteID, prepGFXDataID) then
     with aSpritePack.GFXPrepData[prepGFXDataID.AtlasType, prepGFXDataID.AtlasID] do
     begin
-      for P := 0 to pngHeight - 1 do
-        for Q := 0 to pngWidth - 1 do
+      for I := 0 to pngHeight - 1 do
+        for K := 0 to pngWidth - 1 do
         begin
-          dataX := SpriteInfo.Sprites[prepGFXDataID.SpriteNum].PosX + Q;
-          dataY := SpriteInfo.Sprites[prepGFXDataID.SpriteNum].PosY + P;
+          dataX := SpriteInfo.Sprites[prepGFXDataID.SpriteNum].OriginX + K;
+          dataY := SpriteInfo.Sprites[prepGFXDataID.SpriteNum].OriginY + I;
 
-          pngData[P*pngWidth + Q] := Data[dataY*SpriteInfo.Width + dataX] and $FFFFFF;
-          pngData[P*pngWidth + Q] := pngData[P*pngWidth + Q] or (Data[dataY*SpriteInfo.Width + dataX] and $FF000000);
+          pngData[I*pngWidth + K] := Data[dataY*SpriteInfo.Width + dataX] and $FFFFFF;
+          pngData[I*pngWidth + K] := pngData[I*pngWidth + K] or (Data[dataY*SpriteInfo.Width + dataX] and $FF000000);
         end;
 
       SaveToPng(pngWidth, pngHeight, pngData, aFileMaskPath);

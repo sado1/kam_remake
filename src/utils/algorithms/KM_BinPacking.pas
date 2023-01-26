@@ -18,7 +18,7 @@ type
     Width, Height: Word;
     Sprites: array of packed record
       SpriteID: Integer;
-      PosX, PosY: Word;
+      OriginX, OriginY: Word;
     end;
   end;
 
@@ -204,8 +204,8 @@ begin
     begin
       SetLength(aItems.Sprites, Length(aItems.Sprites) + 1);
       aItems.Sprites[High(aItems.Sprites)].SpriteID := fImageID;
-      aItems.Sprites[High(aItems.Sprites)].PosX := fRect.X + fPad;
-      aItems.Sprites[High(aItems.Sprites)].PosY := fRect.Y + fPad;
+      aItems.Sprites[High(aItems.Sprites)].OriginX := fRect.X + fPad;
+      aItems.Sprites[High(aItems.Sprites)].OriginY := fRect.Y + fPad;
     end;
 end;
 

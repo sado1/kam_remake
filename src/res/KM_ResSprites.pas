@@ -1327,10 +1327,10 @@ begin
     spriteID := aSpriteInfo.Sprites[K].SpriteID;
 
     txCoords.TexID := aTexID;
-    txCoords.u1 := aSpriteInfo.Sprites[K].PosX / aSpriteInfo.Width;
-    txCoords.v1 := aSpriteInfo.Sprites[K].PosY / aSpriteInfo.Height;
-    txCoords.u2 := (aSpriteInfo.Sprites[K].PosX + fRXData.Size[spriteID].X) / aSpriteInfo.Width;
-    txCoords.v2 := (aSpriteInfo.Sprites[K].PosY + fRXData.Size[spriteID].Y) / aSpriteInfo.Height;
+    txCoords.u1 := aSpriteInfo.Sprites[K].OriginX / aSpriteInfo.Width;
+    txCoords.v1 := aSpriteInfo.Sprites[K].OriginY / aSpriteInfo.Height;
+    txCoords.u2 := (aSpriteInfo.Sprites[K].OriginX + fRXData.Size[spriteID].X) / aSpriteInfo.Width;
+    txCoords.v2 := (aSpriteInfo.Sprites[K].OriginY + fRXData.Size[spriteID].Y) / aSpriteInfo.Height;
 
     if aAtlasType = saBase then
     begin
@@ -1391,8 +1391,8 @@ begin
       for L := 0 to fRXData.Size[ID].Y - 1 do
       for M := 0 to fRXData.Size[ID].X - 1 do
       begin
-        CT := aSpriteInfo[I].Sprites[K].PosY;
-        CL := aSpriteInfo[I].Sprites[K].PosX;
+        CT := aSpriteInfo[I].Sprites[K].OriginY;
+        CL := aSpriteInfo[I].Sprites[K].OriginX;
         Pixel := (CT + L) * aSpriteInfo[I].Width + CL + M;
         if aMode = saBase then
           atlasData[Pixel] := fRXData.RGBA[ID, L * fRXData.Size[ID].X + M]
