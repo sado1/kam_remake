@@ -103,7 +103,7 @@ type
     function IsEmpty: Boolean;
 
     procedure ExportAllSpritesFromRXData(const aFolder: string);
-    procedure ExportFullImageData2(const aFolder: string; aIndex: Integer; aTempList: TStringList);
+    procedure ExportFullImageData(const aFolder: string; aIndex: Integer);
     procedure ExportImage(const aFile: string; aIndex: Integer);
     procedure ExportMask(const aFile: string; aIndex: Integer);
 
@@ -244,6 +244,7 @@ uses
   {$ENDIF}
   TypInfo,
   KM_Log, KM_CommonClasses,
+  KM_FileIO,
   KM_CommonUtils, KM_Utils, KM_Points,
   KM_GameSettings;
 
@@ -1079,46 +1080,37 @@ end;
 procedure TKMSpritePack.ExportAllSpritesFromRXData(const aFolder: string);
 var
   I: Integer;
-  SL: TStringList;
 begin
   ForceDirectories(aFolder);
 
-  SL := TStringList.Create;
-
   for I := 1 to fRXData.Count do
-  begin
-    ExportFullImageData2(aFolder, I, SL);
-    // Stop export if async thread is terminated by application
-    if TThread.CheckTerminated then
-      Exit;
-  end;
-
-  SL.Free;
+  if not TThread.CheckTerminated then
+    ExportFullImageData(aFolder, I);
 end;
 
 
-procedure TKMSpritePack.ExportFullImageData2(const aFolder: string; aIndex: Integer; aTempList: TStringList);
+procedure TKMSpritePack.ExportFullImageData(const aFolder: string; aIndex: Integer);
+var
+  s: string;
 begin
   if fRXData.Flag[aIndex] <> 1 then Exit;
-  
-    ExportImage(aFolder + Format('%d_%.4d.png', [Byte(fRT)+1, aIndex]), aIndex);
 
-    if fRXData.HasMask[aIndex] then
-      ExportMask(aFolder + Format('%d_%.4da.png', [Byte(fRT)+1, aIndex]), aIndex);
+  ExportImage(aFolder + Format('%d_%.4d.png', [Ord(fRT)+1, aIndex]), aIndex);
 
-    //Export pivot
-    aTempList.Clear;
-    aTempList.Append(IntToStr(fRXData.Pivot[aIndex].x));
-    aTempList.Append(IntToStr(fRXData.Pivot[aIndex].y));
-    //SizeNoShadow is used only for Units
-    if fRT = rxUnits then
-    begin
-      aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].Left));
-      aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].Top));
-      aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].Right));
-      aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].Bottom));
-    end;
-    aTempList.SaveToFile(aFolder + Format('%d_%.4d.txt', [Ord(fRT)+1, aIndex]));
+  if fRXData.HasMask[aIndex] then
+    ExportMask(aFolder + Format('%d_%.4da.png', [Ord(fRT)+1, aIndex]), aIndex);
+
+  // Pivot
+  s := IntToStr(fRXData.Pivot[aIndex].x) + sLineBreak + IntToStr(fRXData.Pivot[aIndex].y) + sLineBreak;
+
+  //SizeNoShadow is used only for Units
+  if fRT = rxUnits then
+    s := s + IntToStr(fRXData.SizeNoShadow[aIndex].Left) + sLineBreak +
+      IntToStr(fRXData.SizeNoShadow[aIndex].Top) + sLineBreak +
+      IntToStr(fRXData.SizeNoShadow[aIndex].Right) + sLineBreak +
+      IntToStr(fRXData.SizeNoShadow[aIndex].Bottom) + sLineBreak;
+
+  WriteTextUtf8(s, aFolder + Format('%d_%.4d.txt', [Ord(fRT)+1, aIndex]));
 end;
 
 

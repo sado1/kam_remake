@@ -32,7 +32,7 @@ type
     function GetOrCreateExportWorker: TKMWorkerThread;
 
     procedure ExportImageFromAtlas(aSpritePack: TKMSpritePack; aSpriteID: Integer; const aFilePath: string; const aFileMaskPath: string = '');
-    procedure ExportFullImageDataFromAtlas2(aSpritePack: TKMSpritePack; aSpriteID: Integer; const aFolder: string; aTempList: TStringList);
+    procedure ExportFullImageDataFromAtlas(aSpritePack: TKMSpritePack; aSpriteID: Integer; const aFolder: string);
   public
     constructor Create;
     destructor Destroy; override;
@@ -56,7 +56,7 @@ uses
   TypInfo,
   KromUtils,
   KM_Resource, KM_ResUnits, KM_ResHouses, KM_ResMapElements, KM_ResTexts, KM_ResInterpolation,
-  KM_IoPNG,
+  KM_FileIO, KM_IoPNG,
   KM_Points, KM_CommonTypes, KM_Log;
 
 
@@ -151,10 +151,8 @@ begin
       folderPath: string;
       sprites: TKMResSprites;
       spritePack: TKMSpritePack;
-      SL: TStringList;
     begin
       sprites := TKMResSprites.Create(nil, nil, True);
-      SL := TStringList.Create;
       try
         if sprites.LoadRXASprites(aRT) then
         begin
@@ -165,12 +163,11 @@ begin
           folderPath := ExeDir + 'Export' + PathDelim + RX_INFO[aRT].FileName + '.rxa' + PathDelim;
           ForceDirectories(folderPath);
           for I := 1 to spritePack.RXData.Count do
-            ExportFullImageDataFromAtlas2(spritePack, I, folderPath, SL);
+            ExportFullImageDataFromAtlas(spritePack, I, folderPath);
         end;
       finally
         sprites.ClearTemp;
         sprites.Free;
-        SL.Free;
       end;
     end, aOnDone, 'Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)) + 'from ' + RX_INFO[aRT].FileName + '.rxa');
 end;
@@ -194,7 +191,6 @@ begin
       LVL, STEP, origSpriteID, spriteID: Integer;
       used: array of Boolean;
       spritePack: TKMSpritePack;
-      sList: TStringList;
       folderCreated: Boolean;
       sprites: TKMResSprites;
       units: TKMResUnits;
@@ -214,7 +210,6 @@ begin
       folderPath := ExeDir + 'Export' + PathDelim + 'UnitAnimHD' + PathDelim;
       ForceDirectories(folderPath);
 
-      sList := TStringList.Create;
       try
         for UT := aUnitFrom to aUnitTo do
           for ACT := Low(TKMUnitActionType) to High(TKMUnitActionType) do
@@ -238,7 +233,7 @@ begin
                   for LVL := 0 to INTERP_LEVEL - 1 do
                   begin
                     spriteID := gRes.Interpolation.UnitAction(UT, ACT, DIR, STEP, LVL / INTERP_LEVEL);
-                    ExportFullImageDataFromAtlas2(spritePack, spriteID, fullFolderPath, SList);
+                    ExportFullImageDataFromAtlas(spritePack, spriteID, fullFolderPath);
 
                     // Stop export if async thread is terminated by application
                     if TThread.CheckTerminated then Exit;
@@ -287,7 +282,7 @@ begin
                   for LVL := 0 to INTERP_LEVEL - 1 do
                   begin
                     spriteID := gRes.Interpolation.SerfCarry(WT, DIR, STEP, LVL / INTERP_LEVEL);
-                    ExportFullImageDataFromAtlas2(spritePack, spriteID, fullFolderPath, SList);
+                    ExportFullImageDataFromAtlas(spritePack, spriteID, fullFolderPath);
 
                     used[spriteID] := True;
 
@@ -310,7 +305,7 @@ begin
               for LVL := 0 to INTERP_LEVEL - 1 do
               begin
                 spriteID := gRes.Interpolation.UnitThought(TH, STEP, LVL / INTERP_LEVEL);
-                ExportFullImageDataFromAtlas2(spritePack, spriteID, fullFolderPath, SList);
+                ExportFullImageDataFromAtlas(spritePack, spriteID, fullFolderPath);
                 used[spriteID] := True;
               end;
           end;
@@ -324,7 +319,7 @@ begin
         for spriteID := 1 to Length(used)-1 do
           if not used[spriteID] then
           begin
-            ExportFullImageDataFromAtlas2(spritePack, spriteID, fullFolderPath, SList);
+            ExportFullImageDataFromAtlas(spritePack, spriteID, fullFolderPath);
             // Stop export if async thread is terminated by application
             if TThread.CheckTerminated then Exit;
           end;
@@ -333,7 +328,6 @@ begin
         sprites.Free;
         units.Free;
         resTexts.Free;
-        sList.Free;
       end;
     end, aOnDone, 'Export HD units anim');
 end;
@@ -358,7 +352,6 @@ begin
       used: array of Boolean;
       rxData: TRXData;
       spritePack: TKMSpritePack;
-      sList: TStringList;
       folderCreated: Boolean;
       sprites: TKMResSprites;
       units: TKMResUnits;
@@ -377,7 +370,6 @@ begin
       folderPath := ExeDir + 'Export' + PathDelim + 'UnitAnim' + PathDelim;
       ForceDirectories(folderPath);
 
-      sList := TStringList.Create;
       try
         for UT := aUnitFrom to aUnitTo do
           for ACT := Low(TKMUnitActionType) to High(TKMUnitActionType) do
@@ -397,7 +389,7 @@ begin
                     ForceDirectories(fullFolderPath);
                     folderCreated := True;
                   end;
-                  spritePack.ExportFullImageData2(fullFolderPath, spriteID, sList);
+                  spritePack.ExportFullImageData(fullFolderPath, spriteID);
                   // Stop export if async thread is terminated by application
                   if TThread.CheckTerminated then Exit;
                 end;
@@ -440,7 +432,7 @@ begin
                       ForceDirectories(fullFolderPath);
                       folderCreated := True;
                     end;
-                    spritePack.ExportFullImageData2(fullFolderPath, spriteID, sList);
+                    spritePack.ExportFullImageData(fullFolderPath, spriteID);
                     // Stop export if async thread is terminated by application
                     if TThread.CheckTerminated then Exit;
                   end;
@@ -454,7 +446,7 @@ begin
         for T := thEat to High(TKMUnitThought) do
           for STEP := THOUGHT_BOUNDS[T,1] to  THOUGHT_BOUNDS[T,2] do
           begin
-            spritePack.ExportFullImageData2(fullFolderPath, STEP+1, sList);
+            spritePack.ExportFullImageData(fullFolderPath, STEP+1);
             used[STEP+1] := True;
           end;
 
@@ -466,7 +458,7 @@ begin
         for spriteID := 1 to Length(used)-1 do
           if not used[spriteID] then
           begin
-            spritePack.ExportFullImageData2(fullFolderPath, spriteID, sList);
+            spritePack.ExportFullImageData(fullFolderPath, spriteID);
             // Stop export if async thread is terminated by application
             if TThread.CheckTerminated then Exit;
           end;
@@ -475,7 +467,6 @@ begin
         sprites.Free;
         units.Free;
         resTexts.Free;
-        sList.Free;
       end;
     end, aOnDone, 'Export units anim');
 end;
@@ -495,7 +486,6 @@ begin
       ACT: TKMHouseActionType;
       sprites: TKMResSprites;
       spritePack: TKMSpritePack;
-      sList: TStringList;
       houses: TKMResHouses;
       resTexts: TKMTextLibraryMulti;
     begin
@@ -506,7 +496,6 @@ begin
       folderPath := ExeDir + 'Export' + PathDelim + 'HouseAnimHD' + PathDelim;
       ForceDirectories(folderPath);
 
-      sList := TStringList.Create;
       houses := TKMResHouses.Create;
 
       resTexts := TKMTextLibraryMulti.Create;
@@ -532,7 +521,7 @@ begin
               for LVL := 0 to INTERP_LEVEL - 1 do
               begin
                 spriteID := gRes.Interpolation.House(HT, ACT, STEP, LVL / INTERP_LEVEL);
-                ExportFullImageDataFromAtlas2(spritePack, spriteID, fullFolderPath, SList);
+                ExportFullImageDataFromAtlas(spritePack, spriteID, fullFolderPath);
 
                 // Stop export if async thread is terminated by application
                 if TThread.CheckTerminated then Exit;
@@ -563,7 +552,7 @@ begin
                 for LVL := 0 to INTERP_LEVEL - 1 do
                 begin
                   spriteID := gRes.Interpolation.Beast(HT, beast, I, STEP, LVL / INTERP_LEVEL);
-                  ExportFullImageDataFromAtlas2(spritePack, spriteID, fullFolderPath, SList);
+                  ExportFullImageDataFromAtlas(spritePack, spriteID, fullFolderPath);
 
                   // Stop export if async thread is terminated by application
                   if TThread.CheckTerminated then Exit;
@@ -576,7 +565,6 @@ begin
         houses.Free;
         sprites.ClearTemp;
         sprites.Free;
-        sList.Free;
       end;
     end, aOnDone, 'Export HD House animation');
 end;
@@ -596,8 +584,6 @@ begin
     ACT: TKMHouseActionType;
     Q, beast, I, K, origSpriteID: Integer;
     spritePack: TKMSpritePack;
-    SList: TStringList;
-
     sprites: TKMResSprites;
     resTexts: TKMTextLibraryMulti;
   begin
@@ -608,7 +594,6 @@ begin
     folderPath := ExeDir + 'Export' + PathDelim + 'HouseAnim' + PathDelim;
     ForceDirectories(folderPath);
 
-    SList := TStringList.Create;
     houses := TKMResHouses.Create;
 
     resTexts := TKMTextLibraryMulti.Create;
@@ -626,7 +611,7 @@ begin
           begin
             origSpriteID := houses[HT].Anim[ACT].Step[K] + 1;
             if origSpriteID <> 0 then
-              spritePack.ExportFullImageData2(fullFolderPath, origSpriteID, SList);
+              spritePack.ExportFullImageData(fullFolderPath, origSpriteID);
             // Stop export if async thread is terminated by application
             if TThread.CheckTerminated then Exit;
           end;
@@ -651,7 +636,7 @@ begin
             begin
               origSpriteID := houses.BeastAnim[HT,beast,I].Step[K]+1;
               if origSpriteID <> 0 then
-                spritePack.ExportFullImageData2(fullFolderPath, origSpriteID, SList);
+                spritePack.ExportFullImageData(fullFolderPath, origSpriteID);
               // Stop export if async thread is terminated by application
               if TThread.CheckTerminated then Exit;
             end;
@@ -660,7 +645,6 @@ begin
     finally
       resTexts.Free;
       houses.Free;
-      SList.Free;
       sprites.ClearTemp;
       sprites.Free;
     end;
@@ -718,30 +702,29 @@ begin
 end;
 
 
-procedure TKMResExporter.ExportFullImageDataFromAtlas2(aSpritePack: TKMSpritePack; aSpriteID: Integer; const aFolder: string; aTempList: TStringList);
+procedure TKMResExporter.ExportFullImageDataFromAtlas(aSpritePack: TKMSpritePack; aSpriteID: Integer; const aFolder: string);
+var
+  s: string;
 begin
-  if aSpritePack.RXData.Flag[aSpriteID] = 1 then
-  begin
-    ExportImageFromAtlas(aSpritePack, aSpriteID, aFolder + Format('%d_%.4d.png', [Byte(aSpritePack.RT)+1, aSpriteID]),
-                                                 aFolder + Format('%d_%.4da.png', [Byte(aSpritePack.RT)+1, aSpriteID]));
+  if aSpritePack.RXData.Flag[aSpriteID] <> 1 then Exit;
+
+  ExportImageFromAtlas(aSpritePack, aSpriteID, aFolder + Format('%d_%.4d.png', [Byte(aSpritePack.RT)+1, aSpriteID]),
+                                               aFolder + Format('%d_%.4da.png', [Byte(aSpritePack.RT)+1, aSpriteID]));
 
 //    if aSpritePack.RXData.HasMask[aIndex] then
 //      ExportMask(aFolder + Format('%d_%.4da.png', [Byte(fRT)+1, aIndex]), aIndex);
 
-    //Export pivot
-    aTempList.Clear;
-    aTempList.Append(IntToStr(aSpritePack.RXData.Pivot[aSpriteID].x));
-    aTempList.Append(IntToStr(aSpritePack.RXData.Pivot[aSpriteID].y));
-    //SizeNoShadow is used only for Units
-    if aSpritePack.RT = rxUnits then
-    begin
-      aTempList.Append(IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].Left));
-      aTempList.Append(IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].Top));
-      aTempList.Append(IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].Right));
-      aTempList.Append(IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].Bottom));
-    end;
-    aTempList.SaveToFile(aFolder + Format('%d_%.4d.txt', [Ord(aSpritePack.RT)+1, aSpriteID]));
-  end;
+  // Pivot
+  s := IntToStr(aSpritePack.RXData.Pivot[aSpriteID].x) + sLineBreak + IntToStr(aSpritePack.RXData.Pivot[aSpriteID].y) + sLineBreak;
+
+  //SizeNoShadow is used only for Units
+  if aSpritePack.RT = rxUnits then
+    s := s + IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].Left) + sLineBreak +
+      IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].Top) + sLineBreak +
+      IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].Right) + sLineBreak +
+      IntToStr(aSpritePack.RXData.SizeNoShadow[aSpriteID].Bottom) + sLineBreak;
+
+  WriteTextUtf8(s, aFolder + Format('%d_%.4d.txt', [Ord(aSpritePack.RT)+1, aSpriteID]));
 end;
 
 
@@ -756,7 +739,6 @@ begin
       I, J, K, spriteID: Integer;
       sprites: TKMResSprites;
       spritePack: TKMSpritePack;
-      sList: TStringList;
     begin
       sprites := TKMResSprites.Create(nil, nil, True);
       sprites.LoadRXASprites(rxTrees);
@@ -764,8 +746,6 @@ begin
 
       folderPath := ExeDir + 'Export' + PathDelim + 'TreeAnimHD' + PathDelim;
       ForceDirectories(folderPath);
-
-      sList := TStringList.Create;
 
       PrepareGFXPrepData(spritePack);
 
@@ -785,7 +765,7 @@ begin
                   end else
                     fullFolderPath := folderPath;
 
-                  ExportFullImageDataFromAtlas2(spritePack, spriteID, fullFolderPath, sList);
+                  ExportFullImageDataFromAtlas(spritePack, spriteID, fullFolderPath);
                 end;
 
                 // Stop export if async thread is terminated by application
@@ -794,7 +774,6 @@ begin
       finally
         sprites.ClearTemp;
         sprites.Free;
-        sList.Free;
       end;
     end, aOnDone, 'Export HD Tree animation');
 end;
@@ -812,7 +791,6 @@ begin
       I, K, spriteID: Integer;
       sprites: TKMResSprites;
       spritePack: TKMSpritePack;
-      sList: TStringList;
     begin
       sprites := TKMResSprites.Create(nil, nil, True);
       sprites.LoadSprites(rxTrees, False);
@@ -820,8 +798,6 @@ begin
 
       folderPath := ExeDir + 'Export' + PathDelim + 'TreeAnim' + PathDelim;
       ForceDirectories(folderPath);
-
-      sList := TStringList.Create;
 
       try
         for I := 0 to gRes.MapElements.Count - 1 do
@@ -839,7 +815,7 @@ begin
               end else
                 fullFolderPath := folderPath;
 
-              spritePack.ExportFullImageData2(fullFolderPath, spriteID, sList);
+              spritePack.ExportFullImageData(fullFolderPath, spriteID);
               // Stop export if async thread is terminated by application
               if TThread.CheckTerminated then Exit;
             end;
@@ -848,7 +824,6 @@ begin
       finally
         sprites.ClearTemp;
         sprites.Free;
-        sList.Free;
       end;
     end, aOnDone, 'Export tree anim');
 end;

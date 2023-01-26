@@ -52,6 +52,7 @@ uses
   function IsFilePath(const aPath: UnicodeString): Boolean;
 
   procedure WriteText(const aText: string; aFilename: string; aEncoding: TEncoding);
+  procedure WriteTextUtf8(const aText, aFilename: string);
 
   function IsDirectoryWriteable(const aDir: string): Boolean;
 
@@ -487,6 +488,25 @@ begin
     sl.Free;
   end;
 {$ENDIF}
+end;
+
+
+// Body taken from TStringList.SaveToFile
+procedure WriteTextUtf8(const aText, aFilename: string);
+var
+  Stream: TFileStream;
+  BOM, Buffer: TBytes;
+begin
+  Stream := TFileStream.Create(aFileName, fmCreate);
+  try
+    BOM := TEncoding.UTF8.GetPreamble;
+    Stream.WriteBuffer(BOM, Length(BOM));
+
+    Buffer := TEncoding.UTF8.GetBytes(aText);
+    Stream.WriteBuffer(Buffer, Length(Buffer));
+  finally
+    Stream.Free;
+  end;
 end;
 
 
