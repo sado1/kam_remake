@@ -24,8 +24,7 @@ type
   private
     fExportWorkerHolder: TKMWorkerThreadHolder;
 
-    fGFXPrepDataBySpriteID: TDictionary<Integer, TKMPrepGFXDataID>;
-    fGFXPrepMaskDataBySpriteID: TDictionary<Integer, TKMPrepGFXDataID>;
+    fGFXPrepDataBySpriteID: array [TKMSpriteAtlasType] of TDictionary<Integer, TKMPrepGFXDataID>;
 
     procedure PrepareGFXPrepData(aSpritePack: TKMSpritePack);
 
@@ -74,8 +73,8 @@ constructor TKMResExporter.Create;
 begin
   inherited;
 
-  fGFXPrepDataBySpriteID := TDictionary<Integer, TKMPrepGFXDataID>.Create;
-  fGFXPrepMaskDataBySpriteID := TDictionary<Integer, TKMPrepGFXDataID>.Create;
+  fGFXPrepDataBySpriteID[saBase] := TDictionary<Integer, TKMPrepGFXDataID>.Create;
+  fGFXPrepDataBySpriteID[saMask] := TDictionary<Integer, TKMPrepGFXDataID>.Create;
 end;
 
 
@@ -85,8 +84,8 @@ begin
     //This will ensure all queued work is completed before destruction
     FreeAndNil(fExportWorkerHolder);
 
-  fGFXPrepDataBySpriteID.Free;
-  fGFXPrepMaskDataBySpriteID.Free;
+  FreeAndNil(fGFXPrepDataBySpriteID[saBase]);
+  FreeAndNil(fGFXPrepDataBySpriteID[saMask]);
 
   inherited;
 end;
@@ -106,18 +105,15 @@ var
   I, K: Integer;
   SAT: TKMSpriteAtlasType;
 begin
-  fGFXPrepDataBySpriteID.Clear;
-  fGFXPrepMaskDataBySpriteID.Clear;
+  fGFXPrepDataBySpriteID[saBase].Clear;
+  fGFXPrepDataBySpriteID[saMask].Clear;
 
-  // Map spriteID to loaded from RXA GFXPrepData
+  // Map spriteID to loaded from RXA Atlases
   for SAT := Low(aSpritePack.Atlases) to High(aSpritePack.Atlases) do
     for I := Low(aSpritePack.Atlases[SAT]) to High(aSpritePack.Atlases[SAT]) do
       with aSpritePack.Atlases[SAT, I] do
         for K := 0 to High(Container.Sprites) do
-          case SAT of
-            saBase: fGFXPrepDataBySpriteID.Add(Container.Sprites[K].SpriteID, TKMPrepGFXDataID.New(SAT, I, K));
-            saMask: fGFXPrepMaskDataBySpriteID.Add(Container.Sprites[K].SpriteID, TKMPrepGFXDataID.New(SAT, I, K));
-          end;
+          fGFXPrepDataBySpriteID[SAT].Add(Container.Sprites[K].SpriteID, TKMPrepGFXDataID.New(SAT, I, K));
 end;
 
 
@@ -666,7 +662,7 @@ begin
   SetLength(pngData, pngWidth * pngHeight);
 
   // Export RGB values
-  if fGFXPrepDataBySpriteID.TryGetValue(aSpriteID, prepGFXDataID) then
+  if fGFXPrepDataBySpriteID[saBase].TryGetValue(aSpriteID, prepGFXDataID) then
     with aSpritePack.Atlases[prepGFXDataID.AtlasType, prepGFXDataID.AtlasID] do
     begin
       for I := 0 to pngHeight - 1 do
@@ -683,7 +679,8 @@ begin
       SaveToPng(pngWidth, pngHeight, pngData, aFilePath);
     end;
 
-  if (aFileMaskPath <> '') and fGFXPrepMaskDataBySpriteID.TryGetValue(aSpriteID, prepGFXDataID) then
+    // Masks
+  if (aFileMaskPath <> '') and fGFXPrepDataBySpriteID[saMask].TryGetValue(aSpriteID, prepGFXDataID) then
     with aSpritePack.Atlases[prepGFXDataID.AtlasType, prepGFXDataID.AtlasID] do
     begin
       for I := 0 to pngHeight - 1 do
