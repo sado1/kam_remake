@@ -1581,6 +1581,7 @@ var
   RT: TRXType;
 begin
   inherited Create;
+
   fGameRXTypes := TStringList.Create;
   fTemp := aTemp;
 

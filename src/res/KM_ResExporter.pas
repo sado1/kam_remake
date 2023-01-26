@@ -646,7 +646,7 @@ var
   px, py: Integer;
   pngWidth, pngHeight: Word;
   pngData: TKMCardinalArray;
-  prepGFXDataID: TKMAtlasAddress;
+  atlasAddress: TKMAtlasAddress;
 begin
   pngWidth := aSpritePack.RXData.Size[aSpriteID].X;//fGFXData[aSpritePack.RT, aSpriteID].PxWidth;
   pngHeight := aSpritePack.RXData.Size[aSpriteID].Y;//fGFXData[aSpritePack.RT, aSpriteID].PxHeight;
@@ -654,36 +654,34 @@ begin
   SetLength(pngData, pngWidth * pngHeight);
 
   // Export RGB values
-  if fAtlasMap[saBase].TryGetValue(aSpriteID, prepGFXDataID) then
-    with aSpritePack.Atlases[saBase, prepGFXDataID.AtlasID] do
+  if fAtlasMap[saBase].TryGetValue(aSpriteID, atlasAddress) then
+    with aSpritePack.Atlases[saBase, atlasAddress.AtlasID] do
     begin
+      // Copy rect
       for I := 0 to pngHeight - 1 do
         for K := 0 to pngWidth - 1 do
         begin
-          px := Container.Sprites[prepGFXDataID.SpriteNum].OriginX + K;
-          py := Container.Sprites[prepGFXDataID.SpriteNum].OriginY + I;
+          px := Container.Sprites[atlasAddress.SpriteNum].OriginX + K;
+          py := Container.Sprites[atlasAddress.SpriteNum].OriginY + I;
 
-          //todo: Adjoin
-          pngData[I*pngWidth + K] := Data[py * Container.Width + px] and $FFFFFF;
-          pngData[I*pngWidth + K] := pngData[I * pngWidth + K] or (Data[py * Container.Width + px] and $FF000000);
+          pngData[I * pngWidth + K] := Data[py * Container.Width + px];
         end;
 
       SaveToPng(pngWidth, pngHeight, pngData, aFilePath);
     end;
 
   // Masks
-  if (aFileMaskPath <> '') and fAtlasMap[saMask].TryGetValue(aSpriteID, prepGFXDataID) then
-    with aSpritePack.Atlases[saMask, prepGFXDataID.AtlasID] do
+  if (aFileMaskPath <> '') and fAtlasMap[saMask].TryGetValue(aSpriteID, atlasAddress) then
+    with aSpritePack.Atlases[saMask, atlasAddress.AtlasID] do
     begin
+      // Copy rect
       for I := 0 to pngHeight - 1 do
         for K := 0 to pngWidth - 1 do
         begin
-          px := Container.Sprites[prepGFXDataID.SpriteNum].OriginX + K;
-          py := Container.Sprites[prepGFXDataID.SpriteNum].OriginY + I;
+          px := Container.Sprites[atlasAddress.SpriteNum].OriginX + K;
+          py := Container.Sprites[atlasAddress.SpriteNum].OriginY + I;
 
-          //todo: Adjoin
-          pngData[I*pngWidth + K] := Data[py * Container.Width + px] and $FFFFFF;
-          pngData[I * pngWidth + K] := pngData[I * pngWidth + K] or (Data[py * Container.Width + px] and $FF000000);
+          pngData[I * pngWidth + K] := Data[py * Container.Width + px];
         end;
 
       SaveToPng(pngWidth, pngHeight, pngData, aFileMaskPath);
