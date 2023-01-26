@@ -24,9 +24,9 @@ type
     property SpritesSourcePath: string read fSpritesSourcePath write fSpritesSourcePath;
     property RXXSavePath: string read fRXXSavePath write SetRXXSavePath;
 
-    procedure Pack2(RT: TRXTypeSet; fPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+    procedure Pack2(aRxSet: TRXTypeSet; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
 
-    function GetAvailableToPack(const aPath: string): TRXTypeSet;
+    class function GetAvailableToPack(const aPath: string): TRXTypeSet;
   end;
 
 
@@ -59,7 +59,7 @@ begin
 end;
 
 
-function TKMRXXPacker.GetAvailableToPack(const aPath: string): TRXTypeSet;
+class function TKMRXXPacker.GetAvailableToPack(const aPath: string): TRXTypeSet;
 var
   RT: TRXType;
 begin
@@ -192,7 +192,7 @@ begin
 end;
 
 
-procedure TKMRXXPacker.Pack2(RT: TRXTypeSet; fPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+procedure TKMRXXPacker.Pack2(aRxSet: TRXTypeSet; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
 var
   rxType: TRXType;
   tick, tickTotal: Cardinal;
@@ -206,11 +206,11 @@ begin
   tickTotal := GetTickCount;
 
   for rxType := Low(TRXType) to High(TRXType) do
-  if rxType in RT then
+  if rxType in aRxSet then
   begin
     aOnMessage('Packing ' + RX_INFO[rxType].FileName + '.rxx ... ');
     tick := GetTickCount;
-    Pack(rxType, fPalettes, aOnMessage);
+    Pack(rxType, aPalettes, aOnMessage);
     aOnMessage('... packed in ' + IntToStr(GetTickCount - tick) + ' ms');
   end;
 
