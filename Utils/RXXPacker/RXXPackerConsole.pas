@@ -13,7 +13,7 @@ type
     fSpritesSourcePath: string;
     fRXXSavePath: string;
     fPackToRXA: Boolean;
-    fRxs: TRXTypeSet;
+    fRxSet: TRXTypeSet;
   private
     class procedure OutputInstructions;
     class procedure ParseArguments;
@@ -86,20 +86,18 @@ begin
 
     for rxType := Low(TRXType) to High(TRXType) do
     if LowerCase(fParams[I]) = 'all' then
-      fRxs := RXX_TO_PACK
+      fRxSet := RXX_TO_PACK
     else
     if LowerCase(fParams[I]) = LowerCase(RX_INFO[rxType].FileName) then
-      fRxs := fRxs + [rxType];
+      fRxSet := fRxSet + [rxType];
   end;
 end;
 
 
 class procedure TKMRXXPackerConsole.Pack;
 var
-  rxType: TRXType;
   rxxPacker: TKMRXXPacker;
   resPalettes: TKMResPalettes;
-  tick: Cardinal;
 begin
   ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
 
@@ -107,17 +105,12 @@ begin
   rxxPacker.SpritesSourcePath := fSpritesSourcePath;
   rxxPacker.RXXSavePath := fRXXSavePath;
   rxxPacker.PackToRXA := fPackToRXA;
+  rxxPacker.RXXFormat := rxxOne;
 
   resPalettes := TKMResPalettes.Create;
   resPalettes.LoadPalettes(ExeDir + 'data\gfx\');
   try
-    for rxType := Low(TRXType) to High(TRXType) do
-    if rxType in fRxs then
-    begin
-      tick := GetTickCount;
-      rxxPacker.Pack(rxType, resPalettes, procedure (aMsg: string) begin Writeln(aMsg); end);
-      Writeln(RX_INFO[rxType].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
-    end;
+    rxxPacker.Pack2(fRxSet, resPalettes, procedure (aMsg: string) begin Writeln(aMsg); end);
   finally
     rxxPacker.Free;
     resPalettes.Free;

@@ -2,7 +2,7 @@ unit RXXPackerProc;
 {$I ..\..\KaM_Remake.inc}
 interface
 uses
-  SysUtils, Generics.Collections,
+  SysUtils, Windows, Generics.Collections,
   KM_ResTypes, KM_ResPalettes, KM_ResSprites;
 
 
@@ -14,6 +14,7 @@ type
 
     procedure SetSpritesSourcePath(const aValue: string);
     procedure SetRXXSavePath(const aValue: string);
+    procedure Pack(RT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
   public
     PackToRXX: Boolean;
     PackToRXA: Boolean;
@@ -24,7 +25,7 @@ type
     property SpritesSourcePath: string read fSpritesSourcePath write SetSpritesSourcePath;
     property RXXSavePath: string read fRXXSavePath write SetRXXSavePath;
 
-    procedure Pack(RT: TRXType; fPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+    procedure Pack2(RT: TRXTypeSet; fPalettes: TKMResPalettes; aOnMessage: TProc<string>);
   end;
 
 
@@ -51,7 +52,7 @@ begin
 end;
 
 
-procedure TKMRXXPacker.Pack(RT: TRXType; fPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+procedure TKMRXXPacker.Pack(RT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
 var
   deathAnimProcessed: TList<Integer>;
   spritePack: TKMSpritePackEdit;
@@ -71,7 +72,7 @@ begin
   if (RT <> rxTiles) and not FileExists(rxName) then
     raise Exception.Create('Cannot find ' + rxName + ' file.' + sLineBreak + 'Please copy the file from your KaM\data\gfx\res\ folder.');
 
-  spritePack := TKMSpritePackEdit.Create(RT, fPalettes);
+  spritePack := TKMSpritePackEdit.Create(RT, aPalettes);
   try
     // Load base sprites from original KaM RX packages
     if RT <> rxTiles then
@@ -169,6 +170,32 @@ begin
   finally
     spritePack.Free;
   end;
+end;
+
+
+procedure TKMRXXPacker.Pack2(RT: TRXTypeSet; fPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+var
+  rxType: TRXType;
+  tick, tickTotal: Cardinal;
+begin
+  if not DirectoryExists(fSpritesSourcePath + SPRITES_RES_DIR + '\') then
+  begin
+    aOnMessage('Cannot find ' + fSpritesSourcePath + SPRITES_RES_DIR + '\ folder.' + sLineBreak + 'Please make sure this folder exists.');
+    Exit;
+  end;
+
+  tickTotal := GetTickCount;
+
+  for rxType := Low(TRXType) to High(TRXType) do
+  if rxType in RT then
+  begin
+    aOnMessage('Packing ' + RX_INFO[rxType].FileName + '.rxx ... ');
+    tick := GetTickCount;
+    Pack(rxType, fPalettes, aOnMessage);
+    aOnMessage(RX_INFO[rxType].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
+  end;
+
+  aOnMessage('Everything packed in ' + IntToStr(GetTickCount - tickTotal) + ' ms');
 end;
 
 

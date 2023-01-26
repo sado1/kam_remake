@@ -180,9 +180,8 @@ end;
 
 procedure TRXXForm1.btnPackRXXClick(Sender: TObject);
 var
-  RT: TRXType;
+  rxSet: TRXTypeSet;
   I: Integer;
-  tickTotal, tick: Cardinal;
 begin
   btnPackRXX.Enabled := False;
   chkPackToRXX.Enabled := False;
@@ -190,8 +189,6 @@ begin
   rbRXXFormat0.Enabled := False;
   rbRXXFormat1.Enabled := False;
   try
-    tickTotal := GetTickCount;
-
     fRxxPacker.SpritesSourcePath := edSpritesLoadDir.Text;
     fRxxPacker.RXXSavePath    := edSpritesSaveDir.Text;
     fRxxPacker.PackToRXX      := chkPackToRXX.Checked;
@@ -199,35 +196,19 @@ begin
     if rbRXXFormat0.Checked then fRxxPacker.RXXFormat := rxxZero;
     if rbRXXFormat1.Checked then fRxxPacker.RXXFormat := rxxOne;
 
-    if not DirectoryExists(fRxxPacker.SpritesSourcePath + SPRITES_RES_DIR + '\') then
-    begin
-      MessageBox(Handle, PWideChar('Cannot find ' + fRxxPacker.SpritesSourcePath + SPRITES_RES_DIR + '\ folder.' +
-        sLineBreak + 'Please make sure this folder exists.'), 'Error', MB_ICONEXCLAMATION or MB_OK);
-      Exit;
-    end;
+    rxSet := [];
+    for I := 0 to ListBox1.Items.Count - 1 do
+      if ListBox1.Selected[I] then
+        rxSet := rxSet + [TRXType(ListBox1.Items.Objects[I])];
 
     try
-      for I := 0 to ListBox1.Items.Count - 1 do
-        if ListBox1.Selected[I] then
-        begin
-          tick := GetTickCount;
-          meLog.Lines.Append('Packing ' + ListBox1.Items[I] + ' ...');
-
-          RT := TRXType(ListBox1.Items.Objects[I]);
-
-          fRxxPacker.Pack(RT, fPalettes, procedure (aMsg: string) begin meLog.Lines.Append(aMsg); end);
-
-          ListBox1.Selected[I] := False;
-          ListBox1.Refresh;
-
-          meLog.Lines.Append(ListBox1.Items[I] + ' packed in ' + IntToStr(GetTickCount - tick) + ' ms');
-        end;
-
-      meLog.Lines.Append('Everything packed in ' + IntToStr(GetTickCount - tickTotal) + ' ms');
+      fRxxPacker.Pack2(rxSet, fPalettes, procedure (aMsg: string) begin meLog.Lines.Append(aMsg); end);
     except
       on E: Exception do
         MessageBox(Handle, PWideChar(E.Message), 'Error', MB_ICONEXCLAMATION or MB_OK);
     end;
+
+    ListBox1.ClearSelection;
   finally
     btnPackRXX.Enabled := True;
     chkPackToRXX.Enabled := True;
