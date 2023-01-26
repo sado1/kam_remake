@@ -23,6 +23,8 @@ var
   I, K: Integer;
   T: Cardinal;
 begin
+  ForceDirectories(ExtractFilePath(aFile));
+
   {$IFDEF WDC}
     Png := TPngImage.CreateBlank(COLOR_RGBALPHA, 8, aWidth, aHeight);
     try

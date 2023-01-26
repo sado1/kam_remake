@@ -42,7 +42,6 @@ type
     fTemp: Boolean;
     fPad: Byte; //Force padding between sprites to avoid neighbour edge visibility
 
-    procedure SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; var Data: TKMCardinalArray);
     procedure SetGFXData(aTexID: Cardinal; aSpriteInfo: TKMBinItem; aAtlasType: TKMSpriteAtlasType);
     procedure PrepareAtlases(aSpriteInfo: TBinArray; aMode: TKMSpriteAtlasType; aTexType: TKMTexFormat; var aBaseRAM, aColorRAM, aTexCount: Cardinal;
                              aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil);
@@ -1370,7 +1369,7 @@ var
   CT, CL, Pixel: Cardinal;
   texID: Cardinal;
   ID: Integer;
-  TD: TKMCardinalArray;
+  atlasData: TKMCardinalArray;
   texFilter: TKMFilterType;
 begin
 //  gLog.AddTime('Length(aSpriteInfo) = ' + IntToStr(Length(aSpriteInfo)));
@@ -1381,8 +1380,8 @@ begin
 //      gLog.AddTime('I = ' + IntToStr(I));
     Assert(MakePOT(aSpriteInfo[I].Width) = aSpriteInfo[I].Width);
     Assert(MakePOT(aSpriteInfo[I].Height) = aSpriteInfo[I].Height);
-    SetLength(TD, 0);
-    SetLength(TD, aSpriteInfo[I].Width * aSpriteInfo[I].Height);
+    SetLength(atlasData, 0);
+    SetLength(atlasData, aSpriteInfo[I].Width * aSpriteInfo[I].Height);
 
     //Copy sprite to Atlas
     for K := 0 to High(aSpriteInfo[I].Sprites) do
@@ -1395,35 +1394,35 @@ begin
         CL := aSpriteInfo[I].Sprites[K].PosX;
         Pixel := (CT + L) * aSpriteInfo[I].Width + CL + M;
         if aMode = saBase then
-          TD[Pixel] := fRXData.RGBA[ID, L * fRXData.Size[ID].X + M]
+          atlasData[Pixel] := fRXData.RGBA[ID, L * fRXData.Size[ID].X + M]
         else
-          TD[Pixel] := $FFFFFF or (fRXData.Mask[ID, L * fRXData.Size[ID].X + M] shl 24);
+          atlasData[Pixel] := $FFFFFF or (fRXData.Mask[ID, L * fRXData.Size[ID].X + M] shl 24);
 
         //Fill padding with edge pixels
         if fPad > 0 then
         begin
           if (M = 0) then
           begin
-            TD[Pixel - 1] := TD[Pixel];
+            atlasData[Pixel - 1] := atlasData[Pixel];
             if (L = 0) then
-              TD[Pixel - aSpriteInfo[I].Width - 1] := TD[Pixel]
+              atlasData[Pixel - aSpriteInfo[I].Width - 1] := atlasData[Pixel]
             else
             if (L = fRXData.Size[ID].Y - 1) then
-              TD[Pixel + aSpriteInfo[I].Width - 1] := TD[Pixel];
+              atlasData[Pixel + aSpriteInfo[I].Width - 1] := atlasData[Pixel];
           end;
 
           if (M = fRXData.Size[ID].X - 1) then
           begin
-            TD[Pixel + 1] := TD[Pixel];
+            atlasData[Pixel + 1] := atlasData[Pixel];
             if (L = 0) then
-              TD[Pixel - aSpriteInfo[I].Width + 1] := TD[Pixel]
+              atlasData[Pixel - aSpriteInfo[I].Width + 1] := atlasData[Pixel]
             else
             if (L = fRXData.Size[ID].Y - 1) then
-              TD[Pixel + aSpriteInfo[I].Width + 1] := TD[Pixel];
+              atlasData[Pixel + aSpriteInfo[I].Width + 1] := atlasData[Pixel];
           end;
 
-          if (L = 0) then                       TD[Pixel - aSpriteInfo[I].Width] := TD[Pixel];
-          if (L = fRXData.Size[ID].Y - 1) then  TD[Pixel + aSpriteInfo[I].Width] := TD[Pixel];
+          if (L = 0) then                       atlasData[Pixel - aSpriteInfo[I].Width] := atlasData[Pixel];
+          if (L = fRXData.Size[ID].Y - 1) then  atlasData[Pixel + aSpriteInfo[I].Width] := atlasData[Pixel];
         end;
 
         //Sprite outline
@@ -1431,7 +1430,7 @@ begin
           (L = 0) or (M = 0)
           or (L = fRXData.Size[ID].Y - 1)
           or (M = fRXData.Size[ID].X - 1)) then
-          TD[Pixel] := $FF0000FF;
+          atlasData[Pixel] := $FF0000FF;
       end;
     end;
 
@@ -1442,7 +1441,7 @@ begin
       if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then
         texFilter := ftLinear;
 
-      texID := TKMRender.GenTexture(aSpriteInfo[I].Width, aSpriteInfo[I].Height, @TD[0], aTexType, texFilter, texFilter);
+      texID := TKMRender.GenTexture(aSpriteInfo[I].Width, aSpriteInfo[I].Height, @atlasData[0], aTexType, texFilter, texFilter);
 
       //Now that we know texture IDs we can fill GFXData structure
       SetGFXData(texID, aSpriteInfo[I], aMode);
@@ -1453,7 +1452,7 @@ begin
       // Save prepared data for generating later (in main thread)
       fGFXPrepData[aMode, I].SpriteInfo := aSpriteInfo[I];
       fGFXPrepData[aMode, I].TexType := aTexType;
-      fGFXPrepData[aMode, I].Data := TD;
+      fGFXPrepData[aMode, I].Data := atlasData;
     end;
 
     if aMode = saBase then
@@ -1464,8 +1463,8 @@ begin
     Inc(aTexCount);
 
     if aFillGFXData and EXPORT_SPRITE_ATLASES and (fRT in EXPORT_SPRITE_ATLASES_LIST) then
-      SaveTextureToPNG(aSpriteInfo[I].Width, aSpriteInfo[I].Height, RX_INFO[fRT].FileName + '_' +
-                       SPRITE_TYPE_EXPORT_NAME[aMode] + IntToStr(I), TD);
+      SaveToPng(aSpriteInfo[I].Width, aSpriteInfo[I].Height, atlasData,
+        ExeDir + 'Export\GenTextures\' + RX_INFO[fRT].FileName + '_' + SPRITE_TYPE_EXPORT_NAME[aMode] + IntToStr(I) + '.png');
   end;
 end;
 
@@ -1550,28 +1549,6 @@ end;
 {$ENDIF}
 
 
-procedure TKMSpritePack.SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; var Data: TKMCardinalArray);
-var
-  I, K: Word;
-  folder: string;
-  pngWidth, pngHeight: Word;
-  pngData: TKMCardinalArray;
-begin
-  folder := ExeDir + 'Export' + PathDelim + 'GenTextures' + PathDelim;
-  ForceDirectories(folder);
-
-  pngWidth := aWidth;
-  pngHeight := aHeight;
-  SetLength(pngData, pngWidth * pngHeight);
-
-  for I := 0 to aHeight - 1 do
-    for K := 0 to aWidth - 1 do
-      pngData[I * aWidth + K] := (PCardinal(Cardinal(@Data[0]) + (I * aWidth + K) * 4))^;
-
-  SaveToPng(pngWidth, pngHeight, pngData, folder + aFilename + '.png');
-end;
-
-
 procedure TKMSpritePack.ClearGameResGenTemp;
 var
   SAT: TKMSpriteAtlasType;
@@ -1608,9 +1585,9 @@ begin
         SetGFXData(texID, SpriteInfo, SAT);
 
         if ((not aIsRXA and EXPORT_SPRITE_ATLASES) or (aIsRXA and EXPORT_SPRITE_ATLASES_RXA))
-           and (fRT in EXPORT_SPRITE_ATLASES_LIST) then
-          SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RX_INFO[fRT].FileName + IfThenS(aIsRXA, '_rxa_', '_') +
-                           SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(texID), Data);
+        and (fRT in EXPORT_SPRITE_ATLASES_LIST) then
+          SaveToPng(SpriteInfo.Width, SpriteInfo.Height, Data,
+            ExeDir + 'Export\GenTextures\' + RX_INFO[fRT].FileName + IfThenS(aIsRXA, '_rxa_', '_') + SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(texID) + '.png');
       end;
     end;
   {$ENDIF}
