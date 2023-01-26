@@ -13,10 +13,9 @@ type
   TKMAnimKind = (akNormal, akInterpolated);
 
   TKMAtlasAddress = record
-    AtlasType: TKMSpriteAtlasType;
     AtlasID: Integer;
     SpriteNum: Integer; // In the atlas
-    constructor New(aAtlasType: TKMSpriteAtlasType; aAtlasID, aSpriteNum: Integer);
+    constructor New(aAtlasID, aSpriteNum: Integer);
   end;
 
   // Resource exporter class
@@ -60,9 +59,8 @@ uses
 
 
 { TKMAtlasAddress }
-constructor TKMAtlasAddress.New(aAtlasType: TKMSpriteAtlasType; aAtlasID, aSpriteNum: Integer);
+constructor TKMAtlasAddress.New(aAtlasID, aSpriteNum: Integer);
 begin
-  AtlasType := aAtlasType;
   AtlasID := aAtlasID;
   SpriteNum := aSpriteNum;
 end;
@@ -113,7 +111,7 @@ begin
     for I := Low(aSpritePack.Atlases[SAT]) to High(aSpritePack.Atlases[SAT]) do
       with aSpritePack.Atlases[SAT, I] do
         for K := 0 to High(Container.Sprites) do
-          fGFXPrepDataBySpriteID[SAT].Add(Container.Sprites[K].SpriteID, TKMAtlasAddress.New(SAT, I, K));
+          fGFXPrepDataBySpriteID[SAT].Add(Container.Sprites[K].SpriteID, TKMAtlasAddress.New(I, K));
 end;
 
 
@@ -663,7 +661,7 @@ begin
 
   // Export RGB values
   if fGFXPrepDataBySpriteID[saBase].TryGetValue(aSpriteID, prepGFXDataID) then
-    with aSpritePack.Atlases[prepGFXDataID.AtlasType, prepGFXDataID.AtlasID] do
+    with aSpritePack.Atlases[saBase, prepGFXDataID.AtlasID] do
     begin
       for I := 0 to pngHeight - 1 do
         for K := 0 to pngWidth - 1 do
@@ -681,7 +679,7 @@ begin
 
   // Masks
   if (aFileMaskPath <> '') and fGFXPrepDataBySpriteID[saMask].TryGetValue(aSpriteID, prepGFXDataID) then
-    with aSpritePack.Atlases[prepGFXDataID.AtlasType, prepGFXDataID.AtlasID] do
+    with aSpritePack.Atlases[saMask, prepGFXDataID.AtlasID] do
     begin
       for I := 0 to pngHeight - 1 do
         for K := 0 to pngWidth - 1 do
