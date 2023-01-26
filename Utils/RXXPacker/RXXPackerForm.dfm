@@ -21,23 +21,23 @@ object RXXForm1: TRXXForm1
   object Label2: TLabel
     Left = 16
     Top = 216
-    Width = 99
+    Width = 130
     Height = 13
-    Caption = 'Sprites source folder'
+    Caption = 'Source RX and sprites path'
   end
   object Label3: TLabel
     Left = 16
     Top = 296
-    Width = 156
+    Width = 125
     Height = 13
-    Caption = 'Packed sprites destination folder'
+    Caption = 'Destination RXX/RXA path'
   end
   object Label1: TLabel
     Left = 16
     Top = 256
-    Width = 161
+    Width = 154
     Height = 13
-    Caption = 'Interpolated sprites source folder'
+    Caption = 'Source interpolated sprites path'
   end
   object btnPackRXX: TButton
     Left = 16
@@ -66,13 +66,13 @@ object RXXForm1: TRXXForm1
     TabOrder = 2
     OnClick = btnUpdateListClick
   end
-  object edSpritesLoadDir: TEdit
+  object edSourceRxPath: TEdit
     Left = 16
     Top = 232
     Width = 257
     Height = 21
     TabOrder = 3
-    OnChange = edSpritesLoadDirChange
+    OnChange = edSourceRxPathChange
   end
   object chkPackToRXA: TCheckBox
     Left = 16
@@ -94,13 +94,13 @@ object RXXForm1: TRXXForm1
     TabOrder = 5
     OnClick = chkPackToRXXClick
   end
-  object edSpritesSaveDir: TEdit
+  object edDestinationPath: TEdit
     Left = 16
     Top = 312
     Width = 257
     Height = 21
     TabOrder = 6
-    OnChange = edSpritesLoadDirChange
+    OnChange = edSourceRxPathChange
   end
   object meLog: TMemo
     Left = 280
@@ -127,12 +127,12 @@ object RXXForm1: TRXXForm1
     TabOrder = 9
     TabStop = True
   end
-  object edSpritesLoadDir2: TEdit
+  object edSourceInterpPath: TEdit
     Left = 16
     Top = 272
     Width = 257
     Height = 21
     TabOrder = 10
-    OnChange = edSpritesLoadDirChange
+    OnChange = edSourceRxPathChange
   end
 end

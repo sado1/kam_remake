@@ -14,16 +14,16 @@ type
     btnPackRXX: TButton;
     ListBox1: TListBox;
     btnUpdateList: TButton;
-    edSpritesLoadDir: TEdit;
+    edSourceRxPath: TEdit;
     Label2: TLabel;
     chkPackToRXA: TCheckBox;
     chkPackToRXX: TCheckBox;
     Label3: TLabel;
-    edSpritesSaveDir: TEdit;
+    edDestinationPath: TEdit;
     meLog: TMemo;
     rbRXXFormat0: TRadioButton;
     rbRXXFormat1: TRadioButton;
-    edSpritesLoadDir2: TEdit;
+    edSourceInterpPath: TEdit;
     Label1: TLabel;
     procedure btnPackRXXClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -31,7 +31,7 @@ type
     procedure btnUpdateListClick(Sender: TObject);
     procedure chkPackToRXXClick(Sender: TObject);
     procedure chkPackToRXAClick(Sender: TObject);
-    procedure edSpritesLoadDirChange(Sender: TObject);
+    procedure edSourceRxPathChange(Sender: TObject);
   private
     fPalettes: TKMResPalettes;
 
@@ -62,7 +62,7 @@ var
   rxSet: TRXTypeSet;
 begin
   // fRxxPacker is our SPOT, so we ask it about what it dims doable
-  rxSet := TKMRxxPacker.GetAvailableToPack(edSpritesLoadDir.Text);
+  rxSet := TKMRxxPacker.GetAvailableToPack(edSourceRxPath.Text);
 
   ListBox1.Items.Clear;
   for RT := Low(TRXType) to High(TRXType) do
@@ -71,7 +71,7 @@ begin
 
   if ListBox1.Items.Count = 0 then
   begin
-    ShowMessage('No .RX files were found in' + sLineBreak + edSpritesLoadDir.Text);
+    ShowMessage('No .RX files were found in' + sLineBreak + edSourceRxPath.Text);
     btnPackRXX.Enabled := False;
   end else
   begin
@@ -106,7 +106,7 @@ begin
 end;
 
 
-procedure TRXXForm1.edSpritesLoadDirChange(Sender: TObject);
+procedure TRXXForm1.edSourceRxPathChange(Sender: TObject);
 begin
   if fUpdating then Exit;
 
@@ -126,8 +126,8 @@ begin
   fPalettes.LoadPalettes(ExeDir + 'data\gfx\');
 
   fUpdating := True;
-  edSpritesLoadDir.Text := ExeDir;
-  edSpritesLoadDir2.Text := ExeDir;
+  edSourceRxPath.Text := ExeDir;
+  edSourceInterpPath.Text := ExeDir;
   fUpdating := False;
 
   fSettingsPath := ExtractFilePath(ParamStr(0)) + 'RXXPacker.ini';
@@ -152,9 +152,9 @@ begin
 
   ini := TINIFile.Create(fSettingsPath);
   try
-    edSpritesLoadDir.Text := ini.ReadString('SETTINGS',  'SpritesLoadDir', ExeDir);
-    edSpritesLoadDir2.Text := ini.ReadString('SETTINGS',  'SpritesLoadDir2', ExeDir);
-    edSpritesSaveDir.Text := ini.ReadString('SETTINGS',  'SpritesSaveDir', ExeDir);
+    edSourceRxPath.Text     := ini.ReadString('SETTINGS',  'SourceRxPath', ExeDir);
+    edSourceInterpPath.Text := ini.ReadString('SETTINGS',  'SourceInterpPath', ExeDir);
+    edDestinationPath.Text  := ini.ReadString('SETTINGS',  'DestinationPath', ExeDir);
   finally
     ini.Free;
   end;
@@ -172,9 +172,9 @@ var
 begin
   ini := TINIFile.Create(fSettingsPath);
   try
-    ini.WriteString('SETTINGS',  'SpritesLoadDir', edSpritesLoadDir.Text);
-    ini.WriteString('SETTINGS',  'SpritesLoadDir2', edSpritesLoadDir2.Text);
-    ini.WriteString('SETTINGS',  'SpritesSaveDir', edSpritesSaveDir.Text);
+    ini.WriteString('SETTINGS', 'SourceRxPath',     edSourceRxPath.Text);
+    ini.WriteString('SETTINGS', 'SourceInterpPath', edSourceInterpPath.Text);
+    ini.WriteString('SETTINGS', 'DestinationPath',  edDestinationPath.Text);
   finally
     ini.Free;
   end;
@@ -195,9 +195,9 @@ begin
 
   rxxPacker := TKMRXXPacker.Create;
   try
-    rxxPacker.SourcePathRX      := edSpritesLoadDir.Text;
-    rxxPacker.SourcePathInterp  := edSpritesLoadDir2.Text;
-    rxxPacker.DestinationPath   := edSpritesSaveDir.Text;
+    rxxPacker.SourcePathRX      := edSourceRxPath.Text;
+    rxxPacker.SourcePathInterp  := edSourceInterpPath.Text;
+    rxxPacker.DestinationPath   := edDestinationPath.Text;
     rxxPacker.PackToRXX     := chkPackToRXX.Checked;
     rxxPacker.PackToRXA     := chkPackToRXA.Checked;
     if rbRXXFormat0.Checked then rxxPacker.RXXFormat := rxxZero;
