@@ -12,7 +12,7 @@ uses
 type
   TKMAnimKind = (akNormal, akInterpolated);
 
-  TKMPrepGFXDataID = record
+  TKMAtlasAddress = record
     AtlasType: TKMSpriteAtlasType;
     AtlasID: Integer;
     SpriteNum: Integer; // In the atlas
@@ -24,7 +24,7 @@ type
   private
     fExportWorkerHolder: TKMWorkerThreadHolder;
 
-    fGFXPrepDataBySpriteID: array [TKMSpriteAtlasType] of TDictionary<Integer, TKMPrepGFXDataID>;
+    fGFXPrepDataBySpriteID: array [TKMSpriteAtlasType] of TDictionary<Integer, TKMAtlasAddress>;
 
     procedure PrepareGFXPrepData(aSpritePack: TKMSpritePack);
 
@@ -59,8 +59,8 @@ uses
   KM_Points, KM_CommonTypes, KM_Log;
 
 
-{ TKMPrepGFXDataID }
-constructor TKMPrepGFXDataID.New(aAtlasType: TKMSpriteAtlasType; aAtlasID, aSpriteNum: Integer);
+{ TKMAtlasAddress }
+constructor TKMAtlasAddress.New(aAtlasType: TKMSpriteAtlasType; aAtlasID, aSpriteNum: Integer);
 begin
   AtlasType := aAtlasType;
   AtlasID := aAtlasID;
@@ -73,8 +73,8 @@ constructor TKMResExporter.Create;
 begin
   inherited;
 
-  fGFXPrepDataBySpriteID[saBase] := TDictionary<Integer, TKMPrepGFXDataID>.Create;
-  fGFXPrepDataBySpriteID[saMask] := TDictionary<Integer, TKMPrepGFXDataID>.Create;
+  fGFXPrepDataBySpriteID[saBase] := TDictionary<Integer, TKMAtlasAddress>.Create;
+  fGFXPrepDataBySpriteID[saMask] := TDictionary<Integer, TKMAtlasAddress>.Create;
 end;
 
 
@@ -113,7 +113,7 @@ begin
     for I := Low(aSpritePack.Atlases[SAT]) to High(aSpritePack.Atlases[SAT]) do
       with aSpritePack.Atlases[SAT, I] do
         for K := 0 to High(Container.Sprites) do
-          fGFXPrepDataBySpriteID[SAT].Add(Container.Sprites[K].SpriteID, TKMPrepGFXDataID.New(SAT, I, K));
+          fGFXPrepDataBySpriteID[SAT].Add(Container.Sprites[K].SpriteID, TKMAtlasAddress.New(SAT, I, K));
 end;
 
 
@@ -654,7 +654,7 @@ var
   px, py: Integer;
   pngWidth, pngHeight: Word;
   pngData: TKMCardinalArray;
-  prepGFXDataID: TKMPrepGFXDataID;
+  prepGFXDataID: TKMAtlasAddress;
 begin
   pngWidth := aSpritePack.RXData.Size[aSpriteID].X;//fGFXData[aSpritePack.RT, aSpriteID].PxWidth;
   pngHeight := aSpritePack.RXData.Size[aSpriteID].Y;//fGFXData[aSpritePack.RT, aSpriteID].PxHeight;
@@ -679,7 +679,7 @@ begin
       SaveToPng(pngWidth, pngHeight, pngData, aFilePath);
     end;
 
-    // Masks
+  // Masks
   if (aFileMaskPath <> '') and fGFXPrepDataBySpriteID[saMask].TryGetValue(aSpriteID, prepGFXDataID) then
     with aSpritePack.Atlases[prepGFXDataID.AtlasType, prepGFXDataID.AtlasID] do
     begin
