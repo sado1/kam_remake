@@ -121,7 +121,7 @@ begin
   resPalettes := TKMResPalettes.Create;
   resPalettes.LoadPalettes(ExeDir + 'data\gfx\');
   try
-    rxxPacker.Pack2(fRxSet, resPalettes, procedure (aMsg: string) begin Writeln(aMsg); end);
+    rxxPacker.PackSet(fRxSet, resPalettes, procedure (aMsg: string) begin Writeln(aMsg); end);
   finally
     rxxPacker.Free;
     resPalettes.Free;

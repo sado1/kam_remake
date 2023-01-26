@@ -21,7 +21,7 @@ type
 
     constructor Create;
 
-    procedure Pack2(aRxSet: TRXTypeSet; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+    procedure PackSet(aRxSet: TRXTypeSet; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
 
     class function GetAvailableToPack(const aPath: string): TRXTypeSet;
   end;
@@ -179,7 +179,7 @@ begin
 end;
 
 
-procedure TKMRXXPacker.Pack2(aRxSet: TRXTypeSet; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+procedure TKMRXXPacker.PackSet(aRxSet: TRXTypeSet; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
 var
   rxType: TRXType;
   tick, tickTotal: Cardinal;
