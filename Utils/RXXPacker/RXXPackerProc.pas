@@ -14,7 +14,7 @@ type
 
     procedure SetSpritesSourcePath(const aValue: string);
     procedure SetRXXSavePath(const aValue: string);
-    procedure Pack(RT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+    procedure Pack(aRT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
   public
     PackToRXX: Boolean;
     PackToRXA: Boolean;
@@ -64,7 +64,7 @@ begin
 end;
 
 
-procedure TKMRXXPacker.Pack(RT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+procedure TKMRXXPacker.Pack(aRT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
 var
   deathAnimProcessed: TList<Integer>;
   spritePack: TKMSpritePackEdit;
@@ -77,17 +77,17 @@ var
   dir: TKMDirection;
 begin
   //ruCustom sprite packs do not have a main RXX file so don't need packing
-  if RX_INFO[RT].Usage = ruCustom then Exit;
+  if RX_INFO[aRT].Usage = ruCustom then Exit;
 
-  rxName := fSpritesSourcePath + SPRITES_RES_DIR + '\' + RX_INFO[RT].FileName + '.rx';
+  rxName := fSpritesSourcePath + SPRITES_RES_DIR + '\' + RX_INFO[aRT].FileName + '.rx';
 
-  if (RT <> rxTiles) and not FileExists(rxName) then
+  if (aRT <> rxTiles) and not FileExists(rxName) then
     raise Exception.Create('Cannot find ' + rxName + ' file.' + sLineBreak + 'Please copy the file from your KaM\data\gfx\res\ folder.');
 
-  spritePack := TKMSpritePackEdit.Create(RT, aPalettes);
+  spritePack := TKMSpritePackEdit.Create(aRT, aPalettes);
   try
     // Load base sprites from original KaM RX packages
-    if RT <> rxTiles then
+    if aRT <> rxTiles then
     begin
       spritePack.LoadFromRXFile(rxName);
       spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
@@ -101,7 +101,7 @@ begin
       // Tiles don't need to be trimmed, as they can't use pivots
 
     // Houses need some special treatment to adapt to GL_ALPHA_TEST that we use for construction steps
-    if RT = rxHouses then
+    if aRT = rxHouses then
     begin
       resHouses := TKMResHouses.Create;
       spritePack.AdjoinHouseMasks(resHouses);
@@ -113,7 +113,7 @@ begin
 
     // Determine objects size only for units (used for hitbox)
     //todo: do we need it for houses too ?
-    if RT = rxUnits then
+    if aRT = rxUnits then
       spritePack.DetermineImagesObjectSizeAll;
 
     // The idea was to blur the water and make it semi-trasparent, but it did not work out as expected
@@ -122,18 +122,18 @@ begin
 
     // Save
     if PackToRXX then
-      spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[RT].FileName + '.rxx', RXXFormat);
+      spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[aRT].FileName + '.rxx', RXXFormat);
 
     // Generate alpha shadows for the following sprite packs
-    if RT in [rxHouses, rxUnits, rxGui, rxTrees] then
+    if aRT in [rxHouses, rxUnits, rxGui, rxTrees] then
     begin
-      if RT = rxHouses then
+      if aRT = rxHouses then
       begin
         spritePack.SoftenShadowsRange(889, 892, False); // Smooth smoke
         spritePack.SoftenShadowsRange(1615, 1638, False); // Smooth flame
       end;
 
-      if RT = rxUnits then
+      if aRT = rxUnits then
       begin
         spritePack.SoftenShadowsRange(6251, 6322, False); // Smooth thought bubbles
 
@@ -158,7 +158,7 @@ begin
         end;
       end;
 
-      if RT = rxGui then
+      if aRT = rxGui then
       begin
         spritePack.SoftenShadowsRange(105, 128); //Field plans
         spritePack.SoftenShadowsRange(249, 281); //House tablets only (shadow softening messes up other rxGui sprites)
@@ -169,14 +169,14 @@ begin
         spritePack.SoftenShadowsRange(1, spritePack.RXData.Count);
 
       if PackToRXX then
-        spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[RT].FileName + '_a.rxx', RXXFormat);
+        spritePack.SaveToRXXFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[aRT].FileName + '_a.rxx', RXXFormat);
 
       if PackToRXA then
       begin
-        if DirectoryExists(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\') then
-          spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\', False); // Shadows are already softened for interps
+        if DirectoryExists(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(aRT)+1) + '\') then
+          spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(aRT)+1) + '\', False); // Shadows are already softened for interps
 
-        spritePack.SaveToRXAFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[RT].FileName + '.rxa', RXXFormat);
+        spritePack.SaveToRXAFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[aRT].FileName + '.rxa', RXXFormat);
       end;
     end;
   finally
@@ -204,7 +204,7 @@ begin
     aOnMessage('Packing ' + RX_INFO[rxType].FileName + '.rxx ... ');
     tick := GetTickCount;
     Pack(rxType, fPalettes, aOnMessage);
-    aOnMessage(RX_INFO[rxType].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
+    aOnMessage('... packed in ' + IntToStr(GetTickCount - tick) + ' ms');
   end;
 
   aOnMessage('Everything packed in ' + IntToStr(GetTickCount - tickTotal) + ' ms');
