@@ -10,9 +10,9 @@ type
   TKMRXXPackerConsole = class
   private class var
     fParams: TStringList;
-    fSourcePath: string;
+    fSourcePathRX: string;
     fSourcePathRXA: string;
-    fRXXSavePath: string;
+    fDestinationPath: string;
     fPackToRXA: Boolean;
     fRxSet: TRXTypeSet;
   private
@@ -37,9 +37,10 @@ const
 class procedure TKMRXXPackerConsole.OutputInstructions;
 begin
   Writeln('Arguments:');
-  Writeln(' - sld spritesloaddir %s - RX source folder');
-  Writeln(' - srxa sourcerxa %s - RXA source folder');
-  Writeln(' - ssd spritessavedir %s - target folder');
+  Writeln(' - srx %s - RX sprites source path');
+  Writeln(' - sint %s - Interpolated sprites source path');
+  Writeln(' - d %s - destination path');
+  Writeln(' - rxa - pack to RXA files');
   Writeln(' - all - pack all RX libraries');
   Writeln(' - %s - pack specific RX library');
   Writeln('');
@@ -66,33 +67,32 @@ begin
 
   for I := 0 to fParams.Count - 1 do
   begin
-    if (LowerCase(fParams[I]) = 'sld') or (LowerCase(fParams[I]) = 'spritesloaddir') then
+    if LowerCase(fParams[I]) = 'srx' then
       if I < fParams.Count - 1 then
       begin
-        fSourcePath := fParams[I+1];
+        fSourcePathRX := fParams[I+1];
         fParams[I+1] := ''; // Make sure we dont parse it as some other key
       end else
-        raise Exception.Create('spritesLoadDir directory not specified');
+        raise Exception.Create('Source RX sprites path ("srx") not specified');
 
-    if (LowerCase(fParams[I]) = 'srxa') or (LowerCase(fParams[I]) = 'sourcerxa') then
+    if LowerCase(fParams[I]) = 'sint'then
       if I < fParams.Count - 1 then
       begin
         fSourcePathRXA := fParams[I+1];
         fParams[I+1] := ''; // Make sure we dont parse it as some other key
-        fPackToRXA := True;
       end else
-        raise Exception.Create('SourceRXA directory not specified');
+        raise Exception.Create('Source interpolated sprites path ("sint") not specified');
 
-    if (LowerCase(fParams[I]) = 'ssd') or (LowerCase(fParams[I]) = 'spritessavedir') then
+    if LowerCase(fParams[I]) = 'd' then
       if I < fParams.Count - 1 then
       begin
-        fRXXSavePath := fParams[I+1];
+        fDestinationPath := fParams[I+1];
         fParams[I+1] := ''; // Make sure we dont parse it as some other key
       end else
-        raise Exception.Create('spritesSaveDir directory not specified');
+        raise Exception.Create('Destination path ("d") not specified');
 
-    if (LowerCase(fParams[I]) = 'packtorxa') or (LowerCase(fParams[I]) = 'rxa') then
-        raise Exception.Create('rxa key is disused. Use "srxa" to explicitly set RXA source path and pack RXAs');
+    if LowerCase(fParams[I]) = 'rxa' then
+      fPackToRXA := True;
 
     for rxType := Low(TRXType) to High(TRXType) do
     if LowerCase(fParams[I]) = 'all' then
@@ -112,9 +112,9 @@ begin
   ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
 
   rxxPacker := TKMRXXPacker.Create;
-  rxxPacker.SourcePath2 := fSourcePath;
-  rxxPacker.SourcePathRXA2 := fSourcePathRXA;
-  rxxPacker.RXXSavePath := fRXXSavePath;
+  rxxPacker.SourcePathRX := fSourcePathRX;
+  rxxPacker.SourcePathRXA := fSourcePathRXA;
+  rxxPacker.DestinationPath := fDestinationPath;
   rxxPacker.PackToRXA := fPackToRXA;
   rxxPacker.RXXFormat := rxxOne;
 

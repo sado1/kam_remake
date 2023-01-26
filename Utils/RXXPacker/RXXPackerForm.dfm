@@ -4,7 +4,7 @@ object RXXForm1: TRXXForm1
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'RXX Packer'
-  ClientHeight = 401
+  ClientHeight = 417
   ClientWidth = 705
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -106,7 +106,7 @@ object RXXForm1: TRXXForm1
     Left = 280
     Top = 16
     Width = 409
-    Height = 369
+    Height = 385
     TabOrder = 7
   end
   object rbRXXFormat0: TRadioButton
