@@ -52,6 +52,18 @@ begin
 end;
 
 
+procedure TKMRXXPacker.SetSpritesSourcePath(const aValue: string);
+begin
+  fSpritesSourcePath := IncludeTrailingPathDelimiter(aValue);
+end;
+
+
+procedure TKMRXXPacker.SetRXXSavePath(const aValue: string);
+begin
+  fRXXSavePath := IncludeTrailingPathDelimiter(aValue);
+end;
+
+
 procedure TKMRXXPacker.Pack(RT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
 var
   deathAnimProcessed: TList<Integer>;
@@ -196,18 +208,6 @@ begin
   end;
 
   aOnMessage('Everything packed in ' + IntToStr(GetTickCount - tickTotal) + ' ms');
-end;
-
-
-procedure TKMRXXPacker.SetSpritesSourcePath(const aValue: string);
-begin
-  fSpritesSourcePath := IncludeTrailingPathDelimiter(aValue);
-end;
-
-
-procedure TKMRXXPacker.SetRXXSavePath(const aValue: string);
-begin
-  fRXXSavePath := IncludeTrailingPathDelimiter(aValue);
 end;
 
 
