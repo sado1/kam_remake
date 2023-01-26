@@ -10,8 +10,6 @@ uses
 
 
 type
-  TKMAnimKind = (akNormal, akInterpolated);
-
   TKMAtlasAddress = record
     AtlasID: Integer;
     SpriteNum: Integer; // In the atlas
