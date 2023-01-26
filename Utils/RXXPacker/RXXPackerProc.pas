@@ -9,7 +9,7 @@ uses
 type
   TKMRXXPacker = class
   private
-    fSpritesSourcePath: string;
+    fSourcePath: string;
     fRXXSavePath: string;
 
     procedure SetRXXSavePath(const aValue: string);
@@ -21,7 +21,7 @@ type
 
     constructor Create;
 
-    property SpritesSourcePath: string read fSpritesSourcePath write fSpritesSourcePath;
+    property SourcePath: string read fSourcePath write fSourcePath;
     property RXXSavePath: string read fRXXSavePath write SetRXXSavePath;
 
     procedure Pack2(aRxSet: TRXTypeSet; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
@@ -85,7 +85,7 @@ begin
   //ruCustom sprite packs do not have a main RXX file so don't need packing
   if RX_INFO[aRT].Usage = ruCustom then Exit;
 
-  rxName := fSpritesSourcePath + SPRITES_RES_DIR + '\' + RX_INFO[aRT].FileName + '.rx';
+  rxName := fSourcePath + SPRITES_RES_DIR + '\' + RX_INFO[aRT].FileName + '.rx';
 
   if (aRT <> rxTiles) and not FileExists(rxName) then
     raise Exception.Create('Cannot find ' + rxName + ' file.' + sLineBreak + 'Please copy the file from your KaM\data\gfx\res\ folder.');
@@ -96,14 +96,14 @@ begin
     if aRT <> rxTiles then
     begin
       spritePack.LoadFromRXFile(rxName);
-      spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
+      spritePack.OverloadRXDataFromFolder(fSourcePath + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
       trimmedAmount := spritePack.TrimSprites;
 
       aOnMessage('  trimmed ' + IntToStr(trimmedAmount) + ' bytes');
     end
     else
-      if DirectoryExists(fSpritesSourcePath + SPRITES_RES_DIR + '\') then
-        spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_RES_DIR + '\');
+      if DirectoryExists(fSourcePath + SPRITES_RES_DIR + '\') then
+        spritePack.OverloadRXDataFromFolder(fSourcePath + SPRITES_RES_DIR + '\');
       // Tiles don't need to be trimmed, as they can't use pivots
 
     // Houses need some special treatment to adapt to GL_ALPHA_TEST that we use for construction steps
@@ -179,8 +179,8 @@ begin
 
       if PackToRXA then
       begin
-        if DirectoryExists(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(aRT)+1) + '\') then
-          spritePack.OverloadRXDataFromFolder(fSpritesSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(aRT)+1) + '\', False); // Shadows are already softened for interps
+        if DirectoryExists(fSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(aRT)+1) + '\') then
+          spritePack.OverloadRXDataFromFolder(fSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(aRT)+1) + '\', False); // Shadows are already softened for interps
 
         spritePack.SaveToRXAFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[aRT].FileName + '.rxa', RXXFormat);
       end;
@@ -196,9 +196,9 @@ var
   rxType: TRXType;
   tick, tickTotal: Cardinal;
 begin
-  if not DirectoryExists(fSpritesSourcePath + SPRITES_RES_DIR + '\') then
+  if not DirectoryExists(fSourcePath + SPRITES_RES_DIR + '\') then
   begin
-    aOnMessage('Cannot find ' + fSpritesSourcePath + SPRITES_RES_DIR + '\ folder.' + sLineBreak + 'Please make sure this folder exists.');
+    aOnMessage('Cannot find ' + fSourcePath + SPRITES_RES_DIR + '\ folder.' + sLineBreak + 'Please make sure this folder exists.');
     Exit;
   end;
 

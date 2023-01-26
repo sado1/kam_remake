@@ -190,10 +190,10 @@ begin
 
   rxxPacker := TKMRXXPacker.Create;
   try
-    rxxPacker.SpritesSourcePath := edSpritesLoadDir.Text;
-    rxxPacker.RXXSavePath    := edSpritesSaveDir.Text;
-    rxxPacker.PackToRXX      := chkPackToRXX.Checked;
-    rxxPacker.PackToRXA      := chkPackToRXA.Checked;
+    rxxPacker.SourcePath    := edSpritesLoadDir.Text;
+    rxxPacker.RXXSavePath   := edSpritesSaveDir.Text;
+    rxxPacker.PackToRXX     := chkPackToRXX.Checked;
+    rxxPacker.PackToRXA     := chkPackToRXA.Checked;
     if rbRXXFormat0.Checked then rxxPacker.RXXFormat := rxxZero;
     if rbRXXFormat1.Checked then rxxPacker.RXXFormat := rxxOne;
 

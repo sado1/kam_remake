@@ -10,7 +10,7 @@ type
   TKMRXXPackerConsole = class
   private class var
     fParams: TStringList;
-    fSpritesSourcePath: string;
+    fSourcePath: string;
     fRXXSavePath: string;
     fPackToRXA: Boolean;
     fRxSet: TRXTypeSet;
@@ -68,7 +68,7 @@ begin
     if (LowerCase(fParams[I]) = 'sld') or (LowerCase(fParams[I]) = 'spritesloaddir') then
       if I < fParams.Count - 1 then
       begin
-        fSpritesSourcePath := fParams[I+1];
+        fSourcePath := fParams[I+1];
         fParams[I+1] := ''; // Make sure we dont parse it as some other key
       end else
         raise Exception.Create('spritesLoadDir directory not specified');
@@ -102,7 +102,7 @@ begin
   ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
 
   rxxPacker := TKMRXXPacker.Create;
-  rxxPacker.SpritesSourcePath := fSpritesSourcePath;
+  rxxPacker.SourcePath := fSourcePath;
   rxxPacker.RXXSavePath := fRXXSavePath;
   rxxPacker.PackToRXA := fPackToRXA;
   rxxPacker.RXXFormat := rxxOne;
