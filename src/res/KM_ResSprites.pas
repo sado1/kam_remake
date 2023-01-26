@@ -32,7 +32,7 @@ type
     Data: TKMCardinalArray;
   end;
 
-  TKMGFXPrepData = array [TKMSpriteAtlasType] of array {atlas number} of TKMSpriteAtlasData;
+  TKMSpriteAtlases = array [TKMSpriteAtlasType] of array {atlas number} of TKMSpriteAtlasData;
 
   // Base class for Sprite loading
   TKMSpritePack = class
@@ -50,7 +50,7 @@ type
     fRT: TRXType;
     fRXData: TRXData;
 
-    fGFXPrepData: TKMGFXPrepData;
+    fAtlases: TKMSpriteAtlases;
     procedure Allocate(aCount: Integer); virtual; //Allocate space for data that is being loaded
     procedure AllocateTemp(aCount: Integer);
     procedure ReadRXZHeader(aStream: TStream; out aFormat: TKMRXXFormat);
@@ -69,7 +69,7 @@ type
     property RT: TRXType read fRT;
     property RXData: TRXData read fRXData;
     property Padding: Byte read fPad write fPad;
-    property GFXPrepData: TKMGFXPrepData read fGFXPrepData;
+    property Atlases: TKMSpriteAtlases read fAtlases;
 
     {$IFNDEF NO_OGL}
     procedure MakeGFX(aAlphaShadows: Boolean; aStartingIndex: Integer = 1; aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil); overload;
@@ -875,12 +875,12 @@ begin
         end;
 
       //Atlases
-      for SAT := Low(fGFXPrepData) to High(fGFXPrepData) do
+      for SAT := Low(fAtlases) to High(fAtlases) do
       begin
         decompressionStream.Read(atlasCount, 4);
-        SetLength(fGFXPrepData[SAT], atlasCount);
-        for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
-          with fGFXPrepData[SAT, I] do
+        SetLength(fAtlases[SAT], atlasCount);
+        for I := Low(fAtlases[SAT]) to High(fAtlases[SAT]) do
+          with fAtlases[SAT, I] do
           begin
             decompressionStream.Read(SpriteInfo.Width, 2);
             decompressionStream.Read(SpriteInfo.Height, 2);
@@ -1448,12 +1448,12 @@ begin
       SetGFXData(texID, aSpriteInfo[I], aMode);
     end else
     begin
-      Assert(InRange(I, Low(fGFXPrepData[aMode]), High(fGFXPrepData[aMode])),
-             Format('Preloading sprite index out of range: %d, range [%d;%d]', [I, Low(fGFXPrepData[aMode]), High(fGFXPrepData[aMode])]));
+      Assert(InRange(I, Low(fAtlases[aMode]), High(fAtlases[aMode])),
+             Format('Preloading sprite index out of range: %d, range [%d;%d]', [I, Low(fAtlases[aMode]), High(fAtlases[aMode])]));
       // Save prepared data for generating later (in main thread)
-      fGFXPrepData[aMode, I].SpriteInfo := aSpriteInfo[I];
-      fGFXPrepData[aMode, I].TexType := aTexType;
-      fGFXPrepData[aMode, I].Data := atlasData;
+      fAtlases[aMode, I].SpriteInfo := aSpriteInfo[I];
+      fAtlases[aMode, I].TexType := aTexType;
+      fAtlases[aMode, I].Data := atlasData;
     end;
 
     if aMode = saBase then
@@ -1519,7 +1519,7 @@ begin
 
   if CheckTerminated then Exit; //Our thread could be terminated and asked to stop. Exit immediately then
 
-  SetLength(fGFXPrepData[saBase], Length(spriteInfo));
+  SetLength(fAtlases[saBase], Length(spriteInfo));
 
   PrepareAtlases(spriteInfo, saBase, aTexType, aBaseRAM, aColorRAM, aTexCount, aFillGFXData, aOnCheckTerminated);
 
@@ -1544,7 +1544,7 @@ begin
   SetLength(spriteInfo, 0);
   BinPack(spriteSizes, atlasSize, fPad, spriteInfo);
   if CheckTerminated then Exit;
-  SetLength(fGFXPrepData[saMask], Length(spriteInfo));
+  SetLength(fAtlases[saMask], Length(spriteInfo));
   PrepareAtlases(spriteInfo, saMask, tfAlpha8, aBaseRAM, aColorRAM, aTexCount, aFillGFXData, aOnCheckTerminated);
 end;
 {$ENDIF}
@@ -1554,8 +1554,8 @@ procedure TKMSpritePack.ClearGameResGenTemp;
 var
   SAT: TKMSpriteAtlasType;
 begin
-  for SAT := Low(fGFXPrepData) to High(fGFXPrepData) do
-    SetLength(fGFXPrepData[SAT], 0);
+  for SAT := Low(fAtlases) to High(fAtlases) do
+    SetLength(fAtlases[SAT], 0);
 end;
 
 
@@ -1572,10 +1572,10 @@ var
   texFilter: TKMFilterType;
 begin
   {$IFNDEF NO_OGL}
-  for SAT := Low(fGFXPrepData) to High(fGFXPrepData) do
-    for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
+  for SAT := Low(fAtlases) to High(fAtlases) do
+    for I := Low(fAtlases[SAT]) to High(fAtlases[SAT]) do
     begin
-      with fGFXPrepData[SAT,I] do
+      with fAtlases[SAT,I] do
       begin
         texFilter := ftNearest;
         if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then

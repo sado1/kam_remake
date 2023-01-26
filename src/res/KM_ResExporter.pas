@@ -110,9 +110,9 @@ begin
   fGFXPrepMaskDataBySpriteID.Clear;
 
   // Map spriteID to loaded from RXA GFXPrepData
-  for SAT := Low(aSpritePack.GFXPrepData) to High(aSpritePack.GFXPrepData) do
-    for I := Low(aSpritePack.GFXPrepData[SAT]) to High(aSpritePack.GFXPrepData[SAT]) do
-      with aSpritePack.GFXPrepData[SAT, I] do
+  for SAT := Low(aSpritePack.Atlases) to High(aSpritePack.Atlases) do
+    for I := Low(aSpritePack.Atlases[SAT]) to High(aSpritePack.Atlases[SAT]) do
+      with aSpritePack.Atlases[SAT, I] do
         for K := 0 to High(SpriteInfo.Sprites) do
           case SAT of
             saBase: fGFXPrepDataBySpriteID.Add(SpriteInfo.Sprites[K].SpriteID, TKMPrepGFXDataID.New(SAT, I, K));
@@ -684,7 +684,7 @@ begin
 
   //Export RGB values
   if fGFXPrepDataBySpriteID.TryGetValue(aSpriteID, prepGFXDataID) then
-    with aSpritePack.GFXPrepData[prepGFXDataID.AtlasType, prepGFXDataID.AtlasID] do
+    with aSpritePack.Atlases[prepGFXDataID.AtlasType, prepGFXDataID.AtlasID] do
     begin
       for I := 0 to pngHeight - 1 do
         for K := 0 to pngWidth - 1 do
@@ -700,7 +700,7 @@ begin
     end;
 
   if (aFileMaskPath <> '') and fGFXPrepMaskDataBySpriteID.TryGetValue(aSpriteID, prepGFXDataID) then
-    with aSpritePack.GFXPrepData[prepGFXDataID.AtlasType, prepGFXDataID.AtlasID] do
+    with aSpritePack.Atlases[prepGFXDataID.AtlasType, prepGFXDataID.AtlasID] do
     begin
       for I := 0 to pngHeight - 1 do
         for K := 0 to pngWidth - 1 do

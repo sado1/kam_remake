@@ -712,11 +712,12 @@ procedure TKMSpritePackEdit.SaveToRXAFile(const aFileName: string; aFormat: TKMR
 const
   SNS_MAX_ABS_VAL = CELL_SIZE_PX*5; // Empirical value
 var
-  I, Count: Integer;
+  I: Integer;
   SAT: TKMSpriteAtlasType;
   InputStream: TCompressionStream;
   OutputStream: TFileStream;
   baseRAM, colorRAM, texCount: Cardinal;
+  numAtlases, numSprites, numPixels: Integer;
 begin
   if IsEmpty then Exit;
 
@@ -751,22 +752,22 @@ begin
     end;
 
   // Atlases
-  for SAT := Low(fGFXPrepData) to High(fGFXPrepData) do
+  for SAT := Low(fAtlases) to High(fAtlases) do
   begin
-    Count := Length(fGFXPrepData[SAT]);
-    InputStream.Write(Count, 4);
-    for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
-      with fGFXPrepData[SAT, I] do
+    numAtlases := Length(fAtlases[SAT]);
+    InputStream.Write(numAtlases, 4);
+    for I := Low(fAtlases[SAT]) to High(fAtlases[SAT]) do
+      with fAtlases[SAT, I] do
       begin
         InputStream.Write(SpriteInfo.Width, 2);
         InputStream.Write(SpriteInfo.Height, 2);
-        Count := Length(SpriteInfo.Sprites);
-        InputStream.Write(Count, 4);
-        InputStream.Write(SpriteInfo.Sprites[0], Count*SizeOf(SpriteInfo.Sprites[0]));
+        numSprites := Length(SpriteInfo.Sprites);
+        InputStream.Write(numSprites, 4);
+        InputStream.Write(SpriteInfo.Sprites[0], numSprites * SizeOf(SpriteInfo.Sprites[0]));
         InputStream.Write(TexType, SizeOf(TKMTexFormat));
-        Count := Length(Data);
-        InputStream.Write(Count, 4);
-        InputStream.Write(Data[0], Count*SizeOf(Data[0]));
+        numPixels := Length(Data);
+        InputStream.Write(numPixels, 4);
+        InputStream.Write(Data[0], numPixels * SizeOf(Data[0]));
       end;
   end;
 
