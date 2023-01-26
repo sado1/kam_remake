@@ -113,10 +113,10 @@ begin
   for SAT := Low(aSpritePack.Atlases) to High(aSpritePack.Atlases) do
     for I := Low(aSpritePack.Atlases[SAT]) to High(aSpritePack.Atlases[SAT]) do
       with aSpritePack.Atlases[SAT, I] do
-        for K := 0 to High(SpriteInfo.Sprites) do
+        for K := 0 to High(Container.Sprites) do
           case SAT of
-            saBase: fGFXPrepDataBySpriteID.Add(SpriteInfo.Sprites[K].SpriteID, TKMPrepGFXDataID.New(SAT, I, K));
-            saMask: fGFXPrepMaskDataBySpriteID.Add(SpriteInfo.Sprites[K].SpriteID, TKMPrepGFXDataID.New(SAT, I, K));
+            saBase: fGFXPrepDataBySpriteID.Add(Container.Sprites[K].SpriteID, TKMPrepGFXDataID.New(SAT, I, K));
+            saMask: fGFXPrepMaskDataBySpriteID.Add(Container.Sprites[K].SpriteID, TKMPrepGFXDataID.New(SAT, I, K));
           end;
 end;
 
@@ -161,7 +161,7 @@ begin
           spritePack := sprites[aRT];
 
           PrepareGFXPrepData(spritePack);
-          
+
           folderPath := ExeDir + 'Export' + PathDelim + RX_INFO[aRT].FileName + '.rxa' + PathDelim;
           ForceDirectories(folderPath);
           for I := 1 to spritePack.RXData.Count do
@@ -273,7 +273,7 @@ begin
               begin
                 origSpriteID := anim.Step[STEP+1]+1;
                 if origSpriteID = 0 then Continue;
-              
+
                 if utSerf in [aUnitFrom..aUnitTo] then
                 begin
                   if not folderCreated then
@@ -284,7 +284,7 @@ begin
                     ForceDirectories(fullFolderPath);
                     folderCreated := True;
                   end;
-                
+
                   for LVL := 0 to INTERP_LEVEL - 1 do
                   begin
                     spriteID := gRes.Interpolation.SerfCarry(WT, DIR, STEP, LVL / INTERP_LEVEL);
@@ -525,17 +525,17 @@ begin
 
             fullFolderPath := folderPath + resTexts.DefaultTexts[houses[HT].HouseNameTextID] + PathDelim +
                                 HOUSE_ACTION_STR[ACT] + PathDelim;
-            ForceDirectories(fullFolderPath);                      
-            
+            ForceDirectories(fullFolderPath);
+
             for STEP := 0 to houses[HT].Anim[ACT].Count - 1 do
-            begin                
+            begin
               origSpriteID := houses[HT].Anim[ACT].Step[STEP+1] + 1;
               if origSpriteID = 0 then Continue;
               for LVL := 0 to INTERP_LEVEL - 1 do
               begin
                 spriteID := gRes.Interpolation.House(HT, ACT, STEP, LVL / INTERP_LEVEL);
                 ExportFullImageDataFromGFXData(spritePack, spriteID, fullFolderPath, SList);
-                
+
                 // Stop export if async thread is terminated by application
                 if TThread.CheckTerminated then Exit;
               end;
@@ -548,16 +548,16 @@ begin
             HT := htSwine
           else
             HT := htStables;
-            
+
           for beast := 1 to 5 do
             for I := 1 to 3 do
             begin
               if houses.BeastAnim[HT,beast,I].Count = 0 then Continue;
 
-              fullFolderPath := folderPath + resTexts.DefaultTexts[houses[HT].HouseNameTextID] + PathDelim + 'Beast' + PathDelim + 
+              fullFolderPath := folderPath + resTexts.DefaultTexts[houses[HT].HouseNameTextID] + PathDelim + 'Beast' + PathDelim +
                                 int2fix(beast,2) + PathDelim;
               ForceDirectories(fullFolderPath);
-              
+
               for STEP := 0 to houses.BeastAnim[HT,beast,I].Count - 1 do
               begin
                 origSpriteID := houses.BeastAnim[HT,beast,I].Step[STEP+1]+1;
@@ -621,11 +621,11 @@ begin
         for ACT := haWork1 to haFlag3 do
         begin
           if houses[HT].Anim[ACT].Count = 0 then Continue;
-          
+
           fullFolderPath := folderPath + resTexts.DefaultTexts[houses[HT].HouseNameTextID] + PathDelim + HOUSE_ACTION_STR[ACT] + PathDelim;
           ForceDirectories(fullFolderPath);
           for K := 1 to houses[HT].Anim[ACT].Count do
-          begin                                      
+          begin
             origSpriteID := houses[HT].Anim[ACT].Step[K] + 1;
             if origSpriteID <> 0 then
               spritePack.ExportFullImageData(fullFolderPath, origSpriteID, SList);
@@ -640,7 +640,7 @@ begin
           HT := htSwine
         else
           HT := htStables;
-          
+
         for beast := 1 to 5 do
           for I := 1 to 3 do
           begin
@@ -648,7 +648,7 @@ begin
 
             fullFolderPath := folderPath + resTexts.DefaultTexts[houses[HT].HouseNameTextID] + PathDelim + 'Beast' + PathDelim + int2fix(beast,2) + PathDelim;
             ForceDirectories(fullFolderPath);
-            
+
             for K := 1 to houses.BeastAnim[HT,beast,I].Count do
             begin
               origSpriteID := houses.BeastAnim[HT,beast,I].Step[K]+1;
@@ -672,7 +672,8 @@ end;
 
 procedure TKMResExporter.ExportImageFromGFXData(aSpritePack: TKMSpritePack; aSpriteID: Integer; const aFilePath: string; const aFileMaskPath: string = '');
 var
-  I, K, dataX, dataY: Integer;
+  I, K: Integer;
+  px, py: Integer;
   pngWidth, pngHeight: Word;
   pngData: TKMCardinalArray;
   prepGFXDataID: TKMPrepGFXDataID;
@@ -682,18 +683,19 @@ begin
 
   SetLength(pngData, pngWidth * pngHeight);
 
-  //Export RGB values
+  // Export RGB values
   if fGFXPrepDataBySpriteID.TryGetValue(aSpriteID, prepGFXDataID) then
     with aSpritePack.Atlases[prepGFXDataID.AtlasType, prepGFXDataID.AtlasID] do
     begin
       for I := 0 to pngHeight - 1 do
         for K := 0 to pngWidth - 1 do
         begin
-          dataX := SpriteInfo.Sprites[prepGFXDataID.SpriteNum].OriginX + K;
-          dataY := SpriteInfo.Sprites[prepGFXDataID.SpriteNum].OriginY + I;
+          px := Container.Sprites[prepGFXDataID.SpriteNum].OriginX + K;
+          py := Container.Sprites[prepGFXDataID.SpriteNum].OriginY + I;
 
-          pngData[I*pngWidth + K] := Data[dataY*SpriteInfo.Width + dataX] and $FFFFFF;
-          pngData[I*pngWidth + K] := pngData[I*pngWidth + K] or (Data[dataY*SpriteInfo.Width + dataX] and $FF000000);
+          //todo: Adjoin
+          pngData[I*pngWidth + K] := Data[py * Container.Width + px] and $FFFFFF;
+          pngData[I*pngWidth + K] := pngData[I * pngWidth + K] or (Data[py * Container.Width + px] and $FF000000);
         end;
 
       SaveToPng(pngWidth, pngHeight, pngData, aFilePath);
@@ -705,11 +707,12 @@ begin
       for I := 0 to pngHeight - 1 do
         for K := 0 to pngWidth - 1 do
         begin
-          dataX := SpriteInfo.Sprites[prepGFXDataID.SpriteNum].OriginX + K;
-          dataY := SpriteInfo.Sprites[prepGFXDataID.SpriteNum].OriginY + I;
+          px := Container.Sprites[prepGFXDataID.SpriteNum].OriginX + K;
+          py := Container.Sprites[prepGFXDataID.SpriteNum].OriginY + I;
 
-          pngData[I*pngWidth + K] := Data[dataY*SpriteInfo.Width + dataX] and $FFFFFF;
-          pngData[I*pngWidth + K] := pngData[I*pngWidth + K] or (Data[dataY*SpriteInfo.Width + dataX] and $FF000000);
+          //todo: Adjoin
+          pngData[I*pngWidth + K] := Data[py * Container.Width + px] and $FFFFFF;
+          pngData[I * pngWidth + K] := pngData[I * pngWidth + K] or (Data[py * Container.Width + px] and $FF000000);
         end;
 
       SaveToPng(pngWidth, pngHeight, pngData, aFileMaskPath);
@@ -849,7 +852,7 @@ begin
                 ForceDirectories(fullFolderPath);
               end else
                 fullFolderPath := folderPath;
-                
+
               spritePack.ExportFullImageData(fullFolderPath, spriteID, sList);
               // Stop export if async thread is terminated by application
               if TThread.CheckTerminated then Exit;

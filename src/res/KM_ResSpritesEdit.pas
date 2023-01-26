@@ -759,11 +759,11 @@ begin
     for I := Low(fAtlases[SAT]) to High(fAtlases[SAT]) do
       with fAtlases[SAT, I] do
       begin
-        InputStream.Write(SpriteInfo.Width, 2);
-        InputStream.Write(SpriteInfo.Height, 2);
-        numSprites := Length(SpriteInfo.Sprites);
+        InputStream.Write(Container.Width, 2);
+        InputStream.Write(Container.Height, 2);
+        numSprites := Length(Container.Sprites);
         InputStream.Write(numSprites, 4);
-        InputStream.Write(SpriteInfo.Sprites[0], numSprites * SizeOf(SpriteInfo.Sprites[0]));
+        InputStream.Write(Container.Sprites[0], numSprites * SizeOf(Container.Sprites[0]));
         InputStream.Write(TexType, SizeOf(TKMTexFormat));
         numPixels := Length(Data);
         InputStream.Write(numPixels, 4);

@@ -27,7 +27,7 @@ type
 
   // Atlas data, needed for Texture Atlas Generation
   TKMSpriteAtlasData = record
-    SpriteInfo: TKMBinItem;
+    Container: TKMBinItem;
     TexType: TKMTexFormat;
     Data: TKMCardinalArray;
   end;
@@ -882,11 +882,11 @@ begin
         for I := Low(fAtlases[SAT]) to High(fAtlases[SAT]) do
           with fAtlases[SAT, I] do
           begin
-            decompressionStream.Read(SpriteInfo.Width, 2);
-            decompressionStream.Read(SpriteInfo.Height, 2);
+            decompressionStream.Read(Container.Width, 2);
+            decompressionStream.Read(Container.Height, 2);
             decompressionStream.Read(spriteCount, 4);
-            SetLength(SpriteInfo.Sprites, spriteCount);
-            decompressionStream.Read(SpriteInfo.Sprites[0], spriteCount*SizeOf(SpriteInfo.Sprites[0]));
+            SetLength(Container.Sprites, spriteCount);
+            decompressionStream.Read(Container.Sprites[0], spriteCount * SizeOf(Container.Sprites[0]));
             decompressionStream.Read(TexType, SizeOf(TKMTexFormat));
             decompressionStream.Read(dataCount, 4);
             SetLength(Data, dataCount);
@@ -1451,7 +1451,7 @@ begin
       Assert(InRange(I, Low(fAtlases[aMode]), High(fAtlases[aMode])),
              Format('Preloading sprite index out of range: %d, range [%d;%d]', [I, Low(fAtlases[aMode]), High(fAtlases[aMode])]));
       // Save prepared data for generating later (in main thread)
-      fAtlases[aMode, I].SpriteInfo := aSpriteInfo[I];
+      fAtlases[aMode, I].Container := aSpriteInfo[I];
       fAtlases[aMode, I].TexType := aTexType;
       fAtlases[aMode, I].Data := atlasData;
     end;
@@ -1581,13 +1581,13 @@ begin
         if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then
           texFilter := ftLinear;
 
-        texID := TKMRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
+        texID := TKMRender.GenTexture(Container.Width, Container.Height, @Data[0], TexType, texFilter, texFilter);
         //Now that we know texture IDs we can fill GFXData structure
-        SetGFXData(texID, SpriteInfo, SAT);
+        SetGFXData(texID, Container, SAT);
 
         if ((not aIsRXA and EXPORT_SPRITE_ATLASES) or (aIsRXA and EXPORT_SPRITE_ATLASES_RXA))
         and (fRT in EXPORT_SPRITE_ATLASES_LIST) then
-          SaveToPng(SpriteInfo.Width, SpriteInfo.Height, Data,
+          SaveToPng(Container.Width, Container.Height, Data,
             ExeDir + 'Export\GenTextures\' + RX_INFO[fRT].FileName + IfThenS(aIsRXA, '_rxa_', '_') + SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(texID) + '.png');
       end;
     end;
