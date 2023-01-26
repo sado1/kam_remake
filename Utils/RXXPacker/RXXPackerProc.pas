@@ -12,7 +12,7 @@ type
     procedure Pack(aRT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
   public
     SourcePathRX: string;
-    SourcePathRXA: string;
+    SourcePathInterp: string;
     DestinationPath: string;
 
     PackToRXX: Boolean;
@@ -167,8 +167,8 @@ begin
 
       if PackToRXA then
       begin
-        if DirectoryExists(SourcePathRXA + IntToStr(Ord(aRT)+1) + '\') then
-          spritePack.OverloadRXDataFromFolder(SourcePathRXA + IntToStr(Ord(aRT)+1) + '\', False); // Shadows are already softened for interps
+        if DirectoryExists(SourcePathInterp + IntToStr(Ord(aRT)+1) + '\') then
+          spritePack.OverloadRXDataFromFolder(SourcePathInterp + IntToStr(Ord(aRT)+1) + '\', False); // Shadows are already softened for interps
 
         spritePack.SaveToRXAFile(DestinationPath + RX_INFO[aRT].FileName + '.rxa', RXXFormat);
       end;
@@ -190,9 +190,9 @@ begin
     Exit;
   end;
 
-  if PackToRXA and not DirectoryExists(SourcePathRXA) then
+  if PackToRXA and not DirectoryExists(SourcePathInterp) then
   begin
-    aOnMessage('Cannot find "' + SourcePathRXA + '" folder.' + sLineBreak + 'Please make sure this folder exists and has data.');
+    aOnMessage('Cannot find "' + SourcePathInterp + '" folder.' + sLineBreak + 'Please make sure this folder exists and has data.');
     Exit;
   end;
 

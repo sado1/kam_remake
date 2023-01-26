@@ -11,7 +11,7 @@ type
   private class var
     fParams: TStringList;
     fSourcePathRX: string;
-    fSourcePathRXA: string;
+    fSourcePathInterp: string;
     fDestinationPath: string;
     fPackToRXA: Boolean;
     fRxSet: TRXTypeSet;
@@ -78,7 +78,7 @@ begin
     if LowerCase(fParams[I]) = 'sint'then
       if I < fParams.Count - 1 then
       begin
-        fSourcePathRXA := fParams[I+1];
+        fSourcePathInterp := fParams[I+1];
         fParams[I+1] := ''; // Make sure we dont parse it as some other key
       end else
         raise Exception.Create('Source interpolated sprites path ("sint") not specified');
@@ -113,7 +113,7 @@ begin
 
   rxxPacker := TKMRXXPacker.Create;
   rxxPacker.SourcePathRX := fSourcePathRX;
-  rxxPacker.SourcePathRXA := fSourcePathRXA;
+  rxxPacker.SourcePathInterp := fSourcePathInterp;
   rxxPacker.DestinationPath := fDestinationPath;
   rxxPacker.PackToRXA := fPackToRXA;
   rxxPacker.RXXFormat := rxxOne;
