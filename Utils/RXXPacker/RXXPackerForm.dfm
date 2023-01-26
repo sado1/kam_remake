@@ -20,21 +20,28 @@ object RXXForm1: TRXXForm1
   TextHeight = 14
   object Label2: TLabel
     Left = 16
-    Top = 232
+    Top = 216
     Width = 99
     Height = 13
     Caption = 'Sprites source folder'
   end
   object Label3: TLabel
     Left = 16
-    Top = 280
+    Top = 296
     Width = 156
     Height = 13
     Caption = 'Packed sprites destination folder'
   end
+  object Label1: TLabel
+    Left = 16
+    Top = 256
+    Width = 161
+    Height = 13
+    Caption = 'Interpolated sprites source folder'
+  end
   object btnPackRXX: TButton
     Left = 16
-    Top = 360
+    Top = 376
     Width = 257
     Height = 25
     Caption = 'Pack selected'
@@ -52,7 +59,7 @@ object RXXForm1: TRXXForm1
   end
   object btnUpdateList: TButton
     Left = 16
-    Top = 328
+    Top = 344
     Width = 257
     Height = 25
     Caption = 'Update List'
@@ -61,7 +68,7 @@ object RXXForm1: TRXXForm1
   end
   object edSpritesLoadDir: TEdit
     Left = 16
-    Top = 248
+    Top = 232
     Width = 257
     Height = 21
     TabOrder = 3
@@ -89,7 +96,7 @@ object RXXForm1: TRXXForm1
   end
   object edSpritesSaveDir: TEdit
     Left = 16
-    Top = 296
+    Top = 312
     Width = 257
     Height = 21
     TabOrder = 6
@@ -119,5 +126,13 @@ object RXXForm1: TRXXForm1
     Checked = True
     TabOrder = 9
     TabStop = True
+  end
+  object edSpritesLoadDir2: TEdit
+    Left = 16
+    Top = 272
+    Width = 257
+    Height = 21
+    TabOrder = 10
+    OnChange = edSpritesLoadDirChange
   end
 end

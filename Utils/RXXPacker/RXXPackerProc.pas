@@ -9,7 +9,8 @@ uses
 type
   TKMRXXPacker = class
   private
-    fSourcePath: string;
+    fSourcePath2: string;
+    fSourcePathRXA2: string;
     fRXXSavePath: string;
 
     procedure SetRXXSavePath(const aValue: string);
@@ -21,18 +22,14 @@ type
 
     constructor Create;
 
-    property SourcePath: string read fSourcePath write fSourcePath;
+    property SourcePath2: string read fSourcePath2 write fSourcePath2;
+    property SourcePathRXA2: string read fSourcePathRXA2 write fSourcePathRXA2;
     property RXXSavePath: string read fRXXSavePath write SetRXXSavePath;
 
     procedure Pack2(aRxSet: TRXTypeSet; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
 
     class function GetAvailableToPack(const aPath: string): TRXTypeSet;
   end;
-
-
-const
-  SPRITES_RES_DIR = 'SpriteResource';
-  SPRITES_INTERP_DIR = 'SpriteInterp' + PathDelim + 'Output';
 
 
 implementation
@@ -65,18 +62,18 @@ begin
   Result := [rxTiles]; //Tiles are always in the list
 
   for RT := Low(TRXType) to High(TRXType) do
-    if FileExists(aPath + SPRITES_RES_DIR + '\' + RX_INFO[RT].FileName + '.rx') then
+    if FileExists(aPath + RX_INFO[RT].FileName + '.rx') then
       Result := Result + [RT];
 end;
 
 
 procedure TKMRXXPacker.Pack(aRT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
 var
+  rxName: string;
   deathAnimProcessed: TList<Integer>;
   spritePack: TKMSpritePackEdit;
   trimmedAmount: Cardinal;
   step, spriteID: Integer;
-  rxName: string;
   resHouses: TKMResHouses;
   resUnits: TKMResUnits;
   UT: TKMUnitType;
@@ -85,25 +82,27 @@ begin
   //ruCustom sprite packs do not have a main RXX file so don't need packing
   if RX_INFO[aRT].Usage = ruCustom then Exit;
 
-  rxName := fSourcePath + SPRITES_RES_DIR + '\' + RX_INFO[aRT].FileName + '.rx';
+  rxName := fSourcePath2 + RX_INFO[aRT].FileName + '.rx';
 
   if (aRT <> rxTiles) and not FileExists(rxName) then
-    raise Exception.Create('Cannot find ' + rxName + ' file.' + sLineBreak + 'Please copy the file from your KaM\data\gfx\res\ folder.');
+    raise Exception.Create('Cannot find "' + rxName + '" file.' + sLineBreak + 'Please copy the file from your KaM\data\gfx\res\ folder.');
 
   spritePack := TKMSpritePackEdit.Create(aRT, aPalettes);
   try
     // Load base sprites from original KaM RX packages
     if aRT <> rxTiles then
     begin
+      // Load base RX
       spritePack.LoadFromRXFile(rxName);
-      spritePack.OverloadRXDataFromFolder(fSourcePath + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
+      // Overload (something we dont need in RXXPacker, cos all the custom sprites are in other folders)
+      spritePack.OverloadRXDataFromFolder(fSourcePath2, False); // Do not soften shadows, it will be done later on
       trimmedAmount := spritePack.TrimSprites;
 
       aOnMessage('  trimmed ' + IntToStr(trimmedAmount) + ' bytes');
     end
     else
-      if DirectoryExists(fSourcePath + SPRITES_RES_DIR + '\') then
-        spritePack.OverloadRXDataFromFolder(fSourcePath + SPRITES_RES_DIR + '\');
+      if DirectoryExists(fSourcePath2) then
+        spritePack.OverloadRXDataFromFolder(fSourcePath2);
       // Tiles don't need to be trimmed, as they can't use pivots
 
     // Houses need some special treatment to adapt to GL_ALPHA_TEST that we use for construction steps
@@ -179,8 +178,8 @@ begin
 
       if PackToRXA then
       begin
-        if DirectoryExists(fSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(aRT)+1) + '\') then
-          spritePack.OverloadRXDataFromFolder(fSourcePath + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(aRT)+1) + '\', False); // Shadows are already softened for interps
+        if DirectoryExists(fSourcePathRXA2 + IntToStr(Ord(aRT)+1) + '\') then
+          spritePack.OverloadRXDataFromFolder(fSourcePathRXA2 + IntToStr(Ord(aRT)+1) + '\', False); // Shadows are already softened for interps
 
         spritePack.SaveToRXAFile(fRXXSavePath + 'data\Sprites\' + RX_INFO[aRT].FileName + '.rxa', RXXFormat);
       end;
@@ -196,9 +195,9 @@ var
   rxType: TRXType;
   tick, tickTotal: Cardinal;
 begin
-  if not DirectoryExists(fSourcePath + SPRITES_RES_DIR + '\') then
+  if not DirectoryExists(fSourcePath2) then
   begin
-    aOnMessage('Cannot find ' + fSourcePath + SPRITES_RES_DIR + '\ folder.' + sLineBreak + 'Please make sure this folder exists.');
+    aOnMessage('Cannot find "' + fSourcePath2 + '" folder.' + sLineBreak + 'Please make sure this folder exists.');
     Exit;
   end;
 

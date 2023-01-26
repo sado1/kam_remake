@@ -11,6 +11,7 @@ type
   private class var
     fParams: TStringList;
     fSourcePath: string;
+    fSourcePathRXA: string;
     fRXXSavePath: string;
     fPackToRXA: Boolean;
     fRxSet: TRXTypeSet;
@@ -36,9 +37,9 @@ const
 class procedure TKMRXXPackerConsole.OutputInstructions;
 begin
   Writeln('Arguments:');
-  Writeln(' - sld spritesloaddir %s - source folder');
+  Writeln(' - sld spritesloaddir %s - RX source folder');
+  Writeln(' - srxa sourcerxa %s - RXA source folder');
   Writeln(' - ssd spritessavedir %s - target folder');
-  Writeln(' - rxa packtorxa - pack RXA as well');
   Writeln(' - all - pack all RX libraries');
   Writeln(' - %s - pack specific RX library');
   Writeln('');
@@ -73,6 +74,15 @@ begin
       end else
         raise Exception.Create('spritesLoadDir directory not specified');
 
+    if (LowerCase(fParams[I]) = 'srxa') or (LowerCase(fParams[I]) = 'sourcerxa') then
+      if I < fParams.Count - 1 then
+      begin
+        fSourcePathRXA := fParams[I+1];
+        fParams[I+1] := ''; // Make sure we dont parse it as some other key
+        fPackToRXA := True;
+      end else
+        raise Exception.Create('SourceRXA directory not specified');
+
     if (LowerCase(fParams[I]) = 'ssd') or (LowerCase(fParams[I]) = 'spritessavedir') then
       if I < fParams.Count - 1 then
       begin
@@ -82,7 +92,7 @@ begin
         raise Exception.Create('spritesSaveDir directory not specified');
 
     if (LowerCase(fParams[I]) = 'packtorxa') or (LowerCase(fParams[I]) = 'rxa') then
-      fPackToRXA := True;
+        raise Exception.Create('rxa key is disused. Use "srxa" to explicitly set RXA source path and pack RXAs');
 
     for rxType := Low(TRXType) to High(TRXType) do
     if LowerCase(fParams[I]) = 'all' then
@@ -102,7 +112,8 @@ begin
   ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
 
   rxxPacker := TKMRXXPacker.Create;
-  rxxPacker.SourcePath := fSourcePath;
+  rxxPacker.SourcePath2 := fSourcePath;
+  rxxPacker.SourcePathRXA2 := fSourcePathRXA;
   rxxPacker.RXXSavePath := fRXXSavePath;
   rxxPacker.PackToRXA := fPackToRXA;
   rxxPacker.RXXFormat := rxxOne;

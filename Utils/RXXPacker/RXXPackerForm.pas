@@ -23,6 +23,8 @@ type
     meLog: TMemo;
     rbRXXFormat0: TRadioButton;
     rbRXXFormat1: TRadioButton;
+    edSpritesLoadDir2: TEdit;
+    Label1: TLabel;
     procedure btnPackRXXClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -125,6 +127,7 @@ begin
 
   fUpdating := True;
   edSpritesLoadDir.Text := ExeDir;
+  edSpritesLoadDir2.Text := ExeDir;
   fUpdating := False;
 
   fSettingsPath := ExtractFilePath(ParamStr(0)) + 'RXXPacker.ini';
@@ -150,6 +153,7 @@ begin
   ini := TINIFile.Create(fSettingsPath);
   try
     edSpritesLoadDir.Text := ini.ReadString('SETTINGS',  'SpritesLoadDir', ExeDir);
+    edSpritesLoadDir2.Text := ini.ReadString('SETTINGS',  'SpritesLoadDir2', ExeDir);
     edSpritesSaveDir.Text := ini.ReadString('SETTINGS',  'SpritesSaveDir', ExeDir);
   finally
     ini.Free;
@@ -169,6 +173,7 @@ begin
   ini := TINIFile.Create(fSettingsPath);
   try
     ini.WriteString('SETTINGS',  'SpritesLoadDir', edSpritesLoadDir.Text);
+    ini.WriteString('SETTINGS',  'SpritesLoadDir2', edSpritesLoadDir2.Text);
     ini.WriteString('SETTINGS',  'SpritesSaveDir', edSpritesSaveDir.Text);
   finally
     ini.Free;
@@ -190,7 +195,8 @@ begin
 
   rxxPacker := TKMRXXPacker.Create;
   try
-    rxxPacker.SourcePath    := edSpritesLoadDir.Text;
+    rxxPacker.SourcePath2    := edSpritesLoadDir.Text;
+    rxxPacker.SourcePathRXA2    := edSpritesLoadDir2.Text;
     rxxPacker.RXXSavePath   := edSpritesSaveDir.Text;
     rxxPacker.PackToRXX     := chkPackToRXX.Checked;
     rxxPacker.PackToRXA     := chkPackToRXA.Checked;
