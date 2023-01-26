@@ -23,9 +23,9 @@ type
   private
     fExportWorkerHolder: TKMWorkerThreadHolder;
 
-    fGFXPrepDataBySpriteID: array [TKMSpriteAtlasType] of TDictionary<Integer, TKMAtlasAddress>;
+    fAtlasMap: array [TKMSpriteAtlasType] of TDictionary<Integer, TKMAtlasAddress>;
 
-    procedure PrepareGFXPrepData(aSpritePack: TKMSpritePack);
+    procedure PrepareAtlasMap(aSpritePack: TKMSpritePack);
 
     function GetOrCreateExportWorker: TKMWorkerThread;
 
@@ -71,8 +71,8 @@ constructor TKMResExporter.Create;
 begin
   inherited;
 
-  fGFXPrepDataBySpriteID[saBase] := TDictionary<Integer, TKMAtlasAddress>.Create;
-  fGFXPrepDataBySpriteID[saMask] := TDictionary<Integer, TKMAtlasAddress>.Create;
+  fAtlasMap[saBase] := TDictionary<Integer, TKMAtlasAddress>.Create;
+  fAtlasMap[saMask] := TDictionary<Integer, TKMAtlasAddress>.Create;
 end;
 
 
@@ -82,8 +82,8 @@ begin
     //This will ensure all queued work is completed before destruction
     FreeAndNil(fExportWorkerHolder);
 
-  FreeAndNil(fGFXPrepDataBySpriteID[saBase]);
-  FreeAndNil(fGFXPrepDataBySpriteID[saMask]);
+  FreeAndNil(fAtlasMap[saBase]);
+  FreeAndNil(fAtlasMap[saMask]);
 
   inherited;
 end;
@@ -98,20 +98,20 @@ begin
 end;
 
 
-procedure TKMResExporter.PrepareGFXPrepData(aSpritePack: TKMSpritePack);
+procedure TKMResExporter.PrepareAtlasMap(aSpritePack: TKMSpritePack);
 var
   I, K: Integer;
   SAT: TKMSpriteAtlasType;
 begin
-  fGFXPrepDataBySpriteID[saBase].Clear;
-  fGFXPrepDataBySpriteID[saMask].Clear;
+  fAtlasMap[saBase].Clear;
+  fAtlasMap[saMask].Clear;
 
   // Map spriteID to loaded from RXA Atlases
   for SAT := Low(aSpritePack.Atlases) to High(aSpritePack.Atlases) do
     for I := Low(aSpritePack.Atlases[SAT]) to High(aSpritePack.Atlases[SAT]) do
       with aSpritePack.Atlases[SAT, I] do
         for K := 0 to High(Container.Sprites) do
-          fGFXPrepDataBySpriteID[SAT].Add(Container.Sprites[K].SpriteID, TKMAtlasAddress.New(I, K));
+          fAtlasMap[SAT].Add(Container.Sprites[K].SpriteID, TKMAtlasAddress.New(I, K));
 end;
 
 
@@ -152,7 +152,7 @@ begin
         begin
           spritePack := sprites[aRT];
 
-          PrepareGFXPrepData(spritePack);
+          PrepareAtlasMap(spritePack);
 
           folderPath := ExeDir + 'Export' + PathDelim + RX_INFO[aRT].FileName + '.rxa' + PathDelim;
           ForceDirectories(folderPath);
@@ -194,7 +194,7 @@ begin
       sprites.LoadRXASprites(rxUnits);
       spritePack := sprites[rxUnits];
 
-      PrepareGFXPrepData(spritePack);
+      PrepareAtlasMap(spritePack);
 
       units := TKMResUnits.Create;
       resTexts := TKMTextLibraryMulti.Create;
@@ -496,7 +496,7 @@ begin
       resTexts.LoadLocale(ExeDir + 'data' + PathDelim + 'text' + PathDelim + 'text.%s.libx');
       resTexts.ForceDefaultLocale := True;
 
-      PrepareGFXPrepData(spritePack);
+      PrepareAtlasMap(spritePack);
 
       try
         for HT := HOUSE_MIN to HOUSE_MAX do
@@ -660,7 +660,7 @@ begin
   SetLength(pngData, pngWidth * pngHeight);
 
   // Export RGB values
-  if fGFXPrepDataBySpriteID[saBase].TryGetValue(aSpriteID, prepGFXDataID) then
+  if fAtlasMap[saBase].TryGetValue(aSpriteID, prepGFXDataID) then
     with aSpritePack.Atlases[saBase, prepGFXDataID.AtlasID] do
     begin
       for I := 0 to pngHeight - 1 do
@@ -678,7 +678,7 @@ begin
     end;
 
   // Masks
-  if (aFileMaskPath <> '') and fGFXPrepDataBySpriteID[saMask].TryGetValue(aSpriteID, prepGFXDataID) then
+  if (aFileMaskPath <> '') and fAtlasMap[saMask].TryGetValue(aSpriteID, prepGFXDataID) then
     with aSpritePack.Atlases[saMask, prepGFXDataID.AtlasID] do
     begin
       for I := 0 to pngHeight - 1 do
@@ -736,15 +736,15 @@ begin
       spritePack: TKMSpritePack;
     begin
       sprites := TKMResSprites.Create(nil, nil, True);
-      sprites.LoadRXASprites(rxTrees);
-      spritePack := sprites[rxTrees];
-
-      folderPath := ExeDir + 'Export' + PathDelim + 'TreeAnimHD' + PathDelim;
-      ForceDirectories(folderPath);
-
-      PrepareGFXPrepData(spritePack);
-
       try
+        sprites.LoadRXASprites(rxTrees);
+        spritePack := sprites[rxTrees];
+
+        folderPath := ExeDir + 'Export' + PathDelim + 'TreeAnimHD' + PathDelim;
+        ForceDirectories(folderPath);
+
+        PrepareAtlasMap(spritePack);
+
         for I := 0 to gRes.MapElements.Count - 1 do
           if (gMapElements[I].Anim.Count > 0) and (gMapElements[I].Anim.Step[1] > 0) then
             for J := 0 to gMapElements[I].Anim.Count - 1 do
