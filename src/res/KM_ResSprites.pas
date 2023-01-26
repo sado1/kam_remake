@@ -25,13 +25,14 @@ type
 
   TTGameResourceLoader = class;
 
-  TKMGFXPrepData =  array [TKMSpriteAtlasType] of // for each atlas type
-                      array of                  // Atlases
-                        record                  // Atlas data, needed for Texture Atlas Generation
-                          SpriteInfo: TKMBinItem;
-                          TexType: TKMTexFormat;
-                          Data: TKMCardinalArray;
-                        end;
+  // Atlas data, needed for Texture Atlas Generation
+  TKMSpriteAtlasData = record
+    SpriteInfo: TKMBinItem;
+    TexType: TKMTexFormat;
+    Data: TKMCardinalArray;
+  end;
+
+  TKMGFXPrepData = array [TKMSpriteAtlasType] of array {atlas number} of TKMSpriteAtlasData;
 
   // Base class for Sprite loading
   TKMSpritePack = class
@@ -874,7 +875,7 @@ begin
         end;
 
       //Atlases
-      for SAT := Low(TKMSpriteAtlasType) to High(TKMSpriteAtlasType) do
+      for SAT := Low(fGFXPrepData) to High(fGFXPrepData) do
       begin
         decompressionStream.Read(atlasCount, 4);
         SetLength(fGFXPrepData[SAT], atlasCount);
@@ -1553,7 +1554,7 @@ procedure TKMSpritePack.ClearGameResGenTemp;
 var
   SAT: TKMSpriteAtlasType;
 begin
-  for SAT := Low(TKMSpriteAtlasType) to High(TKMSpriteAtlasType) do
+  for SAT := Low(fGFXPrepData) to High(fGFXPrepData) do
     SetLength(fGFXPrepData[SAT], 0);
 end;
 
@@ -1571,7 +1572,7 @@ var
   texFilter: TKMFilterType;
 begin
   {$IFNDEF NO_OGL}
-  for SAT := Low(TKMSpriteAtlasType) to High(TKMSpriteAtlasType) do
+  for SAT := Low(fGFXPrepData) to High(fGFXPrepData) do
     for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
     begin
       with fGFXPrepData[SAT,I] do

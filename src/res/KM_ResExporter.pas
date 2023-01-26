@@ -110,7 +110,7 @@ begin
   fGFXPrepMaskDataBySpriteID.Clear;
 
   // Map spriteID to loaded from RXA GFXPrepData
-  for SAT := Low(TKMSpriteAtlasType) to High(TKMSpriteAtlasType) do
+  for SAT := Low(aSpritePack.GFXPrepData) to High(aSpritePack.GFXPrepData) do
     for I := Low(aSpritePack.GFXPrepData[SAT]) to High(aSpritePack.GFXPrepData[SAT]) do
       with aSpritePack.GFXPrepData[SAT, I] do
         for K := 0 to High(SpriteInfo.Sprites) do

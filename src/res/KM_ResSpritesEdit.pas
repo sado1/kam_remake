@@ -750,8 +750,8 @@ begin
       InputStream.Write(fRXData.HasMask[I], 1);
     end;
 
-  //Atlases
-  for SAT := Low(TKMSpriteAtlasType) to High(TKMSpriteAtlasType) do
+  // Atlases
+  for SAT := Low(fGFXPrepData) to High(fGFXPrepData) do
   begin
     Count := Length(fGFXPrepData[SAT]);
     InputStream.Write(Count, 4);
