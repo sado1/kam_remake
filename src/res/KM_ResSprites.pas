@@ -103,7 +103,7 @@ type
     function IsEmpty: Boolean;
 
     procedure ExportAllSpritesFromRXData(const aFolder: string);
-    procedure ExportFullImageData(const aFolder: string; aIndex: Integer; aTempList: TStringList = nil);
+    procedure ExportFullImageData2(const aFolder: string; aIndex: Integer; aTempList: TStringList);
     procedure ExportImage(const aFile: string; aIndex: Integer);
     procedure ExportMask(const aFile: string; aIndex: Integer);
 
@@ -1087,7 +1087,7 @@ begin
 
   for I := 1 to fRXData.Count do
   begin
-    ExportFullImageData(aFolder, I, SL);
+    ExportFullImageData2(aFolder, I, SL);
     // Stop export if async thread is terminated by application
     if TThread.CheckTerminated then
       Exit;
@@ -1097,19 +1097,10 @@ begin
 end;
 
 
-procedure TKMSpritePack.ExportFullImageData(const aFolder: string; aIndex: Integer; aTempList: TStringList = nil);
-var
-  listCreated: Boolean;
+procedure TKMSpritePack.ExportFullImageData2(const aFolder: string; aIndex: Integer; aTempList: TStringList);
 begin
-  listCreated := False;
-  if aTempList = nil then
-  begin
-    aTempList := TStringList.Create;
-    listCreated := True;
-  end;
-
-  if fRXData.Flag[aIndex] = 1 then
-  begin
+  if fRXData.Flag[aIndex] <> 1 then Exit;
+  
     ExportImage(aFolder + Format('%d_%.4d.png', [Byte(fRT)+1, aIndex]), aIndex);
 
     if fRXData.HasMask[aIndex] then
@@ -1128,10 +1119,6 @@ begin
       aTempList.Append(IntToStr(fRXData.SizeNoShadow[aIndex].Bottom));
     end;
     aTempList.SaveToFile(aFolder + Format('%d_%.4d.txt', [Ord(fRT)+1, aIndex]));
-  end;
-
-  if listCreated then
-    aTempList.Free;
 end;
 
 
