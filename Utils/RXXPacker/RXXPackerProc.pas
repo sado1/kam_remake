@@ -19,7 +19,7 @@ type
     PackToRXA: Boolean;
     RXXFormat: TKMRXXFormat;
 
-    constructor Create(const aSpritesSourcePath: string);
+    constructor Create;
 
     property SpritesSourcePath: string read fSpritesSourcePath write fSpritesSourcePath;
     property RXXSavePath: string read fRXXSavePath write SetRXXSavePath;
@@ -41,15 +41,14 @@ uses
 
 
 { TKMRXXPacker }
-constructor TKMRXXPacker.Create(const aSpritesSourcePath: string);
+constructor TKMRXXPacker.Create;
 begin
-  inherited Create;
+  inherited;
 
-  SpritesSourcePath := aSpritesSourcePath;
-
+  // Default values
   PackToRXX := True;
   PackToRXA := False;
-  RXXFormat := rxxOne; // Default to latest one
+  RXXFormat := rxxOne;
 end;
 
 

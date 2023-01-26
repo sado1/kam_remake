@@ -101,7 +101,7 @@ var
 begin
   ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
 
-  rxxPacker := TKMRXXPacker.Create(ExeDir);
+  rxxPacker := TKMRXXPacker.Create;
   rxxPacker.SpritesSourcePath := fSpritesSourcePath;
   rxxPacker.RXXSavePath := fRXXSavePath;
   rxxPacker.PackToRXA := fPackToRXA;

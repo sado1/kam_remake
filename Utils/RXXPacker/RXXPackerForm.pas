@@ -32,7 +32,6 @@ type
     procedure edSpritesLoadDirChange(Sender: TObject);
   private
     fPalettes: TKMResPalettes;
-    fRxxPacker: TKMRXXPacker;
 
     fSettingsPath: string;
     fUpdating: Boolean;
@@ -61,7 +60,7 @@ var
   rxSet: TRXTypeSet;
 begin
   // fRxxPacker is our SPOT, so we ask it about what it dims doable
-  rxSet := fRxxPacker.GetAvailableToPack(edSpritesLoadDir.Text);
+  rxSet := TKMRxxPacker.GetAvailableToPack(edSpritesLoadDir.Text);
 
   ListBox1.Items.Clear;
   for RT := Low(TRXType) to High(TRXType) do
@@ -121,13 +120,12 @@ begin
 
   gLog := TKMLog.Create(ExeDir + 'RXXPacker.log');
 
+  fPalettes := TKMResPalettes.Create;
+  fPalettes.LoadPalettes(ExeDir + 'data\gfx\');
+
   fUpdating := True;
   edSpritesLoadDir.Text := ExeDir;
   fUpdating := False;
-
-  fRxxPacker := TKMRXXPacker.Create(ExeDir);
-  fPalettes := TKMResPalettes.Create;
-  fPalettes.LoadPalettes(ExeDir + 'data\gfx\');
 
   fSettingsPath := ExtractFilePath(ParamStr(0)) + 'RXXPacker.ini';
   LoadSettings;
@@ -139,7 +137,6 @@ end;
 procedure TRXXForm1.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(fPalettes);
-  FreeAndNil(fRxxPacker);
   FreeAndNil(gLog);
 end;
 
@@ -181,6 +178,7 @@ end;
 
 procedure TRXXForm1.btnPackRXXClick(Sender: TObject);
 var
+  rxxPacker: TKMRXXPacker;
   rxSet: TRXTypeSet;
   I: Integer;
 begin
@@ -189,13 +187,15 @@ begin
   chkPackToRXA.Enabled := False;
   rbRXXFormat0.Enabled := False;
   rbRXXFormat1.Enabled := False;
+
+  rxxPacker := TKMRXXPacker.Create;
   try
-    fRxxPacker.SpritesSourcePath := edSpritesLoadDir.Text;
-    fRxxPacker.RXXSavePath    := edSpritesSaveDir.Text;
-    fRxxPacker.PackToRXX      := chkPackToRXX.Checked;
-    fRxxPacker.PackToRXA      := chkPackToRXA.Checked;
-    if rbRXXFormat0.Checked then fRxxPacker.RXXFormat := rxxZero;
-    if rbRXXFormat1.Checked then fRxxPacker.RXXFormat := rxxOne;
+    rxxPacker.SpritesSourcePath := edSpritesLoadDir.Text;
+    rxxPacker.RXXSavePath    := edSpritesSaveDir.Text;
+    rxxPacker.PackToRXX      := chkPackToRXX.Checked;
+    rxxPacker.PackToRXA      := chkPackToRXA.Checked;
+    if rbRXXFormat0.Checked then rxxPacker.RXXFormat := rxxZero;
+    if rbRXXFormat1.Checked then rxxPacker.RXXFormat := rxxOne;
 
     rxSet := [];
     for I := 0 to ListBox1.Items.Count - 1 do
@@ -203,7 +203,7 @@ begin
         rxSet := rxSet + [TRXType(ListBox1.Items.Objects[I])];
 
     try
-      fRxxPacker.Pack2(rxSet, fPalettes, procedure (aMsg: string) begin meLog.Lines.Append(aMsg); end);
+      rxxPacker.Pack2(rxSet, fPalettes, procedure (aMsg: string) begin meLog.Lines.Append(aMsg); end);
     except
       on E: Exception do
         MessageBox(Handle, PWideChar(E.Message), 'Error', MB_ICONEXCLAMATION or MB_OK);
@@ -211,6 +211,8 @@ begin
 
     ListBox1.ClearSelection;
   finally
+    FreeAndNil(rxxPacker);
+
     btnPackRXX.Enabled := True;
     chkPackToRXX.Enabled := True;
     chkPackToRXA.Enabled := True;
