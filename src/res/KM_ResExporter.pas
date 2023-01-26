@@ -114,6 +114,7 @@ procedure TKMResExporter.ExportSpritesFromRXXToPNG(aRT: TRXType; aOnDone: TProc<
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
+
   GetOrCreateExportWorker.QueueWork(procedure
     var
       sprites: TKMResSprites;
@@ -133,6 +134,7 @@ procedure TKMResExporter.ExportSpritesFromRXAToPNG(aRT: TRXType; aOnDone: TProc<
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
+
   GetOrCreateExportWorker.QueueWork(procedure
     var
       I: Integer;
@@ -324,6 +326,7 @@ procedure TKMResExporter.ExportUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExport
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
+
   // Asynchroniously export data
   GetOrCreateExportWorker.QueueWork(procedure
     var
@@ -461,6 +464,7 @@ procedure TKMResExporter.ExportHouseAnimHD(aOnDone: TProc<String>);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
+
   // Asynchroniously export data
   GetOrCreateExportWorker.QueueWork(procedure
     var
@@ -559,6 +563,7 @@ procedure TKMResExporter.ExportHouseAnim(aOnDone: TProc<String>);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
+
   // Asynchroniously export data
   GetOrCreateExportWorker.QueueWork(procedure
   var
@@ -714,6 +719,7 @@ procedure TKMResExporter.ExportTreeAnimHD(aOnDone: TProc<String>);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
+
   // Asynchroniously export data
   GetOrCreateExportWorker.QueueWork(procedure
     var
@@ -765,6 +771,7 @@ procedure TKMResExporter.ExportTreeAnim(aOnDone: TProc<String>);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
+
   // Asynchroniously export data
   GetOrCreateExportWorker.QueueWork(procedure
     var
