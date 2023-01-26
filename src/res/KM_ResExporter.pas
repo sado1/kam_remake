@@ -33,18 +33,15 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure ExportHDTreeAnim(aOnDone: TProc<String> = nil);
-    procedure ExportTreeAnim(aOnDone: TProc<String> = nil);
-    procedure ExportHDHouseAnim(aOnDone: TProc<String> = nil);
-    procedure ExportHouseAnim(aOnDone: TProc<String> = nil);
-    procedure ExportHDUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportThoughts, aExportUnused: Boolean; aOnDone: TProc<String> = nil);
-    procedure ExportUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean = False; aOnDone: TProc<String> = nil);
-    procedure ExportSpritesFromRXXToPNG(aRT: TRXType; aOnDone: TProc<String> = nil);
-    procedure ExportSpritesFromRXAToPNG(aRT: TRXType; aOnDone: TProc<String> = nil);
+    procedure ExportTreeAnimHD(aOnDone: TProc<String>);
+    procedure ExportTreeAnim(aOnDone: TProc<String>);
+    procedure ExportHouseAnimHD(aOnDone: TProc<String>);
+    procedure ExportHouseAnim(aOnDone: TProc<String>);
+    procedure ExportUnitAnimHD(aUnitFrom, aUnitTo: TKMUnitType; aExportThoughts, aExportUnused: Boolean; aOnDone: TProc<String>);
+    procedure ExportUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean; aOnDone: TProc<String>);
+    procedure ExportSpritesFromRXXToPNG(aRT: TRXType; aOnDone: TProc<String>);
+    procedure ExportSpritesFromRXAToPNG(aRT: TRXType; aOnDone: TProc<String>);
   end;
-
-var
-  gResExporter: TKMResExporter;
 
 
 implementation
@@ -77,7 +74,7 @@ end;
 destructor TKMResExporter.Destroy;
 begin
   if fExportWorkerHolder <> nil then
-    //This will ensure all queued work is completed before destruction
+    // This will ensure all queued work is completed before destruction
     FreeAndNil(fExportWorkerHolder);
 
   FreeAndNil(fAtlasMap[saBase]);
@@ -113,7 +110,7 @@ begin
 end;
 
 
-procedure TKMResExporter.ExportSpritesFromRXXToPNG(aRT: TRXType; aOnDone: TProc<String> = nil);
+procedure TKMResExporter.ExportSpritesFromRXXToPNG(aRT: TRXType; aOnDone: TProc<String>);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
@@ -132,7 +129,7 @@ begin
 end;
 
 
-procedure TKMResExporter.ExportSpritesFromRXAToPNG(aRT: TRXType; aOnDone: TProc<String> = nil);
+procedure TKMResExporter.ExportSpritesFromRXAToPNG(aRT: TRXType; aOnDone: TProc<String>);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
@@ -163,7 +160,7 @@ begin
 end;
 
 
-procedure TKMResExporter.ExportHDUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportThoughts, aExportUnused: Boolean; aOnDone: TProc<String> = nil);
+procedure TKMResExporter.ExportUnitAnimHD(aUnitFrom, aUnitTo: TKMUnitType; aExportThoughts, aExportUnused: Boolean; aOnDone: TProc<String>);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
@@ -323,7 +320,7 @@ end;
 
 
 //Export Units graphics categorized by Unit and Action
-procedure TKMResExporter.ExportUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean = False; aOnDone: TProc<String> = nil);
+procedure TKMResExporter.ExportUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean; aOnDone: TProc<String>);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
@@ -460,7 +457,7 @@ begin
 end;
 
 
-procedure TKMResExporter.ExportHDHouseAnim(aOnDone: TProc<String> = nil);
+procedure TKMResExporter.ExportHouseAnimHD(aOnDone: TProc<String>);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
@@ -558,7 +555,7 @@ end;
 
 
 //Export Houses graphics categorized by House and Action
-procedure TKMResExporter.ExportHouseAnim(aOnDone: TProc<String> = nil);
+procedure TKMResExporter.ExportHouseAnim(aOnDone: TProc<String>);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
@@ -713,7 +710,7 @@ begin
 end;
 
 
-procedure TKMResExporter.ExportHDTreeAnim(aOnDone: TProc<String> = nil);
+procedure TKMResExporter.ExportTreeAnimHD(aOnDone: TProc<String>);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
@@ -764,7 +761,7 @@ end;
 
 
 //Export Trees graphics categorized by ID
-procedure TKMResExporter.ExportTreeAnim(aOnDone: TProc<String> = nil);
+procedure TKMResExporter.ExportTreeAnim(aOnDone: TProc<String>);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);

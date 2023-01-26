@@ -99,7 +99,7 @@ uses
   KromUtils, KM_FileIO,
   KM_GameApp, KM_VclHelpers,
   KM_System,
-  KM_ResExporter, KM_ResTexts,
+  KM_ResTexts,
   KM_KeysSettings,
   KM_Music,
   KM_Log, KM_CommonUtils, KM_Defaults, KM_Points, KM_DevPerfLog,
@@ -265,7 +265,6 @@ begin
   end;
 
   gVideoPlayer := TKMVideoPlayer.Create(ENABLE_VIDEOS_UNDER_WINE or not IsUnderWine);
-  gResExporter := TKMResExporter.Create;
 
   fFormMain.Caption := 'KaM Remake - ' + UnicodeString(GAME_VERSION);
   //Will make the form slightly higher, so do it before ReinitRender so it is reset
@@ -392,8 +391,6 @@ begin
 
     if Assigned(gVideoPlayer) then
       gVideoPlayer.Free;
-
-    FreeAndNil(gResExporter);
 
     // fFormMain.DevSettingsSave; Moved into MainForm itself, since it's purely MainForms business. Rest of the app should know nothing about it
 
