@@ -128,7 +128,6 @@ begin
         if sprites.LoadSprites(aRT, False) then
           sprites[aRT].ExportAllSpritesFromRXData(ExeDir + 'Export' + PathDelim + RX_INFO[aRT].FileName + '.rxx' + PathDelim);
       finally
-        sprites.ClearTemp;
         sprites.Free;
       end;
     end, aOnDone, 'Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)) + 'from ' + RX_INFO[aRT].FileName + '.rxx');
@@ -160,7 +159,6 @@ begin
             ExportFullImageDataFromAtlas(spritePack, I, folderPath);
         end;
       finally
-        sprites.ClearTemp;
         sprites.Free;
       end;
     end, aOnDone, 'Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)) + 'from ' + RX_INFO[aRT].FileName + '.rxa');
@@ -318,7 +316,6 @@ begin
             if TThread.CheckTerminated then Exit;
           end;
       finally
-        sprites.ClearTemp;
         sprites.Free;
         units.Free;
         resTexts.Free;
@@ -457,7 +454,6 @@ begin
             if TThread.CheckTerminated then Exit;
           end;
       finally
-        sprites.ClearTemp;
         sprites.Free;
         units.Free;
         resTexts.Free;
@@ -557,7 +553,6 @@ begin
       finally
         resTexts.Free;
         houses.Free;
-        sprites.ClearTemp;
         sprites.Free;
       end;
     end, aOnDone, 'Export HD House animation');
@@ -639,7 +634,6 @@ begin
     finally
       resTexts.Free;
       houses.Free;
-      sprites.ClearTemp;
       sprites.Free;
     end;
   end, aOnDone, 'Export house anim');
@@ -767,7 +761,6 @@ begin
                 if TThread.CheckTerminated then Exit;
               end;
       finally
-        sprites.ClearTemp;
         sprites.Free;
       end;
     end, aOnDone, 'Export HD Tree animation');
@@ -817,7 +810,6 @@ begin
           end;
         end;
       finally
-        sprites.ClearTemp;
         sprites.Free;
       end;
     end, aOnDone, 'Export tree anim');
