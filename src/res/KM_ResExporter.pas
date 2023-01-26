@@ -125,7 +125,7 @@ begin
       finally
         sprites.Free;
       end;
-    end, aOnDone, 'Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)) + 'from ' + RX_INFO[aRT].FileName + '.rxx');
+    end, aOnDone, 'Export from ' + RX_INFO[aRT].FileName + '.rxx');
 end;
 
 
@@ -156,7 +156,7 @@ begin
       finally
         sprites.Free;
       end;
-    end, aOnDone, 'Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)) + 'from ' + RX_INFO[aRT].FileName + '.rxa');
+    end, aOnDone, 'Export from ' + RX_INFO[aRT].FileName + '.rxa');
 end;
 
 
