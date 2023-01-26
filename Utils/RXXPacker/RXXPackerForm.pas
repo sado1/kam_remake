@@ -58,18 +58,19 @@ uses
 procedure TRXXForm1.UpdateList;
 var
   RT: TRXType;
+  rxSet: TRXTypeSet;
 begin
-  fRxxPacker.SpritesSourcePath := edSpritesLoadDir.Text;
+  // fRxxPacker is our SPOT, so we ask it about what it dims doable
+  rxSet := fRxxPacker.GetAvailableToPack(edSpritesLoadDir.Text);
 
   ListBox1.Items.Clear;
   for RT := Low(TRXType) to High(TRXType) do
-    if (RT = rxTiles) //Tiles are always in the list
-    or FileExists(fRxxPacker.SpritesSourcePath + 'SpriteResource\' + RX_INFO[RT].FileName + '.rx') then
+    if RT in rxSet then
       ListBox1.Items.AddObject(RX_INFO[RT].FileName, TObject(RT));
 
   if ListBox1.Items.Count = 0 then
   begin
-    ShowMessage('No .RX files were found in' + sLineBreak + ExeDir + 'SpriteResource\');
+    ShowMessage('No .RX files were found in' + sLineBreak + edSpritesLoadDir.Text);
     btnPackRXX.Enabled := False;
   end else
   begin

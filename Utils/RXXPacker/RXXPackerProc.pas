@@ -12,7 +12,6 @@ type
     fSpritesSourcePath: string;
     fRXXSavePath: string;
 
-    procedure SetSpritesSourcePath(const aValue: string);
     procedure SetRXXSavePath(const aValue: string);
     procedure Pack(aRT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
   public
@@ -22,10 +21,12 @@ type
 
     constructor Create(const aSpritesSourcePath: string);
 
-    property SpritesSourcePath: string read fSpritesSourcePath write SetSpritesSourcePath;
+    property SpritesSourcePath: string read fSpritesSourcePath write fSpritesSourcePath;
     property RXXSavePath: string read fRXXSavePath write SetRXXSavePath;
 
     procedure Pack2(RT: TRXTypeSet; fPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+
+    function GetAvailableToPack(const aPath: string): TRXTypeSet;
   end;
 
 
@@ -52,15 +53,21 @@ begin
 end;
 
 
-procedure TKMRXXPacker.SetSpritesSourcePath(const aValue: string);
-begin
-  fSpritesSourcePath := IncludeTrailingPathDelimiter(aValue);
-end;
-
-
 procedure TKMRXXPacker.SetRXXSavePath(const aValue: string);
 begin
   fRXXSavePath := IncludeTrailingPathDelimiter(aValue);
+end;
+
+
+function TKMRXXPacker.GetAvailableToPack(const aPath: string): TRXTypeSet;
+var
+  RT: TRXType;
+begin
+  Result := [rxTiles]; //Tiles are always in the list
+
+  for RT := Low(TRXType) to High(TRXType) do
+    if FileExists(aPath + SPRITES_RES_DIR + '\' + RX_INFO[RT].FileName + '.rx') then
+      Result := Result + [RT];
 end;
 
 
