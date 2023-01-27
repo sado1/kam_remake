@@ -297,7 +297,7 @@ type
     Count: Integer;
     Flag: array of Byte; // Sprite is valid
     Size: array of record X,Y: Word; end;
-    Pivot: array of record x,y: Integer; end;
+    Pivot: array of record X,Y: Integer; end;
     Data: array of array of Byte;
   end;}
 
