@@ -42,9 +42,9 @@ object RXXForm1: TRXXForm1
   object Label4: TLabel
     Left = 216
     Top = 256
-    Width = 59
+    Width = 54
     Height = 13
-    Caption = 'Save format'
+    Caption = 'RXX format'
   end
   object Label5: TLabel
     Left = 16
@@ -91,18 +91,18 @@ object RXXForm1: TRXXForm1
   object chkPackToRXA: TCheckBox
     Left = 16
     Top = 272
-    Width = 73
+    Width = 129
     Height = 17
-    Caption = 'Pack to RXA'
+    Caption = 'Pack to RXA (HD anims)'
     TabOrder = 4
     OnClick = chkPackToRXAClick
   end
   object chkPackToRXX: TCheckBox
     Left = 16
     Top = 256
-    Width = 73
+    Width = 113
     Height = 17
-    Caption = 'Pack to RXX'
+    Caption = 'Pack to RXX (classic)'
     Checked = True
     State = cbChecked
     TabOrder = 5
