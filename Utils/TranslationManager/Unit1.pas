@@ -558,9 +558,7 @@ begin
     IgnoreChanges := false;
   except
     on E: Exception do
-    begin
       gLog.AddTime('Error on ListBox1Click: ' + E.Message + sLineBreak + GetStackTrace(10));
-    end;
   end;
 end;
 
@@ -581,9 +579,7 @@ begin
     mnuSave.Enabled := True;
   except
     on E: Exception do
-    begin
       gLog.AddTime('Error on btnSortByIndexClick: ' + E.Message + sLineBreak + GetStackTrace(10));
-    end;
   end;
 end;
 
@@ -598,9 +594,7 @@ begin
     mnuSave.Enabled := True;
   except
     on E: Exception do
-    begin
       gLog.AddTime('Error on btnSortByNameClick: ' + E.Message + sLineBreak + GetStackTrace(10));
-    end;
   end;
 end;
 
@@ -614,7 +608,6 @@ begin
   except
     on E: Exception do
       gLog.AddTime('Error on btnCompactIndexesClick ' + E.Message + sLineBreak + GetStackTrace(10));
-
   end;
 end;
 
@@ -626,9 +619,7 @@ begin
     RefreshList;
   except
     on E: Exception do
-    begin
       gLog.AddTime('Error on FilterChanged: ' + E.Message + sLineBreak + GetStackTrace(10));
-    end;
   end;
 end;
 
@@ -700,6 +691,7 @@ begin
   if IgnoreChanges then exit;
   ID := ListboxLookup[ListBox1.ItemIndex];
   if fTextManager.Consts[ID].TextID = -1 then exit;
+
   T := TMemo(Sender).Tag;
   fTextManager.Texts[fTextManager.Consts[ID].TextID][T] := {$IFDEF FPC}Utf8ToAnsi{$ENDIF}(TMemo(Sender).Text);
   mnuSave.Enabled := True;
