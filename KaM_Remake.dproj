@@ -586,6 +586,7 @@
         <DCCReference Include="src\utils\io\KM_IoXML.pas"/>
         <DCCReference Include="src\utils\method_parser\KM_MethodParser.pas"/>
         <DCCReference Include="src\utils\method_parser\KM_MethodParserParams.pas"/>
+        <None Include="KM_TextIDs.inc"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
