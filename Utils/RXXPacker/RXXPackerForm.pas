@@ -25,6 +25,8 @@ type
     rbRXXFormat1: TRadioButton;
     edSourceInterpPath: TEdit;
     Label1: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
     procedure btnPackRXXClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);

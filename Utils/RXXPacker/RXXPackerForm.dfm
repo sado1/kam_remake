@@ -20,7 +20,7 @@ object RXXForm1: TRXXForm1
   TextHeight = 14
   object Label2: TLabel
     Left = 16
-    Top = 216
+    Top = 16
     Width = 130
     Height = 13
     Caption = 'Source RX and sprites path'
@@ -34,10 +34,24 @@ object RXXForm1: TRXXForm1
   end
   object Label1: TLabel
     Left = 16
-    Top = 256
+    Top = 56
     Width = 154
     Height = 13
     Caption = 'Source interpolated sprites path'
+  end
+  object Label4: TLabel
+    Left = 216
+    Top = 256
+    Width = 59
+    Height = 13
+    Caption = 'Save format'
+  end
+  object Label5: TLabel
+    Left = 16
+    Top = 104
+    Width = 27
+    Height = 13
+    Caption = 'Items'
   end
   object btnPackRXX: TButton
     Left = 16
@@ -50,9 +64,9 @@ object RXXForm1: TRXXForm1
   end
   object ListBox1: TListBox
     Left = 16
-    Top = 16
+    Top = 120
     Width = 257
-    Height = 153
+    Height = 129
     ItemHeight = 14
     MultiSelect = True
     TabOrder = 1
@@ -68,7 +82,7 @@ object RXXForm1: TRXXForm1
   end
   object edSourceRxPath: TEdit
     Left = 16
-    Top = 232
+    Top = 32
     Width = 257
     Height = 21
     TabOrder = 3
@@ -76,7 +90,7 @@ object RXXForm1: TRXXForm1
   end
   object chkPackToRXA: TCheckBox
     Left = 16
-    Top = 192
+    Top = 272
     Width = 73
     Height = 17
     Caption = 'Pack to RXA'
@@ -85,7 +99,7 @@ object RXXForm1: TRXXForm1
   end
   object chkPackToRXX: TCheckBox
     Left = 16
-    Top = 176
+    Top = 256
     Width = 73
     Height = 17
     Caption = 'Pack to RXX'
@@ -110,16 +124,16 @@ object RXXForm1: TRXXForm1
     TabOrder = 7
   end
   object rbRXXFormat0: TRadioButton
-    Left = 224
-    Top = 176
+    Left = 216
+    Top = 272
     Width = 49
     Height = 17
     Caption = 'RXX'
     TabOrder = 8
   end
   object rbRXXFormat1: TRadioButton
-    Left = 224
-    Top = 192
+    Left = 216
+    Top = 288
     Width = 49
     Height = 17
     Caption = 'RXX1'
@@ -129,7 +143,7 @@ object RXXForm1: TRXXForm1
   end
   object edSourceInterpPath: TEdit
     Left = 16
-    Top = 272
+    Top = 72
     Width = 257
     Height = 21
     TabOrder = 10
