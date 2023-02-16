@@ -830,25 +830,25 @@ end;
 procedure TForm1.RefreshFilter;
 var
   Id: Integer;
-  Filter, MainFile: Boolean;
+  isMainFile, isFiltered: Boolean;
 begin
   Id := lbFolders.ItemIndex;
   if Id = -1 then Exit;
 
-  MainFile := SameText(lbFolders.Items[ID], 'data\text\text.%s.libx');
-  Filter := cbShowMis.Checked or cbShowDup.Checked
+  isMainFile := SameText(lbFolders.Items[ID], 'data\text\text.%s.libx');
+  isFiltered := cbShowMis.Checked or cbShowDup.Checked
     or (edTextFilter.Text <> '') or (edLabelId.Text <> '') or (edLabelName.Text <> '');
 
   //Disable buttons
-  mnuSortByIndex.Enabled := MainFile and not Filter;
-  mnuSortByName.Enabled := MainFile and not Filter;
-  mnuCompactIndexes.Enabled := MainFile and not Filter;
-  btnInsert.Enabled := not Filter;
-  btnRename.Enabled := MainFile;
-  btnDelete.Enabled := not Filter;
-  btnInsertSeparator.Enabled := MainFile and not Filter;
-  btnMoveUp.Enabled := MainFile and not Filter;
-  btnMoveDown.Enabled := MainFile and not Filter;
+  mnuSortByIndex.Enabled := isMainFile and not isFiltered;
+  mnuSortByName.Enabled := isMainFile and not isFiltered;
+  mnuCompactIndexes.Enabled := isMainFile and not isFiltered;
+  btnInsert.Enabled := not isFiltered;
+  btnRename.Enabled := isMainFile;
+  btnDelete.Enabled := not isFiltered;
+  btnInsertSeparator.Enabled := isMainFile and not isFiltered;
+  btnMoveUp.Enabled := isMainFile and not isFiltered;
+  btnMoveDown.Enabled := isMainFile and not isFiltered;
 end;
 
 
