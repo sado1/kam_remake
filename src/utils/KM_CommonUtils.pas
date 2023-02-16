@@ -347,9 +347,7 @@ begin
   end;
 
   for I := Low(aArr2^) to High(aArr2^) do
-  begin
     Inc(aArr1^[I], aArr2^[I]);
-  end;
 end;
 
 
@@ -366,10 +364,7 @@ begin
   Result := False;
   for I := Low(aArray) to High(aArray) do
     if aValue = aArray[I] then
-    begin
-      Result := True;
-      Exit;
-    end;
+      Exit(True);
 end;
 
 
@@ -380,10 +375,7 @@ begin
   Result := False;
   for I := Low(aArray) to High(aArray) do
     if aValue = aArray[I] then
-    begin
-      Result := True;
-      Exit;
-    end;
+      Exit(True);
 end;
 
 
@@ -394,10 +386,7 @@ begin
   Result := False;
   for I := Low(aArray) to High(aArray) do
     if KMSamePoint(aPoint, aArray[I]) then
-    begin
-      Result := True;
-      Exit;
-    end;
+      Exit(True);
 end;
 
 
@@ -408,10 +397,7 @@ begin
   Result := False;
   for I := 0 to aElemCnt - 1 do
     if KMSamePoint(aPoint, aArray[I]) then
-    begin
-      Result := True;
-      Exit;
-    end;
+      Exit(True);
 end;
 
 
