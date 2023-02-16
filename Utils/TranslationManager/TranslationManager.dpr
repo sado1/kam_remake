@@ -3,10 +3,11 @@ program TranslationManager;
 uses
   {$IFDEF FPC} Interfaces, {$ENDIF}
   Forms,
+
   Unit1 in 'Unit1.pas' {Form1},
   Unit_PathManager in 'Unit_PathManager.pas',
   Unit_Text in 'Unit_Text.pas',
-	TranslationManagerUtils in 'TranslationManagerUtils.pas';
+  TranslationManagerUtils in 'TranslationManagerUtils.pas';
 
 {$IFDEF WDC}
 {$R *.res}
