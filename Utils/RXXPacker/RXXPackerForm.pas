@@ -62,9 +62,11 @@ procedure TRXXForm1.UpdateList;
 var
   RT: TRXType;
   rxSet: TRXTypeSet;
+  path: string;
 begin
+  path := IncludeTrailingPathDelimiter(edSourceRxPath.Text);
   // fRxxPacker is our SPOT, so we ask it about what it dims doable
-  rxSet := TKMRxxPacker.GetAvailableToPack(edSourceRxPath.Text);
+  rxSet := TKMRxxPacker.GetAvailableToPack(path);
 
   ListBox1.Items.Clear;
   for RT := Low(TRXType) to High(TRXType) do
@@ -73,7 +75,7 @@ begin
 
   if ListBox1.Items.Count = 0 then
   begin
-    ShowMessage('No .RX files were found in' + sLineBreak + edSourceRxPath.Text);
+    ShowMessage('No .RX files were found in' + sLineBreak + path);
     btnPackRXX.Enabled := False;
   end else
   begin
