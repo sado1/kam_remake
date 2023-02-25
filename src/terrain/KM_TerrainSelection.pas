@@ -517,7 +517,8 @@ begin
   SetMainLands;
 
   // Update terrain kind info
-  gGame.TerrainPainter.FixTerrainKindInfo(fSelectionRect);
+  // fSelectionRect - [0..255,0..255], but TerKindInfo - [1..256,1..256])
+  gGame.TerrainPainter.FixTerrainKindInfo(KMRectMove(fSelectionRect, 1, 1));
 
   gTerrain.UpdateAll(fSelectionRect);
 
