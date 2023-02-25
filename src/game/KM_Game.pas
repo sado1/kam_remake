@@ -2389,7 +2389,9 @@ begin
     fullPath := SaveName(aSaveName, EXT_SAVE_MAIN, fParams.IsMultiplayer);
     mpLocalDataPath := SaveName(aSaveName, EXT_SAVE_MP_LOCAL, fParams.IsMultiplayer);
 
-    saveByPlayer := (aSaveName <> AUTOSAVE_SAVE_NAME) and (aSaveName <> AUTOSAVE_AFTER_PT_END_SAVE_NAME);
+    saveByPlayer :=     (aSaveName <> AUTOSAVE_SAVE_NAME)
+                    and (aSaveName <> AUTOSAVE_AFTER_PT_END_SAVE_NAME)
+                    and (aSaveName <> RETURN_TO_LOBBY_SAVE);
     SaveGameToFile(fullPath, saveByPlayer, aSaveWorkerThread, aTimestamp, mpLocalDataPath);
 
     if not fParams.IsMultiPlayerOrSpec then
