@@ -9,12 +9,15 @@ uses
 type
   TKMRXXPacker = class
   private
-    procedure Pack(aRT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
-  public
-    SourcePathRX: string;
-    SourcePathInterp: string;
-    DestinationPath: string;
+    fSourcePathRX: string;
+    fSourcePathInterp: string;
+    fDestinationPath: string;
 
+    procedure Pack(aRT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+    procedure SetDestinationPath(const aValue: string);
+    procedure SetSourcePathInterp(const aValue: string);
+    procedure SetSourcePathRX(const aValue: string);
+  public
     PackToRXX: Boolean;
     PackToRXA: Boolean;
     RXXFormat: TKMRXXFormat;
@@ -22,6 +25,10 @@ type
     constructor Create;
 
     procedure PackSet(aRxSet: TRXTypeSet; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+
+    property SourcePathRX: string read fSourcePathRX write SetSourcePathRX;
+    property SourcePathInterp: string read fSourcePathInterp write SetSourcePathInterp;
+    property DestinationPath: string read fDestinationPath write SetDestinationPath;
 
     class function GetAvailableToPack(const aPath: string): TRXTypeSet;
   end;
@@ -232,6 +239,24 @@ begin
   end;
 
   aOnMessage('Everything packed in ' + IntToStr(GetTickCount - tickTotal) + ' ms');
+end;
+
+
+procedure TKMRXXPacker.SetDestinationPath(const aValue: string);
+begin
+  fDestinationPath := IncludeTrailingPathDelimiter(aValue);
+end;
+
+
+procedure TKMRXXPacker.SetSourcePathInterp(const aValue: string);
+begin
+  fSourcePathInterp := IncludeTrailingPathDelimiter(aValue);
+end;
+
+
+procedure TKMRXXPacker.SetSourcePathRX(const aValue: string);
+begin
+  fSourcePathRX := IncludeTrailingPathDelimiter(aValue);
 end;
 
 
