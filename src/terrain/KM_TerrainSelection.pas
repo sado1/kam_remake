@@ -359,7 +359,7 @@ begin
     end;
 
   for I := 0 to gTerrain.MapY do
-    fLandTerKindTemp[I] := Copy(gGame.TerrainPainter.MainLandTerKind[I], 0, gTerrain.MapX);
+    fLandTerKindTemp[I] := Copy(gGame.TerrainPainter.MainLandTerKind[I], 0, gTerrain.MapX + 1);
 end;
 
 
