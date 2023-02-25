@@ -923,7 +923,9 @@ begin
   if gCursor.MapEdDefPosSetGroup then
   begin
     formation := gMySpectator.Hand.AI.General.DefencePositions.TroopFormations[groupType];
-    if G = nil then
+    // Do not add group if loc is already occupied by unit
+    if (G = nil)
+      and (gTerrain.UnitsHitTest(aLoc.X, aLoc.Y) = nil) then
       gMySpectator.Hand.AddUnitGroup(UNIT_TYPES_BY_GT_LVL[groupType, gCursor.MapEdDefPosGroupLevel],
                                      aLoc, dir, formation.UnitsPerRow, formation.NumUnits);
   end;
