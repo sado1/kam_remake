@@ -632,6 +632,7 @@ begin
     gHands[fUnit.Owner].Constructions.HouseList.AddHouse(fHouse); //Add the house to JobList, so then all workers could take it
     gHands[fUnit.Owner].Deliveries.Queue.AddDemand(fHouse, nil, wtTimber, gRes.Houses[fHouse.HouseType].WoodCost, dtOnce, diHigh4);
     gHands[fUnit.Owner].Deliveries.Queue.AddDemand(fHouse, nil, wtStone, gRes.Houses[fHouse.HouseType].StoneCost, dtOnce, diHigh4);
+    gScriptEvents.ProcHousePlanDigged(fHouse);
   end;
 
   gHands.CleanUpHousePointer(fHouse);
@@ -748,7 +749,6 @@ begin
           SetActionWalkToSpot(OutOfWay);
           fHouseNeedsWorker := False; //House construction no longer needs the worker to continue
           fHouseReadyToBuild := True; //If worker gets killed while walking house will be finished without him
-          gScriptEvents.ProcHousePlanDigged(fHouse);
         end;
     else
         Result := trTaskDone;
