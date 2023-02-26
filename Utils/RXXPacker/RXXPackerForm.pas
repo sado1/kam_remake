@@ -34,6 +34,7 @@ type
     procedure chkPackToRXXClick(Sender: TObject);
     procedure chkPackToRXAClick(Sender: TObject);
     procedure edSourceRxPathChange(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     fPalettes: TKMResPalettes;
 
@@ -41,6 +42,7 @@ type
     fUpdating: Boolean;
 
     procedure UpdateUI;
+    procedure UpdateSettings;
     procedure UpdateList;
 
     procedure LoadSettings;
@@ -86,6 +88,14 @@ begin
 end;
 
 
+procedure TRXXForm1.UpdateSettings;
+begin
+  if fUpdating then Exit;
+
+  SaveSettings;
+end;
+
+
 procedure TRXXForm1.btnUpdateListClick(Sender: TObject);
 begin
   UpdateList;
@@ -101,20 +111,26 @@ end;
 procedure TRXXForm1.chkPackToRXAClick(Sender: TObject);
 begin
   UpdateUI;
+  UpdateSettings;
 end;
 
 
 procedure TRXXForm1.chkPackToRXXClick(Sender: TObject);
 begin
   UpdateUI;
+  UpdateSettings;
 end;
 
 
 procedure TRXXForm1.edSourceRxPathChange(Sender: TObject);
 begin
-  if fUpdating then Exit;
+  UpdateSettings;
+end;
 
-  SaveSettings;
+
+procedure TRXXForm1.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  UpdateSettings;
 end;
 
 
@@ -159,6 +175,8 @@ begin
     edSourceRxPath.Text     := ini.ReadString('SETTINGS',  'SourceRxPath', ExeDir);
     edSourceInterpPath.Text := ini.ReadString('SETTINGS',  'SourceInterpPath', ExeDir);
     edDestinationPath.Text  := ini.ReadString('SETTINGS',  'DestinationPath', ExeDir);
+    chkPackToRXX.Checked    := ini.ReadBool  ('SETTINGS',  'PackToRXX', True);
+    chkPackToRXA.Checked    := ini.ReadBool  ('SETTINGS',  'PackToRXA', False);
   finally
     ini.Free;
   end;
@@ -179,6 +197,8 @@ begin
     ini.WriteString('SETTINGS', 'SourceRxPath',     edSourceRxPath.Text);
     ini.WriteString('SETTINGS', 'SourceInterpPath', edSourceInterpPath.Text);
     ini.WriteString('SETTINGS', 'DestinationPath',  edDestinationPath.Text);
+    ini.WriteBool  ('SETTINGS', 'PackToRXX',        chkPackToRXX.Checked);
+    ini.WriteBool  ('SETTINGS', 'PackToRXA',        chkPackToRXA.Checked);
   finally
     ini.Free;
   end;

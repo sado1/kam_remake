@@ -64,16 +64,24 @@ end;
 
 
 procedure TKMRXXPacker.Pack(aRT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
+
+  procedure RaiseError(const aMsg: string);
+  begin
+    aOnMessage('Error: ' + aMsg);
+    raise Exception.Create(aMsg);
+  end;
+
 var
   rxPath: string;
   deathAnimProcessed: TList<Integer>;
   spritePack: TKMSpritePackEdit;
   trimmedAmount: Cardinal;
-  step, spriteID: Integer;
+  step, spriteID, rxCount: Integer;
   resHouses: TKMResHouses;
   resUnits: TKMResUnits;
   UT: TKMUnitType;
   dir: TKMDirection;
+  path, msg: string;
 begin
   //ruCustom sprite packs do not have a main RXX file so don't need packing
   if RX_INFO[aRT].Usage = ruCustom then Exit;
@@ -81,7 +89,7 @@ begin
   rxPath := SourcePathRX + RX_INFO[aRT].FileName + '.rx';
 
   if (aRT <> rxTiles) and not FileExists(rxPath) then
-    raise Exception.Create('Cannot find "' + rxPath + '" file.' + sLineBreak + 'Please copy the file from your KaM\data\gfx\res\ folder.');
+    RaiseError('Cannot find "' + rxPath + '" file.' + sLineBreak + 'Please copy the file from your KaM\data\gfx\res\ folder.');
 
   spritePack := TKMSpritePackEdit.Create(aRT, aPalettes);
   try
@@ -104,6 +112,8 @@ begin
       begin
         spritePack.OverloadRXDataFromFolder(SourcePathRX);
         aOnMessage('Overload contains ' + IntToStr(spritePack.RXData.Count) + ' entries');
+        if spritePack.RXData.Count = 0 then
+          aOnMessage('WARNING: no RX sprites were found!');
         // Tiles don't need to be trimmed
       end;
 
@@ -193,12 +203,19 @@ begin
 
       if PackToRXA then
       begin
+        path := SourcePathInterp + IntToStr(Ord(aRT)+1) + '\';
         // Append interpolated sprites
-        if DirectoryExists(SourcePathInterp + IntToStr(Ord(aRT)+1) + '\') then
+        if DirectoryExists(path) then
         begin
+          rxCount := spritePack.RXData.Count;
           spritePack.OverloadRXDataFromFolder(SourcePathInterp + IntToStr(Ord(aRT)+1) + '\', False); // Shadows are already softened for interps
-          aOnMessage('Overload with interpolated sprites contains ' + IntToStr(spritePack.RXData.Count) + ' entries');
-        end;
+          aOnMessage(Format('Overload with interpolated sprites contains %d entries, RXA entries: %d',
+                            [spritePack.RXData.Count, spritePack.RXData.Count - rxCount]));
+          if spritePack.RXData.Count = rxCount then
+            RaiseError('No RXA sprites were found at ' + path);
+        end
+        else
+          RaiseError('Directory of RXA sprites does not exist: ' + path);
 
         aOnMessage('Saving RXA');
         spritePack.SaveToRXAFile(DestinationPath + RX_INFO[aRT].FileName + '.rxa', RXXFormat);
