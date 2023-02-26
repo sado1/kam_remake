@@ -2690,6 +2690,7 @@ begin
             H.WareAddToBuild(wtTimber, resNeeded);
           end
           else
+          if aWoodAmount < 0 then
           begin
             H.WareAddToBuild(wtTimber, aWoodAmount);
             gHands[H.Owner].Deliveries.Queue.AddDemand(H, nil, wtTimber, -aWoodAmount, dtOnce, diHigh4);
@@ -2704,6 +2705,7 @@ begin
             H.WareAddToBuild(wtStone, resNeeded);
           end
           else
+          if aStoneAmount < 0 then
           begin
             H.WareAddToBuild(wtStone, aStoneAmount);
             gHands[H.Owner].Deliveries.Queue.AddDemand(H, nil, wtStone, -aStoneAmount, dtOnce, diHigh4);
