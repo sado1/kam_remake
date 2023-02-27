@@ -12,7 +12,7 @@ uses
 type
   TKMDropCommon = class(TKMControl)
   private
-    fDropCount: Byte;
+    fDropCount: Integer;
     fDropUp: Boolean;
     fFont: TKMFont;
     fButton: TKMButton;
@@ -40,6 +40,7 @@ type
     function ListKeyDown(Sender: TObject; Key: Word; Shift: TShiftState): Boolean;
     procedure UpdateVisibility; override;
     function GetCount: Integer; virtual; abstract;
+    procedure SetDropCount(const aValue: Integer); virtual;
   public
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aStyle: TKMButtonStyle;
                        aAutoClose: Boolean = True);
@@ -50,7 +51,7 @@ type
     procedure SetOpenList(aOpen: Boolean);
     procedure SwitchOpen;
 
-    property DropCount: Byte read fDropCount write fDropCount;
+    property DropCount: Integer read fDropCount write SetDropCount;
     property DropUp: Boolean read fDropUp write fDropUp;
     property ItemIndex: SmallInt read GetItemIndex write SetItemIndex;
     function IsOpen: Boolean; virtual;
@@ -86,6 +87,7 @@ type
     procedure SetEnabled(aValue: Boolean); override;
     procedure SetVisible(aValue: Boolean); override;
     function GetCount: Integer; override;
+    procedure SetDropCount(const aValue: Integer); override;
   public
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; const aDefaultCaption: UnicodeString;
                        aStyle: TKMButtonStyle; aAutoClose: Boolean = True; aBackAlpha: Single = 0.85);
@@ -272,6 +274,12 @@ begin
 end;
 
 
+procedure TKMDropCommon.SetDropCount(const aValue: Integer);
+begin
+  fDropCount := aValue;
+end;
+
+
 procedure TKMDropCommon.SetEnabled(aValue: Boolean);
 begin
   inherited;
@@ -447,6 +455,14 @@ end;
 function TKMDropList.IsOpen: Boolean;
 begin
   Result := fList.Visible;
+end;
+
+
+procedure TKMDropList.SetDropCount(const aValue: Integer);
+begin
+  inherited;
+
+  fList.Height := fList.ItemHeight * fDropCount;
 end;
 
 
