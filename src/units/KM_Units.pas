@@ -353,13 +353,14 @@ type
   TKMUnitFish = class(TKMUnitAnimal)
   private
     fFishCount: Byte; //1-255
+    procedure SetFishCount(const aValue: Byte);
   protected
     function GetPaintActionType(aAct: TKMUnitActionType): TKMUnitActionType; override;
   public
     constructor Create(aID: Cardinal; const aLoc: TKMPointDir; aOwner: TKMHandID); overload;
     constructor Load(LoadStream: TKMemoryStream); override;
 
-    property FishCount: Byte read fFishCount write fFishCount;
+    property FishCount: Byte read fFishCount write SetFishCount;
     procedure ReduceFish;
 
     procedure Save(SaveStream: TKMemoryStream); override;
@@ -1180,9 +1181,18 @@ end;
 
 
 procedure TKMUnitFish.ReduceFish;
+var
+  fishCnt: Byte;
 begin
-  if fFishCount > 1 then
-    Dec(fFishCount)
+  fishCnt := EnsureRange(fFishCount - 1, 0, 255);
+  SetFishCount(fishCnt);
+end;
+
+
+procedure TKMUnitFish.SetFishCount(const aValue: Byte);
+begin
+  if aValue > 0 then
+    fFishCount := aValue
   else
     Kill(HAND_NONE, True, False);
 end;
