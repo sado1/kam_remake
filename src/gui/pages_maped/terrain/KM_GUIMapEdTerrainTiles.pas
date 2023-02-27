@@ -313,11 +313,7 @@ begin
     and not (Sender = TilesMagicWater)
     and not (Sender = TilesRotate)
     and not (Sender = TilesEyedropper) then
-  begin
     TilesSet(TKMButtonFlat(Sender).TexID);
-    NumEdit_SetTileNumber.Value := TKMButtonFlat(Sender).TexID - 1;
-    NumEdit_SetTilePaletteNumber.Value := TKMButtonFlat(Sender).TexID - 1;
-  end;
 
   // Refresh immidiately
   TilesRefresh(nil);
@@ -376,6 +372,7 @@ begin
   NumEdit_SetTileNumber.Value := aTexId;
   NumEdit_SetTilePaletteNumber.Value := aTexId;
 
+  // Set proper scroll position
   if not IsTileVisible(aTexId) then
     for SP := 0 to TilesScroll.MaxValue do
       for I := 0 to MAPED_TILES_Y - 1 do
@@ -409,7 +406,9 @@ begin
     //Remember last selected Tile
     fLastTile := aIndex;
   end;
-
+  // Will also set proper scroll position
+  // todo: reduce number of TilesRefresh calls
+  TilesTableSetTileTexId(aIndex - 1);
   TilesRefresh(nil);
 end;
 
