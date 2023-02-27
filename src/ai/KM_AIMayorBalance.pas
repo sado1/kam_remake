@@ -148,7 +148,7 @@ type
 implementation
 uses
   SysUtils, StrUtils, Math, KromUtils,
-  KM_Hand, KM_HandsCollection, KM_Resource, KM_ResWares;
+  KM_Hand, KM_HandsCollection, KM_Resource, KM_ResWares, KM_ResHouses;
 
 
 { TKMayorBalance }
