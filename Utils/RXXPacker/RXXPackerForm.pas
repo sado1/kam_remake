@@ -233,7 +233,13 @@ begin
         rxSet := rxSet + [TRXType(ListBox1.Items.Objects[I])];
 
     try
-      rxxPacker.PackSet(rxSet, fPalettes, procedure (aMsg: string) begin meLog.Lines.Append(aMsg); end);
+      rxxPacker.PackSet(rxSet, fPalettes,
+        procedure (aMsg: string)
+        begin
+          meLog.Lines.Append(aMsg);
+          Application.ProcessMessages;
+        end
+      );
     except
       on E: Exception do
         MessageBox(Handle, PWideChar(E.Message), 'Error', MB_ICONEXCLAMATION or MB_OK);
