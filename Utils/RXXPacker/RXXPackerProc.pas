@@ -65,10 +65,9 @@ end;
 
 procedure TKMRXXPacker.Pack(aRT: TRXType; aPalettes: TKMResPalettes; aOnMessage: TProc<string>);
 
-  procedure RaiseError(const aMsg: string);
+  procedure WrapMsg(const aMsg: string);
   begin
-    aOnMessage('Error: ' + aMsg);
-    raise Exception.Create(aMsg);
+    aOnMessage(Format('[%s] %s', [RX_INFO[aRT].FileName, aMsg]));
   end;
 
 var
@@ -89,7 +88,7 @@ begin
   rxPath := SourcePathRX + RX_INFO[aRT].FileName + '.rx';
 
   if (aRT <> rxTiles) and not FileExists(rxPath) then
-    RaiseError('Cannot find "' + rxPath + '" file.' + sLineBreak + 'Please copy the file from your KaM\data\gfx\res\ folder.');
+    raise Exception.Create('Cannot find "' + rxPath + '" file.' + sLineBreak + 'Please copy the file from your KaM\data\gfx\res\ folder.');
 
   spritePack := TKMSpritePackEdit.Create(aRT, aPalettes);
   try
@@ -98,29 +97,29 @@ begin
     begin
       // Load base RX
       spritePack.LoadFromRXFile(rxPath);
-      aOnMessage('RX contains ' + IntToStr(spritePack.RXData.Count) + ' entries');
+      WrapMsg('RX contains ' + IntToStr(spritePack.RXData.Count) + ' entries');
 
       // Overload (something we dont need in RXXPacker, cos all the custom sprites are in other folders)
       spritePack.OverloadRXDataFromFolder(SourcePathRX, False); // Do not soften shadows, it will be done later on
-      aOnMessage('With overload contains ' + IntToStr(spritePack.RXData.Count) + ' entries');
+      WrapMsg('With overload contains ' + IntToStr(spritePack.RXData.Count) + ' entries');
 
       trimmedAmount := spritePack.TrimSprites;
-      aOnMessage('  trimmed ' + IntToStr(trimmedAmount) + ' bytes');
+      WrapMsg('  trimmed ' + IntToStr(trimmedAmount) + ' bytes');
     end
     else
       if DirectoryExists(SourcePathRX) then
       begin
         spritePack.OverloadRXDataFromFolder(SourcePathRX);
-        aOnMessage('Overload contains ' + IntToStr(spritePack.RXData.Count) + ' entries');
+        WrapMsg('Overload contains ' + IntToStr(spritePack.RXData.Count) + ' entries');
         if spritePack.RXData.Count = 0 then
-          aOnMessage('WARNING: no RX sprites were found!');
+          WrapMsg('WARNING: no RX sprites were found!');
         // Tiles don't need to be trimmed
       end;
 
     // Houses need some special treatment to adapt to GL_ALPHA_TEST that we use for construction steps
     if aRT = rxHouses then
     begin
-      aOnMessage('Pre-processing houses');
+      WrapMsg('Pre-processing houses');
       resHouses := TKMResHouses.Create;
       spritePack.AdjoinHouseMasks(resHouses);
       spritePack.GrowHouseMasks(resHouses);
@@ -133,7 +132,7 @@ begin
     //todo: do we need it for houses too ?
     if aRT = rxUnits then
     begin
-      aOnMessage('Pre-processing units');
+      WrapMsg('Pre-processing units');
       spritePack.DetermineImagesObjectSizeAll;
     end;
 
@@ -144,7 +143,7 @@ begin
     // Save
     if PackToRXX then
     begin
-      aOnMessage('Saving RXX');
+      WrapMsg('Saving RXX');
       spritePack.SaveToRXXFile(DestinationPath + RX_INFO[aRT].FileName + '.rxx', RXXFormat);
     end;
 
@@ -153,14 +152,14 @@ begin
     begin
       if aRT = rxHouses then
       begin
-        aOnMessage('Alpha shadows for houses');
+        WrapMsg('Alpha shadows for houses');
         spritePack.SoftenShadowsRange(889, 892, False); // Smooth smoke
         spritePack.SoftenShadowsRange(1615, 1638, False); // Smooth flame
       end;
 
       if aRT = rxUnits then
       begin
-        aOnMessage('Alpha shadows for units');
+        WrapMsg('Alpha shadows for units');
         spritePack.SoftenShadowsRange(6251, 6322, False); // Smooth thought bubbles
 
         resUnits := TKMResUnits.Create; // Smooth all death animations for all units
@@ -186,7 +185,7 @@ begin
 
       if aRT = rxGui then
       begin
-        aOnMessage('Alpha shadows for GUI');
+        WrapMsg('Alpha shadows for GUI');
         spritePack.SoftenShadowsRange(105, 128); //Field plans
         spritePack.SoftenShadowsRange(249, 281); //House tablets only (shadow softening messes up other rxGui sprites)
         spritePack.SoftenShadowsRange(461, 468); //Field fences
@@ -197,27 +196,30 @@ begin
 
       if PackToRXX then
       begin
-        aOnMessage('Saving _a.RXX');
+        WrapMsg('Saving _a.RXX');
         spritePack.SaveToRXXFile(DestinationPath + RX_INFO[aRT].FileName + '_a.rxx', RXXFormat);
       end;
 
-      if PackToRXA and (aRT in [rxHouses, rxUnits, rxTrees]) then
+      if PackToRXA then
       begin
         path := SourcePathInterp + IntToStr(Ord(aRT)+1) + '\';
         // Append interpolated sprites
-        if DirectoryExists(path) then
+        if aRT <> rxGui then
         begin
-          rxCount := spritePack.RXData.Count;
-          spritePack.OverloadRXDataFromFolder(SourcePathInterp + IntToStr(Ord(aRT)+1) + '\', False); // Shadows are already softened for interps
-          aOnMessage(Format('Overload with interpolated sprites contains %d entries, RXA entries: %d',
-                            [spritePack.RXData.Count, spritePack.RXData.Count - rxCount]));
-          if spritePack.RXData.Count = rxCount then
-            RaiseError('No RXA sprites were found at ' + path);
-        end
-        else
-          RaiseError('Directory of RXA sprites does not exist: ' + path);
+          if DirectoryExists(path) then
+          begin
+            rxCount := spritePack.RXData.Count;
+            spritePack.OverloadRXDataFromFolder(SourcePathInterp + IntToStr(Ord(aRT)+1) + '\', False); // Shadows are already softened for interps
+            WrapMsg(Format('Overload with interpolated sprites contains %d entries. Unique entries found in .rxa file: %d',
+                              [spritePack.RXData.Count, spritePack.RXData.Count - rxCount]));
+            if spritePack.RXData.Count = rxCount then
+              WrapMsg('WARNING: No RXA sprites were found at ' + path);
+          end
+          else
+            WrapMsg('WARNING: Directory of RXA sprites does not exist: ' + path);
+        end;
 
-        aOnMessage('Saving RXA');
+        WrapMsg('Saving RXA');
         spritePack.SaveToRXAFile(DestinationPath + RX_INFO[aRT].FileName + '.rxa', RXXFormat);
       end;
     end;
