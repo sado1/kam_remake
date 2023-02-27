@@ -202,10 +202,11 @@ begin
 
       if PackToRXA then
       begin
-        path := SourcePathInterp + IntToStr(Ord(aRT)+1) + '\';
-        // Append interpolated sprites
+        // There are no overloaded interp sprites for rxGui
         if aRT <> rxGui then
         begin
+          path := SourcePathInterp + IntToStr(Ord(aRT)+1) + '\';
+          // Append interpolated sprites
           if DirectoryExists(path) then
           begin
             rxCount := spritePack.RXData.Count;
