@@ -39,12 +39,12 @@ type
     procedure SetVisible(aValue: Boolean); override;
     function ListKeyDown(Sender: TObject; Key: Word; Shift: TShiftState): Boolean;
     procedure UpdateVisibility; override;
+    function GetCount: Integer; virtual; abstract;
   public
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aStyle: TKMButtonStyle;
                        aAutoClose: Boolean = True);
 
     procedure Clear; virtual; abstract;
-    function Count: Integer; virtual; abstract;
     procedure OpenList;
     procedure CloseList;
     procedure SetOpenList(aOpen: Boolean);
@@ -54,6 +54,7 @@ type
     property DropUp: Boolean read fDropUp write fDropUp;
     property ItemIndex: SmallInt read GetItemIndex write SetItemIndex;
     function IsOpen: Boolean; virtual;
+    property Count: Integer read GetCount;
 
     property OnShowList: TNotifyEvent read fOnShowList write fOnShowList;
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
@@ -84,11 +85,11 @@ type
   protected
     procedure SetEnabled(aValue: Boolean); override;
     procedure SetVisible(aValue: Boolean); override;
+    function GetCount: Integer; override;
   public
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; const aDefaultCaption: UnicodeString;
                        aStyle: TKMButtonStyle; aAutoClose: Boolean = True; aBackAlpha: Single = 0.85);
     procedure Clear; override;
-    function Count: Integer; override;
     procedure Add(const aItem: UnicodeString; aTag: Integer = 0);
     procedure SelectByName(const aText: UnicodeString);
     procedure SelectByTag(aTag: Integer);
@@ -130,12 +131,12 @@ type
   protected
     procedure SetEnabled(aValue: Boolean); override;
     procedure SetVisible(aValue: Boolean); override;
+    function GetCount: Integer; override;
   public
     FadeImageWhenDisabled: Boolean;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; const aDefaultCaption: UnicodeString; aStyle: TKMButtonStyle; aShowHeader: Boolean = True);
     procedure Add(aItem: TKMListRow);
     procedure Clear; override;
-    function Count: Integer; override;
     property List: TKMColumnBox read fList;
     property Item[aIndex: Integer]: TKMListRow read GetItem; default;
     procedure SetColumns(aFont: TKMFont; aColumns: array of string; aColumnOffsets: array of Word); overload;
@@ -473,7 +474,7 @@ begin
 end;
 
 
-function TKMDropList.Count: Integer;
+function TKMDropList.GetCount: Integer;
 begin
   Result := fList.Count;
 end;
@@ -713,7 +714,7 @@ begin
 end;
 
 
-function TKMDropColumns.Count: Integer;
+function TKMDropColumns.GetCount: Integer;
 begin
   Result := fList.RowCount;
 end;

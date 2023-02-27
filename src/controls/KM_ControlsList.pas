@@ -79,6 +79,8 @@ type
 
     property PaintWidth: Integer read GetPaintWidth;
     property RenderTextWidth: Integer read GetRenderTextWidth;
+
+    function GetCount: Integer;
   protected
     procedure SetLeft(aValue: Integer); override;
     procedure SetTop(aValue: Integer); override;
@@ -116,7 +118,7 @@ type
     procedure ClearSeparators;
 
     procedure Clear;
-    function Count: Integer;
+    property Count: Integer read GetCount;
     function SeparatorsCount: Integer;
 
     function GetVisibleRows: Integer; override;
@@ -822,7 +824,7 @@ begin
 end;
 
 
-function TKMListBox.Count: Integer;
+function TKMListBox.GetCount: Integer;
 begin
   Result := fItems.Count;
 end;
