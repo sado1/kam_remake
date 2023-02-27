@@ -201,7 +201,7 @@ begin
         spritePack.SaveToRXXFile(DestinationPath + RX_INFO[aRT].FileName + '_a.rxx', RXXFormat);
       end;
 
-      if PackToRXA then
+      if PackToRXA and (aRT in [rxHouses, rxUnits, rxTrees]) then
       begin
         path := SourcePathInterp + IntToStr(Ord(aRT)+1) + '\';
         // Append interpolated sprites
