@@ -59,6 +59,7 @@ type
     function  GiveAnimalEx(aType: TKMUnitType; X,Y: Integer): Integer;
     function  GiveField(aHand, X, Y: Integer): Boolean;
     function  GiveFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
+    function  GiveFish(X, Y, aCount : Integer): Integer;
     function  GiveGroup(aHand, aType, X,Y, aDir, aCount, aColumns: Integer): Integer;
     function  GiveGroupEx(aHand: Integer; aType: TKMUnitType; X,Y: Integer; aDir: TKMDirection; aCount, aColumns: Integer): Integer;
     function  GiveHouse(aHand, aHouseType, X,Y: Integer): Integer;
@@ -229,6 +230,7 @@ type
     procedure UnitDismiss(aUnitID: Integer);
     procedure UnitDismissableSet(aUnitID: Integer; aDismissable: Boolean);
     procedure UnitDismissCancel(aUnitID: Integer);
+    procedure UnitFishCountSet(aUnitID, aCount: Integer);
     procedure UnitHPChange(aUnitID, aHP: Integer);
     procedure UnitHPSetInvulnerable(aUnitID: Integer; aInvulnerable: Boolean);
     procedure UnitHungerSet(aUnitID, aHungerLevel: Integer);
@@ -2032,6 +2034,37 @@ begin
         LogWarning('Actions.GiveFieldAged', Format('Cannot give field for player %d at [%d:%d]', [aHand,X,Y]));
     end else
       LogIntParamWarn('Actions.GiveFieldAged', [aHand, X, Y, aStage, Byte(aRandomAge)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 15000
+//* Adds fish to a specified position with aCount fish available to catch
+//* aCount should be in range of 1 to 255
+//* Returns the unit ID or -1 if the fish was not able to be added
+function TKMScriptActions.GiveFish(X, Y, aCount : Integer): Integer;
+var
+  U: TKMUnit;
+begin
+  try
+    Result := UID_NONE;
+
+    // Verify all input parameters
+    if gTerrain.TileInMapCoords(X, Y) then
+    begin
+      aCount := EnsureRange(aCount, 1, FISH_CNT_MAX);
+      U := gHands.PlayerAnimals.AddUnit(utFish, KMPoint(X,Y));
+      if U <> nil then
+      begin
+        TKMUnitFish(U).FishCount := aCount;
+        Result := U.UID;
+      end;
+    end
+    else
+      LogParamWarn('Actions.GiveFish', [X, Y, aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4773,6 +4806,31 @@ begin
     end
     else
       LogIntParamWarn('Actions.UnitDismissCancel', [aUnitID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 15000
+//* Set fish count to be available to catch for a fish unit of specified aUnitID
+//* aCount should be in range of 0 to 255. If aCount set to 0 fish unit will be instantly killed
+procedure TKMScriptActions.UnitFishCountSet(aUnitID, aCount: Integer);
+var
+  U: TKMUnit;
+begin
+  try
+    if aUnitID > 0 then
+    begin
+      aCount := EnsureRange(aCount, 0, FISH_CNT_MAX);
+
+      U := fIDCache.GetUnit(aUnitID);
+      if (U <> nil ) and (U is TKMUnitFish) then
+        TKMUnitFish(U).FishCount := aCount;
+    end
+    else
+      LogIntParamWarn('Actions.UnitFishCountSet', [aUnitID, aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

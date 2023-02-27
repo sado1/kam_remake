@@ -664,6 +664,7 @@ begin
     RegisterMethodCheck(c, 'function  UnitDirection(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function  UnitDirectionEx(aUnitID: Integer): TKMDirection');
     RegisterMethodCheck(c, 'function  UnitDismissable(aUnitID: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  UnitFishCount(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function  UnitHome(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function  UnitHPCurrent(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function  UnitHPInvulnerable(aUnitID: Integer): Boolean');
@@ -736,6 +737,7 @@ begin
     RegisterMethodCheck(c, 'function  GiveAnimalEx(aType: TKMUnitType; X, Y: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveField(aHand: Integer; X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  GiveFieldAged(aHand: Integer; X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
+    RegisterMethodCheck(c, 'function  GiveFish(X, Y, aCount : Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveGroup(aHand: Integer; aType: Integer; X, Y: Integer; aDir: Integer; aCount: Integer; ' +
       'aColumns: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveGroupEx(aHand: Integer; aType: TKMUnitType; X, Y: Integer; aDir: TKMDirection; ' +
@@ -892,6 +894,7 @@ begin
     RegisterMethodCheck(c, 'procedure UnitDismiss(aUnitID: Integer)');
     RegisterMethodCheck(c, 'procedure UnitDismissableSet(aUnitID: Integer; aDismissable: Boolean)');
     RegisterMethodCheck(c, 'procedure UnitDismissCancel(aUnitID: Integer)');
+    RegisterMethodCheck(c, 'procedure UnitFishCountSet(aUnitID, aCount: Integer)');
     RegisterMethodCheck(c, 'procedure UnitHPChange(aUnitID: Integer; aHP: Integer)');
     RegisterMethodCheck(c, 'procedure UnitHPSetInvulnerable(aUnitID: Integer; aInvulnerable: Boolean)');
     RegisterMethodCheck(c, 'procedure UnitHungerSet(aUnitID: Integer; aHungerLevel: Integer)');
@@ -1411,6 +1414,7 @@ begin
       RegisterMethod(@TKMScriptStates.UnitDirection, 'UnitDirection');
       RegisterMethod(@TKMScriptStates.UnitDirectionEx, 'UnitDirectionEx');
       RegisterMethod(@TKMScriptStates.UnitDismissable, 'UnitDismissable');
+      RegisterMethod(@TKMScriptStates.UnitFishCount, 'UnitFishCount');
       RegisterMethod(@TKMScriptStates.UnitHome, 'UnitHome');
       RegisterMethod(@TKMScriptStates.UnitHPCurrent, 'UnitHPCurrent');
       RegisterMethod(@TKMScriptStates.UnitHPInvulnerable, 'UnitHPInvulnerable');
@@ -1481,6 +1485,7 @@ begin
       RegisterMethod(@TKMScriptActions.GiveAnimalEx, 'GiveAnimalEx');
       RegisterMethod(@TKMScriptActions.GiveField, 'GiveField');
       RegisterMethod(@TKMScriptActions.GiveFieldAged, 'GiveFieldAged');
+      RegisterMethod(@TKMScriptActions.GiveFish, 'GiveFish');
       RegisterMethod(@TKMScriptActions.GiveGroup, 'GiveGroup');
       RegisterMethod(@TKMScriptActions.GiveGroupEx, 'GiveGroupEx');
       RegisterMethod(@TKMScriptActions.GiveHouse, 'GiveHouse');
@@ -1621,6 +1626,7 @@ begin
       RegisterMethod(@TKMScriptActions.UnitDismiss, 'UnitDismiss');
       RegisterMethod(@TKMScriptActions.UnitDismissableSet, 'UnitDismissableSet');
       RegisterMethod(@TKMScriptActions.UnitDismissCancel, 'UnitDismissCancel');
+      RegisterMethod(@TKMScriptActions.UnitFishCountSet, 'UnitFishCountSet');
       RegisterMethod(@TKMScriptActions.UnitHPChange, 'UnitHPChange');
       RegisterMethod(@TKMScriptActions.UnitHPSetInvulnerable, 'UnitHPSetInvulnerable');
       RegisterMethod(@TKMScriptActions.UnitHungerSet, 'UnitHungerSet');

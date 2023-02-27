@@ -251,6 +251,7 @@ type
     function UnitDirection(aUnitID: Integer): Integer;
     function UnitDirectionEx(aUnitID: Integer): TKMDirection;
     function UnitDismissable(aUnitID: Integer): Boolean;
+    function UnitFishCount(aUnitID: Integer): Integer;
     function UnitHome(aUnitID: Integer): Integer;
     function UnitHPCurrent(aUnitID: Integer): Integer;
     function UnitHPMax(aUnitID: Integer): Integer;
@@ -5171,6 +5172,29 @@ begin
     end
     else
       LogIntParamWarn('States.UnitDismissable', [aUnitID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 15000
+//* Returns number of available fish to catch on the specified fish unit
+function TKMScriptStates.UnitFishCount(aUnitID: Integer): Integer;
+var
+  U: TKMUnit;
+begin
+  try
+    Result := 0;
+    if aUnitID > 0 then
+    begin
+      U := fIDCache.GetUnit(aUnitID);
+      if (U <> nil ) and (U is TKMUnitFish) then
+        Result := TKMUnitFish(U).FishCount;
+    end
+    else
+      LogIntParamWarn('States.UnitFishCount', [aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
