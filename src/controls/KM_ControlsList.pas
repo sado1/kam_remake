@@ -792,6 +792,8 @@ begin
   fSeparatorTexts.Add(aText);
   SetLength(fSeparatorPositions, Length(fSeparatorPositions) + 1);
   fSeparatorPositions[Length(fSeparatorPositions)-1] := aPosition;
+  // Update List height, since we added separator to it
+  Height := Height + SeparatorHeight;
   //Separators can not be used with scroll bar for now.
   //Scrollbar works line-wise, not pixel-wise,
   //so adding separators could cause visual issues
@@ -801,9 +803,16 @@ end;
 
 
 procedure TKMListBox.ClearSeparators;
+var
+  sepCnt: Integer;
 begin
+  // SeparatorsCount locally.
+  // We should update Height only after clearing separators arrays
+  sepCnt := SeparatorsCount;
   fSeparatorTexts.Clear;
   SetLength(fSeparatorPositions, 0);
+  // Update List height, since we removed separators from it
+  Height := Height - SeparatorsCount*SeparatorHeight;
 end;
 
 
