@@ -319,6 +319,9 @@ procedure TKMGameApp.ToggleLocale(const aLocale: AnsiString; aReturnToMenuPage: 
 begin
   Assert(gGame = nil, 'We don''t want to recreate whole fGame for that. Let''s limit it only to MainMenu');
 
+  // Stop campaign scanning, since we will rescan them on Campaigns menu creation
+  fCampaigns.TerminateScan;
+
   gLog.AddTime('Toggle to locale ' + UnicodeString(aLocale));
   fMainMenuInterface.PageChange(gpLoading, gResTexts[TX_MENU_NEW_LOCALE]);
   Render; //Force to repaint information screen

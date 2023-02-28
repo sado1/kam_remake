@@ -126,6 +126,8 @@ procedure TKMMenuCampaigns.RefreshList;
 var
   I: Integer;
 begin
+  if Self = nil then Exit;
+
   Image_CampsPreview.TexID := 0; //Clear preview image
   ColumnBox_Camps.Clear;
   Memo_CampDesc.Clear;

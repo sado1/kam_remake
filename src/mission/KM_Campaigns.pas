@@ -195,8 +195,6 @@ end;
 
 
 destructor TKMCampaignsCollection.Destroy;
-//var
-//  I: Integer;
 begin
   //Terminate and release the Scanner if we have one working or finished
   TerminateScan;
