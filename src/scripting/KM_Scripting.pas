@@ -1839,6 +1839,7 @@ begin
                     Assert(elemCount = TPSTypeRec_Set(aType).RealSize, 'Script set element count mismatches saved count');
                     LoadStream.Read(Src^, elemCount);
                   end;
+    btProcPtr:    LoadStream.Read(tbtu32(Src^));
     //Already checked and reported as an error in LinkRuntime, no need to crash it here
     //else Assert(False);
   end;
@@ -1980,6 +1981,7 @@ begin
                     SaveStream.Write(elemCount);
                     SaveStream.Write(Src^, elemCount);
                   end;
+    btProcPtr:    SaveStream.Write(tbtu32(Src^));
     //Already checked and reported as an error in LinkRuntime, no need to crash it here
     //else Assert(False);
   end;
