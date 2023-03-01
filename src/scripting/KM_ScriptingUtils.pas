@@ -55,6 +55,11 @@ type
 
     function KMPoint(X,Y: Integer): TKMPoint;
 
+    function Ln(const X: Extended): Extended;
+    function Log2(const X: Extended): Extended;
+    function Log10(const X: Extended): Extended;
+    function LogN(const Base, X: Extended): Extended;
+
     function LowerCase(const Str: String): String;
 
     function MaxI(A, B: Integer): Integer;
@@ -639,6 +644,58 @@ end;
 function TKMScriptUtils.KMPoint(X,Y: Integer): TKMPoint;
 begin
   Result := KM_Points.KMPoint(X,Y);
+end;
+
+
+//* Version: 15000
+//* Returns the natural logarithm of X
+function TKMScriptUtils.Ln(const X: Extended): Extended;
+begin
+  try
+    Result := System.Ln(X);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 15000
+//* Returns log of X for a base of 10
+function TKMScriptUtils.Log10(const X: Extended): Extended;
+begin
+  try
+    Result := Math.Log10(X);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 15000
+//* Returns log of X for a base of 2
+function TKMScriptUtils.Log2(const X: Extended): Extended;
+begin
+  try
+    Result := Math.Log2(X);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 15000
+//* Returns log of X for a specified base
+function TKMScriptUtils.LogN(const Base, X: Extended): Extended;
+begin
+  try
+    Result := Math.LogN(Base, X);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
 end;
 
 

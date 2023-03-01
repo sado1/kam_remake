@@ -525,6 +525,7 @@ begin
     RegisterMethodCheck(c, 'function  HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray');
     RegisterMethodCheck(c, 'function  HouseHasOccupant(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function  HouseHasWorker(aHouseID: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  HouseIsClosedForWorker(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function  HouseIsComplete(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function  HouseOwner(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function  HousePosition(aHouseID: Integer): TKMPoint');
@@ -796,6 +797,7 @@ begin
     RegisterMethodCheck(c, 'function  HouseSchoolQueueAdd(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'function  HouseSchoolQueueAddEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'procedure HouseSchoolQueueRemove(aHouseID: Integer; QueueIndex: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseSetClosedForWorker(aHouseID: Integer; aClosedForWorker: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseTakeWaresFrom(aHouseID: Integer; aType: Integer; aCount: Integer)');
     RegisterMethodCheck(c, 'procedure HouseTakeWaresFromEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer)');
     RegisterMethodCheck(c, 'function  HouseTownHallEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
@@ -937,6 +939,10 @@ begin
     RegisterMethodCheck(c, 'function  InRangeS(aValue: Single; aMin, aMax: Single): Boolean');
     RegisterMethodCheck(c, 'procedure InsertString(Source: string; var Target: string; Index: Integer)');
     RegisterMethodCheck(c, 'function  KMPoint(X, Y: Integer): TKMPoint');
+    RegisterMethodCheck(c, 'function  Ln(X: Extended): Extended');
+    RegisterMethodCheck(c, 'function  Log10(X: Extended): Extended');
+    RegisterMethodCheck(c, 'function  Log2(X: Extended): Extended');
+    RegisterMethodCheck(c, 'function  LogN(Base: Extended; X: Extended): Extended');
     RegisterMethodCheck(c, 'function  LowerCase(Str: string): String');
     RegisterMethodCheck(c, 'function  MaxI(A, B: Integer): Integer');
     RegisterMethodCheck(c, 'function  MaxInArrayI(aArray: array of Integer): Integer');
@@ -1275,6 +1281,7 @@ begin
       RegisterMethod(@TKMScriptStates.HouseGetAllUnitsIn, 'HouseGetAllUnitsIn');
       RegisterMethod(@TKMScriptStates.HouseHasOccupant, 'HouseHasOccupant');
       RegisterMethod(@TKMScriptStates.HouseHasWorker, 'HouseHasWorker');
+      RegisterMethod(@TKMScriptStates.HouseIsClosedForWorker, 'HouseIsClosedForWorker');
       RegisterMethod(@TKMScriptStates.HouseIsComplete, 'HouseIsComplete');
       RegisterMethod(@TKMScriptStates.HouseOwner, 'HouseOwner');
       RegisterMethod(@TKMScriptStates.HousePosition, 'HousePosition');
@@ -1541,6 +1548,7 @@ begin
       RegisterMethod(@TKMScriptActions.HouseSchoolQueueAdd, 'HouseSchoolQueueAdd');
       RegisterMethod(@TKMScriptActions.HouseSchoolQueueAddEx, 'HouseSchoolQueueAddEx');
       RegisterMethod(@TKMScriptActions.HouseSchoolQueueRemove, 'HouseSchoolQueueRemove');
+      RegisterMethod(@TKMScriptActions.HouseSetClosedForWorker, 'HouseSetClosedForWorker');
       RegisterMethod(@TKMScriptActions.HouseTakeWaresFrom, 'HouseTakeWaresFrom');
       RegisterMethod(@TKMScriptActions.HouseTakeWaresFromEx, 'HouseTakeWaresFromEx');
       RegisterMethod(@TKMScriptActions.HouseTownHallEquip, 'HouseTownHallEquip');
@@ -1671,6 +1679,10 @@ begin
       RegisterMethod(@TKMScriptUtils.InRangeS, 'InRangeS');
       RegisterMethod(@TKMScriptUtils.InsertString, 'InsertString');
       RegisterMethod(@TKMScriptUtils.KMPoint, 'KMPoint');
+      RegisterMethod(@TKMScriptUtils.Ln, 'Ln');
+      RegisterMethod(@TKMScriptUtils.Log10, 'Log10');
+      RegisterMethod(@TKMScriptUtils.Log2, 'Log2');
+      RegisterMethod(@TKMScriptUtils.LogN, 'LogN');
       RegisterMethod(@TKMScriptUtils.LowerCase, 'LowerCase');
       RegisterMethod(@TKMScriptUtils.MaxI, 'MaxI');
       RegisterMethod(@TKMScriptUtils.MaxInArrayI, 'MaxInArrayI');

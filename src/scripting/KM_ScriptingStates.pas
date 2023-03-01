@@ -100,6 +100,7 @@ type
     function HouseHasOccupant(aHouseID: Integer): Boolean;
     function HouseHasWorker(aHouseID: Integer): Boolean;
     function HouseIsComplete(aHouseID: Integer): Boolean;
+    function HouseIsClosedForWorker(aHouseID: Integer): Boolean;
     function HouseOwner(aHouseID: Integer): Integer;
     function HousePosition(aHouseID: Integer): TKMPoint;
     function HousePositionX(aHouseID: Integer): Integer;
@@ -3053,6 +3054,30 @@ begin
     end
     else
       LogIntParamWarn('States.HouseIsComplete', [aHouseID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 15000
+//* Returns True if the specified house is closed for worker
+//* Result:
+function TKMScriptStates.HouseIsClosedForWorker(aHouseID: Integer): Boolean;
+var
+  H: TKMHouse;
+begin
+  try
+    Result := False;
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if H <> nil then
+        Result := H.IsClosedForWorker;
+    end
+    else
+      LogIntParamWarn('States.HouseIsClosedForWorker', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

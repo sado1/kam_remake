@@ -123,6 +123,7 @@ type
     procedure HouseDeliveryBlock(aHouseID: Integer; aDeliveryBlocked: Boolean);
     procedure HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: TKMDeliveryMode);
     procedure HouseDisableUnoccupiedMessage(aHouseID: Integer; aDisabled: Boolean);
+    procedure HouseSetClosedForWorker(aHouseID: Integer; aClosedForWorker: Boolean);
     procedure HouseRepairEnable(aHouseID: Integer; aRepairEnabled: Boolean);
     function  HouseSchoolQueueAdd(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer;
     function  HouseSchoolQueueAddEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer;
@@ -3178,6 +3179,28 @@ begin
     end
     else
       LogIntParamWarn('Actions.HouseDisableUnoccupiedMessage', [aHouseID, Byte(aDisabled)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 15000
+//* Sets whether the specified house would be closed for worker
+procedure TKMScriptActions.HouseSetClosedForWorker(aHouseID: Integer; aClosedForWorker: Boolean);
+var
+  H: TKMHouse;
+begin
+  try
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H <> nil) and not H.IsDestroyed then
+        H.IsClosedForWorker := aClosedForWorker;
+    end
+    else
+      LogIntParamWarn('Actions.HouseSetClosedForWorker', [aHouseID, Byte(aClosedForWorker)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
