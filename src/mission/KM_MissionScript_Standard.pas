@@ -399,7 +399,8 @@ begin
 
     ctSetHouseClosedForWorker:
                         if fLastHand <> HAND_NONE then //Skip False-positives for skipped players
-                          if fLastHouse <> nil then
+                          // House could be already destroyed if he had full HP damage (thus 0 hp) in the static script
+                          if (fLastHouse <> nil) and not fLastHouse.IsDestroyed then
                             fLastHouse.IsClosedForWorker := True
                           else
                             AddError('ct_SetHouseClosedForWorker without prior declaration of House');
