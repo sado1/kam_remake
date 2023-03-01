@@ -80,6 +80,8 @@ end;
 
 // Check window param, with current Screen object
 function TKMWindowParams.IsValid(aMonitorsInfo: TKMPointArray): Boolean;
+const
+  WINDOW_AT_EDGE_GAP = 100; // in px, how close could be window near the screen edge (left or top)
 var
   I, ScreenMaxWidth, ScreenMaxHeight: Integer;
 begin
@@ -95,8 +97,10 @@ begin
   // Do not let put window too much left or right. 100px is enough to get it back in that case
   Result := (fWidth >= MIN_RESOLUTION_WIDTH)
         and (fWidth <= ScreenMaxWidth)
+        and (fLeft  <= ScreenMaxWidth - WINDOW_AT_EDGE_GAP)
         and (fHeight >= MIN_RESOLUTION_HEIGHT)
         and (fHeight <= ScreenMaxHeight)
+        and (fTop    <= ScreenMaxHeight - WINDOW_AT_EDGE_GAP)
         and (fState in [TWindowState.wsNormal, TWindowState.wsMaximized]);
 end;
 
