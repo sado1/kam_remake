@@ -4492,6 +4492,7 @@ begin
   if gMySpectator.Selected is TKMUnitGroup then
   begin
     HidePages;
+    SwitchPage(nil); // Hide main back button if we were in e.g. stats
     fGuiGameUnit.ShowGroupInfo(TKMUnitGroup(gMySpectator.Selected), fGuiGameUnit.AskDismiss);
     updateNewSelected := True;
   end else
