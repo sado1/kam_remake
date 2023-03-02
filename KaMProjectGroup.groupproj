@@ -51,7 +51,7 @@
         <Projects Include="Utils\TileResampler\TilesetResampler.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Utils\common\TranslationManager\TranslationManager.dproj">
+        <Projects Include="Utils\TranslationManager (Shared)\TranslationManager.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Utils\RunnerParallelExtension\ParallelRunner.dproj">
@@ -219,13 +219,13 @@
         <MSBuild Projects="Utils\TileResampler\TilesetResampler.dproj" Targets="Make"/>
     </Target>
     <Target Name="TranslationManager">
-        <MSBuild Projects="Utils\common\TranslationManager\TranslationManager.dproj"/>
+        <MSBuild Projects="Utils\TranslationManager (Shared)\TranslationManager.dproj"/>
     </Target>
     <Target Name="TranslationManager:Clean">
-        <MSBuild Projects="Utils\common\TranslationManager\TranslationManager.dproj" Targets="Clean"/>
+        <MSBuild Projects="Utils\TranslationManager (Shared)\TranslationManager.dproj" Targets="Clean"/>
     </Target>
     <Target Name="TranslationManager:Make">
-        <MSBuild Projects="Utils\common\TranslationManager\TranslationManager.dproj" Targets="Make"/>
+        <MSBuild Projects="Utils\TranslationManager (Shared)\TranslationManager.dproj" Targets="Make"/>
     </Target>
     <Target Name="ParallelRunner">
         <MSBuild Projects="Utils\RunnerParallelExtension\ParallelRunner.dproj"/>
