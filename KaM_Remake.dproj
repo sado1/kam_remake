@@ -239,6 +239,12 @@
         <DCCReference Include="src\forms\KM_VclMenuHint.pas"/>
         <DCCReference Include="src\forms\KM_VclHelpers.pas"/>
         <DCCReference Include="src\ext\iaWin.NameDelphiThreads.pas"/>
+        <DCCReference Include="src\ext\pascalscript\uPSCompiler.pas"/>
+        <DCCReference Include="src\ext\pascalscript\uPSDebugger.pas"/>
+        <DCCReference Include="src\ext\pascalscript\uPSDisassembly.pas"/>
+        <DCCReference Include="src\ext\pascalscript\uPSPreProcessor.pas"/>
+        <DCCReference Include="src\ext\pascalscript\uPSRuntime.pas"/>
+        <DCCReference Include="src\ext\pascalscript\uPSUtils.pas"/>
         <DCCReference Include="src\ai\KM_AI.pas"/>
         <DCCReference Include="src\ai\KM_AIArmyEvaluation.pas"/>
         <DCCReference Include="src\ai\KM_AIAttacks.pas"/>
@@ -290,6 +296,7 @@
         <DCCReference Include="src\controls\KM_ControlsTypes.pas"/>
         <DCCReference Include="src\controls\KM_ControlsUtils.pas"/>
         <DCCReference Include="src\controls\KM_ControlsWaresRow.pas"/>
+        <DCCReference Include="src\KM_Crashreport.pas"/>
         <DCCReference Include="src\perflog\KM_DevPerfLog.pas"/>
         <DCCReference Include="src\perflog\KM_DevPerfLogForm.pas"/>
         <DCCReference Include="src\perflog\KM_DevPerfLogSingle.pas"/>
