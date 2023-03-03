@@ -1,0 +1,4 @@
+[submodule "Utils/TranslationManager (from kp-wiki)"]
+	path = Utils/TranslationManager (from kp-wiki)
+	url = https://github.com/KP-Wiki/TranslationManager
+	branch = master
