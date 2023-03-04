@@ -6,3 +6,7 @@
 	path = Utils/ScriptParser (from kp-wiki)
 	url = https://github.com/KP-Wiki/Scripting-Parser
 	branch = master
+[submodule "src/ext/pascalscript_submodule"]
+	path = src/ext/pascalscript_submodule
+	url = https://github.com/reyandme/pascalscript
+	branch = master
