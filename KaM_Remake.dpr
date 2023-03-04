@@ -27,12 +27,12 @@ uses
 
   iaWin.NameDelphiThreads in 'src\ext\iaWin.NameDelphiThreads.pas',
   
-  uPSCompiler in 'src\ext\pascalscript\uPSCompiler.pas',
-  uPSDebugger in 'src\ext\pascalscript\uPSDebugger.pas',
-  uPSDisassembly in 'src\ext\pascalscript\uPSDisassembly.pas',
-  uPSPreProcessor in 'src\ext\pascalscript\uPSPreProcessor.pas',
-  uPSRuntime in 'src\ext\pascalscript\uPSRuntime.pas',
-  uPSUtils in 'src\ext\pascalscript\uPSUtils.pas',
+  uPSCompiler in 'src\ext\pascalscript_submodule\Source\uPSCompiler.pas',
+  uPSDebugger in 'src\ext\pascalscript_submodule\Source\uPSDebugger.pas',
+  uPSDisassembly in 'src\ext\pascalscript_submodule\Source\uPSDisassembly.pas',
+  uPSPreProcessor in 'src\ext\pascalscript_submodule\Source\uPSPreProcessor.pas',
+  uPSRuntime in 'src\ext\pascalscript_submodule\Source\uPSRuntime.pas',
+  uPSUtils in 'src\ext\pascalscript_submodule\Source\uPSUtils.pas',
 
   KM_AI in 'src\ai\KM_AI.pas',
   KM_AIArmyEvaluation in 'src\ai\KM_AIArmyEvaluation.pas',
