@@ -2,3 +2,7 @@
 	path = Utils/TranslationManager (from kp-wiki)
 	url = https://github.com/KP-Wiki/TranslationManager
 	branch = master
+[submodule "Utils/ScriptParser (from kp-wiki)"]
+	path = Utils/ScriptParser (from kp-wiki)
+	url = https://github.com/KP-Wiki/Scripting-Parser
+	branch = master
