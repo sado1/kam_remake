@@ -308,6 +308,7 @@
 309:Übernehmen
 310:Sprache:
 311:Hohe Schatten Qualität
+313:Shift halten um mehrere gleiche Gebäudepläne zu setzen
 314:Lade... Bitte warten
 315:Ein Fehler ist aufgetreten!
 316:Neue Lokalisierung laden
@@ -772,6 +773,7 @@
 820:Leder
 821:Gemischt
 822:Heruntergeladene Karten
+823:Hinweis: beim ersten Angriff einer Serie von regelmäßigen Angriffen wird die KI alle ihre Truppen zum Angriffsziel schicken. Bei allen darauf folgenden Angriffe (dies gilt auch für Einzelattacken) wird sie sich nur an der eingestellten Mindestanzahl Einheiten orientieren.
 824:Verschieben
 825:Zeige Readme PDF an
 826:PDF konnte nicht angezeigt werden
@@ -1333,6 +1335,8 @@
 1386:Nicht unterstützte Version
 1387:Bist du sicher, dass du alle Kampagnen freischalten willst?\nDies kann nicht rückgängig gemacht werden.\n\nWenn du deinen Kampagnenfortschritt speichern möchtest, erstelle eine Kopie der Datei 'Campaigns.dat' im Verzeichnis\n'%s'\n\nMöchtest du fortfahren?
 1388:Harte Maske - verwende automatisch erstellte Übergänge
+1389:Verzögerung in "Ticks" (1 Sekunde= 10 Ticks) bis die KI Truppen mit Lederrüstung ausrüstet
+1390:Verzögerung in "Ticks" (1 Sekunde =10 Ticks) bis die KI Truppen mit Eisenrüstung ausrüstet
 1391:Setze die Anzahl von KI Arbeitern
 1392:Weichzeichner
 1393:Stufe der Terrain Übergänge mittels Masken
@@ -1355,6 +1359,174 @@
 1410:Historie
 1411:Springe zu
 1412:Springt zur geänderten Stelle der Historie.
+1419:Straße
+1420:Kornfeld
+1421:Weinberg
+1422:Overlay
+1423:Objekt
+1424:Sie haben keine ausreichenden Berechtigungen um Knights and Merchants Remake im ausgewählten Ordner \n'%s' \nzu installieren. \nVersuchen Sie die Datei mit "Rechtsklick- "als Administrator ausführen" zu öffnen, installieren Sie in einen anderen Ordner\noder fügen sie KaM_Remake.exe der Whitelist ihres Antivirusprogramms hinzu.\nWählen Sie "diese Datei ausführen".\n
 1425:Kacheln Palette
 1426:Kacheln Palette
 1427:Version
+1428:Geländepinsel Fix
+1429:Replay Speicherpunkte automatisch erstellen
+1430:zur vorherigen Einheit
+1431:Einheit ausrüsten
+1432:zur nächsten Einheit
+1434:Gebäude
+1435:Verteidungsposition/- Radius anzeigen
+1436:als flaches Terrain anzeigen
+1437:Die Spielgeschwindigkeit kann nur verändert werden wenn kein anderer aktiver menschlischer Spieler teilnimmt
+1438:Exportieren der Ressource erfolgreich: [ %s ]
+1439:zurück
+1440:vorwärts
+1441:neu laden
+1442:stopp
+1443:suchen
+1444:Favoriten
+1445:Home
+1446:stumm
+1447:leiser
+1448:lauter
+1449:nächster Titel
+1450:vorheriger Titel
+1451:stopp
+1452:Play/ Pause
+1457:vorheriger Titel
+1458:nächster Titel
+1459:keine Musik
+1460:zufällige Wiedergabe
+1461:Musik lauter
+1462:Musik leiser
+1463:Musik stummschalten
+1464:Geräusche lauter
+1465:Geräusche leiser
+1466:Geräusche stummschalten
+1467:Musik und Geräusche stummschalten
+1468:Pinsel für Objekte
+1469:Bäume
+1470:Alle Objekte außer Bäumen
+1471:Steine
+1472:Blumen
+1473:Pilze
+1474:Baumstümpfe
+1475:abgestorbene Bäume
+1476:Kaktus
+1477:Steppenvegetation
+1478:Ruinen
+1479:Geländeobjekte
+1480:Beim "Malen" die Objekte nach dem ausgewählten Pinsel anordnen
+1481:Objektdichte
+1482:Objekt-/ Baumdichte
+1483:Alter des Waldes
+1484:Pinsel löscht alle platzierten Objekte
+1485:alle
+1486:jung
+1487:mittel
+1488:fällbar
+1489:alle Altersstufen
+1490:junge Bäume
+1491:mittleres Alter
+1492:fällbare Bäume
+1493:Gelände aus kopiertem Bereich einfügen
+1494:Höheninformationen aus kopiertem Bereich einfügen
+1495:Objekte aus kopiertem Bereich einfügen
+1496:Geländeoverlays aus kopiertem Bereich einfügen
+1497:konstante Höhe
+1498:konstante Terrainhöhe
+1499:Höheneinstellung
+1500:Einstellung für "konstante Höhe"
+1501:Alles anheben
+1502:Anheben (Linksklick) / Absenken (Rechtsklick) aller Kacheln der ausgewählten Art (gesamte Karte)
+1503:überschreibe Objekte
+1504:ersetze oder lösche Objekte beim überpinseln
+1505:automatische Übergänge
+1506:groß
+1507:große Bäume
+1508:Stümpfe
+1509:Baumstümpfe
+1510:alle -
+1511:Alle Altersstufen, keine Baumstümpfe
+1512:Missionszeit:
+1513:derzeitige Spielgeschwindigkeit
+1514:derzeitige Abspielgeschwindigkeit
+1515:Spielgeschwindigkeit während der Aufnahme
+1516:HD Bewegungen
+1517:HD Bewegungen
+1518:verbessert die Bewegungsdarstellung bei Einheiten und Objekten
+1519:Für Spieler %0:s bis %1:s Spieler %2:s %3:s muss %4:s sein
+1520:Sieg
+1521:überleben
+1522:zerstört
+1523:gespeichert
+1524:wichtige Gebäude
+1525:Nur diagonal symetrische Allianzen sind zulässig
+1526:HD Animationen
+1527:HD Animationen
+1528:Erhöhen der Anzahl der Frames für Animation
+1529:weiche Gipfel
+1530:sanftere Berggipfel
+1531:Spieleinstellungen
+1532:Replay - Einstellungen
+1533:Karteneditor - Einstellungen
+1534:Die verbesserte KI wird die Einstellungen ignorieren und eigene verwenden
+1535:Zur Kampagnenübersicht
+1536:Jeder Truppentyp ist erlaubt
+1537:schwach
+1538:Soldaten ohne Rüstungen, mit Lederrüstung oder Eisenrüstung
+1539:Gruppe hinzufügen
+1541:Anzahl
+1542:Anzahl der Soldaten in der Truppe. Wenn =0 wird wie bei KI angeordnet
+1543:Reihen
+1545:weiche Übergänge an Kohlefeld
+1547:Ein Synchronisationsfehler ist bei einem anderen Spieler aufgetreten. Bitte schicket uns diesen Absturzbericht auf dass jener uns bei der Entwicklung des Spiels dienlich sein möge.%sDieser Fehler trat beim anderen Spieler auf:%s
+1548:rückgängig
+1549:wiederholen
+1550:Grasland
+1551:Moos
+1552:trockenes Sommergras
+1553:Gras auf Lehmboden
+1554:Lehm
+1555:Sandstrand
+1556:Dünen 1
+1557:Dünen 2
+1558:Dünen 3
+1559:Sandwüste
+1560:Sumpf
+1561:seichtes Ufer
+1562:Wasser
+1563:schnellfließendes Wasser
+1565:verschneites Grasland
+1566:Schnee auf Lehm
+1567:Schnee
+1568:Tiefschnee
+1569:Eis
+1570:Stein
+1571:Goldhaltiges Gestein
+1572:ausgebeutetes Eisenerz- Gestein
+1573:ausgebeutetes Gestein (Eisen)
+1574:Schotter
+1575:Kohlevorkommen
+1576:Golderzhaltiges Gestein
+1577:Eisenerzhaltiges Gestein
+1578:Magma
+1579:tiefer Abgrund
+1580:Nicht gespeichterte Änderungen werden verworfen. Schließen?
+1581:Alarm!
+1582:Kein Overlay
+1583:Overlay 1
+1584:Overlay 2
+1585:Overlay 3
+1586:Overlay 4
+1587:Overlay Straße
+1589:Übernehmen der Multiplayer KI Bau- Einstellungen für Spieler %d
+1590:Multiplayer Einstellungen für KI- Spieler %d
+1591:Achtung: hiermit werden alle KI- Einstellungen für Spieler %d überschrieben! Weiter?
+1592:derzeitiges Passwort speichern
+1593:Anzahl Fische
+1594:Karte speichern
+1595:Karte gespeichert
+1596:Karte wird gespeichert ...
+1597:flaches Gelände
+1598:Kacheln anzeigen
+1599:Spielstand nicht gefunden
