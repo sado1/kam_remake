@@ -12,9 +12,10 @@ cd /D ..
 git submodule update --recursive --remote
 
 @REM pull TranslationManager
-cd /D "./Utils/TranslationManager (from kp-wiki)"
+cd /D "Utils/TranslationManager (from kp-wiki)"
 
-git pull
+git checkout master
+git pull 
 
 @REM pull private repo files
 cd /D %KMRPrivateRepoDir%
