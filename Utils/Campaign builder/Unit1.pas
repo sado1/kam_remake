@@ -114,7 +114,7 @@ var
 implementation
 {$R *.dfm}
 uses
-  KM_ResTypes;
+  KM_ResTypes, KM_ResSprites;
 
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -551,7 +551,7 @@ begin
   // Campaign might have no images yet
   //@Rey: If campaign images ar cleared by mapmaker we should delete the rxx then
   if not fSprites.IsEmpty then
-    fSprites.SaveToRXXFile(ExtractFilePath(dlgSaveCampaign.FileName) + 'images.rxx', True);
+    fSprites.SaveToRXXFile(ExtractFilePath(dlgSaveCampaign.FileName) + 'images.rxx', rxxOne);
 
   if FileExists(ExtractFilePath(dlgSaveCampaign.FileName) +
   Format(TEMPLATE_LIBX_FILE_TEXT, [Locale])) then
