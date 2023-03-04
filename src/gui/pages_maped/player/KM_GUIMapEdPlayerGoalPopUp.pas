@@ -42,7 +42,7 @@ uses
   KM_HandsCollection, KM_Hand,
   KM_RenderUI,
   KM_ResFonts, KM_ResTexts, KM_ResTypes,
-  KM_MapUtils, KM_MapTypes;
+  KM_MapUtilsExt, KM_MapTypes;
 
 { TKMGUIMapEdGoal }
 constructor TKMMapEdPlayerGoal.Create(aParent: TKMPanel);
