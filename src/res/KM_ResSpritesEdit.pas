@@ -696,6 +696,7 @@ begin
     rxxOne:   begin
                 aStream.Write(RXX_VERSION_1[1], Length(RXX_VERSION_1));
 
+                // Commentary text data
                 metadata := GAME_REVISION + ' ' + FormatDateTime('yyyy/mm/dd hh:nn:ss', Now);
                 metadataLen := Length(metadata);
 
