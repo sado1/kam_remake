@@ -237,9 +237,16 @@ begin
 
   errorStr := StringReplace(aErrorString, EolW, '|', [rfReplaceAll]);
 
-  //Display compile errors in-game
-  if (aType in [seCompileError, sePreprocessorError]) and Assigned(fOnScriptError) then
-    fOnScriptError(errorStr);
+  // Display compile errors in-game
+
+  if aType = sePreprocessorError then
+    AppendErrorStr(aErrorString);
+
+  if (aType in [seCompileError, sePreprocessorError]) then
+  begin
+    if Assigned(fOnScriptError) then
+      fOnScriptError(errorStr);
+  end;
 
   // Serious runtime errors should be shown to the player
   if aType in [seException] then
