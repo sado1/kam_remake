@@ -175,9 +175,59 @@ end;
 
 procedure TKMScriptErrorHandler.HandleScriptErrorString(aType: TKMScriptErrorType; const aErrorString: UnicodeString;
                                                         const aDetailedErrorString: UnicodeString = '');
+
+  procedure LogError(aLogErrorMsg: string);
+  var
+    fl: TextFile;
+  begin
+    //Log to map specific log file
+    if fScriptLogFile <> '' then
+    begin
+      if DEBUG_SCRIPTING_EXEC or (fLogLinesCnt < fLogLinesCntMax) then
+      begin
+        gLog.AddTime('Script: ' + aLogErrorMsg); //log the error to global game log
+        AssignFile(fl, fScriptLogFile);
+        if not FileExists(fScriptLogFile) then
+          Rewrite(fl)
+        else
+          if GetFileSize(fScriptLogFile) > MAX_LOG_SIZE then
+          begin
+            //Reset the log if it gets too long so poorly written scripts don't waste disk space
+            Rewrite(fl);
+            WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now),
+                    'Log file exceeded ' + IntToStr(MAX_LOG_SIZE) + ' bytes and was reset']));
+            fLogLinesCnt := 0;
+            fLoggedTooManyLines := False;
+          end
+          else
+            Append(fl);
+        WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), aLogErrorMsg]));
+        Inc(fLogLinesCnt);
+        CloseFile(fl);
+      end
+      else
+      if not fLoggedTooManyLines then
+      begin
+        AssignFile(fl, fScriptLogFile);
+        // File should always exists
+        if not FileExists(fScriptLogFile) then
+          Rewrite(fl)
+        else
+          Append(fl);
+        gLog.AddTime('Script: ' + aLogErrorMsg); //log the error to global game log
+        WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), aLogErrorMsg]));
+        aLogErrorMsg := Format('Script log lines exceeded max value of %d. ' +
+                              'Check ''Debug Scripting'' checkbox in the F11 debug panel (''Scripting'' section) ' +
+                              'or use Actions.LogLinesMaxCnt to set higher value of max log lines', [fLogLinesCntMax]);
+        gLog.AddTime('Script: ' + aLogErrorMsg); //log the error to global game log
+        WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), aLogErrorMsg]));
+        CloseFile(fl);
+        fLoggedTooManyLines := True;
+      end;
+    end;
+  end;
 var
-  fl: TextFile;
-  logErrorMsg, errorStr: UnicodeString;
+  logErrorMsg, errorStrToDisplay: UnicodeString;
 begin
   if BLOCK_FILE_WRITE then Exit;
 
@@ -189,72 +239,28 @@ begin
   if logErrorMsg = '' then //No errors occur
     Exit;
 
-  //Log to map specific log file
-  if fScriptLogFile <> '' then
-  begin
-    if DEBUG_SCRIPTING_EXEC or (fLogLinesCnt < fLogLinesCntMax) then
-    begin
-      gLog.AddTime('Script: ' + logErrorMsg); //log the error to global game log
-      AssignFile(fl, fScriptLogFile);
-      if not FileExists(fScriptLogFile) then
-        Rewrite(fl)
-      else
-        if GetFileSize(fScriptLogFile) > MAX_LOG_SIZE then
-        begin
-          //Reset the log if it gets too long so poorly written scripts don't waste disk space
-          Rewrite(fl);
-          WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now),
-                  'Log file exceeded ' + IntToStr(MAX_LOG_SIZE) + ' bytes and was reset']));
-          fLogLinesCnt := 0;
-          fLoggedTooManyLines := False;
-        end
-        else
-          Append(fl);
-      WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), logErrorMsg]));
-      Inc(fLogLinesCnt);
-      CloseFile(fl);
-    end
-    else
-    if not fLoggedTooManyLines then
-    begin
-      AssignFile(fl, fScriptLogFile);
-      // File should always exists
-      if not FileExists(fScriptLogFile) then
-        Rewrite(fl)
-      else
-        Append(fl);
-      gLog.AddTime('Script: ' + logErrorMsg); //log the error to global game log
-      WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), logErrorMsg]));
-      logErrorMsg := Format('Script log lines exceeded max value of %d. ' +
-                            'Check ''Debug Scripting'' checkbox in the F11 debug panel (''Scripting'' section) ' +
-                            'or use Actions.LogLinesMaxCnt to set higher value of max log lines', [fLogLinesCntMax]);
-      gLog.AddTime('Script: ' + logErrorMsg); //log the error to global game log
-      WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), logErrorMsg]));
-      CloseFile(fl);
-      fLoggedTooManyLines := True;
-    end;
-  end;
+  LogError(logErrorMsg);
 
-  errorStr := StringReplace(aErrorString, EolW, '|', [rfReplaceAll]);
+  errorStrToDisplay := StringReplace(aErrorString, EolW, '|', [rfReplaceAll]);
 
-  // Display compile errors in-game
-
+  // Append preprocessing error
   if aType = sePreprocessorError then
     AppendErrorStr(aErrorString);
 
+  // Display compile errors in-game
   if (aType in [seCompileError, sePreprocessorError]) then
   begin
     if Assigned(fOnScriptError) then
-      fOnScriptError(errorStr);
+      fOnScriptError(errorStrToDisplay);
   end;
 
   // Serious runtime errors should be shown to the player
-  if aType in [seException] then
+  if aType = seException then
   begin
     // Only show the first message in-game to avoid spamming the player
     if not fRuntimeErrorOccured and Assigned(fOnScriptError) then
       fOnScriptError('Error(s) have occured in the mission script. ' +
-                     'Please check the log file for further details. First error:|' + errorStr);
+                     'Please check the log file for further details. First error:|' + errorStrToDisplay);
     fRuntimeErrorOccured := True;
   end;
 end;
