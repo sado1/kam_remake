@@ -797,7 +797,7 @@ begin
   for H := HOUSE_MIN to HOUSE_MAX do
     fItems[H] := TKMHouseSpec.Create(H);
 
-  fCRC := LoadHouseDat(ExeDir+'data' + PathDelim + 'defines' + PathDelim + 'houses.dat');
+  fCRC := LoadHouseDat(ExeDir + 'data' + PathDelim + 'defines' + PathDelim + 'houses.dat');
 
   fItems[htFishermans].fHouseDat.ResProductionX := 1; //we cathc 1 fish per time
   fItems[htFishermans].fHouseDat.WorkerRest := 5; //Set fisher's rest similar to what other houses have
@@ -905,7 +905,7 @@ var
   S: TKMemoryStream;
   i: Integer;
 begin
-  Assert(FileExists(aPath));
+  Assert(FileExists(aPath), Format('houses.dat can not be found at "%s"', [ExtractRelativePath(ExeDir, aPath)]));
 
   S := TKMemoryStreamBinary.Create;
   try

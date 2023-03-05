@@ -172,9 +172,9 @@ begin
 
   ini := TINIFile.Create(fSettingsPath);
   try
-    edSourceRxPath.Text     := ini.ReadString('SETTINGS',  'SourceRxPath', ExeDir);
-    edSourceInterpPath.Text := ini.ReadString('SETTINGS',  'SourceInterpPath', ExeDir);
-    edDestinationPath.Text  := ini.ReadString('SETTINGS',  'DestinationPath', ExeDir);
+    edSourceRxPath.Text     := ini.ReadString('SETTINGS',  'SourceRxPath', '..\..\SpriteResource\');
+    edSourceInterpPath.Text := ini.ReadString('SETTINGS',  'SourceInterpPath', '..\..\SpriteInterp\Output\');
+    edDestinationPath.Text  := ini.ReadString('SETTINGS',  'DestinationPath', '..\..\data\Sprites\');
     chkPackToRXX.Checked    := ini.ReadBool  ('SETTINGS',  'PackToRXX', True);
     chkPackToRXA.Checked    := ini.ReadBool  ('SETTINGS',  'PackToRXA', False);
   finally
