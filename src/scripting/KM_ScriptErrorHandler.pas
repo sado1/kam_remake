@@ -143,6 +143,7 @@ end;
 
 procedure TKMScriptErrorHandler.Clear;
 begin
+  fRuntimeErrorOccured := False;
   fErrorString.GameMessage := '';
   fErrorString.LogMessage := '';
   fWarningsString.GameMessage := '';
