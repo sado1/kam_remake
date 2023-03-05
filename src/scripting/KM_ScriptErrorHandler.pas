@@ -248,11 +248,8 @@ begin
     AppendErrorStr(aErrorString);
 
   // Display compile errors in-game
-  if (aType in [seCompileError, sePreprocessorError]) then
-  begin
-    if Assigned(fOnScriptError) then
-      fOnScriptError(errorStrToDisplay);
-  end;
+  if (aType in [seCompileError, sePreprocessorError]) and Assigned(fOnScriptError) then
+    fOnScriptError(errorStrToDisplay);
 
   // Serious runtime errors should be shown to the player
   if aType = seException then
