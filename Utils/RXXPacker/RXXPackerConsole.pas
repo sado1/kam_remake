@@ -115,7 +115,7 @@ begin
   rxxPacker.SourcePathInterp := fSourcePathInterp;
   rxxPacker.DestinationPath := fDestinationPath;
   rxxPacker.PackToRXA := fPackToRXA;
-  rxxPacker.RXXFormat := rxxOne;
+  rxxPacker.RXXFormat := rxxTwo;
 
   resPalettes := TKMResPalettes.Create;
   resPalettes.LoadPalettes(ExeDir + 'data\gfx\');

@@ -42,7 +42,7 @@ object RXXForm1: TRXXForm1
   end
   object Label4: TLabel
     Left = 216
-    Top = 256
+    Top = 240
     Width = 54
     Height = 13
     Caption = 'RXX format'
@@ -67,8 +67,8 @@ object RXXForm1: TRXXForm1
     Left = 16
     Top = 120
     Width = 257
-    Height = 129
-    ItemHeight = 14
+    Height = 113
+    ItemHeight = 13
     MultiSelect = True
     TabOrder = 1
   end
@@ -91,7 +91,7 @@ object RXXForm1: TRXXForm1
   end
   object chkPackToRXA: TCheckBox
     Left = 16
-    Top = 272
+    Top = 256
     Width = 129
     Height = 17
     Caption = 'Pack to RXA (HD anims)'
@@ -100,7 +100,7 @@ object RXXForm1: TRXXForm1
   end
   object chkPackToRXX: TCheckBox
     Left = 16
-    Top = 256
+    Top = 240
     Width = 113
     Height = 17
     Caption = 'Pack to RXX (classic)'
@@ -126,7 +126,7 @@ object RXXForm1: TRXXForm1
   end
   object rbRXXFormat0: TRadioButton
     Left = 216
-    Top = 272
+    Top = 256
     Width = 49
     Height = 17
     Caption = 'RXX'
@@ -134,12 +134,20 @@ object RXXForm1: TRXXForm1
   end
   object rbRXXFormat1: TRadioButton
     Left = 216
-    Top = 288
+    Top = 272
     Width = 49
     Height = 17
     Caption = 'RXX1'
-    Checked = True
     TabOrder = 9
+  end
+  object rbRXXFormat2: TRadioButton
+    Left = 216
+    Top = 288
+    Width = 49
+    Height = 17
+    Caption = 'RXX2'
+    Checked = True
+    TabOrder = 11
     TabStop = True
   end
   object edSourceInterpPath: TEdit

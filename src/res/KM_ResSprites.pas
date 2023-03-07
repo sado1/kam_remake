@@ -20,9 +20,15 @@ type
   TKMRXXFormat = (
     rxxUnknown, // Unknown header, probably not an RXX file at all
     rxxZero,    // Legacy KMR format
-    rxxOne      // Same as previous, but with an explicit header and SizeNoShadow
+    rxxOne,     // Same as previous, but with an explicit header and SizeNoShadow
+    rxxTwo      // Same as previous, but with dynamic length text in header
   );
 
+const
+  RXX_HEADER_LENGTH = 4;
+  RXX_HEADER: array [TKMRXXFormat] of AnsiString = ('', '', 'RXX1', 'RXX2');
+
+type
   TTGameResourceLoader = class;
 
   // Atlas data, needed for Texture Atlas Generation
@@ -36,9 +42,6 @@ type
 
   // Base class for Sprite loading
   TKMSpritePack = class
-  protected const
-    RXX_HEADER_LENGTH = 4;
-    RXX_VERSION_1: AnsiString = 'RXX1';
   private
     fTemp: Boolean;
     fPad: Byte; // Padding between sprites to avoid neighbour edge visibility
@@ -742,9 +745,16 @@ begin
   SetLength(strFormat, RXX_HEADER_LENGTH);
   aStream.Read(strFormat[1], RXX_HEADER_LENGTH);
 
-  if strFormat = RXX_VERSION_1 then
+  if strFormat = RXX_HEADER[rxxOne] then
   begin
     aFormat := rxxOne;
+
+    // Skip 32 bytes of metadata
+    aStream.Seek(32, soFromCurrent);
+  end else
+  if strFormat = RXX_HEADER[rxxTwo] then
+  begin
+    aFormat := rxxTwo;
 
     // For now we just skip metadata (but in the future we could show it in e.g. RXXEditor)
     aStream.Read(metadataLen, SizeOf(metadataLen));

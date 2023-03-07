@@ -694,7 +694,12 @@ begin
   case aFormat of
     rxxZero:  ;// No header, just straight ZLib data
     rxxOne:   begin
-                aStream.Write(RXX_VERSION_1[1], Length(RXX_VERSION_1));
+                aStream.Write(RXX_HEADER[rxxOne][1], RXX_HEADER_LENGTH);
+                metadata := '01234567890123456789012345678901';
+                aStream.Write(metadata[1], 32);
+              end;
+    rxxTwo:   begin
+                aStream.Write(RXX_HEADER[rxxTwo][1], RXX_HEADER_LENGTH);
 
                 // Commentary text data
                 metadata := GAME_REVISION + ' ' + FormatDateTime('yyyy/mm/dd hh:nn:ss', Now);

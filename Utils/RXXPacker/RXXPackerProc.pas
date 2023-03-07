@@ -47,7 +47,7 @@ begin
   // Default values
   PackToRXX := True;
   PackToRXA := False;
-  RXXFormat := rxxOne;
+  RXXFormat := rxxTwo;
 end;
 
 

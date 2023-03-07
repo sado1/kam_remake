@@ -290,7 +290,7 @@ begin
   gLog.AddTime('Trimmed ' + IntToStr(fSprites.TrimSprites));
 
   // Always save as latest format for now. Later on we could allow format change in UI
-  fSprites.SaveToRXXFile(SaveDialog1.FileName, rxxOne);
+  fSprites.SaveToRXXFile(SaveDialog1.FileName, rxxTwo);
 end;
 
 
