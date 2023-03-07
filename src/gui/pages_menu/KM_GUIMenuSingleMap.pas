@@ -162,8 +162,6 @@ procedure TKMMenuSingleMap.Create_SingleMap(aParent: TKMPanel);
 var
   I: Integer;
   half, descL, buttonW: Word; //Half width for panes
-  L: TKMLabel;
-  B: TKMBevel;
   backCol: TKMColor4f;
 begin
   Panel_Single := TKMPanel.Create(aParent, 0, 0, aParent.Width, aParent.Height);
@@ -226,14 +224,12 @@ begin
 
       //Setup (loc and flag placed alongside just like in MP lobby)
       //Other setup settings can go below
-      L := TKMLabel.Create(Panel_Desc, descL, 330, 150, 20, gResTexts[TX_LOBBY_HEADER_STARTLOCATION], fntMetal, taLeft);
-      L.Anchors := [anLeft, anBottom];
+      TKMLabel.Create(Panel_Desc, descL, 330, 150, 20, gResTexts[TX_LOBBY_HEADER_STARTLOCATION], fntMetal, taLeft).Anchors := [anLeft, anBottom];
       DropBox_Loc := TKMDropList.Create(Panel_Desc, descL, 350, 150, 20, fntMetal, gResTexts[TX_MENU_MAP_LOCATION], bsMenu);
       DropBox_Loc.Anchors := [anLeft, anBottom];
       DropBox_Loc.OnChange := OptionsChange;
 
-      L := TKMLabel.Create(Panel_Desc, half - 80, 330, 80, 20, gResTexts[TX_LOBBY_HEADER_FLAGCOLOR], fntMetal, taLeft);
-      L.Anchors := [anLeft, anBottom];
+      TKMLabel.Create(Panel_Desc, half - 80, 330, 80, 20, gResTexts[TX_LOBBY_HEADER_FLAGCOLOR], fntMetal, taLeft).Anchors := [anLeft, anBottom];
       DropBox_Color := TKMDropColumns.Create(Panel_Desc, half - 80, 350, 80, 20, fntGrey, '', bsMenu);
       DropBox_Color.Anchors := [anLeft, anBottom];
       DropBox_Color.SetColumns(fntOutline, [''], [0]);
@@ -265,14 +261,10 @@ begin
       Button_SetupReadme.Hide;
 
       //Goals
-      B := TKMBevel.Create(Panel_Desc, 0, 530, half, 30);
-      B.Anchors := [anLeft, anBottom];
-      L := TKMLabel.Create(Panel_Desc, 4, 538, 190, 30, gResTexts[TX_MENU_WIN_CONDITION], fntMetal, taLeft);
-      L.Anchors := [anLeft, anBottom];
-      B := TKMBevel.Create(Panel_Desc, 0, 560, half, 30);
-      B.Anchors := [anLeft, anBottom];
-      L := TKMLabel.Create(Panel_Desc, 4, 568, 190, 30, gResTexts[TX_MENU_DEFEAT_CONDITION], fntMetal, taLeft);
-      L.Anchors := [anLeft, anBottom];
+      TKMBevel.Create(Panel_Desc, 0, 530, half, 30).Anchors := [anLeft, anBottom];
+      TKMLabel.Create(Panel_Desc, 4, 538, 190, 30, gResTexts[TX_MENU_WIN_CONDITION], fntMetal, taLeft).Anchors := [anLeft, anBottom];
+      TKMBevel.Create(Panel_Desc, 0, 560, half, 30).Anchors := [anLeft, anBottom];
+      TKMLabel.Create(Panel_Desc, 4, 568, 190, 30, gResTexts[TX_MENU_DEFEAT_CONDITION], fntMetal, taLeft).Anchors := [anLeft, anBottom];
       backCol := TKMColor4f.New(50, 40, 25);
       for I := 0 to MAX_UI_GOALS - 1 do
       begin
@@ -304,14 +296,10 @@ begin
       end;
 
       //Alliances
-      B := TKMBevel.Create(Panel_Desc, 0, 590, half, 20);
-      B.Anchors := [anLeft, anBottom];
-      L := TKMLabel.Create(Panel_Desc, 4, 594, 190, 20, gResTexts[TX_MENU_ALLIES], fntMetal, taLeft);
-      L.Anchors := [anLeft, anBottom];
-      B := TKMBevel.Create(Panel_Desc, 0, 610, half, 20);
-      B.Anchors := [anLeft, anBottom];
-      L := TKMLabel.Create(Panel_Desc, 4, 614, 190, 20, gResTexts[TX_MENU_ENEMIES], fntMetal, taLeft);
-      L.Anchors := [anLeft, anBottom];
+      TKMBevel.Create(Panel_Desc, 0, 590, half, 20).Anchors := [anLeft, anBottom];
+      TKMLabel.Create(Panel_Desc, 4, 594, 190, 20, gResTexts[TX_MENU_ALLIES], fntMetal, taLeft).Anchors := [anLeft, anBottom];
+      TKMBevel.Create(Panel_Desc, 0, 610, half, 20).Anchors := [anLeft, anBottom];
+      TKMLabel.Create(Panel_Desc, 4, 614, 190, 20, gResTexts[TX_MENU_ENEMIES], fntMetal, taLeft).Anchors := [anLeft, anBottom];
 
       for I := 0 to MAX_HANDS - 1 do
       begin
