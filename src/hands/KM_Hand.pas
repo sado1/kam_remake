@@ -1680,11 +1680,11 @@ begin
   //Try to take player name from mission text if we are in SP
   //Do not use names in MP to avoid confusion of AI players with real player nicknames
   if gGameParams.Mode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle] then
-    if gGame.TextMission.HasText(HANDS_NAMES_OFFSET + fID) then
+    if gGame.TextMission.HasHandNameText(fID) then
       if IsHuman then
-        Result := gResTexts[TX_PLAYER_YOU] + ' (' + gGame.TextMission[HANDS_NAMES_OFFSET + fID] + ')'
+        Result := gResTexts[TX_PLAYER_YOU] + ' (' + gGame.TextMission.GetHandNameText(fID) + ')'
       else
-        Result := gGame.TextMission[HANDS_NAMES_OFFSET + fID];
+        Result := gGame.TextMission.GetHandNameText(fID);
 
   //If this location is controlled by an MP player - show his nik
   if (fOwnerNickname <> '') and IsHuman then
@@ -1717,12 +1717,12 @@ begin
   //Try to take player name from mission text if we are in SP
   //Do not use names in MP to avoid confusion of AI players with real player nicknames
   if (gGameParams.Mode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle])
-    and gGame.TextMission.HasText(HANDS_NAMES_OFFSET + fID) then
+    and gGame.TextMission.HasHandNameText(fID) then
   begin
     if aIsHuman then
-      Result := GetText(TX_PLAYER_YOU, aLocalized) + ' (' + gGame.TextMission[HANDS_NAMES_OFFSET + fID] + ')'
+      Result := GetText(TX_PLAYER_YOU, aLocalized) + ' (' + gGame.TextMission.GetHandNameText(fID) + ')'
     else
-      Result := gGame.TextMission[HANDS_NAMES_OFFSET + fID];
+      Result := gGame.TextMission.GetHandNameText(fID);
 
     Exit;
   end;

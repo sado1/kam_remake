@@ -16,7 +16,6 @@ const
   // That string was used in all Synetic games for missing texts
   NO_TEXT = '<<<LEER>>>';
 
-  HANDS_NAMES_OFFSET = 100;
   MISSION_NAME_LIBX_ID = 200; //Reserved Libx ID for Mission name in Campaigns
   LIBX_NO_ID = -1;
 
@@ -39,6 +38,8 @@ type
 
 
   TKMTextLibraryMulti = class(TKMTextLibraryCommon)
+  private const
+    HANDS_NAMES_OFFSET = 100;
   private
     fPref: array [0..2] of Integer;
 
@@ -59,7 +60,11 @@ type
     function ParseTextMarkup(const aText: UnicodeString; aParams: array of const): UnicodeString; overload;
     function HasText(aIndex: Word): Boolean;
     property Texts[aIndex: Word]: UnicodeString read GetTexts; default;
-    // Unfortunally Lazarus could not compile constructions like:
+
+    function HasHandNameText(aIndex: Word): Boolean;
+    function GetHandNameText(aIndex: Word): UnicodeString;
+
+    // Unfortunately Lazarus could not compile constructions like:
     // - 2 properties with the same name
     // - 2 default properties
     // - property with argument type of 'array of const'
@@ -236,6 +241,18 @@ begin
   Result := ((fPref[0] <> -1) and (aIndex < Length(fTexts[fPref[0]])) and (fTexts[fPref[0], aIndex] <> ''))
          or ((fPref[1] <> -1) and (aIndex < Length(fTexts[fPref[1]])) and (fTexts[fPref[1], aIndex] <> ''))
          or ((fPref[2] <> -1) and (aIndex < Length(fTexts[fPref[2]])) and (fTexts[fPref[2], aIndex] <> ''));
+end;
+
+
+function TKMTextLibraryMulti.HasHandNameText(aIndex: Word): Boolean;
+begin
+  Result := HasText(HANDS_NAMES_OFFSET + aIndex);
+end;
+
+
+function TKMTextLibraryMulti.GetHandNameText(aIndex: Word): UnicodeString;
+begin
+  Result := GetTexts(HANDS_NAMES_OFFSET + aIndex);
 end;
 
 
