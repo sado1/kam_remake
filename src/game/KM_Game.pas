@@ -350,7 +350,7 @@ constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TKMRender; aOnDestro
                            aAutoSaveWorkerThreadHolder,
                            aSavePointWorkerThreadHolder: TKMWorkerThreadHolder);
 const
-  UIMode: array[TKMGameMode] of TUIMode = (umSP, umSP, umMP, umSpectate, umSP, umReplay, umReplay);
+  UI_MODE: array [TKMGameMode] of TUIMode = (umSP, umSP, umMP, umSpectate, umSP, umReplay, umReplay);
 begin
   inherited Create;
 
@@ -411,7 +411,7 @@ begin
     end
     else
     begin
-      fGamePlayInterface := TKMGamePlayInterface.Create(aRender, UIMode[fParams.Mode]);
+      fGamePlayInterface := TKMGamePlayInterface.Create(aRender, UI_MODE[fParams.Mode]);
       fGamePlayInterface.OnUserAction := UserAction;
       fActiveInterface := fGamePlayInterface;
     end;
