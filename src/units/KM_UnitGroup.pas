@@ -2137,11 +2137,13 @@ begin
 
 
   Result := inherited ObjToString(aSeparator) +
-            Format('%sUnitsPerRow = %d%sGOrder = %s%sOrderLoc = %s%s' +
+            Format('%sUnitsPerRow = %d%sCanTakeOrders = %s%sInFight = %s%sGOrder = %s%sOrderLoc = %s%s' +
                    'OTargetU = [%s]%sOTargetG = [%s]%sOTargetH = [%s]%sPushbackCmdCnt = %d%s' +
                    'Offenders = [%s]',
                    [aSeparator,
                     fUnitsPerRow, aSeparator,
+                    BoolToStr(CanTakeOrders, True), aSeparator,
+                    BoolToStr(InFight, True), aSeparator,
                     GetEnumName(TypeInfo(TKMGroupOrder), Integer(fOrder)), aSeparator,
                     TypeToString(fOrderLoc), aSeparator,
                     targetUnitStr, aSeparator,
