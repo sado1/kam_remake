@@ -2007,11 +2007,14 @@ begin
     //But because it will not invalidate many candidates, check it late so other checks can do their work first
     if (gHands[aPlayer].FogOfWar.CheckTileRevelation(K,I) <> 255) then Continue;
 
-    //This unit could be on a different tile next to KMPoint(k,i), so we cannot use that anymore.
-    //There was a crash caused by VertexUsageCompatible checking (k,i) instead of U.CurrPosition.
-    //In that case aLoc = (37,54) and k,i = (39;52) but U.CurrPosition = (38;53).
-    //This shows why you can't use (k,i) in checks because it is distance >2 from aLoc! (in melee fight)
-    P := U.Position;
+    // 1. This unit could be on a different tile next to KMPoint(k,i), so we cannot use that anymore.
+    //    There was a crash caused by VertexUsageCompatible checking (k,i) instead of U.CurrPosition.
+    //    In that case aLoc = (37,54) and k,i = (39;52) but U.CurrPosition = (38;53).
+    //    This shows why you can't use (k,i) in checks because it is distance >2 from aLoc! (in melee fight)
+    // 2. We should use PositionNext tile instead of rounded one, since its our model of unit positioning logic
+    //    PositionRound could used for visual assets, which could be obvious for player,
+    //    while logic should be related on PositionNext and / or PositionF
+    P := U.PositionNext;
 
     requiredMaxRad := aMaxRad;
     if (aMaxRad = 1) and KMStepIsDiag(aLoc, P) then
