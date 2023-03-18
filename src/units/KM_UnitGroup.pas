@@ -1942,6 +1942,8 @@ end;
 
 function TKMUnitGroup.GetPositionForDisplayF: TKMPointF;
 begin
+  if (Self = nil) or IsDead then Exit(KMPOINTF_INVALID_TILE);
+
   Result := FlagBearer.PositionF;
 end;
 
