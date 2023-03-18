@@ -285,7 +285,7 @@ begin
   begin
     //Base damage is the unit attack strength + AttackHorse if the enemy is mounted
     damage := gRes.Units[fUnit.UnitType].Attack;
-    if (fOpponent.UnitType in [low(UNIT_TO_GROUP_TYPE) .. high(UNIT_TO_GROUP_TYPE)]) and (UNIT_TO_GROUP_TYPE[fOpponent.UnitType] = gtMounted) then
+    if (fOpponent.UnitType in [Low(UNIT_TO_GROUP_TYPE) .. High(UNIT_TO_GROUP_TYPE)]) and (UNIT_TO_GROUP_TYPE[fOpponent.UnitType] = gtMounted) then
       damage := damage + gRes.Units[fUnit.UnitType].AttackHorse;
 
     damage := damage * (GetDirModifier(fUnit.Direction, fOpponent.Direction) + 1); // Direction modifier
