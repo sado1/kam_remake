@@ -1093,6 +1093,7 @@ begin
   gLog.MessageTypes := [];
 
   gLog.SetDefaultMessageTypes;
+  gLog.MultithreadLogging := true;
 
 //  Include(gLog.MessageTypes, lmtRandomChecks);
 //  Include(gLog.MessageTypes, lmtCommands);
@@ -1112,6 +1113,7 @@ begin
   GAME_SAVE_CHECKPOINT_FREQ_MIN := 10;
   GAME_SAVE_CHECKPOINT_CNT_LIMIT_MAX := 1000;
 
+  gLog.MultithreadLogging := False;
 //  Include(gLog.MessageTypes, lmtRandomChecks)
 end;
 
