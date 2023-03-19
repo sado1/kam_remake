@@ -1,0 +1,29 @@
+by @Lewin:
+
+"
+So, the tool I used for interpolating sprites is called "Dain-App 1.0": https://grisk.itch.io/dain-app
+but you don't run it directly, the AnimInterp tool in the KaM Remake repo will call the DainApp exe with the right parameters
+the source code probably needs tweaking to give it the right path to DainApp
+
+btnProcessClick steps through all the animations in KaM Remake and interpolates them
+
+note (Rey):
+> yes, path to the DainApp is set in the TForm1.FormCreate 
+> it seems you used DAIN APP Alpha 1.0, according to the path, which you set there 
+Lewin
+> I imagine the non alpha version would be better? If needed I can send the version I have
+
+
+
+processing all the sprites takes 24+ hours
+but you can tweak the code to do e.g. just one unit, one action, one direction, etc.
+basically the process is:
+
+1. Dump out the sprites for 2 steps in the sequence of an animation as PNGs, including separate sprites for shadows, team colours, etc.
+2. Run DainApp to create 7x interpolated frames of sprites as PNGs
+3. Load the interpolated PNGs and recombine the shadows, team colours, etc.
+4. Save as PNG in the KaM Remake sprite override format, using a sprite ID assigned sequentially
+5. Write to interp.dat file with lookup table for the interpolated sprite
+there's a few special cases, e.g. some animations are 3x slower like trees, or the butcher idling. There's a special DoInterpSlow that handles that by doing 32x slower interp (instead of 8x) and skipping some frames (since 3x interp is hard to do because it doubles the frame rate each time)
+probably the tool needs cleaning up to give modders a version they can easily use
+since currently it's designed to automatically process all the animations in KaM Remake
