@@ -12,7 +12,7 @@ uses
 implementation
 uses
   SysUtils,
-  KM_Resource, KM_ResTexts,
+  KM_Resource, KM_ResTexts, KM_ResHouses, KM_ResTypes,
   KM_CommonShellUtils, KM_CommonUtils;
 
 
