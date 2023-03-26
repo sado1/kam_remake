@@ -68,10 +68,6 @@ type
   end;
 
 
-var
-  gSingleDotFormat: TFormatSettings;
-
-
 implementation
 uses
   TypInfo, StrUtils,
@@ -504,7 +500,7 @@ end;
 
 function TKMConsoleCommand.P2S(const aParam: String): Single;
 begin
-  Result := StrToFloat(aParam, gSingleDotFormat);
+  Result := StrToFloat(aParam, gFormatSettingsDotSeparator);
 end;
 
 function TKMConsoleCommand.P2U(const aParam: String): String;
@@ -645,7 +641,7 @@ begin
       cpkNone:  ;
       cpkBool:  Result := Result and TryStrToBool(aParams[I], BVal);
       cpkIntg:  Result := Result and TryStrToInt(aParams[I], IVal);
-      cpkSngl:  Result := Result and TryStrToFloat(aParams[I], SVal, gSingleDotFormat);
+      cpkSngl:  Result := Result and TryStrToFloat(aParams[I], SVal, gFormatSettingsDotSeparator);
       cpkUStr:  ;
     end;
 end;
@@ -1356,13 +1352,6 @@ end;
 //  aSL.Add(TAB + 'end;');
 //end;
 
-
-initialization
-begin
-  gSingleDotFormat := {$IFDEF WDC} TFormatSettings.Create; {$ENDIF}
-                      {$IFDEF FPC} DefaultFormatSettings;  {$ENDIF}
-  gSingleDotFormat.DecimalSeparator := '.';
-end;
 
 
 end.

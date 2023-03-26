@@ -187,6 +187,11 @@ const
   function TryExecuteMethodProc(const aStrParam1, aStrParam2, aMethodName: UnicodeString; var aErrorStr: UnicodeString;
                                 aMethodProc: TUnicode2StringEventProc; aAttemps: Byte = DEFAULT_ATTEMPS_CNT_TO_TRY): Boolean; overload;
 
+
+var
+  gFormatSettingsDotSeparator: TFormatSettings; // Format settings with `.` as a decimal separator to be used when parse float values
+
+
 implementation
 uses
   StrUtils, Types,
@@ -2052,6 +2057,14 @@ begin
 
   if not Result then
     aErrorStr := Format('Error executing method (%d tries) %s for parameters: [%s, %s]', [aAttemps, aMethodName, aStrParam1, aStrParam2]);
+end;
+
+
+initialization
+begin
+  gFormatSettingsDotSeparator := {$IFDEF WDC} TFormatSettings.Create; {$ENDIF}
+                                 {$IFDEF FPC} DefaultFormatSettings;  {$ENDIF}
+  gFormatSettingsDotSeparator.DecimalSeparator := '.';
 end;
 
 

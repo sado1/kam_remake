@@ -334,8 +334,8 @@ const
           end;
 
           hasError := False;
-          if TryStrToFloat(StringReplace(directiveParamSL[0], '.', ',', [rfReplaceAll]), goldOrePriceX)
-            and TryStrToFloat(StringReplace(directiveParamSL[1], '.', ',', [rfReplaceAll]), goldPriceX) then
+          if TryStrToFloat(directiveParamSL[0], goldOrePriceX, gFormatSettingsDotSeparator)
+            and TryStrToFloat(directiveParamSL[1], goldPriceX, gFormatSettingsDotSeparator) then
           begin
             goldOrePriceX := EnsureRange(goldOrePriceX, 0.1, 10);
             goldPriceX := EnsureRange(goldPriceX, 0.1, 10);
