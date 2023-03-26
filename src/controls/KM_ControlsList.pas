@@ -812,7 +812,7 @@ begin
   fSeparatorTexts.Clear;
   SetLength(fSeparatorPositions, 0);
   // Update List height, since we removed separators from it
-  Height := Height - SeparatorsCount*SeparatorHeight;
+  Height := Height - sepCnt*SeparatorHeight;
 end;
 
 
