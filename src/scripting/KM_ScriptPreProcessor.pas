@@ -334,19 +334,19 @@ const
           end;
 
           hasError := False;
-            if TryStrToFloat(StringReplace(directiveParamSL[0], '.', ',', [rfReplaceAll]), goldOrePriceX)
-              and TryStrToFloat(StringReplace(directiveParamSL[1], '.', ',', [rfReplaceAll]), goldPriceX) then
-            begin
-              goldOrePriceX := EnsureRange(goldOrePriceX, 0.1, 10);
-              goldPriceX := EnsureRange(goldPriceX, 0.1, 10);
-            end else begin
-              hasError := True;
-              fErrorHandler.AppendErrorStr(Format('Directive ''%s'' has not a number parameter: [%s]. At [%d:%d]' + sLineBreak,
-                                                  [CUSTOM_MARKET_GOLD_PRICE_DIRECTIVE, DirectiveParam, Parser.Row, Parser.Col]));
-              if fValidationIssues <> nil then
-                fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_MARKET_GOLD_PRICE_DIRECTIVE,
-                                           'Wrong directive parameters type, Integer required');
-            end;
+          if TryStrToFloat(StringReplace(directiveParamSL[0], '.', ',', [rfReplaceAll]), goldOrePriceX)
+            and TryStrToFloat(StringReplace(directiveParamSL[1], '.', ',', [rfReplaceAll]), goldPriceX) then
+          begin
+            goldOrePriceX := EnsureRange(goldOrePriceX, 0.1, 10);
+            goldPriceX := EnsureRange(goldPriceX, 0.1, 10);
+          end else begin
+            hasError := True;
+            fErrorHandler.AppendErrorStr(Format('Directive ''%s'' has not a number parameter: [%s]. At [%d:%d]' + sLineBreak,
+                                                [CUSTOM_MARKET_GOLD_PRICE_DIRECTIVE, DirectiveParam, Parser.Row, Parser.Col]));
+            if fValidationIssues <> nil then
+              fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_MARKET_GOLD_PRICE_DIRECTIVE,
+                                         'Wrong directive parameters type, Integer required');
+          end;
 
           if not hasError then
           begin
