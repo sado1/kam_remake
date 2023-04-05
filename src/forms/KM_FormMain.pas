@@ -5,7 +5,7 @@ uses
   SysUtils, StrUtils, Classes, Math,
   ComCtrls, Controls, Buttons, Dialogs, ExtCtrls, Forms, Graphics, Menus, StdCtrls,
   KM_RenderControl, KM_CommonTypes,
-  KM_WindowParams, KM_SettingsDev,
+  KM_WindowParams, KM_SettingsDev, KM_GameTypes,
   KM_Defaults, KM_ResExporter,
   {$IFDEF FPC} LResources, Spin, {$ENDIF}
   {$IFNDEF FPC} Vcl.Samples.Spin, {$ENDIF}  // For some unnown reason Delphi auto add Vcl.Samples.Spin when use {$IFDEF WDC}
@@ -261,6 +261,8 @@ type
     reesrxa1: TMenuItem;
     Housesrxa1: TMenuItem;
     Unitsrxa1: TMenuItem;
+    N15: TMenuItem;
+    Openscriptfile1: TMenuItem;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -348,6 +350,7 @@ type
     procedure Housesrxa1Click(Sender: TObject);
     procedure Unitsrxa1Click(Sender: TObject);
     procedure mnExportHDUnitThoughtsClick(Sender: TObject);
+    procedure Openscriptfile1Click(Sender: TObject);
   private
     {$IFDEF MSWindows}
     fMenuItemHint: TKMVclMenuItemHint; // Custom hint over menu item
@@ -398,8 +401,8 @@ type
     procedure ShowFullScreen;
     procedure ShowInWindow;
 
-    procedure SetSaveEditableMission(aEnabled: Boolean);
-    procedure SetSaveGameWholeMapImage(aEnabled: Boolean);
+    procedure GameStarted(aGameMode: TKMGameMode);
+    procedure GameEnded(aGameMode: TKMGameMode);
     procedure SetExportGameStats(aEnabled: Boolean);
     procedure SetMySpecHandIndex(aHandID: TKMHandID);
     procedure ShowFolderPermissionError;
@@ -552,17 +555,23 @@ begin
 end;
 
 
-procedure TFormMain.SetSaveEditableMission(aEnabled: Boolean);
+procedure TFormMain.GameStarted(aGameMode: TKMGameMode);
 begin
-  SaveEditableMission1.Enabled := aEnabled;
+  SaveEditableMission1.Enabled := aGameMode = gmMapEd;
+  Openscriptfile1.Enabled := True;
+  Debug_SaveGameWholeMapToImage.Enabled := True;
+  btnSaveMapImage.Enabled := True;
+  seMaxImageSize.Enabled := True;
 end;
 
 
-procedure TFormMain.SetSaveGameWholeMapImage(aEnabled: Boolean);
+procedure TFormMain.GameEnded(aGameMode: TKMGameMode);
 begin
-  Debug_SaveGameWholeMapToImage.Enabled := aEnabled;
-  btnSaveMapImage.Enabled := aEnabled;
-  seMaxImageSize.Enabled := aEnabled;
+  SaveEditableMission1.Enabled := False;
+  Openscriptfile1.Enabled := False;
+  Debug_SaveGameWholeMapToImage.Enabled := False;
+  btnSaveMapImage.Enabled := False;
+  seMaxImageSize.Enabled := False;
 end;
 
 
@@ -699,6 +708,22 @@ end;
 procedure TFormMain.RenderAreaRender(aSender: TObject);
 begin
   gMain.Render;
+end;
+
+
+
+procedure TFormMain.Openscriptfile1Click(Sender: TObject);
+var
+  path: string;
+begin
+  if gGameParams = nil then Exit;
+
+  path := gGameParams.GuessMissionFullFilePath;
+
+  if path <> '' then
+    ShellOpenFile(ChangeFileExt(path, '.script'))
+  else
+    ShowMessage('No script file was found! You have to save newly created map before trying to open its script file');
 end;
 
 

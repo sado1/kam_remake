@@ -1121,8 +1121,7 @@ begin
   if gMain <> nil then
   begin
     gMain.FormMain.SetExportGameStats(aGameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti]);
-    gMain.FormMain.SetSaveEditableMission(aGameMode = gmMapEd);
-    gMain.FormMain.SetSaveGameWholeMapImage(True);
+    gMain.FormMain.GameStarted(aGameMode);
     gMain.FormMain.SetMySpecHandIndex(gMySpectator.HandID);
   end;
 
@@ -1154,8 +1153,7 @@ begin
   begin
     gMain.FormMain.SetExportGameStats((aGameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti])
                                        or (gGame.GameResult in [grWin, grDefeat]));
-    gMain.FormMain.SetSaveEditableMission(False);
-    gMain.FormMain.SetSaveGameWholeMapImage(False);
+    gMain.FormMain.GameEnded(aGameMode);
   end;
 
   if Assigned(FormLogistics) then

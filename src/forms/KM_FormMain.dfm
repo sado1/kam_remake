@@ -1625,6 +1625,14 @@ object FormMain: TFormMain
         Caption = 'Load .sav then .rpl'
         OnClick = LoadSavThenRplClick
       end
+      object N15: TMenuItem
+        Caption = '-'
+      end
+      object Openscriptfile1: TMenuItem
+        Caption = 'Open .script file'
+        Enabled = False
+        OnClick = Openscriptfile1Click
+      end
       object N4: TMenuItem
         Caption = '-'
       end
