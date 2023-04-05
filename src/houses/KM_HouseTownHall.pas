@@ -307,7 +307,7 @@ end;
 
 procedure TKMHouseTownHall.UpdateDemands;
 const
-  MAX_GOLD_DEMANDS = 20; //Limit max number of demands by townhall to not to overfill demands list
+  MAX_GOLD_DEMANDS = 30; //Limit max number of demands by townhall to not to overfill demands list
 var
   goldToOrder, ordersRemoved, plannedToRemove, deliveringGold: Integer;
 begin
