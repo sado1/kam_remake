@@ -171,7 +171,7 @@ Improvements:
  +    Defeat player if he intentionally quit. Show win messages in chat when player win
  +    Reveal FOW by house from all tiles it covers (instead of only its right-bottom corner tile)
  +    Increase number of players up to 12 + 1 spectator (will be adjusted later, after beta-testing)
- +    Increase number of hands up to 18 (12 for human players and 6 more for AI's)
+ +    Increase number of hands up to 27 (12 for human players and others for AI's)
  +  L Allow changing speed in MP when there's only 1 human (for playing vs AI like it's SP)
  +    Reduced ArmyAttack minimap alert fight distance (24 -> 12) and duration (6s -> 5s)
  +    Make game speed precise
@@ -461,6 +461,10 @@ Improvements:
  +    AI AutoRepair replaced with enum type of TKMRepairMode, so mapmakers could manage houses repair via Actions.HouseRepairEnable manually from script
  +    Added Actions.AIDefencePositionRemoveByUID
  +    Add scripting actions to set/unset scripting overlay word wrap and font
+ +    Add several scripting methods to work with HouseClosedForWorker and logarythms
+ +    Add Actions/States.AIUnlimitedEquip method
+ +    Add States.HouseWareAmount
+ +    Add several methods to work with fish unit and its 'fish count'
  +    Added:
 
 States:
@@ -561,7 +565,7 @@ OnWareProduced to use with TKMWareType instead of Integer
  
  Maps:
  +    Added 'The Cruel King' campaign made by Gogoud
- -    Removed SP maps: Mission For The Competition and TPR_Mission7.
+ -    Removed SP maps: Mission For The Competition, TPR_Mission7 and To the capital.
  +    Add 'Breaking the Chains' SP mission made by Harry
  +    Add 'True Administrator' SP map madeby DontTalk
  
