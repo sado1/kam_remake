@@ -708,7 +708,11 @@ begin
     gSystem.Cursor := kmcDefault;
   end;
 
+  if Assigned(fOnGameEnd) then
+    fOnGameEnd(gGame.Params.Mode);
+
   FreeThenNil(gGame);
+
   fNetworking.ReturnToLobby; //Clears gGame event pointers from Networking
   fMainMenuInterface.ReturnToLobby(RETURN_TO_LOBBY_SAVE); //Assigns Lobby event pointers to Networking and selects map
   if fNetworking.IsHost then
