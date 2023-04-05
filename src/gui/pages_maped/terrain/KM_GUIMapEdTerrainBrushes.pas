@@ -62,6 +62,7 @@ const
   BTN_TKIND_S_SP_X = 36;
   BTN_TKIND_S_SP_Y = 40;
   SURF_ROW_LEN = 5;
+  BRUSH_ROW_LEN = 6;
 
   SURFACES: array [0..5, 0..SURF_ROW_LEN-1] of record
     Terrain: TKMTerrainKind;
@@ -125,10 +126,10 @@ var
   procedure CreateBrushMaskBtn(aMK: TKMTileMaskKind);
   begin
     BrushMasks[aMK] := TKMButtonFlat.Create(Panel_Brushes, SURFACES_TAB
-                                                           + ( (Ord(aMK) mod SURF_ROW_LEN)
-                                                               + Min((Ord(aMK) div SURF_ROW_LEN), 1) // + 1 for the 2nd and further lines
+                                                           + ( (Ord(aMK) mod BRUSH_ROW_LEN)
+                                                               + Min((Ord(aMK) div BRUSH_ROW_LEN), 1) // + 1 for the 2nd and further lines
                                                              ) * BTN_TKIND_S_SP_X,
-                                                           305 + (Ord(aMK) div SURF_ROW_LEN)*BTN_TKIND_S_SP_Y,
+                                                           305 + (Ord(aMK) div BRUSH_ROW_LEN)*BTN_TKIND_S_SP_Y,
                                                            BTN_TKIND_S, BTN_TKIND_S,
                                             TILE_MASK_KINDS_PREVIEW[aMK] + 1, rxTiles);
     BrushMasks[aMK].Anchors := [anTop];
@@ -192,7 +193,7 @@ begin
     CreateBrushMaskBtn(MK);
 
 
-  MagicBrush := TKMButtonFlat.Create(Panel_Brushes, SURFACES_TAB + High(SURFACES[I])*BTN_TKIND_S_SP_X, 305 + BTN_TKIND_S_SP_Y, 34, 34, 673, rxGui);
+  MagicBrush := TKMButtonFlat.Create(Panel_Brushes, SURFACES_TAB + (BRUSH_ROW_LEN - 1)*BTN_TKIND_S_SP_X, 305 + BTN_TKIND_S_SP_Y, 34, 34, 673, rxGui);
   MagicBrush.Anchors := [anTop];
   MagicBrush.Hint := gResTexts[TX_MAPED_TERRAIN_MAGIC_BRUSH_HINT];
   MagicBrush.OnClick := BrushChange;

@@ -63,7 +63,7 @@ begin
      gResTexts[TX_MAPED_AI_ATTACK_COL_DELAY],
      gResTexts[TX_MAPED_AI_ATTACK_COL_MEN],
      gResTexts[TX_MAPED_AI_ATTACK_COL_TARGET],
-     gResTexts[TX_MAPED_AI_ATTACK_COL_LOC]], [0, 20, 60, 102, 165], True);
+     gResTexts[TX_MAPED_AI_ATTACK_COL_LOC]], [0, 20, 70, 112, 175], True);
   ColumnBox_Attacks.Anchors := [anLeft, anTop, anRight];
   ColumnBox_Attacks.OnClick := Attacks_ListClick;
   ColumnBox_Attacks.OnDoubleClick := Attacks_ListDoubleClick;

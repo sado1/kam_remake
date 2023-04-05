@@ -90,9 +90,9 @@ begin
 
       Inc(Y, 90);
 
-      Label_CurrentMapSize := TKMLabel.Create(Panel_Resize_Edit, 0, Y, TB_WIDTH, 30, '', fntOutline, taCenter);
+      Label_CurrentMapSize := TKMLabel.Create(Panel_Resize_Edit, 0, Y, TB_MAP_ED_WIDTH - 2*Panel_Resize_Edit.Left, 30, '', fntOutline, taCenter);
       Inc(Y, 45);
-      Label_NewMapSize := TKMLabel.Create(Panel_Resize_Edit, 0, Y, TB_WIDTH, 30, '', fntOutline, taCenter);
+      Label_NewMapSize := TKMLabel.Create(Panel_Resize_Edit, 0, Y, TB_MAP_ED_WIDTH - 2*Panel_Resize_Edit.Left, 30, '', fntOutline, taCenter);
       Inc(Y, 45);
 
       Button_Resize := TKMButton.Create(Panel_Resize_Edit, 0, Y, Panel_Resize_Edit.Width, 45, gResTexts[TX_MAPED_MAP_RESIZE_AND_SAVE], bsGame);

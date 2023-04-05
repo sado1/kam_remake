@@ -93,7 +93,7 @@ const
   // Toolbar pads
   TB_PAD = 9; // Picked up empirically
   TB_WIDTH = 180; // Max width of sidebar elements
-  TB_MAP_ED_WIDTH = 214; //Max width of sidebar elements in Map Editor
+  TB_MAP_ED_WIDTH = MAPED_TOOLBAR_WIDTH - 44; //Max width of sidebar elements in Map Editor
   PAGE_TITLE_Y = 5; // Page title offset
   TERRAIN_PAGE_TITLE_Y = PAGE_TITLE_Y + 2; // Terrain pages title offset
   STATS_LINES_CNT = 13; //Number of stats (F3) lines

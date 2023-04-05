@@ -116,10 +116,12 @@ type
     Label_Coordinates: TKMLabel;
     Label_Info: TKMLabel;
     Button_PlayerSelect: array [0..MAX_HANDS-1] of TKMFlatButtonShape; //Animals are common for all
-    Button_History: TKMButtonFlat;
-    Button_Undo, Button_Redo: TKMButtonFlat;
-    Button_ChangeOwner: TKMButtonFlat;
-    Button_UniversalEraser: TKMButtonFlat;
+
+    Panel_MinimapButtons: TKMPanel;
+      Button_History: TKMButtonFlat;
+      Button_Undo, Button_Redo: TKMButtonFlat;
+      Button_ChangeOwner: TKMButtonFlat;
+      Button_UniversalEraser: TKMButtonFlat;
 
     Panel_Common: TKMPanel;
       Button_Main: array [1..5] of TKMButton; //5 buttons
@@ -197,6 +199,11 @@ const
   HND_S = 21;
   HND_P = 2;
   TOP_SIDE_BTN = 48;
+  MMAP_BTN_GAP = 4;
+  MMAP_BTNS_CNT = 4;
+  MMAP_BTN_W = 31;
+  MMAP_BTN_H = 32;
+  MMAP_BTNS_GAP = 3;
 var
   I: Integer;
   S: TKMShape;
@@ -217,7 +224,7 @@ begin
   TKMImage.Create(Panel_Main, 0, 1400, MAPED_TOOLBAR_WIDTH, 400, 404, rxGui, [anLeft, anTop, anRight]);
   TKMImage.Create(Panel_Main, 0, 1800, MAPED_TOOLBAR_WIDTH, 400, 404, rxGui, [anLeft, anTop, anRight]); //For 4K displays
 
-  MinimapView := TKMMinimapView.Create(fMinimap, Panel_Main, 10, 10, MAPED_TOOLBAR_WIDTH - 48, 176);
+  MinimapView := TKMMinimapView.Create(fMinimap, Panel_Main, 10, 10, TB_MAP_ED_WIDTH - 40, 176);
   MinimapView.OnChange := Minimap_OnUpdate;
 
   Label_MissionName := TKMLabel.Create(Panel_Main, MAPED_TOOLBAR_WIDTH + 4, 10, 500, 10, NO_TEXT, fntGrey, taLeft);
@@ -235,13 +242,17 @@ begin
   end;
   Button_PlayerSelect[0].Down := True; //First player selected by default
 
-  Button_History := TKMButtonFlat.Create(Panel_Main, MAPED_TOOLBAR_WIDTH - 33, TOP_SIDE_BTN, 31, 32, 677);
+
+  Panel_MinimapButtons := TKMPanel.Create(Panel_Main, MinimapView.Right + MMAP_BTN_GAP, TOP_SIDE_BTN,
+                                          MMAP_BTN_W, MMAP_BTNS_CNT * MMAP_BTN_H + MMAP_BTNS_GAP * (MMAP_BTNS_CNT - 1));
+
+  Button_History := TKMButtonFlat.Create(Panel_MinimapButtons, 0, 0, MMAP_BTN_W, MMAP_BTN_H, 677);
   Button_History.BackAlpha := 1;
   Button_History.TexOffsetX := -1;
   Button_History.Down := False; // History is hidden by default
   Button_History.OnClick := History_Click;
 
-  Button_Undo := TKMButtonFlat.Create(Panel_Main, MAPED_TOOLBAR_WIDTH - 33, TOP_SIDE_BTN + 35, 15, 32, 0);
+  Button_Undo := TKMButtonFlat.Create(Panel_MinimapButtons, 0, MMAP_BTN_H + MMAP_BTNS_GAP, MMAP_BTN_W div 2, MMAP_BTN_H, 0);
   Button_Undo.BackAlpha := 1;
   Button_Undo.Caption := '<';
   Button_Undo.CapOffsetY := -10;
@@ -249,7 +260,7 @@ begin
   Button_Undo.Hint := gResTexts[TX_MAPED_UNDO_HINT]+ ' (''Ctrl + Z'')';
   Button_Undo.OnClick := UnRedo_Click;
 
-  Button_Redo := TKMButtonFlat.Create(Panel_Main, Button_Undo.Right + 1, TOP_SIDE_BTN + 35, 15, 32, 0);
+  Button_Redo := TKMButtonFlat.Create(Panel_MinimapButtons, Button_Undo.Right + 1, MMAP_BTN_H + MMAP_BTNS_GAP, MMAP_BTN_W div 2, MMAP_BTN_H, 0);
   Button_Redo.BackAlpha := 1;
   Button_Redo.Caption := '>';
   Button_Redo.CapOffsetY := -10;
@@ -257,12 +268,12 @@ begin
   Button_Redo.Hint := gResTexts[TX_MAPED_REDO_HINT] + ' (''Ctrl + Y'' or ''Ctrl + Shift + Z'')';
   Button_Redo.OnClick := UnRedo_Click;
 
-  Button_ChangeOwner := TKMButtonFlat.Create(Panel_Main, MAPED_TOOLBAR_WIDTH - 33, TOP_SIDE_BTN + 70, 30, 32, 662);
+  Button_ChangeOwner := TKMButtonFlat.Create(Panel_MinimapButtons, 0, 2*(MMAP_BTN_H + MMAP_BTNS_GAP), MMAP_BTN_W - 1, MMAP_BTN_H, 662);
   Button_ChangeOwner.BackAlpha := 1;
   Button_ChangeOwner.Down := False;
   Button_ChangeOwner.OnClick := ChangeOwner_Click;
 
-  Button_UniversalEraser := TKMButtonFlat.Create(Panel_Main, MAPED_TOOLBAR_WIDTH - 33, TOP_SIDE_BTN + 105, 30, 32, 340);
+  Button_UniversalEraser := TKMButtonFlat.Create(Panel_MinimapButtons, 0, 3*(MMAP_BTN_H + MMAP_BTNS_GAP), MMAP_BTN_W - 1, MMAP_BTN_H, 340);
   Button_UniversalEraser.BackAlpha := 1;
   Button_UniversalEraser.Down := False;
   Button_UniversalEraser.OnClick := UniversalEraser_Click;

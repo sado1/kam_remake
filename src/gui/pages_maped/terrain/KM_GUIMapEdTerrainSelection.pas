@@ -85,7 +85,7 @@ begin
 
   for PT := Low(TKMTerrainSelectionPasteType) to High(TKMTerrainSelectionPasteType) do
   begin
-    Map_PasteType[PT] := TKMButtonFlat.Create(Panel_Selection, 17 + 50 * Ord(PT), 150, 34, 34, PAST_TYPE_RX_INDEX[PT], rxGui);
+    Map_PasteType[PT] := TKMButtonFlat.Create(Panel_Selection, 21 + 58 * Ord(PT), 150, 34, 34, PAST_TYPE_RX_INDEX[PT], rxGui);
     Map_PasteType[PT].OnClick := SelectionClick;
     Map_PasteType[PT].Hint := gResTexts[PAST_TYPE_HINT[PT]];
     Map_PasteType[PT].Down := True;

@@ -39,13 +39,15 @@ uses
 constructor TKMMapEdTerrainOverlays.Create(aParent: TKMPanel);
 const
   BTN_SIZE = 36;
-  BTNS_PER_ROW = 5;
+  BTNS_PER_ROW = 6;
+  BTN_GAP = 3;
 
   OVERLAY_HINTS_TX: array [toNone..toRoad] of Integer =
                             (TX_MAPED_TERRAIN_OVERLAY_TO_NONE, TX_MAPED_TERRAIN_OVERLAY_TO_DIG1,
                              TX_MAPED_TERRAIN_OVERLAY_TO_DIG2, TX_MAPED_TERRAIN_OVERLAY_TO_DIG3,
                              TX_MAPED_TERRAIN_OVERLAY_TO_DIG4, TX_MAPED_TERRAIN_OVERLAY_TO_ROAD);
 var
+  leftI: Integer;
   TTO: TKMTileOverlay;
 begin
   inherited Create;
@@ -55,7 +57,8 @@ begin
     Anchors := [anLeft, anTop, anRight];
   for TTO := Low(OverlaysTable) to High(OverlaysTable) do
   begin
-    OverlaysTable[TTO] := TKMButtonFlat.Create(Panel_Overlays, 9 + (Byte(TTO) mod BTNS_PER_ROW) * BTN_SIZE,
+    leftI := Byte(TTO) mod BTNS_PER_ROW;
+    OverlaysTable[TTO] := TKMButtonFlat.Create(Panel_Overlays, 9 + leftI * BTN_SIZE + BTN_GAP*(leftI - 1),
                                                              BTN_SIZE + (Byte(TTO) div BTNS_PER_ROW) * BTN_SIZE,
                                                              BTN_SIZE,
                                                              BTN_SIZE,

@@ -103,7 +103,7 @@ type
 
 const
   OBJECTS_PALETTE_MAX_COLS_CNT = 17;
-  OBJ_CELL_W = 68;
+  OBJ_CELL_W = 76;
   OBJ_CELL_H = 84;
 
   OBJ_CELL_PALETTE_W = 68;
