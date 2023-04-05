@@ -198,11 +198,11 @@ const
   HND_COL = 9;
   HND_S = 21;
   HND_P = 2;
-  TOP_SIDE_BTN = 48;
-  MMAP_BTN_GAP = 4;
+  TOP_SIDE_BTN = 10;
+  MMAP_BTN_GAP = 10;
   MMAP_BTNS_CNT = 4;
-  MMAP_BTN_W = 31;
-  MMAP_BTN_H = 32;
+  MMAP_BTN_W = 28;
+  MMAP_BTN_H = 28;
   MMAP_BTNS_GAP = 3;
 var
   I: Integer;
@@ -217,12 +217,18 @@ begin
 
   ResetDragObject;
   //                                   250
-  TKMImage.Create(Panel_Main, 0,    0, MAPED_TOOLBAR_WIDTH, 200, 407, rxGui, [anLeft, anTop, anRight]); //Minimap place
+  // Left panel background
+  TKMImage.Create(Panel_Main, 0, -200, MAPED_TOOLBAR_WIDTH, 400, 404, rxGui, [anLeft, anTop, anRight]);
   TKMImage.Create(Panel_Main, 0,  200, MAPED_TOOLBAR_WIDTH, 400, 404, rxGui, [anLeft, anTop, anRight]);
   TKMImage.Create(Panel_Main, 0,  600, MAPED_TOOLBAR_WIDTH, 400, 404, rxGui, [anLeft, anTop, anRight]);
-  TKMImage.Create(Panel_Main, 0, 1000, MAPED_TOOLBAR_WIDTH, 400, 404, rxGui, [anLeft, anTop, anRight]); //For 1600x1200 this is needed
+  // For 1600x1200 this is needed
+  TKMImage.Create(Panel_Main, 0, 1000, MAPED_TOOLBAR_WIDTH, 400, 404, rxGui, [anLeft, anTop, anRight]);
   TKMImage.Create(Panel_Main, 0, 1400, MAPED_TOOLBAR_WIDTH, 400, 404, rxGui, [anLeft, anTop, anRight]);
-  TKMImage.Create(Panel_Main, 0, 1800, MAPED_TOOLBAR_WIDTH, 400, 404, rxGui, [anLeft, anTop, anRight]); //For 4K displays
+  // For 4K displays
+  TKMImage.Create(Panel_Main, 0, 1800, MAPED_TOOLBAR_WIDTH, 400, 404, rxGui, [anLeft, anTop, anRight]);
+
+  // Minimap place is drawn last
+  TKMImage.Create(Panel_Main, 0,    0,                 220, 200, 679, rxGui, [anLeft, anTop, anRight]);
 
   MinimapView := TKMMinimapView.Create(fMinimap, Panel_Main, 10, 10, TB_MAP_ED_WIDTH - 40, 176);
   MinimapView.OnChange := Minimap_OnUpdate;
@@ -247,13 +253,13 @@ begin
                                           MMAP_BTN_W, MMAP_BTNS_CNT * MMAP_BTN_H + MMAP_BTNS_GAP * (MMAP_BTNS_CNT - 1));
 
   Button_History := TKMButtonFlat.Create(Panel_MinimapButtons, 0, 0, MMAP_BTN_W, MMAP_BTN_H, 677);
-  Button_History.BackAlpha := 1;
+//  Button_History.BackAlpha := 1;
   Button_History.TexOffsetX := -1;
   Button_History.Down := False; // History is hidden by default
   Button_History.OnClick := History_Click;
 
   Button_Undo := TKMButtonFlat.Create(Panel_MinimapButtons, 0, MMAP_BTN_H + MMAP_BTNS_GAP, MMAP_BTN_W div 2, MMAP_BTN_H, 0);
-  Button_Undo.BackAlpha := 1;
+//  Button_Undo.BackAlpha := 1;
   Button_Undo.Caption := '<';
   Button_Undo.CapOffsetY := -10;
   Button_Undo.CapColor := icGreen;
@@ -261,7 +267,7 @@ begin
   Button_Undo.OnClick := UnRedo_Click;
 
   Button_Redo := TKMButtonFlat.Create(Panel_MinimapButtons, Button_Undo.Right + 1, MMAP_BTN_H + MMAP_BTNS_GAP, MMAP_BTN_W div 2, MMAP_BTN_H, 0);
-  Button_Redo.BackAlpha := 1;
+//  Button_Redo.BackAlpha := 1;
   Button_Redo.Caption := '>';
   Button_Redo.CapOffsetY := -10;
   Button_Redo.CapColor := icGreen;
@@ -269,12 +275,12 @@ begin
   Button_Redo.OnClick := UnRedo_Click;
 
   Button_ChangeOwner := TKMButtonFlat.Create(Panel_MinimapButtons, 0, 2*(MMAP_BTN_H + MMAP_BTNS_GAP), MMAP_BTN_W - 1, MMAP_BTN_H, 662);
-  Button_ChangeOwner.BackAlpha := 1;
+//  Button_ChangeOwner.BackAlpha := 1;
   Button_ChangeOwner.Down := False;
   Button_ChangeOwner.OnClick := ChangeOwner_Click;
 
   Button_UniversalEraser := TKMButtonFlat.Create(Panel_MinimapButtons, 0, 3*(MMAP_BTN_H + MMAP_BTNS_GAP), MMAP_BTN_W - 1, MMAP_BTN_H, 340);
-  Button_UniversalEraser.BackAlpha := 1;
+//  Button_UniversalEraser.BackAlpha := 1;
   Button_UniversalEraser.Down := False;
   Button_UniversalEraser.OnClick := UniversalEraser_Click;
 
