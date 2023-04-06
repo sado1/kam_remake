@@ -110,29 +110,30 @@ type
     function ToCardinal: Cardinal;
     class function Generic(aIndex: Integer): TKMColor3f; static;
     class function RandomWSeed(aSeed: Integer): TKMColor3f; static;
-    class function New(aR,aG,aB: Single): TKMColor3f; static;
-    class function NewB(aR,aG,aB: Byte): TKMColor3f; static;
-    class function NewC(aRGB: Cardinal): TKMColor3f; static;
+    constructor New(aR,aG,aB: Single);
+    constructor NewB(aR,aG,aB: Byte);
+    constructor NewC(aRGB: Cardinal);
     function ToString: string;
   end;
 
   TKMColor3b = record
     R,G,B: Byte;
     function ToCardinal: Cardinal;
-    class function New(aR,aG,aB: Byte): TKMColor3b; static;
+    constructor New(aR,aG,aB: Byte);
   end;
+//             Result := R + G shl 8 + B shl 16 + A shl 24;
 
   TKMColor4f = record
     R,G,B,A: Single;
-    class function New(aR,aG,aB,aA: Single): TKMColor4f; overload; static;
-    class function New(aR,aG,aB: Byte): TKMColor4f; overload; static;
-    class function NewB(aR,aG,aB,aA: Byte): TKMColor4f; overload; static;
-    class function New(aCol: Cardinal): TKMColor4f; overload; static;
-    class function New(aCol: TKMColor3f): TKMColor4f; overload; static;
-    class function New(const aCol: TKMColor3f; aAlpha: Single): TKMColor4f; overload; static;
-    class function White: TKMColor4f; static;
-    class function Black: TKMColor4f; static;
-    function Alpha50: TKMColor4f;
+    constructor New(aR,aG,aB,aA: Single); overload;
+    constructor New(aR,aG,aB: Byte); overload;
+    constructor NewB(aR,aG,aB,aA: Byte); overload;
+    constructor New(aCol: Cardinal); overload;
+    constructor New(aCol: TKMColor3f); overload;
+    constructor New(aCol: TKMColor3f; aAlpha: Single); overload;
+    class function White(): TKMColor4f; static;
+    class function Black(): TKMColor4f; static;
+    function Alpha50(): TKMColor4f;
     function Alpha(aAlpha: Single): TKMColor4f;
     function ToColor3f: TKMColor3f;
     function ToCardinal: Cardinal;
@@ -161,27 +162,27 @@ uses
 
 
 { TKMColor3f }
-class function TKMColor3f.New(aR, aG, aB: Single): TKMColor3f;
+constructor TKMColor3f.New(aR, aG, aB: Single);
 begin
-  Result.R := aR;
-  Result.G := aG;
-  Result.B := aB;
+  R := aR;
+  G := aG;
+  B := aB;
 end;
 
 
-class function TKMColor3f.NewB(aR, aG, aB: Byte): TKMColor3f;
+constructor TKMColor3f.NewB(aR, aG, aB: Byte);
 begin
-  Result.R := aR / 255;
-  Result.G := aG / 255;
-  Result.B := aB / 255;
+  R := aR / 255;
+  G := aG / 255;
+  B := aB / 255;
 end;
 
 
-class function TKMColor3f.NewC(aRGB: Cardinal): TKMColor3f;
+constructor TKMColor3f.NewC(aRGB: Cardinal);
 begin
-  Result.B := (aRGB and $FF) / 255;
-  Result.G := (aRGB shr 8 and $FF) / 255;
-  Result.R := (aRGB shr 16 and $FF) / 255;
+  B := (aRGB and $FF) / 255;
+  G := (aRGB shr 8 and $FF) / 255;
+  R := (aRGB shr 16 and $FF) / 255;
 end;
 
 
@@ -222,11 +223,11 @@ end;
 
 
 { TKMColor3b }
-class function TKMColor3b.New(aR, aG, aB: Byte): TKMColor3b;
+constructor TKMColor3b.New(aR, aG, aB: Byte);
 begin
-  Result.R := aR;
-  Result.G := aG;
-  Result.B := aB;
+  R := aR;
+  G := aG;
+  B := aB;
 end;
 
 
@@ -237,58 +238,58 @@ end;
 
 
 { TKMColor4f }
-class function TKMColor4f.New(aR,aG,aB,aA: Single): TKMColor4f;
+constructor TKMColor4f.New(aR,aG,aB,aA: Single);
 begin
-  Result.R := aR;
-  Result.G := aG;
-  Result.B := aB;
-  Result.A := aA;
+  R := aR;
+  G := aG;
+  B := aB;
+  A := aA;
 end;
 
 
-class function TKMColor4f.New(aR,aG,aB: Byte): TKMColor4f;
+constructor TKMColor4f.New(aR,aG,aB: Byte);
 begin
-  Result.R := aR / 255;
-  Result.G := aG / 255;
-  Result.B := aB / 255;
-  Result.A := 1;
+  R := aR / 255;
+  G := aG / 255;
+  B := aB / 255;
+  A := 1;
 end;
 
 
-class function TKMColor4f.NewB(aR,aG,aB,aA: Byte): TKMColor4f;
+constructor TKMColor4f.NewB(aR,aG,aB,aA: Byte);
 begin
-  Result.R := aR / 255;
-  Result.G := aG / 255;
-  Result.B := aB / 255;
-  Result.A := aA / 255;
+  R := aR / 255;
+  G := aG / 255;
+  B := aB / 255;
+  A := aA / 255;
 end;
 
 
-class function TKMColor4f.New(aCol: Cardinal): TKMColor4f;
+constructor TKMColor4f.New(aCol: Cardinal);
 begin
-  Result.R := (aCol and $FF)           / 255;
-  Result.G := ((aCol shr 8) and $FF)   / 255;
-  Result.B := ((aCol shr 16) and $FF)  / 255;
-  Result.A := ((aCol shr 24) and $FF)  / 255;
+  R := (aCol and $FF)           / 255;
+  G := ((aCol shr 8) and $FF)   / 255;
+  B := ((aCol shr 16) and $FF)  / 255;
+  A := ((aCol shr 24) and $FF)  / 255;
 end;
 
 
-class function TKMColor4f.New(aCol: TKMColor3f): TKMColor4f;
+constructor TKMColor4f.New(aCol: TKMColor3f);
 begin
   New(aCol, 1);
 end;
 
 
-class function TKMColor4f.New(const aCol: TKMColor3f; aAlpha: Single): TKMColor4f;
+constructor TKMColor4f.New(aCol: TKMColor3f; aAlpha: Single);
 begin
-  Result.R := aCol.R;
-  Result.G := aCol.G;
-  Result.B := aCol.B;
-  Result.A := aAlpha;
+  R := aCol.R;
+  G := aCol.G;
+  B := aCol.B;
+  A := aAlpha;
 end;
 
 
-class function TKMColor4f.White: TKMColor4f;
+class function TKMColor4f.White(): TKMColor4f;
 begin
   Result.R := 1;
   Result.G := 1;
@@ -306,7 +307,7 @@ begin
 end;
 
 
-function TKMColor4f.Alpha50: TKMColor4f;
+function TKMColor4f.Alpha50(): TKMColor4f;
 begin
   Result := Self;
   Result.A := 0.5;

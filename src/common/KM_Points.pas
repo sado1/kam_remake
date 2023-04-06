@@ -21,8 +21,8 @@ type
     class operator Equal(const A, B: TKMPointF): Boolean;
     class operator NotEqual(const A, B: TKMPointF): Boolean;
     class operator Add(const A, B: TKMPointF): TKMPointF;
-    class function New(aX, aY: Single): TKMPointF; static;
     function ToString: String;
+    constructor New(aX, aY: Single);
   end;
 
   //* Point with integer coordinates X and Y
@@ -283,10 +283,10 @@ begin
 end;
 
 
-class function TKMPointF.New(aX, aY: Single): TKMPointF;
+constructor TKMPointF.New(aX, aY: Single);
 begin
-  Result.X := aX;
-  Result.Y := aY;
+  X := aX;
+  Y := aY;
 end;
 
 
@@ -301,36 +301,30 @@ begin
   Result := not KMSamePointF(A,B);
 end;
 
-
 class operator TKMPointF.Add(const A, B: TKMPointF): TKMPointF;
 begin
   Result := KMPointF(A.X + B.X, A.Y + B.Y);
 end;
-
 
 function TKMPointF.ToString: String;
 begin
   Result := TypeToString(Self);
 end;
 
-
 function TKMPointW.ToString: String;
 begin
   Result := TypeToString(Self);
 end;
-
 
 function TKMPointDir.ToString: String;
 begin
   Result := TypeToString(Self);
 end;
 
-
 function TKMRect.ToString: String;
 begin
   Result := Format('(%d, %d, %d, %d)', [Left, Top, Right, Bottom]);;
 end;
-
 
 function TKMRect.Width: Integer;
 begin
