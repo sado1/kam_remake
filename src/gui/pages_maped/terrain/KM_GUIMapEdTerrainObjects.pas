@@ -103,7 +103,8 @@ type
 
 const
   OBJECTS_PALETTE_MAX_COLS_CNT = 17;
-  OBJ_CELL_W = 76;
+  OBJ_PAL_CELL_W = 68;
+  OBJ_PANEL_CELL_W = 76;
   OBJ_CELL_H = 84;
 
   OBJ_CELL_PALETTE_W = 68;
@@ -208,8 +209,8 @@ begin
   for I := 0 to 2 do
     for J := 0 to 2 do
     begin
-      ObjectsTable[I*3+J] := TKMButtonFlat.Create(Panel_Objects, 9 + I*(OBJ_CELL_W + 1), 40 + J*(OBJ_CELL_H + 1),
-                                                  OBJ_CELL_W, OBJ_CELL_H, 1, rxTrees); //RXid=1  // 1 2
+      ObjectsTable[I*3+J] := TKMButtonFlat.Create(Panel_Objects, 9 + I*(OBJ_PANEL_CELL_W + 1), 40 + J*(OBJ_CELL_H + 1),
+                                                  OBJ_PANEL_CELL_W, OBJ_CELL_H, 1, rxTrees); //RXid=1  // 1 2
       ObjectsTable[I*3+J].CapOffsetY := 15;
       ObjectsTable[I*3+J].Tag := I*3+J; //Store ID
       ObjectsTable[I*3+J].OnClick := ObjectsChange;
@@ -284,12 +285,12 @@ begin
 
     Label_ObjectsPalette := TKMLabel.Create(PopUp_ObjectsPalette, PopUp_ObjectsPalette.Center.X, 0, gResTexts[TX_MAPED_TERRAIN_OBJECTS_PALETTE], fntOutline, taCenter);
 
-    Button_ObjPaletteErase := TKMButtonFlat.Create(PopUp_ObjectsPalette, 0, 0, OBJ_CELL_W, 32, 340);
+    Button_ObjPaletteErase := TKMButtonFlat.Create(PopUp_ObjectsPalette, 0, 0, OBJ_PAL_CELL_W, 32, 340);
     Button_ObjPaletteErase.Hint := gResTexts[TX_MAPED_TERRAIN_OBJECTS_REMOVE];
     Button_ObjPaletteErase.Tag := OBJ_NONE_TAG; //no object
     Button_ObjPaletteErase.OnClickShift := ObjPalette_ClickShift;
 
-    Button_ObjPaletteBlock := TKMButtonFlat.Create(PopUp_ObjectsPalette, 0, 0, OBJ_CELL_W, 32, 254, rxTrees);
+    Button_ObjPaletteBlock := TKMButtonFlat.Create(PopUp_ObjectsPalette, 0, 0, OBJ_PAL_CELL_W, 32, 254, rxTrees);
     Button_ObjPaletteBlock.Hint := gResTexts[TX_MAPED_TERRAIN_OBJECTS_BLOCK];
     Button_ObjPaletteBlock.Tag := OBJ_BLOCK_TAG; //block object
     Button_ObjPaletteBlock.OnClickShift := ObjPalette_ClickShift;
@@ -515,13 +516,13 @@ procedure TKMMapEdTerrainObjects.ObjectsPalette_Refresh(Sender: TObject);
 var
   I, J, K, leftAdj, topAdj: Integer;
 begin
-  leftAdj := (PopUp_ObjectsPalette.Width - fObjPaletteTableSize.X*(OBJ_CELL_W + 1) - 25*Byte(Scroll_ObjectsPalette.Visible)) div 2;
+  leftAdj := (PopUp_ObjectsPalette.Width - fObjPaletteTableSize.X*(OBJ_PAL_CELL_W + 1) - 25*Byte(Scroll_ObjectsPalette.Visible)) div 2;
   topAdj := Image_ObjectsPalette.Top + 60;
 
   K := 0;
 
   Button_ObjPaletteErase.Left := leftAdj;
-  Button_ObjPaletteBlock.Left := leftAdj + OBJ_CELL_W + 1;
+  Button_ObjPaletteBlock.Left := leftAdj + OBJ_PAL_CELL_W + 1;
 
   for I := 0 to fObjPaletteTableSize.Y - 1 do
     for J := 0 to fObjPaletteTableSize.X - 1 do
@@ -580,7 +581,7 @@ begin
   ColsCnt := EnsureRange(PopUp_ObjectsPalette.Width div (OBJ_CELL_PALETTE_W + 1), 1, OBJECTS_PALETTE_MAX_COLS_CNT);
   Scroll_ObjectsPalette.Visible := RowsCnt*ColsCnt < fCountCompact;
   //Recalc ColsCount considering possible scroll width
-  ColsCnt := EnsureRange((PopUp_ObjectsPalette.Width - 25*Byte(Scroll_ObjectsPalette.Visible)) div (OBJ_CELL_W + 1), 1, OBJECTS_PALETTE_MAX_COLS_CNT);
+  ColsCnt := EnsureRange((PopUp_ObjectsPalette.Width - 25*Byte(Scroll_ObjectsPalette.Visible)) div (OBJ_PAL_CELL_W + 1), 1, OBJECTS_PALETTE_MAX_COLS_CNT);
 
   fObjPaletteTableSize := KMPoint(ColsCnt, RowsCnt);
 
