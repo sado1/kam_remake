@@ -76,7 +76,8 @@ uses
 const
   //todo: Add LIBX and WAV support for maps
   VALID_MAP_EXTENSIONS:  array[1..5] of UnicodeString =         ('map','dat',EXT_FILE_SCRIPT,'txt','pdf');
-  VALID_MAP_EXTENSIONS_POSTFIX:  array[1..3] of UnicodeString = ('libx','wav','ogg');
+  VALID_MAP_EXTENSIONS_POSTFIX:  array[1..4] of UnicodeString = ('libx','wav','ogg','pdf');
+//  VALID__MAP_EXT_DOUBLE_POSTFIX
   VALID_SAVE_EXTENSIONS: array[1..3] of UnicodeString =         (EXT_SAVE_MAIN, EXT_SAVE_BASE, EXT_SAVE_REPLAY);
 
 
@@ -109,7 +110,7 @@ constructor TKMFileSender.Create(aType: TKMTransferType; const aName: UnicodeStr
 var
   I, J: Integer;
   F: TSearchRec;
-  fileName: UnicodeString;
+  fileName, postfix: UnicodeString;
   sourceStream: TKMemoryStream;
   compressionStream: TCompressionStream;
   scriptPreProcessor: TKMScriptPreProcessor;
@@ -124,6 +125,12 @@ begin
   //Fill stream with data to be sent
   case aType of
   kttMap: begin
+            // Supports next file names:
+            // MapName.dat
+            // MapName.map
+            // MapName.txt
+            // MapName.pdf
+            // MapName.script + any included script
             for I := Low(VALID_MAP_EXTENSIONS) to High(VALID_MAP_EXTENSIONS) do
             begin
               fileName := GetFullSourceFileName(aType, aName, aMapKind, '', VALID_MAP_EXTENSIONS[I]);
@@ -148,7 +155,12 @@ begin
                 end;
               end;
             end;
-            for I := Low(VALID_MAP_EXTENSIONS_POSTFIX) to High(VALID_MAP_EXTENSIONS_POSTFIX) do
+            // Supports next file names:
+            // MapName.snd_name.wav / .ogg
+            // MapName.snd_name.eng.wav / .ogg
+            // MapName.eng.libx
+            // MapName.eng.pdf
+            for I := Low(fileName) to High(VALID_MAP_EXTENSIONS_POSTFIX) do
             begin
               fileName := GetFullSourceFileName(aType, aName, aMapKind, '.*', VALID_MAP_EXTENSIONS_POSTFIX[I]);
               try
@@ -156,7 +168,20 @@ begin
                 begin
                   repeat
                     if (F.Attr and faDirectory = 0) then
-                      AddFileToStream(ExtractFilePath(fileName) + F.Name, ExtractFileExt(ChangeFileExt(F.Name,'')), VALID_MAP_EXTENSIONS_POSTFIX[I]);
+                    begin
+                      // Find everything except map name and extension
+                      // Cut ext with dot
+                      postfix := ChangeFileExt(F.Name, '');
+                      // Find 'MapName.'
+                      if Pos(aName + '.', postfix) = 1 then
+                        // Copy '.snd_name.eng'
+                        postfix := Copy(postfix, Length(aName) + 1, Length(postfix))
+                      else
+                        // No postfix was found
+                        postfix := '';
+
+                      AddFileToStream(ExtractFilePath(fileName) + F.Name, postfix, VALID_MAP_EXTENSIONS_POSTFIX[I]);
+                    end;
                   until FindNext(F) <> 0;
                 end;
               finally
@@ -391,7 +416,7 @@ begin
     else
       fileName := GetFullDestFileName(fType, fName, postfix, ext);
 
-    Assert(not FileExists(fileName), 'Transfer file already exists');
+    Assert(not FileExists(fileName), 'Transfer file already exists: ' + fileName);
     fileStream.SaveToFile(fileName);
     fileStream.Free;
   end;
