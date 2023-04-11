@@ -35,7 +35,7 @@
 34:Minerai d'or
 35:Charbon
 36:Fer
-37:Caisse d'or
+37:Or
 38:Barrique de vin
 39:Blé
 40:Miche de pain
@@ -154,14 +154,14 @@
 155:Réparation du bâtiment oui/non
 156:Bâtiment indisponible actuellement
 157:Santé
-158:Pivoter à gauche
-159:Pivoter à droite
+158:Pivoter à gauche|Bouton droit de la souris ou ALT pour tourner de 90 degrés, Shift pour tourner de 180 degrés
+159:Pivoter à droite|Bouton droit de la souris ou ALT pour tourner de 90 degrés, Shift pour tourner de 180 degrés
 160:Attaquer
 161:Envoyer les troupes
 162:Ravitailler les troupes
 163:Charger !
-164:Ajouter un rang
-165:Enlever un rang
+164:Ajouter un rang|Bouton droit de la souris ou Shift pour ajouter 5 rangs
+165:Enlever un rang|Bouton droit de la souris ou Shift pour retirer 5 rangs
 166:Sélectionner|l'autre unité
 167:Annuler
 168:Supprimer
@@ -427,7 +427,7 @@
 432:Joueur
 433:les bâtiment économiques
 434:les serfs et écoles
-435:Possessions militaires
+435:les possessions militaires
 436:Inconnu
 437:les troupes
 438:Batiments
@@ -536,7 +536,7 @@
 546:Non prêt
 547:Débuter !
 548:Vitesse (en temps de paix)
-549:Vitesse
+549:Vitesse de jeu
 550:OK
 551:Annuler
 552:Description
@@ -609,8 +609,8 @@
 620:Le temps de paix est terminé. À vos armes !
 621:Temps de jeu :|%s
 622:Halte
-623:Regrouper les unités
-624:Scinder les unités
+623:Regrouper les unités|Maintenir la touche Shift pour lier plusieurs groupes
+624:Scinder les unités ('%s'). Séparer une unité du groupe ('Ctrl + %s')
 625:Lecteur de replay
 626:Regarder le replay
 627:Format non supporté %s
@@ -727,7 +727,7 @@
 771:Brouillard
 772:Visionner
 773:Spectateur
-774:Portée d'attaque auto.
+774:Portée d'attaque auto
 775:Les groupes d'IA vont automatiquement attaquer si vous êtes aussi proche que ce nombre de tiles
 776:Défendre les alliés
 777:L'IA défendra les unités et les bâtiments des l'alliés comme s'ils étaient les siens.
@@ -1231,7 +1231,7 @@
 1284:Fixer les mines
 1285:S'assure que les ressources sont exploitables (mine d'or et mine de fer)\n\n\n\n\n
 1286:Quantité de ressources: pierres
-1287:Resource quantity: or
+1287:Quantité de ressources: or
 1288:Quantité de ressources: fer
 1289:Obstacles
 1290:Activer les obstacles (montagnes, rivières, marais, etc.)
