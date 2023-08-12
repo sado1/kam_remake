@@ -130,6 +130,7 @@ uses
   KM_RenderUI, KM_Pics,
   KM_Resource, KM_ResFonts, KM_ResTypes,
   KM_CommonUtils, KM_MapUtilsExt,
+  KM_GameAppSettings,
   KM_MapTypes;
 
 const
@@ -467,6 +468,9 @@ begin
 
       //Update pic
       ColumnBox_MapEd.Item[Y].Cells[0].Pic := fMaps[I].FavouriteMapPic;
+
+      // Save settings immediately, thus updated favourite maps could be seen in the other game instances
+      gGameAppSettings.SaveSettings;
     finally
       fMaps.Unlock;
     end;
@@ -1134,6 +1138,9 @@ end;
 
 procedure TKMMenuMapEditor.Show;
 begin
+  // Reload settings because we could have updated favourite maps, f.e.
+  gGameAppSettings.ReloadSettings;
+
   // we can get access to gGameApp only here, because in Create it could still be nil
   Radio_MapType.ItemIndex := gGameSettings.MenuMapEdMapType;
   NumEdit_MapSizeX.Value := gGameSettings.MenuMapEdNewMapX;
