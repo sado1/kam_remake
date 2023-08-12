@@ -45,6 +45,8 @@ type
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
     procedure SyncLoad;
+
+    function ObjToString(const aSeparator: String = ' '): String;
   end;
 
 
@@ -2197,7 +2199,7 @@ begin
 
   actStr := 'nil';
   if CurrentAction <> nil then
-    actStr := CurrentAction.ClassName;
+    actStr := CurrentAction.ObjToString();
 
   resOutPoolStr := '';
   for I := Low(fWareOutPool) to High(fWareOutPool) do
@@ -2402,6 +2404,28 @@ begin
 end;
 
 
+function TKMHouseAction.ObjToString(const aSeparator: String = ' '): String;
+var
+  AT: TKMHouseActionType;
+  subActStr: string;
+begin
+  subActStr := '';
+  for AT in fSubAction do
+  begin
+    if subActStr <> '' then
+      subActStr := subActStr + ' ';
+
+    subActStr := subActStr + GetEnumName(TypeInfo(TKMHouseActionType), Integer(AT));
+  end;
+
+  Result := Format('%sState = %s%sSubAction = [%s]',
+                   [aSeparator,
+                    GetEnumName(TypeInfo(TKMHouseState), Integer(fHouseState)), aSeparator,
+                    subActStr]);
+end;
+
+
+{ TKMHouseTower }
 procedure TKMHouseTower.Paint;
 var
   fillColor, lineColor: Cardinal;
