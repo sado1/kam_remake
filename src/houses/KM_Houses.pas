@@ -454,6 +454,7 @@ end;
 
 procedure TKMHouseSketchEdit.CopyTo(aHouseSketch: TKMHouseSketchEdit);
 begin
+  aHouseSketch.Owner := Owner;
   aHouseSketch.SetUID(UID);
   aHouseSketch.SetHouseType(HouseType);
   aHouseSketch.SetPosition(Position);

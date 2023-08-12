@@ -737,6 +737,7 @@ var
       and (aHouse.HouseType = aHouseType)
       {and (not aConsiderHousePlan or aHouse.IsComplete)} then
     begin
+      aHouseSketchTmp.Owner := fID;
       aHouseSketchTmp.SetHouseUID(aHouse.UID);
       aHouseSketchTmp.SetHouseType(aHouse.HouseType);
       aHouseSketchTmp.SetPosition(aHouse.Position);
@@ -748,6 +749,7 @@ var
     if not aHousePlan.IsEmpty
       and (aHousePlan.HouseType = aHouseType) then
     begin
+      aHouseSketchTmp.Owner := fID;
       aHouseSketchTmp.SetHouseUID(aHousePlan.UID);
       aHouseSketchTmp.SetHouseType(aHousePlan.HouseType);
       aHouseSketchTmp.SetPosition(aHousePlan.Loc);

@@ -121,7 +121,9 @@ type
 implementation
 uses
   KM_Entity,
-  KM_InterfaceGame, KM_Resource,
+  KM_Game, KM_HandTypes,
+  KM_InterfaceGamePlay, KM_InterfaceGame,
+  KM_Resource,
   KM_UnitGroup, KM_HouseTownHall,
   KM_ResUnits, KM_ResTypes;
 
@@ -324,7 +326,16 @@ begin
     gMySpectator.Highlight := fHouseSketch;
     H := gHands[aHandIndex].Houses.GetHouseByUID(fHouseSketch.UID);
     if H <> nil then
-      gMySpectator.Selected := H;
+      gMySpectator.Selected := H
+    else if fHouseSketch.Owner <> HAND_NONE then
+    begin
+      gMySpectator.Selected := nil; // Unselect previous house / entity / etc
+      gMySpectator.HandId := fHouseSketch.Owner;
+    end;
+
+    gMySpectator.UpdateSelect(False);
+    TKMGamePlayInterface(gGame.ActiveInterface).UpdateReplayView;
+
     Result := KMPointF(fHouseSketch.Entrance); //get position on that house
     fLastHouseUIDs[HT] := fHouseSketch.UID;
   end;
@@ -562,6 +573,9 @@ begin
   if nextGroup <> nil then
   begin
     gMySpectator.Selected := nextGroup;
+    gMySpectator.UpdateSelect(False);
+    TKMGamePlayInterface(gGame.ActiveInterface).UpdateReplayView;
+
     Result := nextGroup.FlagBearer.PositionF; //get position on that warrior
     fLastWarriorUIDs[UT] := nextGroup.UID;
   end;
