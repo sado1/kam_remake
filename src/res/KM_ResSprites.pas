@@ -47,8 +47,10 @@ type
     fPad: Byte; // Padding between sprites to avoid neighbour edge visibility
 
     procedure SetGFXData(aTexID: Cardinal; aSpriteInfo: TKMBinItem; aAtlasType: TKMSpriteAtlasType);
+    {$IFNDEF NO_OGL}
     procedure PrepareAtlases(aSpriteInfo: TBinArray; aMode: TKMSpriteAtlasType; aTexType: TKMTexFormat; var aBaseRAM, aColorRAM, aTexCount: Cardinal;
                              aFillGFXData: Boolean = True; aOnCheckTerminated: TBooleanFuncSimple = nil);
+    {$ENDIF}
   protected
     fRT: TRXType;
     fRXData: TRXData;
