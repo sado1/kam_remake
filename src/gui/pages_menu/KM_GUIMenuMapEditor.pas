@@ -39,6 +39,8 @@ type
     procedure SetSelectedMapInfo(aID: Integer = -1); overload;
     procedure SetSelectedMapInfo(aCRC: Cardinal; const aName: UnicodeString); overload;
 
+    procedure RefreshAll;
+
     procedure ScanUpdate(Sender: TObject);
     procedure ScanTerminate(Sender: TObject);
     procedure SortUpdate(Sender: TObject);
@@ -865,6 +867,7 @@ begin
                 else if Button_MapMoveConfirm.IsClickable then
                   MoveClick(Button_MapMoveConfirm);
     VK_F2:      RenameClick(Button_MapRename);
+    VK_F5:      RefreshAll;
     VK_DELETE:  DeleteClick(Button_MapDelete);
   end;
 end;
@@ -1139,7 +1142,7 @@ begin
 end;
 
 
-procedure TKMMenuMapEditor.Show;
+procedure TKMMenuMapEditor.RefreshAll;
 begin
   // Reload settings because we could have updated favourite maps, f.e.
   gGameAppSettings.ReloadSettings;
@@ -1153,6 +1156,12 @@ begin
 
   ListUpdate;
   UpdateUI;
+end;
+
+
+procedure TKMMenuMapEditor.Show;
+begin
+  RefreshAll;
 
   Panel_MapEd.Show;
   ColumnBox_MapEd.Focus;
