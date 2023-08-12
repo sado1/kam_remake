@@ -562,10 +562,16 @@ begin
       // Somehow no task
       wHasNoTask := (fTask = nil);
       if (not wThrowingRock) then       // Let recruit finish rock throwing
-        if (wGoingForEating) then
+        if wGoingForEating then
         begin
+          // Set house state manually here, since in case close for worker and gotEat event occurs on the same tick
+          // GoEat task could not be able to set this house state, since we "disjoined" worker and the house already
+          if wIsInsideHouse then
+            fHome.SetState(hstEmpty);
           CleanHousePointer;            // Clean house pointer, do not cancel eating task
-        end else begin
+        end
+        else
+        begin
           if (wWalkingOutside) then begin
             AbandonWalk;                // Stop walking
             CleanHousePointer(True);    // Clean house pointer and free task
