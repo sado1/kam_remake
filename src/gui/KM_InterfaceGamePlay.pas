@@ -4147,7 +4147,7 @@ var
   pbj: TObject;
   H: TKMHouse;
   group, group2: TKMUnitGroup;
-  oldSelected: TObject;
+  oldSelected: TKMHandEntity;
   oldSelectedUnit: TKMUnitWarrior;
 begin
   // Check if mouse was clicked insede MP chat panel
