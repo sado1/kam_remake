@@ -887,6 +887,9 @@ procedure TKMMenuMapEditor.BackClick(Sender: TObject);
 begin
   fMaps.TerminateScan;
 
+  // Save settings because we could have updated favourite maps, selected map etc
+  gGameAppSettings.SaveSettings;
+
   fOnPageChange(gpMainMenu);
 end;
 
