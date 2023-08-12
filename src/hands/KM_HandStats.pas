@@ -55,8 +55,9 @@ type
     fChartCitizens: TKMCardinalArray;
     fChartArmy: array[TKMChartArmyKind] of array[WARRIOR_MIN..WARRIOR_MAX] of TKMCardinalArray;
     fChartWares: array [WARE_MIN..WARE_MAX] of TKMCardinalArray;
-    // No need to save fArmyEmpty array, as it will be still same after load and 1 HandStats update (which we always do on game exit)
-    // It's important to use cakTotal instead of cakInstantenious, because Inst. can be empty even after load and 1 update state!
+    // Has to save fArmyEmpty array, even thought it will be still same after load and 1 HandStats update (which we always do on game exit)
+    // since we don't want army chart to be empty before 1st UpdateState (30 sec)
+    // It's important to use cakTotal instead of cakInstantenious, because Inst. could be empty even after load and 1 update state!
     fArmyEmpty: array[cakTotal..cakLost] of array [WARRIOR_MIN..WARRIOR_MAX] of Boolean;
 
     Houses: array [TKMHouseType] of TKMHouseStats;
@@ -854,6 +855,8 @@ begin
     for CKind := Low(TKMChartArmyKind) to High(TKMChartArmyKind) do
       for UT := WARRIOR_MIN to WARRIOR_MAX do
         SaveStream.Write(fChartArmy[CKind,UT,0], SizeOf(fChartArmy[CKind,UT,0]) * fChartCount);
+
+    SaveStream.Write(fArmyEmpty, SizeOf(fArmyEmpty));
   end;
 end;
 
@@ -871,6 +874,7 @@ begin
   fWareDistribution.Load(LoadStream);
 
   LoadStream.Read(fChartCount);
+
   if fChartCount <> 0 then
   begin
     fChartCapacity := fChartCount;
@@ -878,17 +882,21 @@ begin
     SetLength(fChartCitizens, fChartCount);
     LoadStream.Read(fChartHouses[0], SizeOf(fChartHouses[0]) * fChartCount);
     LoadStream.Read(fChartCitizens[0], SizeOf(fChartCitizens[0]) * fChartCount);
+
     for WT := WARE_MIN to WARE_MAX do
     begin
       SetLength(fChartWares[WT], fChartCount);
       LoadStream.Read(fChartWares[WT][0], SizeOf(fChartWares[WT][0]) * fChartCount);
     end;
+
     for CKind := Low(TKMChartArmyKind) to High(TKMChartArmyKind) do
       for UT := WARRIOR_MIN to WARRIOR_MAX do
       begin
         SetLength(fChartArmy[CKind,UT], fChartCount);
         LoadStream.Read(fChartArmy[CKind,UT,0], SizeOf(fChartArmy[CKind,UT,0]) * fChartCount);
       end;
+
+    LoadStream.Read(fArmyEmpty, SizeOf(fArmyEmpty));
   end;
 end;
 
@@ -1008,7 +1016,7 @@ begin
     cakTotal:          Result := GetWarriorsTotal(aUnitType);
     cakDefeated:       Result := GetUnitKilledQty(aUnitType);
     cakLost:           Result := GetUnitLostQty(aUnitType);
-    else                raise Exception.Create('Unknowkn chart army kind');
+    else                raise Exception.Create('Unknown chart army kind');
   end;
 end;
 
