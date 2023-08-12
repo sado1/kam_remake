@@ -14,7 +14,9 @@ type
   TKMHouseStats = packed record
     Planned,             //Houseplans were placed
     PlanRemoved,         //Houseplans were removed
-    Started,             //Construction started
+    Started,             //Construction started (WIP)
+    RdyToBuild,          //Ready to be built
+    BuildEnded,          //Build ended (either completed or destroyed)
     Ended,               //Construction ended (either done or destroyed/cancelled)
     Initial,             //created by script on mission start
     Built,               //constructed by player
@@ -83,6 +85,8 @@ type
     procedure HousePlanned(aType: TKMHouseType);
     procedure HousePlanRemoved(aType: TKMHouseType);
     procedure HouseStarted(aType: TKMHouseType);
+    procedure HouseRdyToBeBuilt(aType: TKMHouseType);
+    procedure HouseBuildEnded(aType: TKMHouseType);
     procedure HouseClosed(aWasClosed: Boolean; aType: TKMHouseType);
     procedure HouseEnded(aType: TKMHouseType);
     procedure HouseCreated(aType: TKMHouseType; aWasBuilt: Boolean);
@@ -104,6 +108,7 @@ type
     function GetHouseOpenedQty(aType: TKMHouseType): Integer; overload;
     function GetHouseQty(const aType: array of TKMHouseType): Integer; overload;
     function GetHouseWip(aType: TKMHouseType): Integer; overload;
+    function GetHouseRdyToBeBuilt(aType: TKMHouseType): Integer;
     function GetHousePlans(aType: TKMHouseType): Integer; overload;
     function GetHouseWip(const aType: array of TKMHouseType): Integer; overload;
     function GetHouseTotal(aType: TKMHouseType): Integer;
@@ -196,6 +201,18 @@ end;
 procedure TKMHandStats.HouseStarted(aType: TKMHouseType);
 begin
   Inc(Houses[aType].Started);
+end;
+
+
+procedure TKMHandStats.HouseRdyToBeBuilt(aType: TKMHouseType);
+begin
+  Inc(Houses[aType].RdyToBuild);
+end;
+
+
+procedure TKMHandStats.HouseBuildEnded(aType: TKMHouseType);
+begin
+  Inc(Houses[aType].BuildEnded);
 end;
 
 
@@ -389,6 +406,19 @@ begin
     else        Result := Houses[aType].Started + Houses[aType].Planned - Houses[aType].Ended - Houses[aType].PlanRemoved;
   end;
 end;
+
+
+function TKMHandStats.GetHouseRdyToBeBuilt(aType: TKMHouseType): Integer;
+var
+  HT: TKMHouseType;
+begin
+  Result := 0;
+  case aType of
+    htNone:    ;
+    htAny:     for HT := HOUSE_MIN to HOUSE_MAX do
+                  Inc(Result, Houses[HT].RdyToBuild - Houses[HT].BuildEnded);
+    else        Result := Houses[aType].RdyToBuild - Houses[aType].BuildEnded;
+  end;end;
 
 
 //How many house plans player has at certain moment...

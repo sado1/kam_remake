@@ -1586,7 +1586,12 @@ begin
 
   //Only Done houses are treated as Self-Destruct, Lost, Destroyed
   if aHouse.BuildingState in [hbsNoGlyph .. hbsStone] then
-    fStats.HouseEnded(aHouse.HouseType)
+  begin
+    fStats.HouseEnded(aHouse.HouseType);
+    // Mark houses BuildEnded only for houses where ready to build
+    if aHouse.IsReadyToBeBuilt then
+      fStats.HouseBuildEnded(aHouse.HouseType);
+  end
   else
   begin
     //We have to consider destroyed closed house as actually opened, otherwise closed houses stats will be corrupted

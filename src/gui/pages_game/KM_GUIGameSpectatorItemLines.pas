@@ -51,6 +51,7 @@ type
   TKMGUIGameSpectatorItemLineConstructing = class(TKMGUIGameSpectatorItemLineCustomBuildings)
   protected
     function GetValue(aHandIndex: Integer; ATag: Integer): String; override;
+    function GetAdditionalValue(aHandIndex: Integer; ATag: Integer): String; override;
     function GetProgress(aHandIndex: Integer; ATag: Integer): Single; override;
     function GetVerifyHouseSketchFn: TAnonHouseSketchBoolFn; override;
   end;
@@ -121,7 +122,7 @@ type
 implementation
 uses
   KM_Entity,
-  KM_Game, KM_HandTypes,
+  KM_Game, KM_HandTypes, KM_HandEntity,
   KM_InterfaceGamePlay, KM_InterfaceGame,
   KM_Resource,
   KM_UnitGroup, KM_HouseTownHall,
@@ -347,8 +348,17 @@ function TKMGUIGameSpectatorItemLineConstructing.GetValue(aHandIndex: Integer; A
 var
   value: Integer;
 begin
-  value := gHands[aHandIndex].Stats.GetHouseWip(TKMHouseType(ATag));
+  value := gHands[aHandIndex].Stats.GetHouseRdyToBeBuilt(TKMHouseType(ATag));
   Result := IfThen(value > 0, IntToStr(value));
+end;
+
+
+function TKMGUIGameSpectatorItemLineConstructing.GetAdditionalValue(aHandIndex: Integer; ATag: Integer): String;
+var
+  value: Integer;
+begin
+  value := gHands[aHandIndex].Stats.GetHouseWip(TKMHouseType(ATag)) - gHands[aHandIndex].Stats.GetHouseRdyToBeBuilt(TKMHouseType(ATag));
+  Result := IfThen(value > 0, '+' + IntToStr(value));
 end;
 
 
@@ -411,7 +421,7 @@ function TKMGUIGameSpectatorItemLineHouses.GetAdditionalValue(aHandIndex: Intege
 var
   value: Integer;
 begin
-  value := gHands[aHandIndex].Stats.GetHouseWip(TKMHouseType(ATag));
+  value := gHands[aHandIndex].Stats.GetHouseRdyToBeBuilt(TKMHouseType(ATag));
   Result := IfThen(value > 0, '+' + IntToStr(value));
 end;
 
