@@ -223,7 +223,7 @@ begin
   Result := fJsonObject.B[Name];
   {$ENDIF}
   {$IFDEF FPC}
-  Result := fJsonObject.Booleans[Name];
+  Result := fJsonObject.Get(Name, False);
   {$ENDIF}
 end;
 
@@ -234,7 +234,7 @@ begin
   Result := fJsonObject.I[Name];
   {$ENDIF}
   {$IFDEF FPC}
-  Result := fJsonObject.Integers[Name];
+  Result := fJsonObject.Get(Name, 0);
   {$ENDIF}
 end;
 
@@ -256,7 +256,7 @@ begin
   Result := fJsonObject.S[Name];
   {$ENDIF}
   {$IFDEF FPC}
-  Result := fJsonObject.Strings[Name];
+  Result := fJsonObject.Get(Name, '');
   {$ENDIF}
 end;
 
