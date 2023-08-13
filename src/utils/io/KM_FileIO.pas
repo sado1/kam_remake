@@ -211,11 +211,11 @@ const
 {$ENDIF}
 begin
   {$IFDEF MSWINDOWS}
-    {$IFDEF FPC}
-  ShOp.hWnd := 0;
-    {$ELSE}
+    //{$IFDEF FPC}
+  //ShOp.hWnd := 0;
+    //{$ELSE}
   ShOp.Wnd := 0;
-    {$ENDIF}
+    //{$ENDIF}
   ShOp.wFunc := FO_DELETE;
   ShOp.pFrom := PChar(aFilePath + #0);
   ShOp.pTo := nil;
@@ -294,11 +294,11 @@ begin
     {$IFDEF MSWINDOWS}
     if aDeleteToBin then
     begin
-        {$IFDEF FPC}
-      ShOp.hWnd := 0;
-        {$ELSE}
+        //{$IFDEF FPC}
+      //ShOp.hWnd := 0;
+        //{$ELSE}
       ShOp.Wnd := 0;
-        {$ENDIF}
+        //{$ENDIF}
       ShOp.wFunc := FO_DELETE;
       ShOp.pFrom := PChar(aPath + #0);
       ShOp.pTo := nil;
@@ -460,7 +460,7 @@ begin
   Result := -1;
 
   {$IFDEF MSWindows}
-  if not GetFileAttributesEx(PWideChar(aFileName), GetFileExInfoStandard, @info) then
+  if not GetFileAttributesEx({$IFDEF FPC}PChar{$ELSE}PWideChar{$ENDIF}(aFileName), GetFileExInfoStandard, @info) then
     EXIT;
 
   Result := Int64(info.nFileSizeLow) or Int64(info.nFileSizeHigh shl 32);
