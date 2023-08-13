@@ -30,8 +30,8 @@ type
     procedure AfterPreProcess;
     procedure BeforePreProcess(const aMainFileName: UnicodeString; const aMainFileText: AnsiString);
 
-    function ScriptOnNeedFile(Sender: TPSPreProcessor; const aCallingFileName: UnicodeString;
-                              var aFileName: UnicodeString; var aOutput: AnsiString): Boolean;
+    function ScriptOnNeedFile(Sender: TPSPreProcessor; const aCallingFileName: tbtunicodestring;
+                              var aFileName: tbtunicodestring; var aOutput: tbtstring): Boolean;
     procedure ScriptOnProcessDirective(Sender: TPSPreProcessor; Parser: TPSPascalPreProcessorParser; const Active: Boolean;
                                         const DirectiveName, DirectiveParam: tbtString; var aContinue: Boolean);
   protected
@@ -405,8 +405,8 @@ begin
 end;
 
 
-function TKMScriptPreProcessor.ScriptOnNeedFile(Sender: TPSPreProcessor; const aCallingFileName: UnicodeString;
-                                                var aFileName: UnicodeString; var aOutput: AnsiString): Boolean;
+function TKMScriptPreProcessor.ScriptOnNeedFile(Sender: TPSPreProcessor; const aCallingFileName: tbtunicodestring;
+                                                var aFileName: tbtunicodestring; var aOutput: tbtstring): Boolean;
 var
   path, fileName, fileExt, errorStr: string;
   inclFile: string;
