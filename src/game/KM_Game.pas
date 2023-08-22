@@ -1,4 +1,4 @@
-﻿unit KM_Game;
+unit KM_Game;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -2275,7 +2275,7 @@ begin
 
   mainStream    := TKMemoryStreamBinary.Create(False); // Not compressed
   headerStream  := TKMemoryStreamBinary.Create(False); // Not compressed
-  bodyStream    := TKMemoryStreamBinary.Create(True);  // Compressed
+  bodyStream    := TKMemoryStreamBinary.Create(not SAVE_NO_COMPRESSION);  // Compressed by default
 
   SaveGameToStream(aTimestamp, headerStream, bodyStream);
 
