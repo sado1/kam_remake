@@ -204,8 +204,15 @@ begin
   target.Y := aim.Y + KaMRandomS2(PROJECTILE_JITTER_HOUSE[aProjType], 'TKMProjectiles.AimTarget 7');
 
   //Calculate the arc, less for shorter flights
+  //@Rey: As revealed in chat, this is an erroneous code
+  // It should be something alike
+  // distanceToHit := GetLength(aStart.X - target.X, aStart.Y - target.Y);
   distanceToHit := GetLength(target.X, target.Y);
   distanceInRange := EnsureRange(distanceToHit, aMinRange, aMaxRange);
+
+  //@Rey: As revealed in chat, this is an erroneous code
+  // It should be something alike
+  // arc = Max((distanceInRange - aMinRange) / aMaxRange * ProjectileArcs[aProjType, 1] + KaMRandomS2(ProjectileArcs[aProjType, 2], 'TKMProjectiles.AimTarget 8')), 0);
   arc := (distanceInRange/distanceToHit)*(PROJECTILE_ARC[aProjType, 1] + KaMRandomS2(PROJECTILE_ARC[aProjType, 2], 'TKMProjectiles.AimTarget 8'));
 
   Result := AddItem(aStart, aim, target, speed, arc, aMaxRange, aProjType, aOwner);
