@@ -142,8 +142,8 @@ type
 
     procedure MakeCheckpoint(aArea: TKMCheckpointArea; const aCaption: string);
     procedure JumpTo(aIndex: Integer); overload;
-    procedure Undo(aUpdateImmidiately: Boolean = True);
-    procedure Redo(aUpdateImmidiately: Boolean = True);
+    procedure Undo;
+    procedure Redo;
   end;
 
 
@@ -815,7 +815,7 @@ begin
 end;
 
 
-procedure TKMMapEditorHistory.Undo(aUpdateImmidiately: Boolean = True);
+procedure TKMMapEditorHistory.Undo;
 var
   prev: Integer;
 begin
@@ -826,18 +826,18 @@ begin
   Assert(prev >= 0);
 
   // Apply only requested area (e.g. if we are undoing single change made to Houses at step 87 since editing start)
-  fCheckpoints[prev].Apply(fCheckpoints[fCheckpointPos].Area, aUpdateImmidiately);
+  fCheckpoints[prev].Apply(fCheckpoints[fCheckpointPos].Area, True);
 
   Dec(fCheckpointPos);
 
   IncCounter;
 
-  if aUpdateImmidiately and Assigned(fOnUndoRedo) then
+  if Assigned(fOnUndoRedo) then
     fOnUndoRedo;
 end;
 
 
-procedure TKMMapEditorHistory.Redo(aUpdateImmidiately: Boolean = True);
+procedure TKMMapEditorHistory.Redo;
 var
   next: Integer;
 begin
@@ -847,13 +847,13 @@ begin
 
   Assert(next <= fCheckpoints.Count - 1);
 
-  fCheckpoints[next].Apply(caAll, aUpdateImmidiately);
+  fCheckpoints[next].Apply(caAll, True);
 
   fCheckpointPos := next;
 
   IncCounter;
 
-  if aUpdateImmidiately and Assigned(fOnUndoRedo) then
+  if Assigned(fOnUndoRedo) then
     fOnUndoRedo;
 end;
 
