@@ -26,7 +26,7 @@ type
 
   TKMCheckpointTerrain = class(TKMCheckpoint)
   private
-    // Each Undo step stores whole terrain for simplicity
+    // Each Undo step stores whole terrain for simplicity (and ease of jumping to random checkpoint in the list)
     fData: array of array of TKMUndoTile;
     function MakeUndoTile(const aTile: TKMTerrainTile;
                           const aPaintedTile: TKMPainterTile;
@@ -62,7 +62,7 @@ type
 
   TKMCheckpointUnits = class(TKMCheckpoint)
   private
-    // Each Undo step stores all units for simplicity
+    // Each Undo step stores all units for simplicity (and ease of jumping to random checkpoint in the list)
     fUnits: array of record
       UnitType: TKMUnitType;
       Position: TKMPoint;
@@ -80,7 +80,7 @@ type
 
   TKMCheckpointHouses = class(TKMCheckpoint)
   private
-    // Each Undo step stores all houses for simplicity
+    // Each Undo step stores all houses for simplicity (and ease of jumping to random checkpoint in the list)
     fHouses: array of record
       HouseType: TKMHouseType;
       Position: TKMPoint;
