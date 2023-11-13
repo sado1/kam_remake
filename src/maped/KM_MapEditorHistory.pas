@@ -791,16 +791,18 @@ begin
 
   areas := [];
   if aIndex < fCheckpointPos then
-    for I := aIndex + 1 to fCheckpointPos do //Collect areas of checkpoints that should be Undone
+    // Collect areas of checkpoints that should be Undone
+    for I := aIndex + 1 to fCheckpointPos do
       areas := areas + [fCheckpoints[I].Area]
   else
-  for I := fCheckpointPos + 1 to aIndex do // Collect areas from +1 pos upto index
-    areas := areas + [fCheckpoints[I].Area];
+    // Collect areas from +1 pos upto index
+    for I := fCheckpointPos + 1 to aIndex do
+      areas := areas + [fCheckpoints[I].Area];
 
   JumpTo(aIndex, areas);
 
   if (areas * [caTerrain, caAll]) <> [] then
-      UpdateAll;
+    UpdateAll;
 
   if undoRedoNeeded and Assigned(fOnUndoRedo) then
     fOnUndoRedo;
