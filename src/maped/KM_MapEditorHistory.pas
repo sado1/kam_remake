@@ -125,7 +125,7 @@ type
 
     procedure IncCounter;
     procedure UpdateAll;
-    procedure JumpTo(aIndex: Integer; aAreas: TKMCheckpointAreaSet); overload;
+    procedure JumpToAreas(aIndex: Integer; aAreas: TKMCheckpointAreaSet);
   public
     constructor Create;
     destructor Destroy; override;
@@ -141,7 +141,7 @@ type
     procedure Clear;
 
     procedure MakeCheckpoint(aArea: TKMCheckpointArea; const aCaption: string);
-    procedure JumpTo(aIndex: Integer); overload;
+    procedure JumpTo(aIndex: Integer);
     procedure Undo;
     procedure Redo;
   end;
@@ -759,7 +759,7 @@ begin
 end;
 
 
-procedure TKMMapEditorHistory.JumpTo(aIndex: Integer; aAreas: TKMCheckpointAreaSet);
+procedure TKMMapEditorHistory.JumpToAreas(aIndex: Integer; aAreas: TKMCheckpointAreaSet);
 var
   A: TKMCheckpointArea;
   prev: Integer;
@@ -799,7 +799,7 @@ begin
     for I := fCheckpointPos + 1 to aIndex do
       areas := areas + [fCheckpoints[I].Area];
 
-  JumpTo(aIndex, areas);
+  JumpToAreas(aIndex, areas);
 
   if (areas * [caTerrain, caAll]) <> [] then
     UpdateAll;
