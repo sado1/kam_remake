@@ -69,6 +69,7 @@ type
     procedure ProcUnitAfterDied(aUnitType: Integer; aOwner: TKMHandID; aX, aY: Integer);
     procedure ProcUnitAfterDiedEx(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
   public
+    //todo: This could be replaced with ENonScriptException = class(Exception)
     ExceptionOutsideScript: Boolean; //Flag that the exception occured in a State or Action call not script
 
     constructor Create(aExec: TPSExec; aPreProcessor: TPSPreProcessor; aIDCache: TKMScriptingIdCache);
