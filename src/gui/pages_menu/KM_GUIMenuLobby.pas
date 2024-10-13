@@ -1223,31 +1223,22 @@ procedure TKMMenuLobby.HostMenuClick(Sender: TObject);
 var
   id: Integer;
 begin
-  //We can't really do global bans because player's IP addresses change all the time (and we have no other way to identify someone).
-  //My idea was for bans to be managed completely by the server, since player's don't actually know each other's IPs.
-  //So the host says "please ban client 3257" and the server adds his IP to the ban list for this room. The ban list
-  //is then reset when the room becomes empty. Maybe we need to call the button "ban from this lobby" instead.
-  //In any way banlist should be editable from within the lobby, so we will need methods to get the list
-  //from the server and allow to remove items from it.
+  // We can't really do global bans because player's IP addresses change all the time (and we have no other way to identify someone).
+  // My idea was for bans to be managed completely by the server, since player's don't actually know each other's IPs.
+  // So the host says "please ban client 3257" and the server adds his IP to the ban list for this room. The ban list
+  // is then reset when the room becomes empty. Maybe we need to call the button "ban from this lobby" instead.
+  // In any way banlist should be editable from within the lobby, so we will need methods to get the list
+  // from the server and allow to remove items from it.
 
   id := gNetworking.NetPlayers.ServerToLocal(TKMControl(Sender).Tag);
-  if id = -1 then Exit; //Player has quit the lobby
+  if id = -1 then Exit; // Player has quit the lobby
 
-  //Kick
-  if (Sender = PopUpMenu_Host) and (PopUpMenu_Host.ItemIndex = 0) then
-    gNetworking.KickPlayer(id);
-
-  //Ban
-  if (Sender = PopUpMenu_Host) and (PopUpMenu_Host.ItemIndex = 1) then
-    gNetworking.BanPlayer(id);
-
-  //Set to host
-  if (Sender = PopUpMenu_Host) and (PopUpMenu_Host.ItemIndex = 2) then
-    gNetworking.SetToHost(id);
-
-  // Mute/Unmute
-  if (Sender = PopUpMenu_Host) and (PopUpMenu_Host.ItemIndex = 3) then
-    ToggleMutePlayer(id);
+  case PopUpMenu_Host.ItemIndex of
+    0: gNetworking.KickPlayer(id);
+    1: gNetworking.BanPlayer(id);
+    2: gNetworking.SetToHost(id);
+    3: ToggleMutePlayer(id);
+  end;
 end;
 
 
@@ -1256,9 +1247,10 @@ var
   id: Integer;
 begin
   id := gNetworking.NetPlayers.ServerToLocal(TKMControl(Sender).Tag);
-  if id = -1 then Exit; //Player has quit the lobby
+  if id = -1 then Exit; // Player has quit the lobby
+
   // Mute/Unmute
-  if (Sender = PopUpMenu_Joiner) and (PopUpMenu_Joiner.ItemIndex = 0) then
+  if PopUpMenu_Joiner.ItemIndex = 0 then
     ToggleMutePlayer(id);
 end;
 
