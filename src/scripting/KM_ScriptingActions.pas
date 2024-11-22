@@ -1398,7 +1398,7 @@ begin
       Result := gHands[aHand].AI.General.Attacks.AddAttack(attackType, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount,
                                                              aRangedGroupCount, aMountedGroupCount, aRandomGroups, aTarget, 0, aCustomPosition);
     end else
-      LogIntParamWarn('Actions.AIAttackAdd', [aHand, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount]);
+      LogParamWarn('Actions.AIAttackAdd', [aHand, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount,aCustomPosition.ToString]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3204,7 +3204,7 @@ begin
       end;
     end
     else
-      LogIntParamWarn('Actions.HouseSetFlagPoint', [aHouseID]);
+      LogParamWarn('Actions.HouseSetFlagPoint', [aHouseID, aPosition.ToString]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
