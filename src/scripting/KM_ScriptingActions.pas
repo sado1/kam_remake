@@ -123,6 +123,7 @@ type
     procedure HouseDeliveryBlock(aHouseID: Integer; aDeliveryBlocked: Boolean);
     procedure HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: TKMDeliveryMode);
     procedure HouseDisableUnoccupiedMessage(aHouseID: Integer; aDisabled: Boolean);
+    procedure HouseSetFlagPoint(aHouseID: Integer; aPosition: TKMPoint);
     procedure HouseSetClosedForWorker(aHouseID: Integer; aClosedForWorker: Boolean);
     procedure HouseRepairEnable(aHouseID: Integer; aRepairEnabled: Boolean);
     function  HouseSchoolQueueAdd(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer;
@@ -3185,6 +3186,30 @@ begin
   end;
 end;
 
+//* Version: X
+//* Sets flag point for the specified house
+procedure TKMScriptActions.HouseSetFlagPoint(aHouseID: Integer; aPosition: TKMPoint);
+var
+  H: TKMHouse;
+  HWFP: TKMHouseWFlagPoint;
+begin
+  try
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H <> nil) and not H.IsDestroyed and (H is TKMHouseWFlagPoint)  then
+      begin
+        HWFP := TKMHouseWFlagPoint(H);
+        HWFP.FlagPoint := aPosition;
+      end;
+    end
+    else
+      LogIntParamWarn('Actions.HouseSetFlagPoint', [aHouseID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
 
 //* Version: 15000
 //* Sets whether the specified house would be closed for worker
