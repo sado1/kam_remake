@@ -99,6 +99,7 @@ type
     procedure EventHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
     procedure ProcHouseDamaged(aHouse: TKMHouse; aAttacker: TKMUnit);
     procedure ProcHouseDestroyed(aHouse: TKMHouse; aDestroyerIndex: TKMHandID);
+    procedure ProcHouseFlagPointChanged(aHouse: TKMHouse);
     procedure ProcHouseRepaired(aHouse: TKMHouse; aRepairAmount, aDamage: Integer);
     procedure ProcHouseWareCountChanged(aHouse: TKMHouse; aWare: TKMWareType; aCnt, aChangeCnt: Integer);
     procedure ProcGameSpeedChanged(aSpeed: Single);
@@ -706,6 +707,17 @@ begin
   begin
     fIDCache.CacheHouse(aHouse, aHouse.UID); //Improves cache efficiency since aHouse will probably be accessed soon
     CallEventHandlers(evtHouseDestroyed, [aHouse.UID, aDestroyerIndex]);
+  end;
+end;
+
+//* Version: X
+//* Occurs when a house flag point position is changed
+procedure TKMScriptEvents.ProcHouseFlagPointChanged(aHouse: TKMHouse);
+begin
+  if MethodAssigned(evtHouseFlagPointChanged) then
+  begin
+    fIDCache.CacheHouse(aHouse, aHouse.UID); //Improves cache efficiency since aHouse will probably be accessed soon
+    CallEventHandlers(evtHouseFlagPointChanged, [aHouse.UID]);
   end;
 end;
 

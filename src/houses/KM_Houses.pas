@@ -2523,8 +2523,16 @@ end;
 
 
 procedure TKMHouseWFlagPoint.SetFlagPoint(aFlagPoint: TKMPoint);
+var
+  oldFlagPoint: TKMPoint;
 begin
+  oldFlagPoint := fFlagPoint;
   fFlagPoint := GetValidPoint(aFlagPoint);
+
+  if not KMSamePoint(oldFlagPoint, fFlagPoint) then
+  begin
+    gScriptEvents.ProcHouseFlagPointChanged(Self);
+  end;
 end;
 
 
