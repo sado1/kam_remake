@@ -123,7 +123,7 @@ type
     procedure HouseDeliveryBlock(aHouseID: Integer; aDeliveryBlocked: Boolean);
     procedure HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: TKMDeliveryMode);
     procedure HouseDisableUnoccupiedMessage(aHouseID: Integer; aDisabled: Boolean);
-    procedure HouseSetFlagPoint(aHouseID: Integer; aPosition: TKMPoint);
+    procedure HouseFlagPointSet(aHouseID: Integer; aPosition: TKMPoint);
     procedure HouseSetClosedForWorker(aHouseID: Integer; aClosedForWorker: Boolean);
     procedure HouseRepairEnable(aHouseID: Integer; aRepairEnabled: Boolean);
     function  HouseSchoolQueueAdd(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer;
@@ -3189,7 +3189,7 @@ end;
 
 //* Version: 15250
 //* Sets flag point for the specified house
-procedure TKMScriptActions.HouseSetFlagPoint(aHouseID: Integer; aPosition: TKMPoint);
+procedure TKMScriptActions.HouseFlagPointSet(aHouseID: Integer; aPosition: TKMPoint);
 var
   H: TKMHouse;
   HWFP: TKMHouseWFlagPoint;
@@ -3205,7 +3205,7 @@ begin
       end;
     end
     else
-      LogParamWarn('Actions.HouseSetFlagPoint', [aHouseID, aPosition.ToString]);
+      LogParamWarn('Actions.HouseFlagPointSet', [aHouseID, aPosition.ToString]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
