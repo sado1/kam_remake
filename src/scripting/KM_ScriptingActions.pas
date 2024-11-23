@@ -3186,7 +3186,8 @@ begin
   end;
 end;
 
-//* Version: X
+
+//* Version: 15250
 //* Sets flag point for the specified house
 procedure TKMScriptActions.HouseSetFlagPoint(aHouseID: Integer; aPosition: TKMPoint);
 var
@@ -3210,6 +3211,7 @@ begin
     raise;
   end;
 end;
+
 
 //* Version: 15000
 //* Sets whether the specified house would be closed for worker
