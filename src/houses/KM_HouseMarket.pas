@@ -211,6 +211,12 @@ begin
     SetWareOutCnt(aWare, fMarketWareOut[aWare] + aCount); //Place the new resource in the OUT list
     gHands[Owner].Deliveries.Queue.AddOffer(Self, aWare, aCount);
   end;
+
+  // If we received smth and have TakeOut delivery mode
+  // it means delivery mdoe was changed when serf was already entering the house
+  // In that case we have to add ware he brought to the offer
+  if DeliveryMode = dmTakeOut then
+    gHands[Owner].Deliveries.Queue.AddOffer(Self, aWare, aCount);
 end;
 
 
