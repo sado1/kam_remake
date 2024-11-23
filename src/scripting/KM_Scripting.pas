@@ -1032,6 +1032,7 @@ const
     (ParamCount: 1; Typ: (0, btS32   , 0       , 0       , 0       , 0       ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHouseBuilt
     (ParamCount: 2; Typ: (0, btS32   , btS32   , 0       , 0       , 0       ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHouseDamaged
     (ParamCount: 2; Typ: (0, btS32   , btS32   , 0       , 0       , 0       ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHouseDestroyed
+    (ParamCount: 5; Typ: (0, btS32   , btS32   , btS32   , btS32   , btS32   ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHouseFlagPointChanged
     (ParamCount: 1; Typ: (0, btS32   , 0       , 0       , 0       , 0       ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHousePlanDigged
     (ParamCount: 4; Typ: (0, btS32   , btS32   , btS32   , btS32   , 0       ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHousePlanPlaced
     (ParamCount: 4; Typ: (0, btS32   , btS32   , btS32   , btEnum  , 0       ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHousePlanPlacedEx

@@ -2535,7 +2535,7 @@ begin
 
   if not KMSamePoint(oldFlagPoint, fFlagPoint) then
   begin
-    gScriptEvents.ProcHouseFlagPointChanged(Self);
+    gScriptEvents.ProcHouseFlagPointChanged(Self, oldFlagPoint.X, oldFlagPoint.Y, fFlagPoint.X, fFlagPoint.Y);
   end;
 end;
 
