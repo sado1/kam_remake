@@ -22,6 +22,7 @@ type
     evtHouseBuilt,
     evtHouseDamaged,
     evtHouseDestroyed,
+    evtHouseFlagPointChanged,
     evtHousePlanDigged,
     evtHousePlanPlaced,
     evtHousePlanPlacedEx,

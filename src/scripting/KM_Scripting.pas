@@ -799,6 +799,7 @@ begin
     RegisterMethodCheck(c, 'procedure HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: TKMDeliveryMode)');
     RegisterMethodCheck(c, 'procedure HouseDestroy(aHouseID: Integer; aSilent: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseDisableUnoccupiedMessage(aHouseID: Integer; aDisabled: Boolean)');
+    RegisterMethodCheck(c, 'procedure HouseSetFlagPoint(aHouseID: Integer; aPosition: TKMPoint)');
     RegisterMethodCheck(c, 'procedure HouseRepairEnable(aHouseID: Integer; aRepairEnabled: Boolean)');
     RegisterMethodCheck(c, 'function  HouseSchoolQueueAdd(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'function  HouseSchoolQueueAddEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer');
@@ -1031,6 +1032,7 @@ const
     (ParamCount: 1; Typ: (0, btS32   , 0       , 0       , 0       , 0       ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHouseBuilt
     (ParamCount: 2; Typ: (0, btS32   , btS32   , 0       , 0       , 0       ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHouseDamaged
     (ParamCount: 2; Typ: (0, btS32   , btS32   , 0       , 0       , 0       ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHouseDestroyed
+    (ParamCount: 5; Typ: (0, btS32   , btS32   , btS32   , btS32   , btS32   ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHouseFlagPointChanged
     (ParamCount: 1; Typ: (0, btS32   , 0       , 0       , 0       , 0       ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHousePlanDigged
     (ParamCount: 4; Typ: (0, btS32   , btS32   , btS32   , btS32   , 0       ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHousePlanPlaced
     (ParamCount: 4; Typ: (0, btS32   , btS32   , btS32   , btEnum  , 0       ); Dir: (pmIn, pmIn, pmIn, pmIn, pmIn)), // OnHousePlanPlacedEx
@@ -1550,6 +1552,7 @@ begin
       RegisterMethod(@TKMScriptActions.HouseDeliveryMode, 'HouseDeliveryMode');
       RegisterMethod(@TKMScriptActions.HouseDestroy, 'HouseDestroy');
       RegisterMethod(@TKMScriptActions.HouseDisableUnoccupiedMessage, 'HouseDisableUnoccupiedMessage');
+      RegisterMethod(@TKMScriptActions.HouseSetFlagPoint, 'HouseSetFlagPoint');
       RegisterMethod(@TKMScriptActions.HouseRepairEnable, 'HouseRepairEnable');
       RegisterMethod(@TKMScriptActions.HouseSchoolQueueAdd, 'HouseSchoolQueueAdd');
       RegisterMethod(@TKMScriptActions.HouseSchoolQueueAddEx, 'HouseSchoolQueueAddEx');
