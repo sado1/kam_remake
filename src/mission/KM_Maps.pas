@@ -1056,15 +1056,15 @@ end;
 procedure TKMMapTxtInfo.SaveTXTInfo(const aFilePath: String);
 var
   St: String;
-  ft: TextFile;
   MD: TKMMissionDifficulty;
+  SL: TStringList;
 
   procedure WriteLine(const aLineHeader: String; const aLineValue: String = '');
   begin
-    Writeln(ft, aLineHeader);
+    SL.Add(aLineHeader);
     if aLineValue <> '' then
-      Writeln(ft, aLineValue);
-    Writeln(ft);
+      SL.Add(aLineValue);
+    SL.Add('');
   end;
 
 begin
@@ -1077,65 +1077,68 @@ begin
 
   ForceDirectories(ExtractFilePath(aFilePath));
 
-  AssignFile(ft, aFilePath);
-  Rewrite(ft);
+  SL := TStringList.Create;
 
-  if Author <> '' then
-    WriteLine('Author', Author);
+  try
+    if Author <> '' then
+      WriteLine('Author', Author);
 
-  if Version <> '' then
-    WriteLine('Version', Version);
+    if Version <> '' then
+      WriteLine('Version', Version);
 
-  if fSmallDescLibx <> LIBX_NO_ID then
-    WriteLine('SmallDescLIBX', IntToStr(fSmallDescLibx))
-  else
-  if fSmallDesc <> '' then
-    WriteLine('SmallDesc', fSmallDesc);
+    if fSmallDescLibx <> LIBX_NO_ID then
+      WriteLine('SmallDescLIBX', IntToStr(fSmallDescLibx))
+    else
+    if fSmallDesc <> '' then
+      WriteLine('SmallDesc', fSmallDesc);
 
-  if fBigDescLibx <> LIBX_NO_ID then
-    WriteLine('BigDescLIBX', IntToStr(fBigDescLibx))
-  else
-  if fBigDesc <> '' then
-    WriteLine('BigDesc', fBigDesc);
+    if fBigDescLibx <> LIBX_NO_ID then
+      WriteLine('BigDescLIBX', IntToStr(fBigDescLibx))
+    else
+    if fBigDesc <> '' then
+      WriteLine('BigDesc', fBigDesc);
 
-  if IsCoop then
-    WriteLine('SetCoop');
+    if IsCoop then
+      WriteLine('SetCoop');
 
-  if IsSpecial then
-    WriteLine('SetSpecial');
+    if IsSpecial then
+      WriteLine('SetSpecial');
 
-  if IsRMG then
-    WriteLine('RMG');
+    if IsRMG then
+      WriteLine('RMG');
 
-  if IsPlayableAsSP then
-    WriteLine('PlayableAsSP');
+    if IsPlayableAsSP then
+      WriteLine('PlayableAsSP');
 
-  if BlockPeacetime then
-    WriteLine('BlockPeacetime');
+    if BlockPeacetime then
+      WriteLine('BlockPeacetime');
 
-  if BlockTeamSelection then
-    WriteLine('BlockTeamSelection');
+    if BlockTeamSelection then
+      WriteLine('BlockTeamSelection');
 
-  if BlockColorSelection then
-    WriteLine('BlockColorSelection');
+    if BlockColorSelection then
+      WriteLine('BlockColorSelection');
 
-  if BlockFullMapPreview then
-    WriteLine('BlockFullMapPreview');
+    if BlockFullMapPreview then
+      WriteLine('BlockFullMapPreview');
 
-  if HasDifficultyLevels then
-  begin
-    St := '';
-    for MD := MISSION_DIFFICULTY_MIN to MISSION_DIFFICULTY_MAX do
-      if MD in DifficultyLevels then
-      begin
-        if St <> '' then
-          St := St + ',';
-        St := St + GetEnumName(TypeInfo(TKMMissionDifficulty), Integer(MD));
-      end;
-    WriteLine('DifficultyLevels', St);
+    if HasDifficultyLevels then
+    begin
+      St := '';
+      for MD := MISSION_DIFFICULTY_MIN to MISSION_DIFFICULTY_MAX do
+        if MD in DifficultyLevels then
+        begin
+          if St <> '' then
+            St := St + ',';
+          St := St + GetEnumName(TypeInfo(TKMMissionDifficulty), Integer(MD));
+        end;
+      WriteLine('DifficultyLevels', St);
+    end;
+
+    SL.SaveToFile(aFilePath, TEncoding.UTF8);
+  finally
+    SL.Free;
   end;
-
-  CloseFile(ft);
 end;
 
 
@@ -1154,55 +1157,50 @@ procedure TKMMapTxtInfo.LoadTXTInfo(const aFilePath: String);
   end;
 
 var
-  I, tmpInt: Integer;
-  St, S: String;
-  ft: TextFile;
-  stList: TStringList;
+  I, K, tmpInt: Integer;
+  line: String;
+  stList, fileSList: TStringList;
   MD: TKMMissionDifficulty;
 begin
   //Load additional text info
-  if FileExists(aFilePath) then
-  begin
-    AssignFile(ft, aFilePath);
-    FileMode := fmOpenRead;
-    Reset(ft);
-    repeat
-      ReadLn(ft, St);
-      if SameText(St, 'Author') then
-        Readln(ft, Author);
+  if not FileExists(aFilePath) then Exit;
 
-      if SameText(St, 'Version') then
-        Readln(ft, Version);
+  fileSList := TStringList.Create;
+  try
+    fileSList.LoadFromFile(aFilePath, TEncoding.UTF8);
 
-      if SameText(St, 'BigDesc') then
+    for K := 0 to fileSList.Count - 1 do
+    begin
+      line := fileSList.Strings[K];
+      if SameText(line, 'Author') then
+        Author := fileSList.Strings[K + 1];
+
+      if SameText(line, 'Version') then
+        Version := fileSList.Strings[K + 1];
+
+      if SameText(line, 'BigDesc') then
+        BigDesc := fileSList.Strings[K + 1]; // Will reset BigDescLIBX if needed
+
+      if SameText(line, 'BigDescLIBX') then
       begin
-        Readln(ft, S);
-        BigDesc := S; // Will reset BigDescLIBX if needed
-      end;
-
-      if SameText(St, 'BigDescLIBX') then
-      begin
-        Readln(ft, S);
-        tmpInt := StrToIntDef(S, LIBX_NO_ID);
+        tmpInt := StrToIntDef(fileSList.Strings[K + 1], LIBX_NO_ID);
         if tmpInt <> LIBX_NO_ID then
           SetBigDescLibxAndTranslation(tmpInt, LoadDescriptionFromLIBX(tmpInt));
       end;
 
-      if SameText(St, 'SmallDesc') then
+      if SameText(line, 'SmallDesc') then
       begin
-        ReadLn(ft, S);
-        SmallDesc := S; // Will reset SmallDescLIBX if needed
+        SmallDesc := fileSList.Strings[K + 1]; // Will reset SmallDescLIBX if needed
       end;
 
-      if SameText(St, 'SmallDescLIBX') then
+      if SameText(line, 'SmallDescLIBX') then
       begin
-        Readln(ft, S);
-        tmpInt := StrToIntDef(S, LIBX_NO_ID);
+        tmpInt := StrToIntDef(fileSList.Strings[K + 1], LIBX_NO_ID);
         if tmpInt <> LIBX_NO_ID then
           SetSmallDescLibxAndTranslation(tmpInt, LoadDescriptionFromLIBX(tmpInt));
       end;
 
-      if SameText(St, 'SetCoop') then
+      if SameText(line, 'SetCoop') then
       begin
         IsCoop := True;
         BlockTeamSelection := True;
@@ -1210,38 +1208,42 @@ begin
         BlockFullMapPreview := True;
       end;
 
-      if SameText(St, 'SetSpecial') then
+      if SameText(line, 'SetSpecial') then
         IsSpecial := True;
-      if SameText(St, 'RMG') then
+      if SameText(line, 'RMG') then
         IsRMG := True;
-      if SameText(St, 'PlayableAsSP') then
+      if SameText(line, 'PlayableAsSP') then
         IsPlayableAsSP := True;
-      if SameText(St, 'BlockTeamSelection') then
+      if SameText(line, 'BlockTeamSelection') then
         BlockTeamSelection := True;
-      if SameText(St, 'BlockColorSelection') then
+      if SameText(line, 'BlockColorSelection') then
         BlockColorSelection := True;
-      if SameText(St, 'BlockPeacetime') then
+      if SameText(line, 'BlockPeacetime') then
         BlockPeacetime := True;
-      if SameText(St, 'BlockFullMapPreview') then
+      if SameText(line, 'BlockFullMapPreview') then
         BlockFullMapPreview := True;
 
-      if SameText(St, 'DifficultyLevels') then
+      if SameText(line, 'DifficultyLevels') then
       begin
-        Readln(ft, S);
         stList := TStringList.Create;
-        StringSplit(S, ',', stList);
-        for I := 0 to stList.Count - 1 do
-          for MD := MISSION_DIFFICULTY_MIN to MISSION_DIFFICULTY_MAX do
-            if SameText(stList[I], GetEnumName(TypeInfo(TKMMissionDifficulty), Integer(MD))) then
-              Include(DifficultyLevels, MD);
-        stList.Free;
+        try
+          StringSplit(fileSList.Strings[K + 1], ',', stList);
+          for I := 0 to stList.Count - 1 do
+            for MD := MISSION_DIFFICULTY_MIN to MISSION_DIFFICULTY_MAX do
+              if SameText(stList[I], GetEnumName(TypeInfo(TKMMissionDifficulty), Integer(MD))) then
+                Include(DifficultyLevels, MD);
+        finally
+          stList.Free;
+        end;
       end;
-    until(eof(ft));
-    CloseFile(ft);
-
-    // Normalize descriptions
-    NormalizeDesc;
+    end;
+  finally
+    fileSList.Free;
   end;
+
+
+  // Normalize descriptions
+  NormalizeDesc;
 end;
 
 
