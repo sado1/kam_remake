@@ -1826,8 +1826,9 @@ begin
     btU32:           LoadStream.Read(tbtu32(Src^)); //Cardinal / LongInt
     btS32:           LoadStream.Read(tbts32(Src^)); //Integer
     btSingle:        LoadStream.Read(tbtsingle(Src^));
-    btString:        LoadStream.ReadA(tbtString(Src^));
-    btUnicodeString: LoadStream.ReadW(tbtUnicodeString(Src^));
+    // Use Huge string, since there were cases when players had such a long variables
+    btString:        LoadStream.ReadHugeString(tbtString(Src^));
+    btUnicodeString: LoadStream.ReadHugeStringW(tbtUnicodeString(Src^));
     btStaticArray:begin
                     LoadStream.Read(elemCount);
                     Assert(elemCount = TPSTypeRec_StaticArray(aType).Size, 'Script array element count mismatches saved count');
@@ -1968,8 +1969,9 @@ begin
     btU32:           SaveStream.Write(tbtu32(Src^)); //Cardinal / LongInt
     btS32:           SaveStream.Write(tbts32(Src^)); //Integer
     btSingle:        SaveStream.Write(tbtsingle(Src^));
-    btString:        SaveStream.WriteA(tbtString(Src^));
-    btUnicodeString: SaveStream.WriteW(tbtUnicodeString(Src^));
+    // Use Huge string, since there were cases when players had such a long variables
+    btString:        SaveStream.WriteHugeString(tbtString(Src^));
+    btUnicodeString: SaveStream.WriteHugeStringW(tbtUnicodeString(Src^));
     btStaticArray:begin
                     elemCount := TPSTypeRec_StaticArray(aType).Size;
                     SaveStream.Write(elemCount);
