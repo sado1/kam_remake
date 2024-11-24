@@ -40,6 +40,9 @@ type
     procedure ReadHugeString(out Value: AnsiString); overload;
     procedure WriteHugeString(const Value: AnsiString); overload;
 
+    procedure ReadHugeStringW(out Value: UnicodeString); overload;
+    procedure WriteHugeStringW(const Value: UnicodeString); overload;
+
 //    {$IFDEF DESKTOP}
     //Legacy format for campaigns info, maxlength 65k ansichars
     procedure ReadA(out Value: AnsiString); reintroduce; overload; virtual; abstract;
@@ -1643,6 +1646,28 @@ begin
   inherited Write(I, SizeOf(I));
   if I = 0 then Exit;
   inherited Write(Pointer(Value)^, I);
+end;
+
+
+procedure TKMemoryStream.ReadHugeStringW(out Value: UnicodeString);
+var
+  I: Cardinal;
+begin
+  Read(I, SizeOf(I));
+  SetLength(Value, I);
+  if I > 0 then
+    Read(Pointer(Value)^, I * SizeOf(WideChar));
+end;
+
+
+procedure TKMemoryStream.WriteHugeStringW(const Value: UnicodeString);
+var
+  I: Cardinal;
+begin
+  I := Length(Value);
+  inherited Write(I, SizeOf(I));
+  if I = 0 then Exit;
+  inherited Write(Pointer(Value)^, I * SizeOf(WideChar));
 end;
 
 
