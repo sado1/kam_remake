@@ -22,7 +22,7 @@ const
 type
   TKMTextLibraryCommon = class
   private
-    procedure LoadLIBXFile(const FilePath: string; var aArray: TUnicodeStringArray; aFullScan: Boolean = False);
+    procedure LoadLIBXFile(const FilePath: string; var aArray: TUnicodeStringArray; aFullScan: Boolean = True);
   end;
 
 
@@ -54,7 +54,7 @@ type
     function DoParseTextMarkup(const aText: UnicodeString; aTagSym: Char): UnicodeString;
   public
     constructor Create;
-    procedure LoadLocale(const aPathTemplate: string; aFullScan: Boolean = False); // All locales for Mission strings
+    procedure LoadLocale(const aPathTemplate: string; aFullScan: Boolean = True); // All locales for Mission strings
     procedure Clear;
     function ParseTextMarkup(const aText: UnicodeString): UnicodeString; overload;
     function ParseTextMarkup(const aText: UnicodeString; aParams: array of const): UnicodeString; overload;
@@ -88,7 +88,7 @@ uses
 
 { TKMTextLibraryCommon }
 // LIBX files consist of lines. Each line has an index and a text. Lines without index are skipped
-procedure TKMTextLibraryCommon.LoadLIBXFile(const FilePath: string; var aArray: TUnicodeStringArray; aFullScan: Boolean = False);
+procedure TKMTextLibraryCommon.LoadLIBXFile(const FilePath: string; var aArray: TUnicodeStringArray; aFullScan: Boolean = True);
 
   function TextToArray(const aText: UnicodeString): TUnicodeStringArray;
   var
@@ -207,12 +207,12 @@ procedure TKMTextLibrarySingle.LoadLocale(const aPathTemplate: string);
 begin
   // We load the English LIBX by default, then overwrite it with the selected language
   // (this way missing strings are in English)
-  LoadLIBXFile(Format(aPathTemplate, [gResLocales.DefaultLocale]), fTexts, True);
+  LoadLIBXFile(Format(aPathTemplate, [gResLocales.DefaultLocale]), fTexts);
 
   if gResLocales.FallbackLocale <> '' then
-    LoadLIBXFile(Format(aPathTemplate, [gResLocales.FallbackLocale]), fTexts, True);
+    LoadLIBXFile(Format(aPathTemplate, [gResLocales.FallbackLocale]), fTexts);
 
-  LoadLIBXFile(Format(aPathTemplate, [gResLocales.UserLocale]), fTexts, True);
+  LoadLIBXFile(Format(aPathTemplate, [gResLocales.UserLocale]), fTexts);
 end;
 
 
@@ -314,7 +314,7 @@ end;
 
 
 // Path template with %s
-procedure TKMTextLibraryMulti.LoadLocale(const aPathTemplate: string; aFullScan: Boolean = False);
+procedure TKMTextLibraryMulti.LoadLocale(const aPathTemplate: string; aFullScan: Boolean = True);
 var
   I: Integer;
 begin
