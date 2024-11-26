@@ -50,10 +50,10 @@ type
 
     procedure NotifyLogSubs(aText: UnicodeString);
 
-    procedure AddLineTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aDoCloseFile: Boolean = True); overload;
-    procedure AddLineTime(const aText: UnicodeString; aFlushImmidiately: Boolean = True); overload;
-    procedure AddLineNoTime(const aText: UnicodeString; aWithPrefix: Boolean = True; aDoCloseFile: Boolean = True); overload;
-    procedure AddLineNoTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aWithPrefix: Boolean = True; aDoCloseFile: Boolean = True); overload;
+    procedure AddLineTime(const aText: UnicodeString; aLogType: TKMLogMessageType); overload;
+    procedure AddLineTime(const aText: UnicodeString); overload;
+    procedure AddLineNoTime(const aText: UnicodeString; aWithPrefix: Boolean = True); overload;
+    procedure AddLineNoTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aWithPrefix: Boolean = True); overload;
 
     function GetMultithreadLogging: Boolean;
     procedure SetMultithreadLogging(const aValue: Boolean);
@@ -65,7 +65,6 @@ type
 
     // AppendLog adds the line to Log along with time passed since previous line added
     procedure AddTime(const aText: UnicodeString); overload;
-    procedure AddTimeNoFlush(const aText: UnicodeString); overload;
     procedure AddTime(const aText: UnicodeString; num: Integer); overload;
     procedure AddTime(const aText: UnicodeString; num: Single); overload;
     procedure AddTime(num: Integer; const aText: UnicodeString); overload;
@@ -96,7 +95,6 @@ type
     procedure AddAssert(const aMessageText: UnicodeString);
     // AddToLog simply adds the text
     procedure AddNoTime(const aText: UnicodeString; aWithPrefix: Boolean = True);
-    procedure AddNoTimeNoFlush(const aText: UnicodeString);
     procedure DeleteOldLogs;
     property LogPath: UnicodeString read fLogPath; //Used by dedicated server
 //    property OnLogMessage: TUnicodeStringEvent read fOnLogMessage write fOnLogMessage;
@@ -110,7 +108,7 @@ var
 
 implementation
 uses
-  Classes, SysUtils,
+  Classes, SysUtils, IOUtils,
   KM_FileIO,
   KM_Defaults, KM_CommonUtils;
 
@@ -256,11 +254,8 @@ begin
   try
     ForceDirectories(ExtractFilePath(fLogPath));
 
-    AssignFile(fLogFile, fLogPath);
-    Rewrite(fLogFile);
     //           hh:nn:ss.zzz 12345.678s 1234567ms     text-text-text
-    WriteLn(fLogFile, '   Timestamp    Elapsed     Delta  Thread    Description');
-    CloseFile(fLogFile);
+    TFile.AppendAllText(fLogPath, '   Timestamp    Elapsed     Delta  Thread    Description');
   except
     on E: Exception do
     begin
@@ -268,7 +263,7 @@ begin
       raise E;
     end;
   end;
-  AddLineTime('Log is up and running. Game version: ' + UnicodeString(GAME_VERSION));
+  TFile.AppendAllText(fLogPath, 'Log is up and running. Game version: ' + UnicodeString(GAME_VERSION) + sLineBreak);
 end;
 
 
@@ -313,11 +308,12 @@ begin
 end;
 
 
-//Lines are timestamped, each line invokes file open/close for writing,
-//meaning that no lines will be lost if Remake crashes
-procedure TKMLog.AddLineTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aDoCloseFile: Boolean = True);
+// Lines are timestamped, each line invokes file open/close for writing,
+// meaning that no lines will be lost if Remake crashes
+procedure TKMLog.AddLineTime(const aText: UnicodeString; aLogType: TKMLogMessageType);
 var
   lockedHere: Boolean;
+  txt: String;
 begin
   if Self = nil then Exit;
 
@@ -337,23 +333,26 @@ begin
     if not FileExists(fLogPath) then
       InitLog;  // Recreate log file, if it was deleted
 
-    Append(fLogFile);
+    txt := '';
+
     //Write a line when the day changed since last time (useful for dedicated server logs that could be over months)
     if Abs(Trunc(fPreviousDate) - Trunc(Now)) >= 1 then
     begin
-      WriteLn(fLogFile, '========================');
-      WriteLn(fLogFile, '    Date: ' + FormatDateTime('yyyy/mm/dd', Now));
-      WriteLn(fLogFile, '========================');
+      txt := txt + '========================' + sLineBreak
+                 + '    Date: ' + FormatDateTime('yyyy/mm/dd', Now) + sLineBreak
+                 + '========================' + sLineBreak;
+
     end;
-    WriteLn(fLogFile, Format('%12s %9.3fs %7dms %6d    %s', [
+
+    txt := Format('%s%12s %9.3fs %7dms %6d    %s' + sLineBreak, [
+                  txt,
                   FormatDateTime('hh:nn:ss.zzz', Now),
                   TimeSince(fFirstTick) / 1000,
                   TimeSince(fPreviousTick),
                   TThread.CurrentThread.ThreadID,
-                  aText]));
+                  aText]);
 
-    if aDoCloseFile then
-      CloseFile(fLogFile);
+    TFile.AppendAllText(fLogPath, txt);
 
     fPreviousTick := TimeGet;
     fPreviousDate := Now;
@@ -367,16 +366,15 @@ begin
 end;
 
 
-//Add line with timestamp
-procedure TKMLog.AddLineTime(const aText: UnicodeString; aFlushImmidiately: Boolean = True);
+// Add line with timestamp
+procedure TKMLog.AddLineTime(const aText: UnicodeString);
 begin
-  AddLineTime(aText, lmtDefault, aFlushImmidiately);
+  AddLineTime(aText, lmtDefault);
 end;
 
 
-//Add line but without timestamp
-procedure TKMLog.AddLineNoTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aWithPrefix: Boolean = True;
-                               aDoCloseFile: Boolean = True);
+// Add line but without timestamp
+procedure TKMLog.AddLineNoTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aWithPrefix: Boolean = True);
 var
   lockedHere: Boolean;
 begin
@@ -398,14 +396,10 @@ begin
     if not FileExists(fLogPath) then
       InitLog;  // Recreate log file, if it was deleted
 
-    Append(fLogFile);
     if aWithPrefix then
-      WriteLn(fLogFile, '                                      ' + aText)
+      TFile.AppendAllText(fLogPath, '                                            ' + aText + sLineBreak)
     else
-      WriteLn(fLogFile, aText);
-
-    if aDoCloseFile then
-      CloseFile(fLogFile);
+      TFile.AppendAllText(fLogPath, aText + sLineBreak);
   finally
     // We could be locked by other thread, thus unlock here only if this thread made a lock
     if lockedHere and MultithreadLogging then
@@ -417,22 +411,15 @@ end;
 
 
 //Add line without timestamp
-procedure TKMLog.AddLineNoTime(const aText: UnicodeString; aWithPrefix: Boolean = True; aDoCloseFile: Boolean = True);
+procedure TKMLog.AddLineNoTime(const aText: UnicodeString; aWithPrefix: Boolean = True);
 begin
-  AddLineNoTime(aText, lmtDefault, aWithPrefix, aDoCloseFile);
+  AddLineNoTime(aText, lmtDefault, aWithPrefix);
 end;
 
 
 procedure TKMLog.AddTime(const aText: UnicodeString);
 begin
   AddLineTime(aText);
-end;
-
-
-procedure TKMLog.AddTimeNoFlush(const aText: UnicodeString);
-begin
-  if Self = nil then Exit;
-  AddLineTime(aText, False);
 end;
 
 
@@ -607,14 +594,6 @@ begin
   if Self = nil then Exit;
 
   AddLineNoTime(aText, aWithPrefix);
-end;
-
-
-procedure TKMLog.AddNoTimeNoFlush(const aText: UnicodeString);
-begin
-  if Self = nil then Exit;
-
-  AddLineNoTime(aText, True, False);
 end;
 
 

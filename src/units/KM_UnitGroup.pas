@@ -1451,7 +1451,7 @@ begin
     if not fSelected.IsDeadOrDying then
     begin
       if not aTargetGroup.HasMember(fSelected) then
-        gLog.AddNoTimeNoFlush(
+        gLog.AddNoTime(
           Format('Make sure we joined selected unit. Group UID: %d; TargetGroup UID: %d Selected member UID: %d',
                  [UID, aTargetGroup.UID, fSelected.UID]));
       aTargetGroup.fSelected := fSelected;
