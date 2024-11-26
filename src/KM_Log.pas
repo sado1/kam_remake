@@ -108,7 +108,8 @@ var
 
 implementation
 uses
-  Classes, SysUtils, IOUtils,
+  {$IFDEF WDC}IOUtils,{$ENDIF}
+  Classes, SysUtils,
   KM_FileIO,
   KM_Defaults, KM_CommonUtils;
 
@@ -255,7 +256,16 @@ begin
     ForceDirectories(ExtractFilePath(fLogPath));
 
     //           hh:nn:ss.zzz 12345.678s 1234567ms     text-text-text
+    {$IFDEF WDC}
     TFile.AppendAllText(fLogPath, '   Timestamp    Elapsed     Delta  Thread    Description');
+    {$ENDIF}
+    {$IFDEF FPC}
+    AssignFile(fLogFile, fLogPath);
+    Rewrite(fLogFile);
+    //           hh:nn:ss.zzz 12345.678s 1234567ms     text-text-text
+    WriteLn(fLogFile, '   Timestamp    Elapsed     Delta  Thread    Description');
+    CloseFile(fLogFile);
+    {$ENDIF}
   except
     on E: Exception do
     begin
@@ -263,7 +273,11 @@ begin
       raise E;
     end;
   end;
+  {$IFDEF WDC}
   TFile.AppendAllText(fLogPath, 'Log is up and running. Game version: ' + UnicodeString(GAME_VERSION) + sLineBreak);
+  {$ELSE}
+  WriteLn(fLogFile, 'Log is up and running. Game version: ' + UnicodeString(GAME_VERSION));
+  {$ENDIF}
 end;
 
 
@@ -313,7 +327,7 @@ end;
 procedure TKMLog.AddLineTime(const aText: UnicodeString; aLogType: TKMLogMessageType);
 var
   lockedHere: Boolean;
-  txt: String;
+  txt, txt2: String;
 begin
   if Self = nil then Exit;
 
@@ -335,24 +349,36 @@ begin
 
     txt := '';
 
+    {$IFDEF FPC} Append(fLogFile); {$ENDIF}
+
     //Write a line when the day changed since last time (useful for dedicated server logs that could be over months)
     if Abs(Trunc(fPreviousDate) - Trunc(Now)) >= 1 then
     begin
+      {$IFDEF WDC}
       txt := txt + '========================' + sLineBreak
                  + '    Date: ' + FormatDateTime('yyyy/mm/dd', Now) + sLineBreak
                  + '========================' + sLineBreak;
-
+      {$ENDIF}
+      {$IFDEF FPC}
+      WriteLn(fLogFile, '========================');
+      WriteLn(fLogFile, '    Date: ' + FormatDateTime('yyyy/mm/dd', Now));
+      WriteLn(fLogFile, '========================');
+      {$ENDIF}
     end;
 
-    txt := Format('%s%12s %9.3fs %7dms %6d    %s' + sLineBreak, [
-                  txt,
-                  FormatDateTime('hh:nn:ss.zzz', Now),
-                  TimeSince(fFirstTick) / 1000,
-                  TimeSince(fPreviousTick),
-                  TThread.CurrentThread.ThreadID,
-                  aText]);
-
-    TFile.AppendAllText(fLogPath, txt);
+    txt2 := Format('%12s %9.3fs %7dms %6d    %s', [
+                    FormatDateTime('hh:nn:ss.zzz', Now),
+                    TimeSince(fFirstTick) / 1000,
+                    TimeSince(fPreviousTick),
+                    TThread.CurrentThread.ThreadID,
+                    aText]);
+    {$IFDEF WDC}
+    TFile.AppendAllText(fLogPath, txt + txt2 + sLineBreak);
+    {$ENDIF}
+    {$IFDEF FPC}
+    WriteLn(fLogFile, txt2);
+    CloseFile(fLogFile);
+    {$ENDIF}
 
     fPreviousTick := TimeGet;
     fPreviousDate := Now;
@@ -396,10 +422,23 @@ begin
     if not FileExists(fLogPath) then
       InitLog;  // Recreate log file, if it was deleted
 
+    {$IFDEF FPC} Append(fLogFile); {$ENDIF}
+
     if aWithPrefix then
-      TFile.AppendAllText(fLogPath, '                                            ' + aText + sLineBreak)
+    begin
+      {$IFDEF WDC}
+      TFile.AppendAllText(fLogPath, '                                            ' + aText + sLineBreak);
+      {$ENDIF}
+      {$IFDEF FPC}
+      WriteLn(fLogFile, '                                      ' + aText);
+      {$ENDIF}
+    end
     else
-      TFile.AppendAllText(fLogPath, aText + sLineBreak);
+    begin
+      {$IFDEF WDC} TFile.AppendAllText(fLogPath, aText + sLineBreak); {$ENDIF}
+      {$IFDEF FPC} WriteLn(fLogFile, aText); {$ENDIF}
+    end;
+    {$IFDEF FPC} CloseFile(fLogFile); {$ENDIF}
   finally
     // We could be locked by other thread, thus unlock here only if this thread made a lock
     if lockedHere and MultithreadLogging then
