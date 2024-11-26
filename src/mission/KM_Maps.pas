@@ -1135,6 +1135,7 @@ begin
       WriteLine('DifficultyLevels', St);
     end;
 
+    // Use UTF8 to save Chinese properly f.e.
     SL.SaveToFile(aFilePath, TEncoding.UTF8);
   finally
     SL.Free;
@@ -1168,7 +1169,18 @@ begin
   try
     fileSList := TStringList.Create;
     try
-      fileSList.LoadFromFile(aFilePath, TEncoding.UTF8);
+      try
+         // Try to load as a UTF8 file to get Chinese properly f.e.
+        fileSList.LoadFromFile(aFilePath, TEncoding.UTF8);
+      except
+        on E: Exception do
+        begin
+          // Even if the file is not in UTF8 we have to load it.
+          // We would not load proper strings (BigDesc / SmallDesc f.e.)
+          // but at least we will get map settings like Coop / Special etc
+          fileSList.LoadFromFile(aFilePath);
+        end;
+      end;
 
       for K := 0 to fileSList.Count - 1 do
       begin
