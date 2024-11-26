@@ -66,6 +66,7 @@ uses
   KM_CommonTypes in 'src\common\KM_CommonTypes.pas',
   KM_Defaults in 'src\common\KM_Defaults.pas',
   KM_Entity in 'src\common\KM_Entity.pas',
+  KM_Lists in 'src\common\KM_Lists.pas',
   KM_Points in 'src\common\KM_Points.pas',
   KM_WorkerThread in 'src\common\KM_WorkerThread.pas',
 
