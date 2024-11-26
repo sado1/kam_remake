@@ -75,6 +75,7 @@ xcopy ..\bass.dll "%kam_folder%"\bass.dll* /y /r /i
 xcopy ..\ogg.dll "%kam_folder%"\ogg.dll* /y /r /i
 xcopy ..\vorbis.dll "%kam_folder%"\vorbis.dll* /y /r /i
 xcopy ..\vorbisfile.dll "%kam_folder%"\vorbisfile.dll* /y /r /i
+xcopy ..\OpenAL32.dll "%kam_folder%"\OpenAL32.dll* /y /r /i
 xcopy ..\Installer\uninst_clean.bat "%kam_folder%"\uninst_clean.bat* /y /r /i
 xcopy ..\Installer\oalinst.exe "%kam_folder%"\oalinst.exe* /y /r /i
 
