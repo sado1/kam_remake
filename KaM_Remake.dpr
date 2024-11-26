@@ -69,6 +69,7 @@ uses
   KM_Lists in 'src\common\KM_Lists.pas',
   KM_Points in 'src\common\KM_Points.pas',
   KM_WorkerThread in 'src\common\KM_WorkerThread.pas',
+  KM_WorkerThreadUtils in 'src\common\KM_WorkerThreadUtils.pas',
 
   KM_Console in 'src\KM_Console.pas',
   

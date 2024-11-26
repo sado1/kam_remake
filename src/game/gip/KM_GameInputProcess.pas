@@ -479,7 +479,8 @@ uses
   KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall, KM_HouseStore, KM_HouseArmorWorkshop,
   KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_RenderUI,
   KM_ResFonts, KM_Resource,
-  KM_Log;
+  KM_Log,
+  KM_WorkerThreadUtils;
 
 const 
   NO_LAST_TICK_VALUE = 0;
@@ -1426,7 +1427,7 @@ var
 begin
   S := TKMemoryStreamBinary.Create;
   SaveToStream(S);
-  TKMemoryStream.AsyncSaveToFileCompressedAndFree(S, aFileName, 'GIPCompressed', aWorkerThread);
+  AsyncSaveToFileCompressedAndFree(S, aFileName, 'GIPCompressed', aWorkerThread);
 end;
 
 

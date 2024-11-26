@@ -341,7 +341,7 @@ uses
   KM_NetPlayersList,
   KM_HandTypes, KM_ResLocales,
   KM_ServerSettings,
-  KM_MapUtils, KM_Utils;
+  KM_MapUtils, KM_Utils, KM_WorkerThreadUtils;
 
 const
   LAST_SAVES_MAX_CNT = 5; // Max number of save names to collect for crashreport
@@ -2304,14 +2304,14 @@ begin
   end;
 
   mainStream.Write(True); // Save is compressed
-  TKMemoryStream.AsyncSaveStreamsToFileAndFree(mainStream, headerStream, bodyStream, aPathName, SAVE_HEADER_MARKER, SAVE_BODY_MARKER, aSaveWorkerThread);
+  AsyncSaveStreamsToFileAndFree(mainStream, headerStream, bodyStream, aPathName, SAVE_HEADER_MARKER, SAVE_BODY_MARKER, aSaveWorkerThread);
 
   // Save .sav.txt file
   if DoSaveGameAsText then
   begin
     saveStreamTxt := TKMemoryStreamText.Create;
     SaveGameToStream(aTimestamp, saveStreamTxt);
-    TKMemoryStream.AsyncSaveToFileAndFree(saveStreamTxt, aPathName + EXT_SAVE_TXT_DOT, aSaveWorkerThread);
+    AsyncSaveToFileAndFree(saveStreamTxt, aPathName + EXT_SAVE_TXT_DOT, aSaveWorkerThread);
   end;
 end;
 
@@ -2412,13 +2412,25 @@ begin
       loadFrom := ChangeFileExt(ExeDir + fLoadFromFileRel, EXT_SAVE_BASE_DOT);
       //Game was saved from replay (.bas file)
       if FileExists(loadFrom) then
+        {$IFDEF WDC}
         KMCopyFileAsync(loadFrom, newSaveName, True, aSaveWorkerThread);
+        {$ELSE}
+        KMCopyFile(loadFrom, newSaveName, True);
+        {$ENDIF}
     end else
       //Normally saved game
       {$IFDEF PARALLEL_RUNNER}
+        {$IFDEF WDC}
         KMCopyFileAsync(SaveName('basesave_thread_' + IntToStr(THREAD_NUMBER), EXT_SAVE_BASE, fParams.IsMultiplayer), NewSaveName, True, aSaveWorkerThread);
+        {$ELSE}
+        KMCopyFile(SaveName('basesave_thread_' + IntToStr(THREAD_NUMBER), EXT_SAVE_BASE, fParams.IsMultiplayer), NewSaveName, True, aSaveWorkerThread);
+        {$ENDIF}
       {$ELSE}
+        {$IFDEF WDC}
         KMCopyFileAsync(SaveName('basesave', EXT_SAVE_BASE, fParams.IsMultiplayer), newSaveName, True, aSaveWorkerThread);
+        {$ELSE}
+        KMCopyFile(SaveName('basesave', EXT_SAVE_BASE, fParams.IsMultiplayer), newSaveName, True);
+        {$ENDIF}
       {$ENDIF}
 
     // Save replay info
