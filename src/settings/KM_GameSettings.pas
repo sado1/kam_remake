@@ -388,7 +388,7 @@ begin
     Video.Enabled      := nVideo.Attributes['Enabled'].AsBoolean(False); //Disabled by default
     Video.VideoStretch := nVideo.Attributes['Stretch'].AsBoolean(True);
     Video.PlayOnStartup := nVideo.Attributes['Startup'].AsBoolean(True);
-    Video.VideoVolume  := nVideo.Attributes['Volume'].AsFloat(0.5);
+    Video.VideoVolume  := nVideo.Attributes['Volume'].AsFloat(1);
 
   // GameCommon
   nGameCommon := nGameSettings.AddOrFindChild('GameCommon');
