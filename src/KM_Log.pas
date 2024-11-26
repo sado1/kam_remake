@@ -2,7 +2,7 @@ unit KM_Log;
 {$I KaM_Remake.inc}
 interface
 uses
-  SyncObjs, KM_CommonTypes, KM_CommonClasses
+  SyncObjs, KM_CommonTypes
   {$IFDEF KMR_GAME} // Not needed for server and other tools
   , Generics.Collections
   {$ENDIF}
