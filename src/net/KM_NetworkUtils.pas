@@ -6,8 +6,8 @@ type
   TKMNetworkUtils = class
 
   public
-    class function GetEscapedNewLineServerName(str: String): String; overload; static;
-    class function GetEscapedNewLineServerName(str: AnsiString): AnsiString; overload; static;
+    class function GetEscapedNewLineServerName(str: String): String; static;
+    class function GetEscapedNewLineServerNameA(str: AnsiString): AnsiString; static;
   end;
 
 
@@ -22,9 +22,9 @@ end;
 
 
 // Add AnsiString version of the same procedure, to avoid type casting compilation hint
-class function TKMNetworkUtils.GetEscapedNewLineServerName(str: AnsiString): AnsiString;
+class function TKMNetworkUtils.GetEscapedNewLineServerNameA(str: AnsiString): AnsiString;
 begin
-  Result := GetEscapedNewLineServerName(str);
+  Result := AnsiString(GetEscapedNewLineServerName(String(str)));
 end;
 
 

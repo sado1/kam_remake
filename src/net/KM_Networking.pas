@@ -1697,7 +1697,7 @@ begin
       mkServerName:
               begin
                 M.ReadA(tmpStringA);
-                fServerName := TKMNetworkUtils.GetEscapedNewLineServerName(tmpStringA);
+                fServerName := TKMNetworkUtils.GetEscapedNewLineServerNameA(tmpStringA);
               end;
 
       mkIndexOnServer:
