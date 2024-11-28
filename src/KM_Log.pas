@@ -50,6 +50,8 @@ type
 
     procedure InitLog;
 
+    procedure AppendText(aTxt: String);
+
     procedure NotifyLogSubs(aText: UnicodeString);
 
     procedure AddLineTime(const aText: UnicodeString; aLogType: TKMLogMessageType); overload;
@@ -250,6 +252,14 @@ begin
 end;
 
 
+procedure TKMLog.AppendText(aTxt: String);
+begin
+  {$IFDEF WDC}
+  TFile.AppendAllText(fLogPath, aTxt + sLineBreak, TEncoding.UTF8);
+  {$ENDIF}
+end;
+
+
 procedure TKMLog.InitLog;
 begin
   if BLOCK_FILE_WRITE then Exit;
@@ -259,7 +269,7 @@ begin
 
     //           hh:nn:ss.zzz 12345.678s 1234567ms     text-text-text
     {$IFDEF WDC}
-    TFile.AppendAllText(fLogPath, '   Timestamp    Elapsed     Delta  Thread    Description');
+    AppendText('   Timestamp    Elapsed     Delta  Thread    Description');
     {$ENDIF}
     {$IFDEF FPC}
     AssignFile(fLogFile, fLogPath);
@@ -371,7 +381,7 @@ begin
                     TThread.CurrentThread.ThreadID,
                     aText]);
     {$IFDEF WDC}
-    TFile.AppendAllText(fLogPath, txt + txt2 + sLineBreak);
+    AppendText(txt + txt2);
     {$ENDIF}
     {$IFDEF FPC}
     WriteLn(fLogFile, txt2);
@@ -425,7 +435,7 @@ begin
     if aWithPrefix then
     begin
       {$IFDEF WDC}
-      TFile.AppendAllText(fLogPath, '                                            ' + aText + sLineBreak);
+      AppendText('                                            ' + aText);
       {$ENDIF}
       {$IFDEF FPC}
       WriteLn(fLogFile, '                                      ' + aText);
@@ -433,7 +443,7 @@ begin
     end
     else
     begin
-      {$IFDEF WDC} TFile.AppendAllText(fLogPath, aText + sLineBreak); {$ENDIF}
+      {$IFDEF WDC} AppendText(aText); {$ENDIF}
       {$IFDEF FPC} WriteLn(fLogFile, aText); {$ENDIF}
     end;
     {$IFDEF FPC} CloseFile(fLogFile); {$ENDIF}
