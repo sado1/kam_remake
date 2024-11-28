@@ -297,6 +297,7 @@ uses
   KM_NetworkConsts in 'src\net\KM_NetworkConsts.pas',
   KM_Networking in 'src\net\KM_Networking.pas',
   KM_NetworkTypes in 'src\net\KM_NetworkTypes.pas',
+  KM_NetworkUtils in 'src\net\KM_NetworkUtils.pas',
 
   KM_HTTPClient in 'src\net\http\KM_HTTPClient.pas',
   {$IFDEF WDC} KM_HTTPClientOverbyte in 'src\net\http\KM_HTTPClientOverbyte.pas', {$ENDIF}
