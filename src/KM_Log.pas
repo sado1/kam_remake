@@ -29,7 +29,9 @@ type
   TKMLog = class
   private
     CS: TCriticalSection;
+    {$IFDEF FPC}
     fLogFile: TextFile;
+    {$ENDIF}
     fLogPath: UnicodeString;
     fFirstTick: cardinal;
     fPreviousTick: cardinal;
