@@ -1151,6 +1151,8 @@ var
 begin
   gLog.AddTime('Replay failed a consistency check at tick ' + IntToStr(fParams.Tick));
   gLog.AddTime(Format('MyRand = %d, seed: %d; but command: %s', [aMyRand, GetKaMSeed, fGameInputProcess.StoredGIPCommandToString(aCommand)]));
+
+  {$IFDEF RNG_SPY}
   if gLog.CanLogRandomChecks() then
   begin
     gLog.LogRandomChecks('Next KaMRandom seed values are: ');
@@ -1166,6 +1168,7 @@ begin
         gLog.LogRandomChecks('Find match with MyRand !!!');
     end;
   end;
+  {$ENDIF}
 
   if not fIgnoreConsistencyCheckErrors then
   begin

@@ -1501,8 +1501,10 @@ function KaMRandom(const aCaller: AnsiString; aLogRng: Boolean = True): Extended
 begin
   Result := KaMRandomWSeed(fKamSeed);
 
+  {$IFDEF RNG_SPY}
   if aLogRng then
     LogKamRandom(Result, aCaller, 'KMRand');
+  {$ENDIF}
 end;
 
 
@@ -1513,8 +1515,10 @@ begin
   else
     Result := Random(aMax);
 
+  {$IFDEF RNG_SPY}
   if aLogRng then
     LogKamRandom(Result, aCaller, 'I*');
+  {$ENDIF}
 end;
 
 
@@ -1525,8 +1529,10 @@ begin
   else
     Result := Random(aMax);
 
+  {$IFDEF RNG_SPY}
   if aLogRng then
     LogKamRandom(Integer(Result), aCaller, 'C*');
+  {$ENDIF}
 end;
 
 
@@ -1537,8 +1543,10 @@ begin
   else
     Result := Random(aMax);
 
+  {$IFDEF RNG_SPY}
   if aLogRng then
     LogKamRandom(Integer(Result), aCaller, 'I64*');
+  {$ENDIF}
 end;
 
 
@@ -1547,7 +1555,9 @@ function KaMRandomI2(Range_Both_Directions: Integer; const aCaller: AnsiString):
 begin
   Result := KaMRandom(Range_Both_Directions*2+1, aCaller, False) - Range_Both_Directions;
 
+  {$IFDEF RNG_SPY}
   LogKamRandom(Result, aCaller, 'S2I*');
+  {$ENDIF}
 end;
 
 
@@ -1556,7 +1566,9 @@ function KaMRandomS2(Range_Both_Directions: Single; const aCaller: AnsiString): 
 begin
   Result := KaMRandom(Round(Range_Both_Directions*20000)+1, aCaller, False)/10000-Range_Both_Directions;
 
+  {$IFDEF RNG_SPY}
   LogKamRandom(Result, aCaller, 'S2S*');
+  {$ENDIF}
 end;
 
 
@@ -1565,7 +1577,9 @@ function KaMRandomS1(aMax: Single; const aCaller: AnsiString): Single;
 begin
   Result := KaMRandom(Round(aMax*10000), aCaller, False)/10000;
 
+  {$IFDEF RNG_SPY}
   LogKamRandom(Result, aCaller, 'S1S*');
+  {$ENDIF}
 end;
 
 
