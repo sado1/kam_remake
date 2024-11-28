@@ -772,7 +772,7 @@ function TKMPointList.GetRandom(out Point: TKMPoint): Boolean;
 begin
   Result := fCount <> 0;
   if Result then
-    Point := fItems[KaMRandom(fCount, 'TKMPointList.GetRandom')];
+    Point := fItems[KaMRandom(fCount{$IFDEF RNG_SPY}, 'TKMPointList.GetRandom'{$ENDIF})];
 end;
 
 
@@ -970,7 +970,7 @@ begin
   for I := 0 to fCount - 1 do
     weightsSum := weightsSum + fWeight[I];
 
-  rnd := KaMRandomS1(weightsSum, 'TKMPointCenteredList.GetWeightedRandom');
+  rnd := KaMRandomS1(weightsSum{$IFDEF RNG_SPY}, 'TKMPointCenteredList.GetWeightedRandom'{$ENDIF});
 
   for I := 0 to fCount - 1 do
   begin
@@ -1163,7 +1163,7 @@ begin
   Result := False;
   if fCount > 0 then
   begin
-    Point := fItems[KaMRandom(fCount, 'TKMPointDirList.GetRandom')];
+    Point := fItems[KaMRandom(fCount{$IFDEF RNG_SPY}, 'TKMPointDirList.GetRandom'{$ENDIF})];
     Result := True;
   end;
 end;
@@ -1240,7 +1240,7 @@ begin
   for I := 0 to fCount - 1 do
     weightsSum := weightsSum + fWeight[I];
 
-  rnd := KaMRandomS1(weightsSum, 'TKMPointDirCenteredList.GetWeightedRandom');
+  rnd := KaMRandomS1(weightsSum{$IFDEF RNG_SPY}, 'TKMPointDirCenteredList.GetWeightedRandom'{$ENDIF});
 
   for I := 0 to fCount - 1 do
   begin

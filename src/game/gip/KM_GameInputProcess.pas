@@ -1514,7 +1514,7 @@ begin
     fQueue[fCount].Rand := 0
   else
     //This will be our check to ensure everything is consistent
-    fQueue[fCount].Rand := Cardinal(KaMRandom(MaxInt, 'TKMGameInputProcess.StoreCommand'));
+    fQueue[fCount].Rand := Cardinal(KaMRandom(MaxInt{$IFDEF RNG_SPY}, 'TKMGameInputProcess.StoreCommand'{$ENDIF}));
 end;
 
 

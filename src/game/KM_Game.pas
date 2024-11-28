@@ -134,7 +134,8 @@ type
     function CheckPauseGameAtTick: Boolean;
     function IsReplayEnded: Boolean;
 
-    function DoSaveRandomChecks: Boolean;
+    {$IFDEF RNG_SPY} function DoSaveRandomChecks: Boolean; {$ENDIF}
+
     function DoSaveGameAsText: Boolean;
     function DoRenderGame: Boolean;
 
@@ -337,7 +338,9 @@ uses
   KM_GameInputProcess_Multi, KM_GameInputProcess_Single,
   KM_Resource, KM_ResSound,
   KM_InterfaceDefaults, KM_InterfaceTypes, KM_GameSettings,
-  KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils,
+  {$IFDEF RNG_SPY} KM_RandomChecks, {$ENDIF}
+  KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_NetPlayersList,
   KM_HandTypes, KM_ResLocales,
   KM_ServerSettings,
@@ -452,11 +455,13 @@ begin
   end;
   gProjectiles := TKMProjectiles.Create(gRenderPool.AddProjectile);
 
+  {$IFDEF RNG_SPY}
   if gRandomCheckLogger <> nil then
   begin
     gRandomCheckLogger.Clear;
     gRandomCheckLogger.Enabled := not fParams.IsMapEditor and not fParams.IsReplay; //Disable random check logger for MapEditor
   end;
+  {$ENDIF}
 
   gGameSettings.PlayersColorMode := pcmDefault;
 end;
@@ -510,8 +515,10 @@ begin
 
   FreeAndNil(gMySpectator);
 
+  {$IFDEF RNG_SPY}
   if gRandomCheckLogger <> nil then
     gRandomCheckLogger.Clear;
+  {$ENDIF}
 
   FreeAndNil(fParams);
 
@@ -1143,11 +1150,13 @@ end;
 procedure TKMGame.ReplayInconsistency(aCommand: TKMStoredGIPCommand; aMyRand: Cardinal);
 const
   TRY_KAM_RANDOM_CNT = 10;
+  {$IFDEF RNG_SPY}
 var
   I: Integer;
   tempSeedI, tempSeedF: Integer;
   valI: Integer;
   valF: Double;
+  {$ENDIF}
 begin
   gLog.AddTime('Replay failed a consistency check at tick ' + IntToStr(fParams.Tick));
   gLog.AddTime(Format('MyRand = %d, seed: %d; but command: %s', [aMyRand, GetKaMSeed, fGameInputProcess.StoredGIPCommandToString(aCommand)]));
@@ -2360,7 +2369,8 @@ end;
 procedure TKMGame.Save(const aSaveName: UnicodeString; aTimestamp: TDateTime; aSaveWorkerThread: TKMWorkerThread);
 var
   I, index: Integer;
-  fullPath, rngPath, mpLocalDataPath, newSaveName, loadFrom: UnicodeString;
+  fullPath, mpLocalDataPath, newSaveName, loadFrom: UnicodeString;
+  {$IFDEF RNG_SPY} rngPath: UnicodeString; {$ENDIF}
   saveByPlayer: Boolean;
 begin
   {$IFDEF PERFLOG}
@@ -2448,6 +2458,7 @@ begin
       fSavePoints.SaveToFileAsync(ChangeFileExt(fullPath, EXT_SAVE_GAME_SAVEPTS_DOT), aSaveWorkerThread);
     end;
 
+    {$IFDEF RNG_SPY}
     if DoSaveRandomChecks then
       try
         rngPath := ChangeFileExt(fullPath, EXT_SAVE_RNG_LOG_DOT);
@@ -2456,6 +2467,7 @@ begin
         on E: Exception do
           gLog.AddTime('Error saving random checks to ' + rngPath); //Silently log error, don't propagate error further
       end;
+    {$ENDIF}
 
     // Collect latest save names
     if aSaveName = AUTOSAVE_SAVE_NAME then
@@ -2670,7 +2682,7 @@ procedure TKMGame.LoadFromFile(const aPathName: UnicodeString; const aCustomRepl
 var
   loadStream: TKMemoryStream;
   gameMPLocalData: TKMGameMPLocalData;
-  rngPath: UnicodeString;
+  {$IFDEF RNG_SPY} rngPath: UnicodeString; {$ENDIF}
 begin
   fLoadFromFileRel := ChangeFileExt(ExtractRelativePath(ExeDir, aPathName), EXT_SAVE_MAIN_DOT);
   fLastSaveFileRel := fLoadFromFileRel; // We set last save to the loaded file, so we will be able to restart from this point
@@ -2712,6 +2724,7 @@ begin
 
     // SetSeed was there, I dont know the dependencies so please check if it is ok to include it in LoadGameStream
 
+    {$IFDEF RNG_SPY}
     if DoSaveRandomChecks then
       try
         rngPath := ChangeFileExt(aPathName, EXT_SAVE_RNG_LOG_DOT);
@@ -2721,6 +2734,7 @@ begin
         on E: Exception do
           gLog.AddTime('Error loading random checks from ' + rngPath); //Silently log error, don't propagate error further
       end;
+    {$ENDIF}
 
     gLog.AddTime('Loading game', True);
   finally
@@ -3142,10 +3156,12 @@ begin
 
       CheckPauseGameAtTick;
     finally
+      {$IFDEF RNG_SPY}
       // Save rng logger even if game crashed during tick execution, f.e. because of desync
       if DoSaveRandomChecks then
         gRandomCheckLogger.UpdateState(fParams.Tick);
-     end;
+      {$ENDIF}
+    end;
   finally
     {$IFDEF PERFLOG}
     gPerfLogs.TickEnd;
@@ -3308,12 +3324,14 @@ begin
 end;
 
 
+{$IFDEF RNG_SPY}
 function TKMGame.DoSaveRandomChecks: Boolean;
 begin
   Result := gGameSettings.DebugSaveRandomChecks
             and SAVE_RANDOM_CHECKS
             and (gRandomCheckLogger <> nil);
 end;
+{$ENDIF}
 
 
 function TKMGame.DoRenderGame: Boolean;

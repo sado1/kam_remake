@@ -4184,7 +4184,7 @@ end;
 function TKMScriptStates.KaMRandom: Single;
 begin
   try
-    Result := KM_CommonUtils.KaMRandom('TKMScriptStates.KaMRandom');
+    Result := KM_CommonUtils.KaMRandom({$IFDEF RNG_SPY}'TKMScriptStates.KaMRandom'{$ENDIF});
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4199,7 +4199,7 @@ function TKMScriptStates.KaMRandomI(aMax: Integer): Integer;
 begin
   try
     //No parameters to check, any integer is fine (even negative)
-    Result := KM_CommonUtils.KaMRandom(aMax, 'TKMScriptStates.KaMRandomI');
+    Result := KM_CommonUtils.KaMRandom(aMax{$IFDEF RNG_SPY}, 'TKMScriptStates.KaMRandomI'{$ENDIF});
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

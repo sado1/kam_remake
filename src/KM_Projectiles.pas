@@ -130,7 +130,7 @@ begin
     B = 2 * (TargetPosition.X * TargetVector.X + TargetPosition.Y * TargetVector.Y)
     C = sqr(TargetPosition.X) + sqr(TargetPosition.Y) }
 
-  speed := PROJECTILE_SPEED[aProjType] + KaMRandomS2(0.05, 'TKMProjectiles.AimTarget');
+  speed := PROJECTILE_SPEED[aProjType] + KaMRandomS2(0.05{$IFDEF RNG_SPY}, 'TKMProjectiles.AimTarget'{$ENDIF});
 
   A := sqr(targetVector.X) + sqr(targetVector.Y) - sqr(speed);
   B := 2 * (targetPosition.X * targetVector.X + targetPosition.Y * targetVector.Y);
@@ -161,8 +161,8 @@ begin
             + KMLength(KMPOINTF_ZERO, targetVector) * PROJECTILE_PREDICT_JITTER[aProjType];
 
     //Calculate the target position relative to start position (the 0;0)
-    target.X := targetPosition.X + targetVector.X*timeToHit + KaMRandomS2(jitter, 'TKMProjectiles.AimTarget 2');
-    target.Y := targetPosition.Y + targetVector.Y*timeToHit + KaMRandomS2(jitter, 'TKMProjectiles.AimTarget 3');
+    target.X := targetPosition.X + targetVector.X*timeToHit + KaMRandomS2(jitter{$IFDEF RNG_SPY}, 'TKMProjectiles.AimTarget 2'{$ENDIF});
+    target.Y := targetPosition.Y + targetVector.Y*timeToHit + KaMRandomS2(jitter{$IFDEF RNG_SPY}, 'TKMProjectiles.AimTarget 3'{$ENDIF});
 
     //We can try and shoot at a target that is moving away,
     //but the arrows can't flight any further than their max_range
@@ -172,7 +172,7 @@ begin
     target.Y := aStart.Y + target.Y / distanceToHit * distanceInRange;
 
     //Calculate the arc, less for shorter flights
-    arc := ((distanceInRange-aMinRange)/(aMaxRange-aMinRange))*(PROJECTILE_ARC[aProjType, 1] + KaMRandomS2(PROJECTILE_ARC[aProjType, 2], 'TKMProjectiles.AimTarget 4'));
+    arc := ((distanceInRange-aMinRange)/(aMaxRange-aMinRange))*(PROJECTILE_ARC[aProjType, 1] + KaMRandomS2(PROJECTILE_ARC[aProjType, 2]{$IFDEF RNG_SPY}, 'TKMProjectiles.AimTarget 4'{$ENDIF}));
 
     //Check whether this predicted target will hit a friendly unit
     if gTerrain.TileInMapCoords(Round(target.X), Round(target.Y)) then //Arrows may fly off map, UnitsHitTest doesn't like negative coordinates
@@ -197,11 +197,11 @@ var
   distanceToHit, distanceInRange: Single;
   aim, target: TKMPointF;
 begin
-  speed := PROJECTILE_SPEED[aProjType] + KaMRandomS2(0.05, 'TKMProjectiles.AimTarget 5');
+  speed := PROJECTILE_SPEED[aProjType] + KaMRandomS2(0.05{$IFDEF RNG_SPY}, 'TKMProjectiles.AimTarget 5'{$ENDIF});
 
   aim := KMPointF(aTarget.GetRandomCellWithin);
-  target.X := aim.X + KaMRandomS2(PROJECTILE_JITTER_HOUSE[aProjType], 'TKMProjectiles.AimTarget 6'); //So that arrows were within house area, without attitude to tile corners
-  target.Y := aim.Y + KaMRandomS2(PROJECTILE_JITTER_HOUSE[aProjType], 'TKMProjectiles.AimTarget 7');
+  target.X := aim.X + KaMRandomS2(PROJECTILE_JITTER_HOUSE[aProjType]{$IFDEF RNG_SPY}, 'TKMProjectiles.AimTarget 6'{$ENDIF}); //So that arrows were within house area, without attitude to tile corners
+  target.Y := aim.Y + KaMRandomS2(PROJECTILE_JITTER_HOUSE[aProjType]{$IFDEF RNG_SPY}, 'TKMProjectiles.AimTarget 7'{$ENDIF});
 
   //Calculate the arc, less for shorter flights
   //@Rey: As revealed in chat, this is an erroneous code
@@ -213,7 +213,7 @@ begin
   //@Rey: As revealed in chat, this is an erroneous code
   // It should be something alike
   // arc = Max((distanceInRange - aMinRange) / aMaxRange * ProjectileArcs[aProjType, 1] + KaMRandomS2(ProjectileArcs[aProjType, 2], 'TKMProjectiles.AimTarget 8')), 0);
-  arc := (distanceInRange/distanceToHit)*(PROJECTILE_ARC[aProjType, 1] + KaMRandomS2(PROJECTILE_ARC[aProjType, 2], 'TKMProjectiles.AimTarget 8'));
+  arc := (distanceInRange/distanceToHit)*(PROJECTILE_ARC[aProjType, 1] + KaMRandomS2(PROJECTILE_ARC[aProjType, 2]{$IFDEF RNG_SPY}, 'TKMProjectiles.AimTarget 8'{$ENDIF}));
 
   Result := AddItem(aStart, aim, target, speed, arc, aMaxRange, aProjType, aOwner);
 end;
@@ -287,7 +287,7 @@ begin
         begin
           U := gTerrain.UnitsHitTestF(fTarget);
           //Projectile can miss depending on the distance to the unit
-          if (U = nil) or ((1 - Math.Min(KMLength(U.PositionF, fTarget), 1)) > KaMRandom('TKMProjectiles.UpdateState')) then
+          if (U = nil) or ((1 - Math.Min(KMLength(U.PositionF, fTarget), 1)) > KaMRandom({$IFDEF RNG_SPY}'TKMProjectiles.UpdateState'{$ENDIF})) then
           begin
             case fType of
               ptArrow,
@@ -302,7 +302,7 @@ begin
                               if fType = ptSlingRock then Damage := gRes.Units[utRogue].Attack;
                               Damage := Round(Damage / Math.max(gRes.Units[U.UnitType].GetDefenceVsProjectiles(fType = ptBolt), 1)); //Max is not needed, but animals have 0 defence
                               if (FRIENDLY_FIRE or (gHands.CheckAlliance(fOwner.Owner, U.Owner)= atEnemy))
-                              and (Damage >= KaMRandom(101, 'TKMProjectiles.UpdateState')) then
+                              and (Damage >= KaMRandom(101{$IFDEF RNG_SPY}, 'TKMProjectiles.UpdateState'{$ENDIF})) then
                                 U.HitPointsDecrease(1, fOwner);
                             end
                             else
