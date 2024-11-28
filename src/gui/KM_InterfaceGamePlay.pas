@@ -2599,7 +2599,6 @@ begin
 
   Button_Main[tbBuild].Enabled := not isTactic and not HasLostMPGame and not gMySpectator.Hand.InCinematic; //Allow to 'test build' if we are in replay / spectate mode
   Button_Main[tbRatio].Enabled := not isTactic and ((fUIMode in [umReplay, umSpectate]) or (not HasLostMPGame and not gMySpectator.Hand.InCinematic));
-  Button_Main[tbStats].Enabled := not isTactic;
 
   Button_Menu_Load.Enabled := fUIMode = umSP; // No loading during multiplayer games
   Button_Menu_Save.Enabled := (fUIMode in [umSP, umMP, umSpectate]) or (ALLOW_SAVE_IN_REPLAY and (fUIMode = umReplay));
