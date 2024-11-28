@@ -275,11 +275,7 @@ begin
       raise E;
     end;
   end;
-  {$IFDEF WDC}
-  TFile.AppendAllText(fLogPath, 'Log is up and running. Game version: ' + UnicodeString(GAME_VERSION) + sLineBreak);
-  {$ELSE}
-  WriteLn(fLogFile, 'Log is up and running. Game version: ' + UnicodeString(GAME_VERSION));
-  {$ENDIF}
+  AddLineTime('Log is up and running. Game version: ' + UnicodeString(GAME_VERSION));
 end;
 
 
