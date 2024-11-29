@@ -5865,7 +5865,7 @@ end;
 
 //* Version: 5932
 //* Returns the type of the specified group or -1 if Group ID invalid
-//* Result: Group type
+//* Result: Group type, values are 0 - melee, 1 - antiHorse, 2 - ranged, 3 - mounted
 function TKMScriptStates.GroupType(aGroupID: Integer): Integer;
 var
   G: TKMUnitGroup;
@@ -5876,7 +5876,7 @@ begin
     begin
       G := fIDCache.GetGroup(aGroupID);
       if G <> nil then
-        Result := Byte(G.GroupType);
+        Result := Byte(G.GroupType) - GROUP_TYPE_MIN_OFF;
     end
     else
       LogIntParamWarn('States.GroupType', [aGroupID]);
