@@ -739,7 +739,11 @@ begin
     //Try to load map cache up to 3 times (in case its updating by other thread
     //its much easier and working well, then synchronize threads
     if not TryExecuteMethod(TObject(S), aPath, 'LoadFromStreamObj', errorStr, LoadFromStreamObj) then
+    begin
       gLog.AddTime(errorStr);
+      gLog.AddTime('Error loading map cache: ''' + aPath + '''. The file will be deleted.');
+      KMDeleteFile(aPath);
+    end;
   finally
     //Other properties are not saved, they are fast to reload
     S.Free;
