@@ -2,7 +2,7 @@
 
 ---
 
-[System requirements](#system-requirements) · [Installation](#installation) · [Gameplay](#keyboard-shortcuts) · [F.A.Q.](#frequently-asked-questions) · [Community and feedback](#community-and-feedback) · [Known bugs](#known-bugs-and-limitations) · [Source Code](#source-code) · [Credits](#credits) · [Legal notice](#legal-notice)
+[System requirements](#system-requirements) · [Installation](#installation) · [Gameplay](#gameplay) · [F.A.Q.](#frequently-asked-questions) · [Community and feedback](#community-and-feedback) · [Known bugs](#known-bugs-and-limitations) · [Source Code](#source-code) · [Credits](#credits) · [Legal notice](#legal-notice)
 
 ---
 
@@ -22,8 +22,16 @@
 1. The KaM Remake uses OpenGL for graphics. In case of visual issues or inability to launch the game, visit your graphics card manufacturer site to get the latest drivers available.
 1. Launch the mod - KaM_Remake.exe or from the Desktop/Start Menu if you chose to create shortcuts.
 
-### ![](Readme/GUI_0312.gif) Keyboard shortcuts
+### ![](Readme/GUI_0312.gif) Gameplay
 
+#### Multiplayer
+To start a game, go to Multiplayer. You can pick any unused server, if you want to start a new lobby, or you can join an existing lobby.
+
+You can also create a local (LAN) server, using "Create server" button.
+
+If you want to create a new dedicated server for our community, see details here: <https://github.com/reyandme/kam_remake/blob/master/Docs/Readme/technical.md>
+
+#### Keyboard shortcuts
 **The following shortcuts are available in the game:**
 
 - **Esc** closes the open message or active tab in the game menu

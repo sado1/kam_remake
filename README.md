@@ -27,7 +27,7 @@ If you can offer some help in Delphi coding, menu design, documentation, graphic
 
 See [here](Docs/Readme/getting-started_eng.md)
 
-# ![](Docs/Readme/Readme/GUI_0304.gif) Technical details and contributing to Remake
+# ![](Docs/Readme/Readme/GUI_0304.gif) Technical details and contributing code to Remake
 
 See [here](Docs/Readme/technical.md)
 
