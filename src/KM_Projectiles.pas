@@ -215,9 +215,30 @@ end;
 
 { Return flight time (archers like to know when they hit target before firing again) }
 function TKMProjectiles.AddItem(const aStart, aAim, aEnd: TKMPointF; aSpeed, aArc, aMaxLength: Single; aProjType: TKMProjectileType; aOwner: TKMUnit): Word;
-const //TowerRock position is a bit different for reasons said below
-  OFFSET_X: array [TKMProjectileType] of Single = (0.5, 0.5, 0.5, -0.25); //Recruit stands in entrance, Tower middleline is X-0.75
-  OFFSET_Y: array [TKMProjectileType] of Single = (0.2, 0.2, 0.2, -0.2); //Add towers height
+const
+  // TowerRock position is a bit different for reasons said below
+  // Recruit stands in entrance, Tower middleline is X-0.75
+  OFFSET_X: array [TKMDirection] of array [TKMProjectileType] of Single =
+    ((0.5, 0.5, 0.5, -0.25),  // dirNA
+     (0.5, 0.5, 0.7, -0.25),  // dirN
+     (1.0, 0.5, 0.7, -0.25),  // dirNE
+     (0.7, 0.5, 0.7, -0.25),  // dirE
+     (0.7, 0.5, 0.7, -0.25),  // dirSE
+     (0.4, 0.4, 0.3, -0.25),  // dirS
+     (0.4, 0.4, 0.5, -0.25),  // dirSW
+     (0.4, 0.4, 0.5, -0.25),  // dirW
+     (0.3, 0.5, 0.5, -0.25)); // dirNW
+  // Add towers height
+  OFFSET_Y: array [TKMDirection] of array [TKMProjectileType] of Single =
+    ((0.2, 0.2, 0.2, -0.2),  // dirNA
+     (0.2, 0.2, 0.2, -0.2),  // dirN
+     (0.0, 0.6, 0.5, -0.2),  // dirNE
+     (0.3, 0.35,0.3, -0.2),  // dirE
+     (0.5, 0.4, 0.5, -0.2),  // dirSE
+     (0.3, 0.2, 0.4, -0.2),  // dirS
+     (0.4, 0.4, 0.2, -0.2),  // dirSW
+     (0.2, 0.3, 0.3, -0.2),  // dirW
+     (0.1, 0.3, 0.3, -0.2)); // dirNW
 var
   I: Integer;
 begin
@@ -239,8 +260,8 @@ begin
   fItems[I].fTarget.Y := EnsureRange(aEnd.Y, 0, gTerrain.MapY-0.01);
   fItems[I].fShotFrom := aStart;
 
-  fItems[I].fScreenStart.X := aStart.X + OFFSET_X[aProjType];
-  fItems[I].fScreenStart.Y := gTerrain.FlatToHeight(aStart).Y + OFFSET_Y[aProjType];
+  fItems[I].fScreenStart.X := aStart.X + OFFSET_X[aOwner.Direction, aProjType];
+  fItems[I].fScreenStart.Y := gTerrain.FlatToHeight(aStart).Y + OFFSET_Y[aOwner.Direction, aProjType];
   fItems[I].fScreenEnd.X := fItems[I].fTarget.X + 0.5; //projectile hits on Unit's chest height
   fItems[I].fScreenEnd.Y := gTerrain.FlatToHeight(fItems[I].fTarget).Y + 0.5;
 
