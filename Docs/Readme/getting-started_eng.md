@@ -18,6 +18,7 @@
 1. Obtain the original game (Knights and Merchants: The Peasants Rebellion):
 	- Installers from original CD and GOG.com should just work.
 	- If you bought TPR from Steam, you need to run TPR at least once, otherwise Remake's installer will be unable to detect it.
+	- If you use Steam and Linux, see <https://github.com/reyandme/kam_remake/wiki/Game-installation-on-Linux>
 1. Run the Remake installer and follow the installation instructions.
 1. The KaM Remake uses OpenGL for graphics. In case of visual issues or inability to launch the game, visit your graphics card manufacturer site to get the latest drivers available.
 1. Launch the mod - KaM_Remake.exe or from the Desktop/Start Menu if you chose to create shortcuts.

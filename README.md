@@ -3,7 +3,9 @@
 
 # ![](Docs/Readme/Readme/GUI_0318.gif) About
 
-The KaM Remake mod reinvigorates the original “Knights and Merchants: The Shattered Kingdom” strategy game, adding extra features and modernizing the game. See also our website: <http://www.kamremake.com/about/>
+The KaM Remake mod reinvigorates the original “Knights and Merchants: The Shattered Kingdom” strategy game, adding extra features and modernizing the game.
+
+See also our website: <http://www.kamremake.com/about/>
 
 ## ![](Docs/Readme/Readme/GUI_0311.gif) Key features
 
@@ -17,15 +19,14 @@ The KaM Remake mod reinvigorates the original “Knights and Merchants: The Shat
 
 The latest stable version of the game is always available at <https://www.kamremake.com/download/>
 
+## ![](Docs/Readme/Readme/GUI_0303.gif) Getting started
+
+See [here](Docs/Readme/getting-started_eng.md)
 
 ## ![](Docs/Readme/Readme/GUI_0323.gif) Community and Feedback
 
 Join our community at <https://discord.gg/UkkYceR>. We would love your comments, suggestions, compliments, etc.
 If you can offer some help in Delphi coding, menu design, documentation, graphics, sounds, translation or ideas for improvement - please drop us an email or write on Discord. 
-
-## ![](Docs/Readme/Readme/GUI_0303.gif) Getting started
-
-See [here](Docs/Readme/getting-started_eng.md)
 
 # ![](Docs/Readme/Readme/GUI_0304.gif) Technical details and contributing code to Remake
 
