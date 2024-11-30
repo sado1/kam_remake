@@ -484,7 +484,7 @@ end;
 
 
 //This procedure allows us to keep the exception handling code in one place
-procedure TKMScriptEvents.HandleScriptProcCallError(const aMethod: String);//aEx: Exception);
+procedure TKMScriptEvents.HandleScriptProcCallError(const aMethod: String);
 var
   exceptionProc: TPSProcRec;
   internalProc: TPSInternalProcRec;
@@ -496,7 +496,7 @@ var
   e: Exception;
 begin
   e := Exception(AcquireExceptionObject);
-  e.Message := e.Message + ' raised in ' + aMethod;
+  e.Message := e.Message + ''', raised by ' + aMethod;
   if ExceptionOutsideScript then
   begin
     ExceptionOutsideScript := False; //Reset
@@ -556,7 +556,7 @@ begin
       else raise Exception.Create('Unexpected Length(aParams)');
     end;
   except
-    HandleScriptProcCallError('game code called by script event handler ''' + aProc.ProcName + '''');
+    HandleScriptProcCallError('script event handler ''' + aProc.ProcName + '''');
   end;
 end;
 
@@ -582,7 +582,7 @@ begin
       fConsoleCommands[AnsiString(LowerCase(aCmdName))].TryCallProcedure(aHandID, aParams);
       Result := True;
     except
-      HandleScriptProcCallError('game code called by console command handler ''' + aCmdName + '''');
+      HandleScriptProcCallError('console command handler ''' + aCmdName + '''');
     end;
 end;
 
@@ -946,7 +946,7 @@ begin
           try
             TKMScriptBeforeOrderSplitEvent(handler)(aGroup.UID, aNewType, aNewCnt, aMixed);
           except
-            HandleScriptProcCallError('game code called by script event handler ''' + fEventHandlers[evtGroupBeforeOrderSplit][I].ProcName + '''');
+            HandleScriptProcCallError('script event handler ''' + fEventHandlers[evtGroupBeforeOrderSplit][I].ProcName + '''');
           end;
       end;
     end;
