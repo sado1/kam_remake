@@ -53,16 +53,16 @@ For more detailed information about game shortcuts please visit our Wiki page:
 <https://github.com/reyandme/kam_remake/wiki/Controls>
 
 #### Installing add-on maps:
-1. Create a sub-folder in the Maps folder of the KaM Remake and name it, for example, "My New Map".
-2. Put inside .dat and .map files of the map and rename them accordingly "My New Map.dat" and "My New Map.map". File names should match folder name exactly.
-3. You can also make an optional file called "My New Map.txt" which will contain the mission description and other information. Use the same format as the missions provided with the Remake. No official format information will be released because this file will probably be changed later on. 
+Maps should be added (in Remake's directory) to Maps (for singleplayer), MapsMP (for multiplayer); there is also a directory for Campaigns.
+
+You can find additional community-made maps at <https://knights-tavern.com> .
 
 #### Adding custom music:
 You can put your MP3/OGG files into the Music folder of the KaM Remake, and they will be included into the playlist automatically.
 
 # ![](Readme/GUI_0311.gif) Frequently Asked Questions
 **Silent crashes:**  
-If the KaM Remake crashes silently during startup, please send the log file to contact@kamremake.com along with any other information that might be of use.
+If the KaM Remake crashes silently during startup, please send the log file to our Discord channel, along with any other information that might be of use.
 
 **Low framerate:**  
 If you have ridiculously low framerate in game it might be because your OpenGL drivers are out of date. See the OpenGL version information in the top-left corner of the main menu, it should be at least 1.5.x. If it is less you need to update your graphics card drivers (check your card manufacturers website).
