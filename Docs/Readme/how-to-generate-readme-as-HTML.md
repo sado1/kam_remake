@@ -1,4 +1,9 @@
-Windows instructions:
+# .md and .html files
+For section icons to work, Markdown (.md) and HTML files need to be in the same directory as Readme/GUI_*.gif files.
+
+
+
+# instructions
 1. Go to https://github.com/jgm/pandoc/releases/ 
 1. Download windows .zip version
 1. Change path to where you extracted pandoc, and run the commands:
