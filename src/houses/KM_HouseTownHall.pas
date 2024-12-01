@@ -349,6 +349,9 @@ begin
     gHands[Owner].Stats.WareConsumed(aWare, aCount);
   end;
 
+  //Keep track of how many are ordered
+  GoldDeliveryCnt := EnsureRange(GoldDeliveryCnt - aCount, 0, High(Word));
+
   SetGoldCnt(fGoldCnt - aCount, False);
   UpdateDemands;
 end;
