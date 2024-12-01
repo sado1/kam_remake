@@ -4575,8 +4575,8 @@ end;
 
 
 //* Version: 5057
-//* Adds a road plan.
-//* Returns True if the plan was successfully added or False if it failed (e.g. tile blocked)
+//* Adds a house plan.
+//* Returns True if the plan was successfully added or False if it failed (e.g. tile is blocked)
 function TKMScriptActions.PlanAddHouse(aHand, aHouseType, X, Y: Integer): Boolean;
 begin
   Result := False;
@@ -4602,8 +4602,8 @@ end;
 
 
 //* Version: 14000
-//* Adds a road plan.
-//* Returns True if the plan was successfully added or False if it failed (e.g. tile blocked)
+//* Adds a house plan.
+//* Returns True if the plan was successfully added or False if it failed (e.g. tile is blocked)
 function TKMScriptActions.PlanAddHouseEx(aHand: Integer; aHouseType: TKMHouseType; X, Y: Integer): Boolean;
 begin
   Result := False;
