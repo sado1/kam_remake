@@ -194,6 +194,8 @@ begin
   or not fOpponent.Visible //Don't continue to fight units that have went into a house
   or (gHands[fUnit.Owner].Alliances[fOpponent.Owner] = atAlly) //Unit could become ally from script
   or not TKMUnitWarrior(fUnit).WithinFightRange(fOpponent.Position)
+  or (TKMUnitWarrior(fUnit).IsRanged // For ranged - ignore opponents who are under FOW
+    and (gHands[fUnit.Owner].FogOfWar.CheckTileRevelation(fOpponent.Position.X, fOpponent.Position.Y) <> 255))
   or not fUnit.CanWalkDiagonally(fUnit.Position, fOpponent.Position) then //Might be a tree between us now
   begin
     //After killing an opponent there is a very high chance that there is another enemy to be fought immediately
