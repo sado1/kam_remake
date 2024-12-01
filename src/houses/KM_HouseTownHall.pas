@@ -7,7 +7,7 @@ uses
   KM_ResTypes;
 
 const
-  TH_MAX_GOLDMAX_VALUE = 999; //Max value for TownHall MaxGold parameter
+  TH_MAX_GOLDMAX_VALUE = High(Word); //Max value for TownHall MaxGold parameter
 
 
 type
