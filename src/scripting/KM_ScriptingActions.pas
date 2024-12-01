@@ -3075,7 +3075,7 @@ var
   H: TKMHouse;
 begin
   try
-    if (aHouseID > 0) and InRange(aMaxGold, 0, High(Word)) then
+    if (aHouseID > 0) then
     begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) and (H is TKMHouseTownHall) and not H.IsDestroyed and H.IsComplete then
