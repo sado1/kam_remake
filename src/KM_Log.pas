@@ -29,10 +29,9 @@ type
   TKMLog = class
   private
     CS: TCriticalSection;
-    {$IFDEF FPC}
     fLogFile: TextFile;
-    {$ENDIF}
     fLogPath: UnicodeString;
+    fWriteErrCnt: Integer;
     fFirstTick: cardinal;
     fPreviousTick: cardinal;
     fPreviousDate: TDateTime;
@@ -51,6 +50,7 @@ type
     procedure InitLog;
 
     procedure AppendText(aTxt: String);
+    function IsFileAssignedAndAppend: Boolean;
 
     procedure NotifyLogSubs(aText: UnicodeString);
 
@@ -252,15 +252,65 @@ begin
 end;
 
 
+// Check if the log file is assigned
+// File will be appended in case the file is assigned to the file variable
+function TKMLog.IsFileAssignedAndAppend: Boolean;
+begin
+  Result := True;
+  try
+    Append(fLogFile);
+  except
+    Result := False;
+  end;
+end;
+
+
 procedure TKMLog.AppendText(aTxt: String);
+const
+  MAX_LOG_ERROR_CNT = 5;
+
+  procedure doAppend(aE: Exception = nil);
+  begin
+    if not IsFileAssignedAndAppend then
+    begin
+      AssignFile(fLogFile, fLogPath);
+      Append(fLogFile);
+    end;
+
+    // Only show few log errors, don't overspam it
+    if fWriteErrCnt <= MAX_LOG_ERROR_CNT then
+    begin
+      if aE <> nil then
+        WriteLn(fLogFile, 'Error appending to the log file using TFile.AppendAllText: ' + aE.Message);
+    end
+    else
+      Inc(fWriteErrCnt);
+
+    WriteLn(fLogFile, aTxt);
+    CloseFile(fLogFile);
+  end;
+
+
 begin
   {$IFDEF WDC}
-  TFile.AppendAllText(fLogPath, aTxt + sLineBreak, TEncoding.UTF8);
+  try
+    // Try to use TFile.AppendAllText for few times
+    // Then use oldschool Writeln instead
+    if fWriteErrCnt < MAX_LOG_ERROR_CNT then
+      TFile.AppendAllText(fLogPath, aTxt + sLineBreak, TEncoding.UTF8)
+    else
+      doAppend();
+  except
+    on E: Exception do
+      doAppend(E);
+  end;
   {$ENDIF}
 end;
 
 
 procedure TKMLog.InitLog;
+const
+  INIT_STR = '   Timestamp    Elapsed     Delta  Thread    Description';
 begin
   if BLOCK_FILE_WRITE then Exit;
 
@@ -269,7 +319,23 @@ begin
 
     //           hh:nn:ss.zzz 12345.678s 1234567ms     text-text-text
     {$IFDEF WDC}
-    AppendText('   Timestamp    Elapsed     Delta  Thread    Description');
+    try
+      TFile.WriteAllText(fLogPath, INIT_STR + sLineBreak, TEncoding.UTF8);
+    except
+      on E: Exception do
+      begin
+        // Write to log anyway, even if we can't do it using TFile.WriteAllText
+        if not IsFileAssignedAndAppend then
+        begin
+          AssignFile(fLogFile, fLogPath);
+          Rewrite(fLogFile);
+        end;
+        WriteLn(fLogFile, INIT_STR);
+        WriteLn(fLogFile, 'Error creating file using TFile.WriteAllText: ' + E.Message);
+        CloseFile(fLogFile);
+      end;
+    end;
+
     {$ENDIF}
     {$IFDEF FPC}
     AssignFile(fLogFile, fLogPath);
