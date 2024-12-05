@@ -2502,13 +2502,13 @@ end;
 { TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyEqualityComparer }
 function TKMRunnerCachePerformance.TKMRDeliveryBidKeyEqualityComparer.Equals(const Left, Right: TKMRDeliveryBidKey): Boolean;
 begin
-
+  Result := False;
 end;
 
 
 function TKMRunnerCachePerformance.TKMRDeliveryBidKeyEqualityComparer.GetHashCode(const Value: TKMRDeliveryBidKey): Integer;
 begin
-
+  Result := 0;
 end;
 
 
