@@ -892,38 +892,32 @@ begin
 
   if not DirectoryExists(aPath) then Exit;
 
-  gLog.MultithreadLogging := True; // We could log smth while doing saves scan
-
   try
+    FindFirst(aPath + '*', faDirectory, searchRec);
     try
-      FindFirst(aPath + '*', faDirectory, searchRec);
-      try
-        repeat
-          if (searchRec.Name <> '.') and (searchRec.Name <> '..')
-            and (searchRec.Attr and faDirectory = faDirectory)
-            and FileExists(aPath + searchRec.Name + PathDelim + 'info.cmp') then
-          begin
-            if SLOW_CAMPAIGN_SCAN then
-              Sleep(150);
+      repeat
+        if (searchRec.Name <> '.') and (searchRec.Name <> '..')
+          and (searchRec.Attr and faDirectory = faDirectory)
+          and FileExists(aPath + searchRec.Name + PathDelim + 'info.cmp') then
+        begin
+          if SLOW_CAMPAIGN_SCAN then
+            Sleep(150);
 
-            camp := TKMCampaign.Create;
-            camp.LoadFromPath(aPath + searchRec.Name + PathDelim);
-            fOnAdd(camp);
-            // Load progress after each loaded campaign to collect info about unlocked maps before showing the campaign in the list
-            // Its an overkill, but not a huge one, since everything is done in async thread anyway
-            fOnLoadProgress(Self);
-            fOnAddDone(Self);
-          end;
-        until (FindNext(searchRec) <> 0) or Terminated;
-      finally
-        FindClose(searchRec);
-      end;
+          camp := TKMCampaign.Create;
+          camp.LoadFromPath(aPath + searchRec.Name + PathDelim);
+          fOnAdd(camp);
+          // Load progress after each loaded campaign to collect info about unlocked maps before showing the campaign in the list
+          // Its an overkill, but not a huge one, since everything is done in async thread anyway
+          fOnLoadProgress(Self);
+          fOnAddDone(Self);
+        end;
+      until (FindNext(searchRec) <> 0) or Terminated;
     finally
-      if not Terminated and Assigned(fOnComplete) then
-        fOnComplete(Self);
+      FindClose(searchRec);
     end;
   finally
-    gLog.MultithreadLogging := False;
+    if not Terminated and Assigned(fOnComplete) then
+      fOnComplete(Self);
   end;
 end;
 

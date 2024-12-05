@@ -1916,40 +1916,35 @@ var
   pathToMaps: string;
   MK: TKMMapKind;
 begin
-  gLog.MultithreadLogging := True; // We could log smth while create map cache or scan maps
   try
-    try
-      for MK in fMapKinds do
-      begin
-        pathToMaps := ExeDir + MAP_FOLDER_NAME[MK] + PathDelim;
+    for MK in fMapKinds do
+    begin
+      pathToMaps := ExeDir + MAP_FOLDER_NAME[MK] + PathDelim;
 
-        if not DirectoryExists(pathToMaps) then Continue;
+      if not DirectoryExists(pathToMaps) then Continue;
 
-        FindFirst(pathToMaps + '*', faDirectory, searchRec);
-        try
-          repeat
-            if (searchRec.Name <> '.') and (searchRec.Name <> '..')
-              and FileExists(TKMapsCollection.FullPath(searchRec.Name, '.dat', MK))
-              and FileExists(TKMapsCollection.FullPath(searchRec.Name, '.map', MK)) then
-            begin
-              try
-                ProcessMap(searchRec.Name, MK);
-              except
-                on E: Exception do
-                  gLog.AddTime('Error loading map ''' + searchRec.Name + ''''); //Just silently log an exception
-              end;
+      FindFirst(pathToMaps + '*', faDirectory, searchRec);
+      try
+        repeat
+          if (searchRec.Name <> '.') and (searchRec.Name <> '..')
+            and FileExists(TKMapsCollection.FullPath(searchRec.Name, '.dat', MK))
+            and FileExists(TKMapsCollection.FullPath(searchRec.Name, '.map', MK)) then
+          begin
+            try
+              ProcessMap(searchRec.Name, MK);
+            except
+              on E: Exception do
+                gLog.AddTime('Error loading map ''' + searchRec.Name + ''''); //Just silently log an exception
             end;
-          until (FindNext(searchRec) <> 0) or Terminated;
-        finally
-          FindClose(searchRec);
-        end;
+          end;
+        until (FindNext(searchRec) <> 0) or Terminated;
+      finally
+        FindClose(searchRec);
       end;
-    finally
-      if not Terminated and Assigned(fOnComplete) then
-        fOnComplete(Self);
     end;
   finally
-    gLog.MultithreadLogging := False;
+    if not Terminated and Assigned(fOnComplete) then
+      fOnComplete(Self);
   end;
 end;
 

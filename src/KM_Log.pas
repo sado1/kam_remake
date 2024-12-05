@@ -58,9 +58,6 @@ type
     procedure AddLineTime(const aText: UnicodeString); overload;
     procedure AddLineNoTime(const aText: UnicodeString; aWithPrefix: Boolean = True); overload;
     procedure AddLineNoTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aWithPrefix: Boolean = True); overload;
-
-    function GetMultithreadLogging: Boolean;
-    procedure SetMultithreadLogging(const aValue: Boolean);
   public
 
     MessageTypes: TKMLogMessageTypeSet;
@@ -92,8 +89,6 @@ type
     function CanLogNetPacketPingFps: Boolean;
 
     procedure SetDefaultMessageTypes;
-
-    property MultithreadLogging: Boolean read GetMultithreadLogging write SetMultithreadLogging;
 
     // Add line if TestValue=False
     procedure AddAssert(const aMessageText: UnicodeString);
@@ -205,38 +200,6 @@ begin
   {$ENDIF}
 
   inherited;
-end;
-
-
-function TKMLog.GetMultithreadLogging: Boolean;
-begin
-  if Self = nil then Exit(False);
-
-  Result := fMultithreadLogCounter > 0;
-end;
-
-
-procedure TKMLog.SetMultithreadLogging(const aValue: Boolean);
-begin
-  if Self = nil then Exit;
-
-  {$IFDEF WDC}
-  // Doing it faster way in Delphi
-  if aValue then
-    AtomicIncrement(fMultithreadLogCounter)
-  else
-    AtomicDecrement(fMultithreadLogCounter);
-  {$ELSE}
-  Lock;
-  try
-    if aValue then
-      Inc(fMultithreadLogCounter)
-    else
-      Dec(fMultithreadLogCounter);
-  finally
-    Unlock;
-  end;
-  {$ENDIF}
 end;
 
 
@@ -400,7 +363,6 @@ end;
 // meaning that no lines will be lost if Remake crashes
 procedure TKMLog.AddLineTime(const aText: UnicodeString; aLogType: TKMLogMessageType);
 var
-  lockedHere: Boolean;
   txt, txt2: String;
 begin
   if Self = nil then Exit;
@@ -410,13 +372,8 @@ begin
   if not (aLogType in MessageTypes) then // write into log only for allowed types
     Exit;
 
-  lockedHere := False;
-  // Lock/Unlock only when in multithread logging mode. Its quite rare, so we do not need all the time
-  if MultithreadLogging then
-  begin
-    Lock;
-    lockedHere := True;
-  end;
+  // Do not allow multiple threads write into the same file
+  Lock;
   try
     if not FileExists(fLogPath) then
       InitLog;  // Recreate log file, if it was deleted
@@ -457,9 +414,7 @@ begin
     fPreviousTick := TimeGet;
     fPreviousDate := Now;
   finally
-    // We could be locked by other thread, thus unlock here only if this thread made a lock
-    if lockedHere and MultithreadLogging then
-      UnLock;
+    UnLock;
   end;
 
   NotifyLogSubs(aText);
@@ -475,8 +430,6 @@ end;
 
 // Add line but without timestamp
 procedure TKMLog.AddLineNoTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aWithPrefix: Boolean = True);
-var
-  lockedHere: Boolean;
 begin
   if Self = nil then Exit;
 
@@ -485,13 +438,8 @@ begin
   if not (aLogType in MessageTypes) then // write into log only for allowed types
     Exit;
 
-  lockedHere := False;
-  // Lock/Unlock only when in multithread logging mode. Its quite rare, so we do not need all the time
-  if MultithreadLogging then
-  begin
-    Lock;
-    lockedHere := True;
-  end;
+  // Do not allow multiple threads write into the same file
+  Lock;
   try
     if not FileExists(fLogPath) then
       InitLog;  // Recreate log file, if it was deleted
@@ -514,9 +462,8 @@ begin
     end;
     {$IFDEF FPC} CloseFile(fLogFile); {$ENDIF}
   finally
-    // We could be locked by other thread, thus unlock here only if this thread made a lock
-    if lockedHere and MultithreadLogging then
-      UnLock;
+    // Do not allow multiple threads write into the same file
+    UnLock;
   end;
 
   NotifyLogSubs(aText);
