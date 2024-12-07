@@ -1975,10 +1975,12 @@ type
     // Then when we start clashing the Baker we got crash, because we try to use already  occupied vertex
     //
     // We have to prevent this situation and not only check PositionNext vertex, but PositionRound Vertex as well
+    //
+    // P.S. Generally speaking we have to check it's round position as well, since we will be clashing in that direction
+    // and the correcponding vertex should be unoccupied
     Result := Result
               and ((P0 = P)
                 or not KMStepIsDiagAdjust(aLoc, P0)
-                or not KMStepIsBeside(aLoc, P)
                 or (CanWalkDiagonally(aLoc, P0.X, P0.Y))
                     and VertexUsageCompatible(aLoc, P0));
   end;
