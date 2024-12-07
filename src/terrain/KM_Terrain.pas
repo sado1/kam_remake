@@ -1947,12 +1947,12 @@ type
     Result := KMClipRect(Result, 1, 1, fMapX, fMapY); //Clip to map bounds
   end;
 
-  function CheckVertex(const P0, P: TKMPoint): Boolean;
+  function CheckVertex(const aPosRound, aPosNext: TKMPoint): Boolean;
   begin
-    Result := CanWalkDiagonally(aLoc, P.X, P.Y)
-          and ((Abs(aLoc.X - P.X) <> 1)
-            or (Abs(aLoc.Y - P.Y) <> 1)
-            or VertexUsageCompatible(aLoc, P));
+    Result := CanWalkDiagonally(aLoc, aPosNext.X, aPosNext.Y)
+          and ((Abs(aLoc.X - aPosNext.X) <> 1)
+            or (Abs(aLoc.Y - aPosNext.Y) <> 1)
+            or VertexUsageCompatible(aLoc, aPosNext));
     // Check special case
     //
     // Position 1    Then   Position 2
@@ -1979,10 +1979,10 @@ type
     // P.S. Generally speaking we have to check it's round position as well, since we will be clashing in that direction
     // and the correcponding vertex should be unoccupied
     Result := Result
-              and ((P0 = P)
-                or not KMStepIsDiagAdjust(aLoc, P0)
-                or (CanWalkDiagonally(aLoc, P0.X, P0.Y))
-                    and VertexUsageCompatible(aLoc, P0));
+              and ((aPosRound = aPosNext)
+                or not KMStepIsDiagAdjust(aLoc, aPosRound)
+                or (CanWalkDiagonally(aLoc, aPosRound.X, aPosRound.Y))
+                    and VertexUsageCompatible(aLoc, aPosRound));
   end;
 
 var
@@ -1991,7 +1991,7 @@ var
   dX,dY: Integer;
   requiredMaxRad: Single;
   U: TKMUnit;
-  P: TKMPoint;
+  posNext: TKMPoint;
   wCount, cCount, initialSize: Integer;
   W, C: TKMUnitArray;
 begin
@@ -2052,15 +2052,15 @@ begin
     // 2. We should use PositionNext tile instead of rounded one, since its our model of unit positioning logic
     //    PositionRound could used for visual assets, which could be obvious for player,
     //    while logic should be related on PositionNext and / or PositionF
-    P := U.PositionNext;
+    posNext := U.PositionNext;
 
     requiredMaxRad := aMaxRad;
-    if (aMaxRad = 1) and KMStepIsDiag(aLoc, P) then
+    if (aMaxRad = 1) and KMStepIsDiag(aLoc, posNext) then
       requiredMaxRad := 1.42; //Use diagonal radius sqrt(2) instead
 
-    var P0 := U.Position;
+    var posRound := U.Position;
     if (not aTestDiagWalkable
-        or CheckVertex(P0, P))
+        or CheckVertex(posRound, posNext))
       and InRange(KMLength(KMPointF(aLoc), U.PositionF), aMinRad, requiredMaxRad) //Unit's exact position must be close enough
     then
       if aClosest then
