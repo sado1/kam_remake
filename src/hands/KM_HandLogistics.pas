@@ -2314,6 +2314,8 @@ end;
 
 procedure TKMDeliveries.CloseDemand(aWare: TKMWareType; aID: Integer);
 begin
+  if gGame.IsExiting then Exit; // No need to perform anything in case the game is stopping at the moment
+
   Assert(fDemand[aWare,aID].BeingPerformed = 0);
 
   // Notify Demand house if Delete demand was requested
