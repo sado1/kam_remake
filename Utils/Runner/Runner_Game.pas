@@ -313,6 +313,7 @@ type
 
 implementation
 uses
+  KM_Exceptions,
   TypInfo, StrUtils, KM_CampaignTypes,
   KM_HandSpectator, KM_ResHouses, KM_Hand, KM_HandTypes, KM_UnitsCollection, KM_UnitGroup,
   KM_GameSettings,
@@ -1078,6 +1079,8 @@ begin
   DO_NOT_SKIP_LOAD_TILESET := True; //gGameApp will create game in the inherited call, we need to set this earlier
 
   inherited;
+
+  gExceptions := TKMExceptions.Create;
 
   fDesyncsDir := Format('%s..\Desyncs\', [ExeDir]);
   ForceDirectories(fDesyncsDir);
