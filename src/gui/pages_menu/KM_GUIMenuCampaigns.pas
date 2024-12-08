@@ -182,6 +182,8 @@ procedure TKMMenuCampaigns.StartClick(Sender: TObject);
 var
   cmp: UnicodeString;
 begin
+  if ColumnBox_Camps.ItemIndex < 0 then Exit;
+
   //Get the caption and pass it to Campaign selection menu (it will be casted to TKMCampaignName there)
   //so that we avoid cast/uncast/cast along the event chain
   cmp := fCampaigns[ColumnBox_Camps.Rows[ColumnBox_Camps.ItemIndex].Tag].ShortName;
