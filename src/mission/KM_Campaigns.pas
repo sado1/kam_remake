@@ -4,7 +4,7 @@ interface
 uses
   Classes, Generics.Collections, SyncObjs,
   KM_ResTexts, KM_Pics, KM_Maps, KM_MapTypes, KM_CampaignTypes,
-  KM_CommonClasses, KM_Points;
+  KM_CommonTypes, KM_CommonClasses, KM_Points;
 
 
 const
@@ -103,10 +103,10 @@ type
   private
     fOnAdd: TKMCampaignEvent;
     fOnAddDone: TNotifyEvent;
-    fOnLoadProgress: TNotifyEvent;
+    fOnLoadProgress: TUnicodeStringEvent;
     fOnComplete: TNotifyEvent;
   public
-    constructor Create(aOnAdd: TKMCampaignEvent; aOnAddDone, aOnLoadProgress, aOnTerminate, aOnComplete: TNotifyEvent);
+    constructor Create(aOnAdd: TKMCampaignEvent; aOnLoadProgress: TUnicodeStringEvent; aOnAddDone, aOnTerminate, aOnComplete: TNotifyEvent);
     procedure Execute; override;
   end;
 
@@ -130,13 +130,13 @@ type
 
     procedure CampaignAdd(aCampaign: TKMCampaign);
     procedure CampaignAddDone(Sender: TObject);
-    procedure LoadProgress(Sender: TObject);
+    procedure LoadProgressAndUpdateCampaignByName(const aCampName: UnicodeString);
     procedure ScanTerminate(Sender: TObject);
     procedure ScanComplete(Sender: TObject);
 
     procedure Clear;
     procedure SortCampaigns;
-    procedure LoadProgressFromFile(const aFileName: UnicodeString);
+    procedure LoadProgressFromFile(const aFileName: UnicodeString; const aCampName: UnicodeString = '');
   public
     constructor Create;
     destructor Destroy; override;
@@ -246,15 +246,16 @@ begin
 end;
 
 
-//Read progress from file trying to find matching campaigns
-procedure TKMCampaignsCollection.LoadProgressFromFile(const aFileName: UnicodeString);
+// Read progress from file trying to find matching campaigns
+// If aCampName specified - update only this campaign data, do not update all of the other campaigns data
+procedure TKMCampaignsCollection.LoadProgressFromFile(const aFileName: UnicodeString; const aCampName: UnicodeString = '');
 var
   M: TKMemoryStream;
   camp: TKMCampaign;
   I, J, campCount: Integer;
   campName: TKMCampaignId;
   unlocked: Byte;
-  hasScriptData, isViewed: Boolean;
+  hasScriptData, isViewed, doUpdate: Boolean;
   scriptDataSize: Cardinal;
 begin
   if not FileExists(aFileName) then Exit;
@@ -270,6 +271,9 @@ begin
       and (I <> CAMP_HEADER_V3) then Exit;
     hasScriptData := (I = CAMP_HEADER_V3);
 
+    if SLOW_CAMP_PROGRESS_SAVE_LOAD then
+      Sleep(2000);
+
     M.Read(campCount);
     for I := 0 to campCount - 1 do
     begin
@@ -278,20 +282,32 @@ begin
       begin
         M.Read(campName, sizeOf(TKMCampaignId));
         M.Read(unlocked);
+
         camp := CampaignById(campName);
         if camp <> nil then
         begin
-          camp.Viewed := True;
-          camp.UnlockedMap := unlocked;
-          for J := 0 to camp.MapCount - 1 do
-            M.Read(camp.fMapsProgressData[J], SizeOf(camp.fMapsProgressData[J]));
+          // Do we need to update this campaign data?
+          doUpdate := (aCampName = '') or (aCampName = camp.ShortName);
 
-          camp.ScriptDataStream.Clear;
+          if doUpdate then
+          begin
+            camp.Viewed := True;
+            camp.UnlockedMap := unlocked;
+          end;
+          for J := 0 to camp.MapCount - 1 do
+            if doUpdate then
+              M.Read(camp.fMapsProgressData[J], SizeOf(camp.fMapsProgressData[J]))
+            else
+              M.Seek(SizeOf(camp.fMapsProgressData[J]), soCurrent);
+
+          if doUpdate then
+            camp.ScriptDataStream.Clear;
           if hasScriptData then
           begin
             M.Read(scriptDataSize);
             gLog.AddTime('scriptDataSize = ' + IntToStr(scriptDataSize));
-            camp.ScriptDataStream.Write(Pointer(NativeUInt(M.Memory) + M.Position)^, scriptDataSize);
+            if doUpdate then
+              camp.ScriptDataStream.Write(Pointer(NativeUInt(M.Memory) + M.Position)^, scriptDataSize);
             M.Seek(scriptDataSize, soCurrent); //Seek past script data
           end;
         end;
@@ -331,7 +347,14 @@ begin
       end;
     end;
 
-    M.SaveToFile(filePath);
+    Lock;
+    try
+      if SLOW_CAMP_PROGRESS_SAVE_LOAD then
+        Sleep(2000);
+      M.SaveToFile(filePath);
+    finally
+      Unlock;
+    end;
   finally
     M.Free;
   end;
@@ -415,15 +438,20 @@ end;
 
 procedure TKMCampaignsCollection.CampaignAddDone(Sender: TObject);
 begin
-  fUpdateNeeded := True; //Next time the GUI thread calls UpdateState we will run fOnRefresh
+  Lock;
+  try
+    fUpdateNeeded := True; //Next time the GUI thread calls UpdateState we will run fOnRefresh
+  finally
+    Unlock;
+  end;
 end;
 
 
-procedure TKMCampaignsCollection.LoadProgress(Sender: TObject);
+procedure TKMCampaignsCollection.LoadProgressAndUpdateCampaignByName(const aCampName: UnicodeString);
 begin
   Lock;
   try
-    LoadProgressFromFile(ExeDir + SAVES_FOLDER_NAME + PathDelim + 'Campaigns.dat');
+    LoadProgressFromFile(ExeDir + SAVES_FOLDER_NAME + PathDelim + 'Campaigns.dat', aCampName);
   finally
     Unlock;
   end;
@@ -502,7 +530,7 @@ begin
 
   //Scan will launch upon create automatically
   fScanning := True;
-  fScanner := TKMCampaignsScanner.Create(CampaignAdd, CampaignAddDone, LoadProgress, ScanTerminate, ScanComplete);
+  fScanner := TKMCampaignsScanner.Create(CampaignAdd, LoadProgressAndUpdateCampaignByName, CampaignAddDone, ScanTerminate, ScanComplete);
 end;
 
 
@@ -861,7 +889,7 @@ end;
 //aOnAddDone - signal that campaign has been added
 //aOnTerminate - scan was terminated (but could be not complete yet)
 //aOnComplete - scan is complete
-constructor TKMCampaignsScanner.Create(aOnAdd: TKMCampaignEvent; aOnAddDone, aOnLoadProgress, aOnTerminate, aOnComplete: TNotifyEvent);
+constructor TKMCampaignsScanner.Create(aOnAdd: TKMCampaignEvent; aOnLoadProgress: TUnicodeStringEvent; aOnAddDone, aOnTerminate, aOnComplete: TNotifyEvent);
 begin
   //Thread isn't started until all constructors have run to completion
   //so Create(False) may be put in front as well
@@ -901,14 +929,14 @@ begin
           and FileExists(aPath + searchRec.Name + PathDelim + 'info.cmp') then
         begin
           if SLOW_CAMPAIGN_SCAN then
-            Sleep(5000);
+            Sleep(2000);
 
           camp := TKMCampaign.Create;
           camp.LoadFromPath(aPath + searchRec.Name + PathDelim);
           fOnAdd(camp);
           // Load progress after each loaded campaign to collect info about unlocked maps before showing the campaign in the list
           // Its an overkill, but not a huge one, since everything is done in async thread anyway
-          fOnLoadProgress(Self);
+          fOnLoadProgress(camp.ShortName);
           fOnAddDone(Self);
         end;
       until (FindNext(searchRec) <> 0) or Terminated;
