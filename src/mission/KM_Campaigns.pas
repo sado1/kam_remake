@@ -901,7 +901,7 @@ begin
           and FileExists(aPath + searchRec.Name + PathDelim + 'info.cmp') then
         begin
           if SLOW_CAMPAIGN_SCAN then
-            Sleep(150);
+            Sleep(5000);
 
           camp := TKMCampaign.Create;
           camp.LoadFromPath(aPath + searchRec.Name + PathDelim);
