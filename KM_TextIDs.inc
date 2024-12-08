@@ -243,6 +243,7 @@ TX_MUSIC_AT_THE_HARBOR = 225; //At the Harbor
 TX_MUSIC_JOURNEY = 226; //Journey
 
 TX_MENU_CAMPAIGNS = 227; //Campaigns
+TX_MENU_CAMPAIGNS_LOADING = 1601; //Campaigns... loading
 TX_MENU_CAMP_HEADER = 228; //Campaigns
 TX_MENU_CAMP_START = 229; //Start Campaign!
 TX_MENU_SINGLE_MAP = 230; //Play Single Map

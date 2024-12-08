@@ -319,6 +319,11 @@ begin
 end;
 
 
+// Todo: refactor
+// atm we can't show menu before all of the camoaigns are loaded.
+// this is because we call 'SaveProgress' on some events, f.e. when show campaign map
+// and if all of the campaigns are not loaded yet (including their progress)
+// then on that save some of the campaign data will be lost
 procedure TKMCampaignsCollection.SaveProgress;
 var
   I, J: Integer;
@@ -447,6 +452,11 @@ begin
 end;
 
 
+// Todo: refactor
+// atm we can't show menu before all of the camoaigns are loaded.
+// this is because we call 'SaveProgress' on some events, f.e. when show campaign map
+// and if all of the campaigns are not loaded yet (including their progress)
+// then on that save some of the campaign data will be lost
 procedure TKMCampaignsCollection.LoadProgressAndUpdateCampaignByName(const aCampName: UnicodeString);
 begin
   Lock;
@@ -936,6 +946,12 @@ begin
           fOnAdd(camp);
           // Load progress after each loaded campaign to collect info about unlocked maps before showing the campaign in the list
           // Its an overkill, but not a huge one, since everything is done in async thread anyway
+          //
+          // Todo: refactor
+          // atm we can't show menu before all of the camoaigns are loaded.
+          // this is because we call 'SaveProgress' on some events, f.e. when show campaign map
+          // and if all of the campaigns are not loaded yet (including their progress)
+          // then on that save some of the campaign data will be lost
           fOnLoadProgress(camp.ShortName);
           fOnAddDone(Self);
         end;
