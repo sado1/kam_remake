@@ -1089,7 +1089,10 @@ begin
 
   // Deactivate KaM log
   if (gLog = nil) then
-    gLog := TKMLog.Create(Format('%sUtils\Runner\Runner_Log.log',[ExeDir]));
+  begin
+    ForceDirectories(Format('%sUtils\Runner\Logs', [ExeDir]));
+    gLog := TKMLog.Create(Format('%sUtils\Runner\Logs\Runner_%s.log', [ExeDir, FormatDateTime('yyyy-mm-dd_hh-nn-ss-zzz', Now)]));
+  end;
   gLog.MessageTypes := [];
 
   gLog.SetDefaultMessageTypes;
