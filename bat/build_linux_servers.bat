@@ -20,6 +20,9 @@ REM Build x86_64 (x64) version
 call %LAZARUS_LINUX%/lazbuild.exe -q ../Utils/DedicatedServer/KaM_DedicatedServer_win32-linux_x86_64.lpi 
 if errorlevel 1 goto exit3
 
+call 7zip_linux_servers.bat
+if errorlevel 1 goto exit3
+
 goto exit0
 
 :exit3
