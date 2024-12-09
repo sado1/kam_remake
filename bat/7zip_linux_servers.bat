@@ -1,5 +1,5 @@
 @REM
-echo called 7z.bat
+echo called 7z_linux_servers.bat
 
 call get_kam_folder.bat
 
