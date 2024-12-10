@@ -168,8 +168,6 @@ end;
 
 
 class function TSet<T>.Cardinality(const Value: T): Integer;
-var
-  EnumTypeData: PTypeData;
 begin
   if not IsSet then
     raise ERuntimeTypeError.Create('Invalid type in TSet<T>, T must be a set');
@@ -178,8 +176,6 @@ end;
 
 
 class function TSet<T>.SetToString(const Value: T): String;
-var
-  EnumTypeData: PTypeData;
 begin
   if not IsSet then
     raise ERuntimeTypeError.Create('Invalid type in TSet<T>, T must be a set');
@@ -214,7 +210,7 @@ function TKMListUnique<T>.Add(const Value: T): Integer;
 begin
   if Contains(Value) then Exit(0);
 
-  inherited Add(Value);
+  Result := inherited Add(Value);
 end;
 
 
@@ -322,10 +318,13 @@ function TKMLimitedUniqueList<T>.Add(const Value: T): Integer;
 begin
   if Contains(Value) then Exit(0);
 
-  inherited Add(Value);
+  Result := inherited Add(Value);
 
   if Count > fMaxLength then
+  begin
     Delete(0); // Delete the oldest item
+    Result := Result - 1;
+  end;
 end;
 
 
