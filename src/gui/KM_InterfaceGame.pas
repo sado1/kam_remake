@@ -224,7 +224,7 @@ begin
   fViewport := TKMViewport.Create(GetToolbarWidth, aRender.ScreenX, aRender.ScreenY, ViewportPositionChanged);
 
   gLog.AddOnLogEventSub(LogMessageHappened);
-  fLogStringList := TKMLimitedList<string>.Create(80); // 50 lines max
+  fLogStringList := TKMLimitedList<string>.Create(80); // 80 lines max
 
   fDragScrolling := False;
   fDragScrollingCursorPos.X := 0;

@@ -212,7 +212,7 @@ end;
 { TKMListUnique<T> }
 function TKMListUnique<T>.Add(const Value: T): Integer;
 begin
-  if Contains(Value) then Exit;
+  if Contains(Value) then Exit(0);
 
   inherited Add(Value);
 end;
@@ -288,7 +288,7 @@ end;
 
 function TKMLimitedList<T>.Add(const Value: T): Integer;
 begin
-  inherited Add(Value);
+  Result := inherited Add(Value);
 
   if Count > fMaxLength then
     Delete(0); // Delete the oldest item
@@ -320,7 +320,7 @@ end;
 
 function TKMLimitedUniqueList<T>.Add(const Value: T): Integer;
 begin
-  if Contains(Value) then Exit;
+  if Contains(Value) then Exit(0);
 
   inherited Add(Value);
 
