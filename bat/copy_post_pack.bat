@@ -14,13 +14,16 @@ REM ============================================================
 @REM Copy all data files, except sfx, which should be copied from KMRPrevVersionDir
 xcopy ..\data\defines "%kam_folder%"\data\defines\ /y /r /s
 xcopy ..\data\cursors "%kam_folder%"\data\cursors\ /y /r /s
-xcopy ..\data\gfx "%kam_folder%"\data\gfx\ /y /r /s
+REM xcopy ..\data\gfx "%kam_folder%"\data\gfx\ /y /r /s
 @REM Copy *.rxx files only from the /data/Sprites folder, since we will copy *.rxa from the KMR private repo
-xcopy ..\data\Sprites\*.rxx "%kam_folder%"\data\Sprites\ /y /r /s 
+REM xcopy ..\data\Sprites\*.rxx "%kam_folder%"\data\Sprites\ /y /r /s 
 REM xcopy ..\data\Sprites\*.rxa "%kam_folder%"\data\Sprites\ /y /r /s 
 xcopy ..\data\text "%kam_folder%"\data\text\ /y /r /s
 xcopy ..\data\locales.txt "%kam_folder%"\data\locales.txt* /y /r /i
-xcopy ..\Docs\Readme "%kam_folder%"\ /y /r /s
+xcopy "..\Docs\Readme\Readme_eng.html" "%kam_folder%"\Readme_eng.html* /y /r /i
+xcopy "..\Docs\Readme\Readme_eng.html" "%kam_folder%"\Readme_ger.html* /y /r /i
+xcopy "..\Docs\Readme\Readme_eng.html" "%kam_folder%"\Readme_pol.html* /y /r /i
+xcopy "..\Docs\Readme\Readme_eng.html" "%kam_folder%"\Readme_rus.html* /y /r /i
 xcopy ..\Sounds "%kam_folder%"\Sounds\ /y /r /s
 xcopy ..\Music "%kam_folder%"\Music\ /y /r /s
 xcopy ..\lib "%kam_folder%"\lib\ /y /r /s
@@ -49,6 +52,8 @@ REM ============================================================
 REM Copy video files
 REM ============================================================
 xcopy "%KMRPrivateRepoDir%"\Video "%kam_folder%" /y /r /s
+REM copy fonts
+xcopy "%KMRPrivateRepoDir%"\data "%kam_folder%"\data\ /y /r /s
 
 REM ============================================================
 REM Copy files from KMRPrevVersionDir
