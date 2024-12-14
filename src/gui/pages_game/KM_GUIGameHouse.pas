@@ -348,7 +348,7 @@ begin
     Button_Store[I] := TKMButtonFlat.Create(Panel_HouseStore, dX, dY, 32, 36, 0);
     Button_Store[I].TexID := gRes.Wares[StoreResType[I]].GUIIcon;
     Button_Store[I].Tag := I;
-    Button_Store[I].Hint := gRes.Wares[StoreResType[I]].Title;
+    Button_Store[I].Hint := Format(gResTexts[TX_HOUSE_STORE_BARRACKS_WARE_HINT], [gRes.Wares[StoreResType[I]].Title]);
     Button_Store[I].OnClickShift := House_StoreItemClickShift;
 
     Image_Store_NotAccept[I] := TKMImage.Create(Panel_HouseStore, dX + 20, dY, 12, 12, 49);
@@ -480,7 +480,7 @@ begin
       Button_Barracks[I].CapOffsetY := 2;
       Button_Barracks[I].Tag := I;
       Button_Barracks[I].TexID := gRes.Wares[BarracksResType[I]].GUIIcon;
-      Button_Barracks[I].Hint := gRes.Wares[BarracksResType[I]].Title;
+      Button_Barracks[I].Hint := Format(gResTexts[TX_HOUSE_STORE_BARRACKS_WARE_HINT], [gRes.Wares[BarracksResType[I]].Title]);
       Button_Barracks[I].OnClickShift := House_BarracksItemClickShift;
 
       Image_Barracks_NotAccept[I] := TKMImage.Create(Panel_HouseBarracks, dX+16, dY, 12, 12, 49);

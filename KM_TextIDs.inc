@@ -1467,6 +1467,7 @@ TX_MULTIPLAYER_WAITING_DC_PLAYERS_DATA = 964; //Waiting for disconnected players
 TX_HOUSE_DELIVERY_PROHIBITED_HINT = 1259; //Delivery of %s is prohibited
 TX_HOUSE_TAKEOUT_PROHIBITED_HINT = 1260; //Supply of %s is prohibited
 TX_HOUSE_BARRACKS_NOT_ACCEPT_RECRUIT_HINT = 1261; //Recruit is not allowed to enter Barracks
+TX_HOUSE_STORE_BARRACKS_WARE_HINT = 1602; //%s|use LMB to block delivery / RMB to block take out in 'take out' mode and Shift to apply it to all wares
 
 TX_MAPED_RMG_SETTINGS_TITLE = 1263; //Random Map Generator - Settings
 TX_MAPED_RMG_BUTTON_HINT = 1264; //Random map generator settings
@@ -1670,3 +1671,5 @@ TX_MAPED_FISH_COUNT = 1593; //Fish count
 
 TX_MAPED_MAP_SAVED = 1595; //Map saved
 TX_MAPED_MAP_SAVING = 1596; //Saving map...
+
+//TX_
