@@ -385,8 +385,8 @@ end;
 procedure TKMGUICommonOptions.CreateControls(var aTopBlock: Integer; var aLeftBlock: Integer);
 begin
   // Controls section
-  Panel_Ctrl := TKMPanel.Create(Panel_Options, aLeftBlock, aTopBlock, 280, 125);
-  NextBlock(aTopBlock, Panel_Ctrl);
+  Panel_Ctrl := TKMPanel.Create(Panel_Options, aLeftBlock, aTopBlock, 280, 120);
+  NextBlock(aTopBlock, Panel_Ctrl, 5);
   Panel_Ctrl.Anchors := [anLeft];
     TKMLabel.Create(Panel_Ctrl,6,0,270,20,gResTexts[TX_MENU_OPTIONS_CONTROLS],fntOutline,taLeft);
     TKMBevel.Create(Panel_Ctrl,0,20,280,Panel_Ctrl.Height - 20);
@@ -476,7 +476,7 @@ begin
 
   Panel_Game.Height := top + 20 + 3;
   Bevel_Game.Height := Panel_Game.Height - 20;
-  NextBlock(aTopBlock, Panel_Game);
+  NextBlock(aTopBlock, Panel_Game, -10);
 end;
 
 
