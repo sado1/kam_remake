@@ -2,7 +2,7 @@ unit KM_Campaigns;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, Generics.Collections, SyncObjs,
+  Classes, Generics.Collections, Generics.Defaults, SyncObjs,
   KM_ResTexts, KM_Pics, KM_Maps, KM_MapTypes, KM_CampaignTypes,
   KM_CommonTypes, KM_CommonClasses, KM_Points;
 
@@ -135,7 +135,6 @@ type
     procedure ScanComplete(Sender: TObject);
 
     procedure Clear;
-    procedure SortCampaigns;
     procedure LoadProgressFromFile(const aFileName: UnicodeString; const aCampName: UnicodeString = '');
   public
     constructor Create;
@@ -180,12 +179,12 @@ const
   CAMP_HEADER_V3 = $CEED;
 
 
-{ TCampaignsCollection }
+{ TKMCampaignsCollection }
 constructor TKMCampaignsCollection.Create;
 begin
-  inherited Create;
+  inherited;
 
-  fList := TObjectList<TKMCampaign>.Create(True);
+  fList := TObjectList<TKMCampaign>.Create;
 
   //CS is used to guard sections of code to allow only one thread at once to access them
   //We mostly don't need it, as UI should access Maps only when map events are signaled
@@ -205,31 +204,6 @@ begin
   fCriticalSection.Free;
 
   inherited;
-end;
-
-
-procedure TKMCampaignsCollection.SortCampaigns;
-
-  //Return True if items should be exchanged
-  function Compare(A, B: TKMCampaign): Boolean;
-  begin
-    //TSK is first
-    if      A.ShortName = 'TSK' then Result := False
-    else if B.ShortName = 'TSK' then Result := True
-    //TPR is second
-    else if A.ShortName = 'TPR' then Result := False
-    else if B.ShortName = 'TPR' then Result := True
-    //Others are left in existing order (alphabetical)
-    else                            Result := False;
-  end;
-
-var
-  I, K: Integer;
-begin
-  for I := 0 to Count - 1 do
-    for K := I to Count - 1 do
-      if Compare(Campaigns[I], Campaigns[K]) then
-        SwapInt(NativeUInt(fList.List[I]), NativeUInt(fList.List[K]));
 end;
 
 
@@ -430,9 +404,25 @@ begin
     //Set the scanning to False so we could Sort
     fScanning := False;
 
-    //Keep the maps sorted
-    //We signal from Locked section, so everything caused by event can safely access our Maps
-    SortCampaigns;
+    // Keep the maps sorted
+    fList.Sort(TComparer<TKMCampaign>.Construct(
+      function (const aLeft, aRight: TKMCampaign): Integer
+      var
+        sLeft, sRight: string;
+      begin
+        sLeft := aLeft.ShortName;
+        sRight := aRight.ShortName;
+
+        // Add extra sorting key to get TSK and TPR on top
+        if sLeft = 'TSK' then sLeft := '1' + sLeft else
+        if sLeft = 'TPR' then sLeft := '2' + sLeft else
+          sLeft := '3' + sLeft;
+        if sRight = 'TSK' then sRight := '1' + sRight else
+        if sRight = 'TPR' then sRight := '2' + sRight else
+          sRight := '3' + sRight;
+
+        Result := CompareStr(sLeft, sRight);
+      end));
 
     fScanning := True;
   finally
