@@ -147,7 +147,7 @@ type
     procedure Lock;
     procedure Unlock;
     procedure TerminateScan;
-    procedure Refresh(aOnRefresh: TNotifyEvent;  aOnTerminate: TNotifyEvent = nil;aOnComplete: TNotifyEvent = nil);
+    procedure Refresh(aOnRefresh, aOnTerminate, aOnComplete: TNotifyEvent);
 
     //Usage
     property ActiveCampaign: TKMCampaign read fActiveCampaign;// write fActiveCampaign;
@@ -527,10 +527,10 @@ begin
 end;
 
 
-//Start the refresh of maplist
-procedure TKMCampaignsCollection.Refresh(aOnRefresh: TNotifyEvent; aOnTerminate: TNotifyEvent = nil; aOnComplete: TNotifyEvent = nil);
+// Refresh campaigns list
+procedure TKMCampaignsCollection.Refresh(aOnRefresh, aOnTerminate, aOnComplete: TNotifyEvent);
 begin
-  //Terminate previous Scanner if two scans were launched consequentialy
+  // Terminate previous Scanner (e.g. on language change)
   TerminateScan;
   Clear;
 
@@ -538,7 +538,7 @@ begin
   fOnComplete := aOnComplete;
   fOnTerminate := aOnTerminate;
 
-  //Scan will launch upon create automatically
+  // Scanner will launch upon create automatically
   fScanning := True;
   fScanner := TKMCampaignsScanner.Create(CampaignAdd, LoadProgressAndUpdateCampaignByName, CampaignAddDone, ScanTerminate, ScanComplete);
 end;
