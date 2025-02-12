@@ -401,10 +401,7 @@ begin
   try
     fList.Add(aCampaign);
 
-    //Set the scanning to False so we could Sort
-    fScanning := False;
-
-    // Keep the maps sorted
+    // Keep the campaigns properly sorted
     fList.Sort(TComparer<TKMCampaign>.Construct(
       function (const aLeft, aRight: TKMCampaign): Integer
       var
@@ -423,8 +420,6 @@ begin
 
         Result := CompareStr(sLeft, sRight);
       end));
-
-    fScanning := True;
   finally
     Unlock;
   end;
