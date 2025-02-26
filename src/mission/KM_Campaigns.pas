@@ -946,6 +946,7 @@ begin
           //     from campaigns.dat, only drawbacks. We can read it fully once, store its entries in memory, write it out with old or updated entries any time.
           // 3 - As discussed, it would be good to have the campaign data saved per campaign, so that players could access it more easily (e.g. to delete(reset)
           //     or to share between each other.
+          // 4 - I'm not quite sure if "Viewed" flag is needed. Seems to add unnecessary complexity
           fOnLoadProgress(camp.ShortName);
           fOnAddDone(Self);
         end;
