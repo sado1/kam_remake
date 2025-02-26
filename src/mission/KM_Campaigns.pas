@@ -942,8 +942,8 @@ begin
           // 1 - campaign scan needs to be much-MUCH faster. There's no real need to load all the campaign data (including sprites and etc) on scan.
           //     What is needed for the main menu is just the localized name and optionally missions counts. Everything else (that takes literal seconds on first
           //     scan) needs to be loaded async by demand. This will cut the scan time by x50 or more, from several seconds down to 100ms
-          // 2 - Campaign data saving does not have to loose any data when invoked in the middle of ther scan. There's no real benefit in handling campaigns.dat
-          //     like a FullRead/FullWrite list, only drawbacks. Read it once, store its entries in memory, write it out with old or updated entries any time.
+          // 2 - Campaign data saving does not have to loose any data when invoked in the middle of ther scan. There's no real benefit in loading chunks of data
+          //     from campaigns.dat, only drawbacks. We can read it fully once, store its entries in memory, write it out with old or updated entries any time.
           // 3 - As discussed, it would be good to have the campaign data saved per campaign, so that players could access it more easily (e.g. to delete(reset)
           //     or to share between each other.
           fOnLoadProgress(camp.ShortName);
