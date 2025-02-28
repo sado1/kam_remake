@@ -42,7 +42,7 @@ type
     fBackGroundPic: TKMPic;
     fMapCount: Byte;
     fShortName: UnicodeString;
-    fViewed: Boolean;
+    fIntroVideoViewed: Boolean;
 
     fMapsInfo: TKMCampaignMapDataArray;
 
@@ -81,7 +81,7 @@ type
     property ScriptDataStream: TKMemoryStream read fScriptDataStream;
     property MapsInfo: TKMCampaignMapDataArray read fMapsInfo;
     property MapsProgressData: TKMCampaignMapProgressDataArray read fMapsProgressData;
-    property Viewed: Boolean read fViewed write fViewed;
+    property IntroVideoViewed: Boolean read fIntroVideoViewed write fIntroVideoViewed;
 
     function GetCampaignTitle: UnicodeString;
     function GetCampaignDescription: UnicodeString;
@@ -265,7 +265,7 @@ begin
 
           if doUpdate then
           begin
-            camp.Viewed := True;
+            camp.IntroVideoViewed := True;
             camp.UnlockedMap := unlocked;
           end;
           for J := 0 to camp.MapCount - 1 do
@@ -314,8 +314,8 @@ begin
     M.Write(Count);
     for I := 0 to Count - 1 do
     begin
-      M.Write(Campaigns[I].Viewed);
-      if Campaigns[I].Viewed then
+      M.Write(Campaigns[I].IntroVideoViewed);
+      if Campaigns[I].IntroVideoViewed then
       begin
         M.Write(Campaigns[I].CampaignId, SizeOf(TKMCampaignId));
         M.Write(Campaigns[I].UnlockedMap);
@@ -547,8 +547,8 @@ constructor TKMCampaign.Create;
 begin
   inherited;
 
-  //1st map is always unlocked to allow to start campaign
-  fViewed := False;
+  // 1st map is always unlocked to allow to start campaign
+  fIntroVideoViewed := False;
   fUnlockedMap := 0;
   fScriptDataStream := TKMemoryStreamBinary.Create;
 end;

@@ -411,9 +411,9 @@ begin
   //Refresh;
   Panel_Campaign.Show;
 
-  if not fCampaign.Viewed then
+  if not fCampaign.IntroVideoViewed then
   begin
-    fCampaign.Viewed := True;
+    fCampaign.IntroVideoViewed := True;
     fCampaigns.SaveProgress;
 
     gVideoPlayer.AddCampaignVideo(fCampaign.Path, 'Logo');
