@@ -2937,7 +2937,7 @@ begin
   begin
     ticksBehindCnt := GetTicksBehindCnt;
 
-    // When our game is more then 0.5 tick behind - play another tick immidiately
+    // When our game is more then 0.5 tick behind - play another tick immediately
     // This will prevent situation, when lags on local PC (on zoon out, f.e.) leads to lags for all other MP players
     // Also game speed become absolutely presize
     if ticksBehindCnt > 0.5 then

@@ -422,7 +422,7 @@ begin
     gVideoPlayer.Play;
   end;
 
-  // Start briefing audio immidiately, if video was not started (disabled / no video file etc)
+  // Start briefing audio immediately, if video was not started (disabled / no video file etc)
   if not gVideoPlayer.IsActive then
     PlayBriefingAudioTrack;
 end;
