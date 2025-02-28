@@ -559,7 +559,7 @@ var
   I: Integer;
 begin
   FreeAndNil(fTextLib);
-  fScriptDataStream.Free;
+  FreeAndNil(fScriptDataStream);
 
   for I := 0 to High(fMapsInfo) do
     FreeAndNil(fMapsInfo[I].TxtInfo);
