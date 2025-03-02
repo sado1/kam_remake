@@ -31,22 +31,24 @@ type
 
   TKMCampaign = class
   private
-    //Runtime variables
+    // Runtime variables
     fPath: UnicodeString;
     fTextLib: TKMTextLibrarySingle;
     fUnlockedMap: Byte;
     fScriptDataStream: TKMemoryStream;
 
-    //Saved in CMP
-    fCampaignId: TKMCampaignId; //Used to identify the campaign
-    fBackGroundPic: TKMPic;
+    // Saved in CMP
+    fCampaignId: TKMCampaignId; // Used to identify the campaign
     fMapCount: Byte;
     fShortName: UnicodeString;
     fIntroVideoViewed: Boolean;
 
-    fMapsInfo: TKMCampaignMapDataArray;
+    // Saved in .rxx
+    fBackGroundPic: TKMPic;
 
-    fMapsProgressData: TKMCampaignMapProgressDataArray; //Map data, saved in campaign progress
+    fMapsInfo: TKMCampaignMapDataArray; // Missions info (name + TxtInfo)
+
+    fMapsProgressData: TKMCampaignMapProgressDataArray; // Map data, saved in campaign progress
 
     function GetDefaultMissionTitle(aIndex: Byte): UnicodeString;
 
@@ -744,7 +746,7 @@ begin
 
   LoadSprites;
 
-  if UNLOCK_CAMPAIGN_MAPS then //Unlock more maps for debug
+  if UNLOCK_CAMPAIGN_MAPS then // Unlock more maps for debug
     fUnlockedMap := fMapCount - 1;
 end;
 
@@ -938,7 +940,7 @@ begin
           // and if all of the campaigns are not loaded yet (including their progress)
           // then on that save some of the campaign data will be lost
 
-          //@Rey: This can be greatly improved:
+          // @Rey: This can be greatly improved:
           // 1 - campaign scan needs to be much-MUCH faster. There's no real need to load all the campaign data (including sprites and etc) on scan.
           //     What is needed for the main menu is just the localized name and optionally missions counts. Everything else (that takes literal seconds on first
           //     scan) needs to be loaded async by demand. This will cut the scan time by x50 or more, from several seconds down to 100ms
@@ -946,7 +948,6 @@ begin
           //     from campaigns.dat, only drawbacks. We can read it fully once, store its entries in memory, write it out with old or updated entries any time.
           // 3 - As discussed, it would be good to have the campaign data saved per campaign, so that players could access it more easily (e.g. to delete(reset)
           //     or to share between each other.
-          // 4 - I'm not quite sure if "Viewed" flag is needed. Seems to add unnecessary complexity
           fOnLoadProgress(camp.ShortName);
           fOnAddDone(Self);
         end;
