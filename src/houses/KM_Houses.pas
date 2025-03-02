@@ -1977,6 +1977,7 @@ begin
     if gRes.Houses[fType].IsWorkshop and (aCount > 0) then
     begin
       count := aCount;
+      // Get items from the last to the first, so they appear better in the UI (check Leather Workshop f.e.)
       for p := 19 downto 0 do
         if fWareOutPool[p] = I then
           begin
