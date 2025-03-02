@@ -528,6 +528,18 @@ begin
           //After feeding troops, serf should walk away, but ToUnit could be dead by now
           if (fToUnit is TKMUnitWarrior) then
           begin
+            if TKMUnitSerf(fUnit).IsHungry then
+            begin
+              // Serf is hungry, try to go to the Inn
+              if TKMUnitSerf(fUnit).CheckCondition then
+                Exit // Exit immediately, since we created new task here and old task is destroyed!
+                     // Changing any task fields (f.e. Phase) here could affect new task!
+              else
+                // No Inn was found then just walk back to our From house
+                // even if it's destroyed, its location is still valid
+                SetActionWalkToHouse(fFrom, 5);
+            end
+            else
             if TKMUnitSerf(fUnit).TryDeliverFrom(nil) then
               Exit //Exit immediately, since we created new task here and old task is destroyed!
                    //Changing any task fields (f.e. Phase) here could affect new task!
