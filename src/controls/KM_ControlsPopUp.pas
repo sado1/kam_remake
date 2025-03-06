@@ -245,9 +245,12 @@ procedure TKMPopUpMenu.MouseUp(X, Y: Integer; Shift: TShiftState; Button: TMouse
 begin
   inherited;
 
-  // Hide menu on MouseUp
-  MenuHide(nil);
+  // Hide list and shape on MouseUp
+  fList.Hide;
+  fShapeBG.Hide;
 end;
+
+
 
 
 { TKMPopUpPanel }
