@@ -554,6 +554,7 @@ const
   CAMPAIGNS_FOLDER_NAME = 'Campaigns';
   SAVES_FOLDER_NAME = 'Saves';
   SAVES_MP_FOLDER_NAME = 'SavesMP';
+  SAVES_CMP_FOLDER_NAME = 'SavesCMP';
 
 
 { Terrain }

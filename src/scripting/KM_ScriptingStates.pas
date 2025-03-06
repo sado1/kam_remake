@@ -795,7 +795,7 @@ begin
       Exit;
     end;
 
-    Result := gGameApp.Campaigns.ActiveCampaign.MapCount;
+    Result := gGameApp.Campaigns.ActiveCampaign.Spec.MissionsCount;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

@@ -4,7 +4,7 @@ interface
 uses
   SysUtils,
   KM_Controls, KM_ControlsBase, KM_ControlsChart, KM_Defaults, KM_Pics,
-  KM_InterfaceDefaults, KM_MapTypes, KM_CampaignTypes,
+  KM_InterfaceDefaults, KM_MapTypes, KM_CampaignClasses,
   KM_GameTypes, KM_CommonTypes;
 
 
@@ -532,11 +532,8 @@ end;
 
 
 procedure TKMGameResultsSP.ContinueClick(Sender: TObject);
-var
-  campaignName: UnicodeString;
 begin
-  campaignName := Char(fRepeatCampName[0]) + Char(fRepeatCampName[1]) + Char(fRepeatCampName[2]);
-  fOnStopGame(campaignName);
+  fOnStopGame(string(fRepeatCampName.ID));
 end;
 
 
