@@ -684,8 +684,8 @@ begin
   // Menu
   nMenu := nGameSettings.AddOrFindChild('Menu');
     nMenu.Attributes['FavouriteMaps'] := fMenu_FavouriteMapsStr;
-    nMenu.Attributes['CampaignName']      := fMenu_CampaignName;
-    nMenu.Attributes['LobbyMapType']      := fMenu_LobbyMapType;
+    nMenu.Attributes['CampaignName']  := fMenu_CampaignName;
+    nMenu.Attributes['LobbyMapType']  := fMenu_LobbyMapType;
 
     nMenuSP := nMenu.AddOrFindChild('Singleplayer');
       nMenuSP.Attributes['Type'] := fMenu_MapSPType;
