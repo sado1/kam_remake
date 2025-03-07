@@ -676,7 +676,8 @@ end;
 
 procedure TKMMenuLobby.CreateChatMenu(aParent: TKMPanel);
 begin
-  PopUpMenu_Chat := TKMPopUpMenu.Create(aParent, 140);
+  // Use special mode for PopUpMenu, when action is triggered by dragging (down and move) through the list
+  PopUpMenu_Chat := TKMPopUpMenu.Create(aParent, 140, pmmActionOnMouseDownNMove);
   PopUpMenu_Chat.Anchors := [anLeft, anBottom];
   //Menu gets populated right before show
   PopUpMenu_Chat.AddItem(NO_TEXT);
