@@ -2205,7 +2205,7 @@ var
   lobbyCl: Cardinal;
 begin
   // Reload settings because we could have updated favourite maps, f.e.
-  gGameAppSettings.ReloadSettings;
+  gGameAppSettings.ReloadFavouriteMaps;
 
   //Remember previous map selected
   if DropCol_Maps.ItemIndex <> -1 then
@@ -2455,6 +2455,10 @@ begin
     I := DropCol_Maps.Item[Y].Tag;
     fMapsMP.Lock;
     try
+      // We could have updated favourite maps made by other game instances
+      // Do not reload all other settings, cause we could have some settings in the memory only (selected maps f.e.)
+      gGameAppSettings.ReloadFavouriteMaps;
+
       fMapsMP[I].IsFavourite := not fMapsMP[I].IsFavourite;
       if fMapsMP[I].IsFavourite then
       begin
@@ -2465,12 +2469,12 @@ begin
         gServerSettings.ServerMapsRoster.Remove(fMapsMP[I].CRC);
       end;
 
-      //Update pic
+      // Update pic
       DropCol_Maps.Item[Y].Cells[0].Pic := fMapsMP[I].FavouriteMapPic;
       fMapsSortUpdateNeeded := True; //Ask for resort on next list show
 
-      // Save settings immediately, thus updated favourite maps could be seen in the other game instances
-      gGameAppSettings.SaveSettings;
+      // Save favourite maps immediately, thus updated favourite maps could be seen in the other game instances
+      gGameAppSettings.SaveFavouriteMaps;
     finally
       fMapsMP.Unlock;
     end;

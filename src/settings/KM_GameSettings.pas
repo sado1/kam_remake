@@ -162,6 +162,9 @@ type
     procedure SetSpeedPace(const aValue: Word);
     function GetFavouriteMaps: TKMMapsCRCList;
     function GetAsyncGameResLoader: Boolean;
+
+    function GetMenu_MapEdSPMapCRC: Cardinal;
+    procedure SetMenu_MapEdSPMapCRC(aCRC: Cardinal);
   public
     GFX: TKMSettingsGFX;
     SFX: TKMSettingsSFX;
@@ -172,6 +175,9 @@ type
 
     procedure LoadFromXML; override;
     procedure SaveToXML; override;
+
+    procedure LoadFavouriteMapsFromXML;
+    procedure SaveFavouriteMapsToXML;
 
     // Game
     property Autosave: Boolean read fAutosave write fAutosave;
@@ -333,6 +339,34 @@ begin
   if Self = nil then Exit(nil);
 
   Result := fFavouriteMaps;
+end;
+
+
+procedure TKMGameSettings.LoadFavouriteMapsFromXML;
+var
+  nGameSettings, nMenu: TKMXmlNode;
+begin
+  if Self = nil then Exit;
+
+  nGameSettings := Root.AddOrFindChild('Game');
+
+  nMenu := nGameSettings.AddOrFindChild('Menu');
+    fMenu_FavouriteMapsStr   := nMenu.Attributes['FavouriteMaps'].AsString('');
+    fFavouriteMaps.LoadFromString(fMenu_FavouriteMapsStr);
+end;
+
+
+procedure TKMGameSettings.SaveFavouriteMapsToXML;
+var
+  nGameSettings, nMenu: TKMXmlNode;
+begin
+  if Self = nil then Exit;
+  if BLOCK_FILE_WRITE then Exit;
+
+  nGameSettings := Root.AddOrFindChild('Game');
+
+  nMenu := nGameSettings.AddOrFindChild('Menu');
+    nMenu.Attributes['FavouriteMaps'] := fMenu_FavouriteMapsStr;
 end;
 
 
