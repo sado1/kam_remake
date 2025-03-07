@@ -469,10 +469,10 @@ begin
         gServerSettings.ServerMapsRoster.Remove(fMaps[I].CRC);
       end;
 
-      //Update pic
+      // Update pic
       ColumnBox_MapEd.Item[Y].Cells[0].Pic := fMaps[I].FavouriteMapPic;
 
-      // Save settings immediately, thus updated favourite maps could be seen in the other game instances
+      // Save favourite maps immediately, thus updated favourite maps could be seen in the other game instances
       gGameAppSettings.SaveFavouriteMaps;
     finally
       fMaps.Unlock;
