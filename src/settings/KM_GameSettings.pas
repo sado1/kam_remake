@@ -162,9 +162,6 @@ type
     procedure SetSpeedPace(const aValue: Word);
     function GetFavouriteMaps: TKMMapsCRCList;
     function GetAsyncGameResLoader: Boolean;
-
-    function GetMenu_MapEdSPMapCRC: Cardinal;
-    procedure SetMenu_MapEdSPMapCRC(aCRC: Cardinal);
   public
     GFX: TKMSettingsGFX;
     SFX: TKMSettingsSFX;
