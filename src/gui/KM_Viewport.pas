@@ -424,10 +424,11 @@ begin
      not ScrollKeyDown  and
      not ZoomKeyIn      and
      not ZoomKeyOut     and
-     not (cursorPoint.X <= screenBounds.Left + SCROLL_FLEX) and
-     not (cursorPoint.Y <= screenBounds.Top + SCROLL_FLEX) and
-     not (cursorPoint.X >= screenBounds.Right -1-SCROLL_FLEX) and
-     not (cursorPoint.Y >= screenBounds.Bottom-1-SCROLL_FLEX)) then
+     (IGNORE_MOUSE_SCROLLING or
+       (not (cursorPoint.X <= screenBounds.Left + SCROLL_FLEX) and
+        not (cursorPoint.Y <= screenBounds.Top + SCROLL_FLEX) and
+        not (cursorPoint.X >= screenBounds.Right -1-SCROLL_FLEX) and
+        not (cursorPoint.Y >= screenBounds.Bottom-1-SCROLL_FLEX)))) then
   begin
     //Stop the scrolling (e.g. if the form loses focus due to other application popping up)
     ReleaseScrollKeys;

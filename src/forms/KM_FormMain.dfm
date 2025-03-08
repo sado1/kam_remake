@@ -82,13 +82,14 @@ object FormMain: TFormMain
     ParentDoubleBuffered = False
     TabOrder = 1
     object cpMisc: TCategoryPanel
-      Top = 385
+      Top = 705
       Height = 24
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
       OnCollapse = cpCollapseChanged
       OnExpand = cpCollapseChanged
+      ExplicitTop = 385
       ExpandedHeight = 144
       object chkBevel: TCheckBox
         Left = 168
@@ -126,13 +127,14 @@ object FormMain: TFormMain
       end
     end
     object cpLogs: TCategoryPanel
-      Top = 361
+      Top = 681
       Height = 24
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 1
       OnCollapse = cpCollapseChanged
       OnExpand = cpCollapseChanged
+      ExplicitTop = 361
       ExpandedHeight = 198
       object chkLogCommands: TCheckBox
         Left = 120
@@ -237,16 +239,15 @@ object FormMain: TFormMain
       end
     end
     object cpGraphicTweaks: TCategoryPanel
-      Top = 337
-      Height = 24
+      Top = 513
+      Height = 168
       Caption = 'Graphic tweaks'
-      Collapsed = True
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
       OnCollapse = cpCollapseChanged
       OnExpand = cpCollapseChanged
-      ExpandedHeight = 168
+      ExplicitTop = 427
       object Label1: TLabel
         Left = 101
         Top = 55
@@ -381,13 +382,14 @@ object FormMain: TFormMain
       end
     end
     object cpUserInreface: TCategoryPanel
-      Top = 313
+      Top = 489
       Height = 24
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 3
       OnCollapse = cpCollapseChanged
       OnExpand = cpCollapseChanged
+      ExplicitTop = 313
       ExpandedHeight = 114
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -454,23 +456,25 @@ object FormMain: TFormMain
       end
     end
     object cpPerfLogs: TCategoryPanel
-      Top = 289
+      Top = 465
       Height = 24
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 4
       OnCollapse = cpCollapseChanged
       OnExpand = cpCollapseChanged
+      ExplicitTop = 289
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
-      Top = 265
+      Top = 441
       Height = 24
       Caption = 'AI'
       Collapsed = True
       TabOrder = 5
       OnCollapse = cpCollapseChanged
       OnExpand = cpCollapseChanged
+      ExplicitTop = 265
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -694,13 +698,14 @@ object FormMain: TFormMain
       end
     end
     object cpScripting: TCategoryPanel
-      Top = 241
+      Top = 417
       Height = 24
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 6
       OnCollapse = cpCollapseChanged
       OnExpand = cpCollapseChanged
+      ExplicitTop = 241
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -718,13 +723,14 @@ object FormMain: TFormMain
       end
     end
     object cpDebugInput: TCategoryPanel
-      Top = 217
+      Top = 393
       Height = 24
       Caption = 'Debug Input'
       Collapsed = True
       TabOrder = 7
       OnCollapse = cpCollapseChanged
       OnExpand = cpCollapseChanged
+      ExplicitTop = 217
       ExpandedHeight = 210
       object gbFindObjByUID: TGroupBox
         Left = 8
@@ -853,13 +859,14 @@ object FormMain: TFormMain
       end
     end
     object cpGameAdv: TCategoryPanel
-      Top = 193
+      Top = 369
       Height = 24
       Caption = 'Game additional'
       Collapsed = True
       TabOrder = 8
       OnCollapse = cpCollapseChanged
       OnExpand = cpCollapseChanged
+      ExplicitTop = 193
       ExpandedHeight = 239
       object chkLoadUnsupSaves: TCheckBox
         Left = 12
@@ -980,13 +987,14 @@ object FormMain: TFormMain
       end
     end
     object cpDebugOutput: TCategoryPanel
-      Top = 169
+      Top = 345
       Height = 24
       Caption = 'Debug Output'
       Collapsed = True
       TabOrder = 9
       OnCollapse = cpCollapseChanged
       OnExpand = cpCollapseChanged
+      ExplicitTop = 169
       ExpandedHeight = 97
       object chkUIDs: TCheckBox
         Left = 120
@@ -1062,13 +1070,14 @@ object FormMain: TFormMain
       end
     end
     object CategoryPanel1: TCategoryPanel
-      Top = 145
+      Top = 321
       Height = 24
       Caption = 'Debug Terrain'
       Collapsed = True
       TabOrder = 10
       OnCollapse = cpCollapseChanged
       OnExpand = cpCollapseChanged
+      ExplicitTop = 145
       ExpandedHeight = 248
       object chkShowTerrainIds: TCheckBox
         Left = 8
@@ -1296,9 +1305,7 @@ object FormMain: TFormMain
     end
     object cpDebugRender: TCategoryPanel
       Top = 121
-      Height = 24
       Caption = 'Debug Render'
-      Collapsed = True
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 11
@@ -1483,6 +1490,15 @@ object FormMain: TFormMain
         Height = 17
         Caption = 'Viewport position'
         TabOrder = 17
+        OnClick = ControlsUpdate
+      end
+      object chkIgnoreMouseScroll: TCheckBox
+        Left = 8
+        Top = 136
+        Width = 114
+        Height = 17
+        Caption = 'Ignore mouse scroll'
+        TabOrder = 18
         OnClick = ControlsUpdate
       end
     end
