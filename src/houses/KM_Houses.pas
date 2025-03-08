@@ -376,6 +376,7 @@ const
   // Made to prevent serf's taking/losing deliveries only because player clicks throught modes.
   // No hurry, let's wait a bit for player to be sure, what mode he needs
   UPDATE_DELIVERY_MODE_DELAY = 10;
+  NO_UPDATE_DELIVERY_MODE_TICK = 0;
 
 
 { TKMHouseSketch }
@@ -533,7 +534,7 @@ begin
   DoorwayUse        := 0;
   fNewDeliveryMode  := dmDelivery;
   fDeliveryMode     := dmDelivery;
-  fUpdateDeliveryModeOnTick := 0;
+  fUpdateDeliveryModeOnTick := NO_UPDATE_DELIVERY_MODE_TICK;
 
   for I := 1 to 4 do
   begin
@@ -913,7 +914,7 @@ begin
 
   CheckTakeOutDeliveryMode;
 
-  fUpdateDeliveryModeOnTick := 0;
+  fUpdateDeliveryModeOnTick := NO_UPDATE_DELIVERY_MODE_TICK;
   oldDeliveryMode := fDeliveryMode;
   fDeliveryMode := fNewDeliveryMode;
   gScriptEvents.ProcHouseDeliveryModeChanged(Self, oldDeliveryMode, fDeliveryMode);
@@ -926,7 +927,11 @@ procedure TKMHouse.SetNewDeliveryMode(aValue: TKMDeliveryMode);
 begin
   fNewDeliveryMode := aValue;
 
-  fUpdateDeliveryModeOnTick := fTick + UPDATE_DELIVERY_MODE_DELAY;
+  if UPDATE_DELIVERY_MODE_IMMEDIATELY then
+    fUpdateDeliveryModeOnTick := fTick
+  else
+    fUpdateDeliveryModeOnTick := fTick + UPDATE_DELIVERY_MODE_DELAY;
+
   gLog.LogDelivery('NewDeliveryMode set to ' + IntToStr(Ord(fNewDeliveryMode)));
 end;
 

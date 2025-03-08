@@ -114,6 +114,7 @@ var
   {$IFDEF WDC} //Work only in Delphi
   CACHE_DELIVERY_BIDS: Boolean = True; //Cache delivery bids cost. Must be turned ON if we want to use pathfinding for bid calc, huge impact on performance in that case
   {$ENDIF}
+  UPDATE_DELIVERY_MODE_IMMEDIATELY: Boolean = DEBUG_CFG; // Do we update house delivery mode immediately ?
 
   WARFARE_ORDER_SEQUENTIAL    :Boolean = True; //Pick weapon orders like KaM did
   WARFARE_ORDER_PROPORTIONAL  :Boolean = False; //New proportional way (looks like a bad idea)
