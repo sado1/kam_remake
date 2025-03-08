@@ -396,6 +396,9 @@ type
   public
     RenderArea: TKMRenderControl;
     SuppressAltForMenu: Boolean; //Suppress Alt key 'activate window menu' function
+
+    property DevSettings: TKMDevSettings read fDevSettings;
+
     procedure UpdateFormState;
     procedure ControlsReset;
     procedure ControlsRefill;
@@ -1448,8 +1451,6 @@ begin
     chkViewportPos.       SetCheckedWithoutClick(SHOW_VIEWPORT_POS);
     chkSkipRender.        SetCheckedWithoutClick(SKIP_RENDER);
     chkSkipSound.         SetCheckedWithoutClick(SKIP_SOUND);
-    chkIgnoreMouseScroll. SetCheckedWithoutClick(IGNORE_MOUSE_SCROLLING);
-    chkShowUnitsInHouse.  SetCheckedWithoutClick(SHOW_UNITS_IN_HOUSE);
     chkShowGameTick.      SetCheckedWithoutClick(SHOW_GAME_TICK);
     chkBevel.             SetCheckedWithoutClick(SHOW_DEBUG_OVERLAY_BEVEL);
     rgDebugFont.ItemIndex := DEBUG_TEXT_FONT_ID;
