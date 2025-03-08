@@ -264,6 +264,7 @@ type
     N15: TMenuItem;
     Openscriptfile1: TMenuItem;
     chkIgnoreMouseScroll: TCheckBox;
+    chkShowUnitsInHouse: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -1448,6 +1449,7 @@ begin
     chkSkipRender.        SetCheckedWithoutClick(SKIP_RENDER);
     chkSkipSound.         SetCheckedWithoutClick(SKIP_SOUND);
     chkIgnoreMouseScroll. SetCheckedWithoutClick(IGNORE_MOUSE_SCROLLING);
+    chkShowUnitsInHouse.  SetCheckedWithoutClick(SHOW_UNITS_IN_HOUSE);
     chkShowGameTick.      SetCheckedWithoutClick(SHOW_GAME_TICK);
     chkBevel.             SetCheckedWithoutClick(SHOW_DEBUG_OVERLAY_BEVEL);
     rgDebugFont.ItemIndex := DEBUG_TEXT_FONT_ID;
@@ -1653,6 +1655,7 @@ begin
     SKIP_RENDER := chkSkipRender.Checked;
     SKIP_SOUND := chkSkipSound.Checked;
     IGNORE_MOUSE_SCROLLING := chkIgnoreMouseScroll.Checked;
+    SHOW_UNITS_IN_HOUSE := chkShowUnitsInHouse.Checked;
     DISPLAY_SOUNDS := chkPaintSounds.Checked;
     SHOW_VIEWPORT_POS := chkViewportPos.Checked;
 

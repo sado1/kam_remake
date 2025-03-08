@@ -158,6 +158,7 @@ var
   SAVE_RANDOM_CHECKS      :Boolean = True; //Save random checks data to separate file
   MAPED_SHOW_CONDITION_UNIT_BTNS: Boolean = True; //Show condition Inc/Dec buttons for citizen units in MapEd
   {Gameplay display}
+  SHOW_UNITS_IN_HOUSE     :Boolean = False; //Should we hide units when they are in house ?
   IGNORE_MOUSE_SCROLLING  :Boolean = False; //Ignore mouse scrolling
   SKIP_RENDER             :Boolean = False; //Skip all the rendering in favor of faster logic
   DO_NOT_SKIP_LOAD_TILESET:Boolean = False; //Do not skip load tileset even if SKIP_RENDER is set

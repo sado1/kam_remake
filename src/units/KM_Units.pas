@@ -855,7 +855,7 @@ var
   xPaintPos, yPaintPos: Single;
 begin
   inherited;
-  if not fVisible then exit;
+  if not fVisible and not SHOW_UNITS_IN_HOUSE then exit;
   if fAction = nil then exit;
 
   V := fVisual.GetLerp(aTickLag);
