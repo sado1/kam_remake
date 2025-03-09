@@ -19,8 +19,6 @@ type
 
     procedure SetGoldMaxCnt(aValue: Integer);
     function GetGoldCount : Integer;
-
-
   protected
     procedure AddDemandsOnActivate(aWasBuilt: Boolean); override;
 
