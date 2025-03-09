@@ -649,10 +649,9 @@ end;
 
 procedure TKMHouse.AddDemandsOnActivate(aWasBuilt: Boolean);
 var
-  I, demandsCnt: Integer;
   W: TKMWareType;
 begin
-  for I := 1 to 4 do
+  for var I := 1 to 4 do
   begin
     W := gRes.Houses[fType].WareInput[I];
     with gHands[Owner].Deliveries.Queue do
@@ -662,11 +661,6 @@ begin
       wtAll:     AddDemand(Self, nil, W, 1, dtAlways, diNorm);
       else        begin
                     UpdateDemands;
-                    {
-                    demandsCnt := GetWareDistribution(I);
-                    AddDemand(Self, nil, W, demandsCnt, dtOnce, diNorm); //Every new house needs 5 resource units
-                    WareDeliveryCnt[I] := WareDeliveryCnt[I] + demandsCnt; //Keep track of how many resources we have on order (for distribution of wares)
-                    }
                   end;
     end;
   end;
