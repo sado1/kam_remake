@@ -1248,7 +1248,7 @@ begin
   for I := 1 to BARRACKS_RES_COUNT do
   begin
     tmp := barracks.CheckWareIn(BarracksResType[I]);
-    Button_Barracks[I].Caption := IfThen(tmp = 0, '-', IntToKStr(tmp));
+    Button_Barracks[I].Caption := IfThen(tmp = 0, '-', IntToKStr(tmp, 1000));
     //Set highlights
     Button_Barracks[I].Down := False;
     for K := 1 to 4 do
@@ -1260,7 +1260,7 @@ begin
   end;
 
   tmp := barracks.RecruitsCount;
-  Button_BarracksRecruit.Caption := IfThen(tmp = 0, '-', IntToKStr(tmp));
+  Button_BarracksRecruit.Caption := IfThen(tmp = 0, '-', IntToKStr(tmp, 1000));
   Button_BarracksRecruit.Down := True; //Recruit is always enabled, all troops require one
   Image_Barracks_NotAcceptRecruit.Visible := barracks.NotAcceptRecruitFlag;
 
