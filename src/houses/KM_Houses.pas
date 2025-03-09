@@ -2326,7 +2326,7 @@ begin
   fTick := aTick;
 
   //Update delivery mode, if time has come
-  if (fUpdateDeliveryModeOnTick = fTick) then
+  if (fUpdateDeliveryModeOnTick <> NO_UPDATE_DELIVERY_MODE_TICK) and (fUpdateDeliveryModeOnTick <= fTick) then
     UpdateDeliveryMode;
 
   //Show unoccupied message if needed and house belongs to human player and can have worker at all
