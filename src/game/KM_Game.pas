@@ -1090,7 +1090,7 @@ begin
   fileDirName := GetFileDirName(ExtractFileDir(fParams.MissionFullFilePath));
   if DetermineMapKind(fileDirName, mapKind) then
   begin
-    mapInfo := TKMMapInfo.Create(GetFileDirName(fParams.MissionFullFilePath), True, mapKind); // Force recreate map CRC
+    mapInfo := TKMMapInfo.Create(GetFileDirName(fParams.MissionFullFilePath), True, mapKind, True); // Force recreate map CRC
     try
       fParams.MapFullCRC := mapInfo.CRC;
       fParams.MapSimpleCRC := mapInfo.MapAndDatCRC;

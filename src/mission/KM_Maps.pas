@@ -1975,7 +1975,7 @@ procedure TTMapsScanner.ProcessMap(const aPath: UnicodeString; aKind: TKMMapKind
 var
   map: TKMMapInfo;
 begin
-  map := TKMMapInfo.Create(aPath, False, aKind);
+  map := TKMMapInfo.Create(aPath, False, aKind, True);
 
   if SLOW_MAP_SCAN then
     Sleep(50);
@@ -2005,7 +2005,7 @@ begin
   //Simply creating the TKMMapInfo updates the .mi cache file
   if not fIsStopped then
   begin
-    map := TKMMapInfo.Create(aPath, False, aKind);
+    map := TKMMapInfo.Create(aPath, False, aKind, True);
     map.Free;
   end;
 end;

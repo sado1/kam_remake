@@ -629,7 +629,7 @@ begin
   FreeAndNil(fSaveInfo);
 
   //Strict scanning to force CRC recalculation
-  fMapInfo := TKMMapInfo.Create(aName, True, aMapKind);
+  fMapInfo := TKMMapInfo.Create(aName, True, aMapKind, True);
 
   if not fMapInfo.IsValid then
   begin
@@ -984,7 +984,7 @@ begin
                 advancedAIUsableLocs := fMapInfo.AdvancedAIUsableLocs;
                 fixedLocsColors := fMapInfo.FixedLocsColors;
                 //Check that map's hash hasn't changed
-                checkMapInfo := TKMMapInfo.Create(fMapInfo.Name, True, fMapInfo.Kind);
+                checkMapInfo := TKMMapInfo.Create(fMapInfo.Name, True, fMapInfo.Kind, True);
                 try
                   if checkMapInfo.CRC <> fMapInfo.CRC then
                   begin
@@ -2041,12 +2041,12 @@ begin
                 M.Read(tmpCardinal); //CRC
                 //Try to load map from MP or DL folder
                 FreeAndNil(fMapInfo);
-                fMapInfo := TKMMapInfo.Create(tmpStringW, True, mkMP);
+                fMapInfo := TKMMapInfo.Create(tmpStringW, True, mkMP, True);
                 if not fMapInfo.IsValid or (fMapInfo.CRC <> tmpCardinal) then
                 begin
                   //Append CRC to map name
                   tmpStringW := tmpStringW + '_' + IntToHex(Integer(tmpCardinal), 8);
-                  fMapInfo := TKMMapInfo.Create(tmpStringW, True, mkDL);
+                  fMapInfo := TKMMapInfo.Create(tmpStringW, True, mkDL, True);
                   if not fMapInfo.IsValid or (fMapInfo.CRC <> tmpCardinal) then
                     FreeAndNil(fMapInfo);
                 end;
