@@ -61,7 +61,7 @@ type
     mkClientLost,      //Server tells clients that someone has disconnected
     mkReassignHost,    //Server tells clients who is the new host after the host disconnects
 
-    mkGameVersion,     //Server tells a new client which game version we are using
+    mkGameVersion,     //Server tells a new client which NET_PROTOCOL_REVISON we are using (was GAME_VERSION before, but it is unnecessarily strict)
     mkWelcomeMessage,  //Server sends a welcome message to the client
     mkServerName,      //Server sends the server name to the client
     mkJoinRoom,        //Client requests to be placed in a room
