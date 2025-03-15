@@ -35,13 +35,14 @@ type
   private
     // Saved in CMP
     fCampaignId: TKMCampaignId; // Used to identify the campaign
-    fCampIDStr: UnicodeString;
 
     fMapCount: Byte;
 
     fTextLib: TKMTextLibrarySingle;
 
     fMapsInfo: TKMCampaignMapDataArray; // Missions info (name + TxtInfo)
+
+    function GetIDStr(): UnicodeString;
 
     procedure SetMapCount(aValue: Byte);
     procedure SetCampaignId(aCampaignId: TKMCampaignId);
@@ -67,7 +68,7 @@ type
 
     property MissionsCount: Byte read fMapCount write SetMapCount;
     property CampaignId: TKMCampaignId read fCampaignId write SetCampaignId;
-    property IdStr: UnicodeString read fCampIDStr;
+    property IdStr: UnicodeString read GetIDStr;
     property MapsInfo: TKMCampaignMapDataArray read fMapsInfo;
     property TextLib: TKMTextLibrarySingle read fTextLib;
 
@@ -493,7 +494,6 @@ end;
 procedure TKMCampaignSpec.SetCampaignId(aCampaignId: TKMCampaignId);
 begin
   fCampaignId := aCampaignId;
-  fCampIDStr := UnicodeString(fCampaignID.ID);
 end;
 
 
@@ -511,9 +511,9 @@ begin
   M.ReadBytes(cmp);
   Assert(Length(cmp) = 3);
 
-  fCampIDStr := WideChar(cmp[0]) + WideChar(cmp[1]) + WideChar(cmp[2]);
+  var campIDStr := WideChar(cmp[0]) + WideChar(cmp[1]) + WideChar(cmp[2]);
 
-  fCampaignId := TKMCampaignId.Create(AnsiString(fCampIDStr));
+  fCampaignId := TKMCampaignId.Create(AnsiString(campIDStr));
 
   M.Read(fMapCount);
   SetMapCount(fMapCount); //Update array's sizes
@@ -542,9 +542,6 @@ end;
 procedure TKMCampaignSpec.LoadFromFile(const aDir, aFileName: UnicodeString);
 var
   filePath: String;
-
-  I, K: Integer;
-
 begin
   filePath := aDir + aFileName;
   if not FileExists(filePath) then Exit;
@@ -575,13 +572,13 @@ begin
       else
         fMapsInfo[I].TxtInfo.ResetInfo;
 
-      fMapsInfo[I].TxtInfo.LoadTXTInfo(TKMCampaignUtils.GetMissionFile(aPath, fCampIDStr, I, '.txt'));
+      fMapsInfo[I].TxtInfo.LoadTXTInfo(TKMCampaignUtils.GetMissionFile(aPath, IdStr, I, '.txt'));
 
       fMapsInfo[I].MissionName := '';
 
       textMission.Clear; // Better clear object, than rectreate it for every map
       // Make a full scan for Libx top ID, to allow unordered Libx ID's by not carefull campaign makers
-      textMission.LoadLocale(TKMCampaignUtils.GetMissionFile(aPath, fCampIDStr, I, '.%s.libx'));
+      textMission.LoadLocale(TKMCampaignUtils.GetMissionFile(aPath, IdStr, I, '.%s.libx'));
 
       if textMission.HasText(MISSION_NAME_LIBX_ID) then
         fMapsInfo[I].MissionName := StringReplace(textMission[MISSION_NAME_LIBX_ID], '|', ' ', [rfReplaceAll]); //Replace | with space
@@ -642,6 +639,12 @@ begin
     //Have nothing - use default mission name
     //Otherwise just Append (by default MissionName is empty anyway)
     Result := Format(gResTexts[TX_GAME_MISSION], [aIndex + 1]) + fMapsInfo[aIndex].MissionName;
+end;
+
+
+function TKMCampaignSpec.GetIDStr(): UnicodeString;
+begin
+  Result := UnicodeString(fCampaignId.ID);
 end;
 
 
