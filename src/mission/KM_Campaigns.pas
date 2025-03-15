@@ -60,7 +60,9 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure LoadFromFile(const aDir, aFileName: UnicodeString);
+    procedure LoadCMP(const filePath: UnicodeString);
+    procedure LoadFromFile(const aPath: UnicodeString); overload;
+    procedure LoadFromFile(const aDir, aFileName: UnicodeString); overload;
     procedure SaveToFile(const aFileName: UnicodeString);
 
     property MissionsCount: Byte read fMapCount write SetMapCount;
@@ -495,16 +497,11 @@ begin
 end;
 
 
-//Load campaign info from *.cmp file
-//It should be private, but it is used by CampaignBuilder
-procedure TKMCampaignSpec.LoadFromFile(const aDir, aFileName: UnicodeString);
+procedure TKMCampaignSpec.LoadCMP(const filePath: UnicodeString);
 var
-  filePath: String;
   M: TKMemoryStream;
-  I, K: Integer;
   cmp: TBytes;
 begin
-  filePath := aDir + aFileName;
   if not FileExists(filePath) then Exit;
 
   M := TKMemoryStreamBinary.Create;
@@ -521,22 +518,44 @@ begin
   M.Read(fMapCount);
   SetMapCount(fMapCount); //Update array's sizes
 
-  for I := 0 to fMapCount - 1 do
+  for var I := 0 to fMapCount - 1 do
   begin
     M.Read(Maps[I].Flag);
     M.Read(Maps[I].NodeCount);
-    for K := 0 to Maps[I].NodeCount - 1 do
+    for var K := 0 to Maps[I].NodeCount - 1 do
       M.Read(Maps[I].Nodes[K]);
     M.Read(Maps[I].TextPos, SizeOf(TKMBriefingCorner));
   end;
 
   M.Free;
+end;
 
-  LoadMapsInfo(aDir);
+
+procedure TKMCampaignSpec.LoadFromFile(const aPath: UnicodeString);
+begin
+  LoadFromFile(ExtractFilePath(aPath), ExtractFileName(aPath));
+end;
+
+
+//Load campaign info from *.cmp file
+//It should be private, but it is used by CampaignBuilder
+procedure TKMCampaignSpec.LoadFromFile(const aDir, aFileName: UnicodeString);
+var
+  filePath: String;
+
+  I, K: Integer;
+
+begin
+  filePath := aDir + aFileName;
+  if not FileExists(filePath) then Exit;
+
+  LoadCMP(filePath);
 
   FreeAndNil(fTextLib);
   fTextLib := TKMTextLibrarySingle.Create;
   fTextLib.LoadLocale(aDir + 'text.%s.libx');
+
+  LoadMapsInfo(aDir);
 end;
 
 
