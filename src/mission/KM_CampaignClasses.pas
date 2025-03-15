@@ -11,12 +11,13 @@ type
   private
     fID: AnsiString;
     function GetID: AnsiString;
+    procedure SetID(aID: AnsiString);
   public
     constructor Create(aID: AnsiString);
     constructor Load(aLoadStream: TKMemoryStream);
     procedure Save(aSaveStream: TKMemoryStream);
 
-    property ID: AnsiString read GetID write fID;
+    property ID: AnsiString read GetID write SetID;
 
     class function isIdValid(aID: AnsiString): Boolean;
   end;
@@ -63,6 +64,15 @@ begin
   if Self = nil then Exit;
 
   aSaveStream.WriteA(fID);
+end;
+
+
+procedure TKMCampaignId.SetID(aID: AnsiString);
+begin
+  if not isIdValid(aID) then
+    raise Exception.Create('Wrong campaign ID: ' + string(aID));
+
+  fID := aID;
 end;
 
 
