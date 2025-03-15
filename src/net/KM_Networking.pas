@@ -2000,7 +2000,7 @@ begin
       mkReassignHost:
               ReassignHost(aSenderIndex, M);
 
-      mkPing:  PacketSend(aSenderIndex, mkPong);//, Integer(fMyPlayerCurrentFPS)); //Server will intercept this message
+      mkPing:  PacketSend(aSenderIndex, mkPong);
 
       mkPingInfo:
               begin

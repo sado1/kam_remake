@@ -947,8 +947,6 @@ begin
     mkPong:
             begin
               client := fClientList.GetByHandle(aSenderHandle);
-//              M.Read(tmpInteger);
-//              Client.FPS := tmpInteger;
               if (client.fPingStarted <> 0) then
               begin
                 client.Ping := Math.Min(TimeSince(client.fPingStarted), High(Word));
