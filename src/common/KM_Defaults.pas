@@ -249,7 +249,7 @@ var
   SHOW_GIP                :Boolean = False; //Show GIP commands
   SHOW_GIP_AS_BYTES       :Boolean = False; //Show GIP commands as bytes (or as 'parsed type' if False)
   INI_HITPOINT_RESTORE    :Boolean = False; //Use the hitpoint restore rate from the INI file to compare with KaM
-  ALLOW_CAMP_SCRIPT_DATE_UNCOMPRESSED
+  ALLOW_CAMP_SCRIPT_DATA_UNCOMPRESSED
                           :Boolean = False; //Allow to save script data uncompressed
   SLOW_MAP_SCAN           :Boolean = False; //Scan maps with a pause to emulate uncached file access
   SLOW_CAMPAIGN_SCAN      :Boolean = False; //Scan campaigns with a pause to emulate uncached file access

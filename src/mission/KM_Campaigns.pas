@@ -835,7 +835,7 @@ begin
 
     nScriptData := nCamp.AddOrFindChild('scriptData');
 
-    fIsScriptDataBase64Compressed := IfThenB(ALLOW_CAMP_SCRIPT_DATE_UNCOMPRESSED, nScriptData.Attributes['compressed'].AsBoolean(True), True);
+    fIsScriptDataBase64Compressed := IfThenB(ALLOW_CAMP_SCRIPT_DATA_UNCOMPRESSED, nScriptData.Attributes['compressed'].AsBoolean(True), True);
 
     fScriptDataStream.Clear;
 
