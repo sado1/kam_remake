@@ -65,7 +65,8 @@ type
     procedure UpdateMuteMenuItem(aMenu: TKMPopUpMenu; aItemIndex: Integer; aIsMuted: Boolean);
     procedure UpdateImageLobbyFlag(aIndex: Integer);
 
-    procedure PlayersSetupChange(Sender: TObject);
+    procedure SetupChange(Sender: TObject);
+    procedure PlayersChange(Sender: TObject);
     procedure MapColumnClick(aValue: Integer);
     procedure SelectRMGMap(); //RMG
     procedure MapTypeChanged(Sender: TObject);
@@ -439,13 +440,13 @@ begin
       Bevel_Players := TKMBevel.Create(Panel_Players,  0,  0, CW, 340);
 
       CheckBox_HostControl := TKMCheckBox.Create(Panel_Players, 10, 10, (CW div 2) + TC2_ADD - 10, 20, gResTexts[TX_LOBBY_HOST_DOES_SETUP], fntMetal);
-      CheckBox_HostControl.OnClick := PlayersSetupChange;
+      CheckBox_HostControl.OnClick := SetupChange;
 
       CheckBox_Spectators := TKMCheckbox.Create(Panel_Players, (CW div 2) + TC2_ADD, 10, (CW div 2) - TC2_ADD - 10, 20, gResTexts[TX_LOBBY_ALLOW_SPECTATORS], fntMetal);
-      CheckBox_Spectators.OnClick := PlayersSetupChange;
+      CheckBox_Spectators.OnClick := SetupChange;
 
       CheckBox_RandomizeTeamLocations := TKMCheckBox.Create(Panel_Players, 10, 28, CW-20, 20, gResTexts[TX_LOBBY_RANDOMIZE_LOCATIONS], fntMetal);
-      CheckBox_RandomizeTeamLocations.OnClick := PlayersSetupChange;
+      CheckBox_RandomizeTeamLocations.OnClick := SetupChange;
 
     offY := 49;
 
@@ -506,13 +507,13 @@ begin
           DropBox_PlayerSlot[I].Add(MakeRow([gResTexts[TX_LOBBY_SLOT_CLOSED], gResTexts[TX_LOBBY_SLOT_CLOSED_ALL]], I));
         end;
         DropBox_PlayerSlot[I].ItemIndex := 0; //Open
-        DropBox_PlayerSlot[I].OnChange := PlayersSetupChange;
+        DropBox_PlayerSlot[I].OnChange := PlayersChange;
         DropBox_PlayerSlot[I].List.OnCellClick := DropBoxPlayers_CellClick;
         DropBox_PlayerSlot[I].OnShowList := DropBoxPlayers_Show;
 
         DropBox_Loc[I] := TKMDropList.Create(Panel_Players, C2, offY, C2W, 20, fntGrey, '', bsMenu);
         DropBox_Loc[I].Add(gResTexts[TX_LOBBY_RANDOM], LOC_RANDOM);
-        DropBox_Loc[I].OnChange := PlayersSetupChange;
+        DropBox_Loc[I].OnChange := PlayersChange;
         DropBox_Loc[I].DropCount := MAX_LOBBY_PLAYERS + 2; //also 'Random' and possible 'Spectator'
 
         PercentBar_DownloadProgress[I] := TKMPercentBar.Create(Panel_Players, C2, offY, 150, 20, fntGrey);
@@ -523,7 +524,7 @@ begin
         DropBox_Team[I] := TKMDropList.Create(Panel_Players, C3, offY, C3W, 20, fntGrey, '', bsMenu);
         DropBox_Team[I].Add('-');
         for K := 1 to MAX_TEAMS do DropBox_Team[I].Add(IntToStr(K));
-        DropBox_Team[I].OnChange := PlayersSetupChange;
+        DropBox_Team[I].OnChange := PlayersChange;
 
         DropBox_Colors[I] := TKMDropColumns.Create(Panel_Players, C4, offY, C4W, 20, fntGrey, '', bsMenu);
         DropBox_Colors[I].SetColumns(fntOutline, [''], [0]);
@@ -533,7 +534,7 @@ begin
         DropBox_Colors[I].Add(MakeListRow([''], [$FFFFFFFF], [MakePic(rxGuiMain, 31)], 0));
         for K := Low(MP_PLAYER_COLORS) to High(MP_PLAYER_COLORS) do
           DropBox_Colors[I].Add(MakeListRow([''], [MP_PLAYER_COLORS[K]], [MakePic(rxGuiMain, 30)]));
-        DropBox_Colors[I].OnChange := PlayersSetupChange;
+        DropBox_Colors[I].OnChange := PlayersChange;
 
         Image_Ready[I] := TKMImage.Create(Panel_Players, C5-8, offY, 16, 16, 32, rxGuiMain);
         Label_Ping[I] := TKMLabel.Create(Panel_Players, C6, offY, '', fntMetal, taCenter);
@@ -1439,9 +1440,9 @@ begin
           Inc(AISlotsChanged);
         end;
         DropBox_PlayerSlot[J].ItemIndex := Y;
-        //Do not call for PlayerSetupChange if this row is AIPlayer and did not change (it was AIPlayer before that) - to avoid existing AIPlayer reset
+        // Do not call for PlayerChange if this row is AIPlayer and did not change (it was AIPlayer before that) - to avoid existing AIPlayer reset
         if RowChanged or not IsAILine then
-          PlayersSetupChange(DropBox_PlayerSlot[J]);
+          PlayersChange(DropBox_PlayerSlot[J]);
       end;
     end;
 
@@ -1486,14 +1487,7 @@ begin
 end;
 
 
-//Try to change players setup, Networking will check if it can be done under current
-//conditions immediately and reverts the change without disturbing Host.
-//If the change is possible Networking will send query to the Host.
-//Host will reply with OnPlayersSetup event and data will be actualized.
-procedure TKMMenuLobby.PlayersSetupChange(Sender: TObject);
-var
-  I, netI: Integer;
-  col: Cardinal;
+procedure TKMMenuLobby.SetupChange(Sender: TObject);
 begin
   //Host control toggle
   if Sender = CheckBox_HostControl then
@@ -1521,7 +1515,18 @@ begin
       gNetworking.SendPlayerListAndRefreshPlayersSetup;
     end;
   end;
+end;
 
+
+//Try to change players setup, Networking will check if it can be done under current
+//conditions immediately and reverts the change without disturbing Host.
+//If the change is possible Networking will send query to the Host.
+//Host will reply with OnPlayersSetup event and data will be actualized.
+procedure TKMMenuLobby.PlayersChange(Sender: TObject);
+var
+  I, netI: Integer;
+  col: Cardinal;
+begin
   for I := 1 to MAX_LOBBY_SLOTS do
   begin
     netI := fLocalToNetPlayers[I];
