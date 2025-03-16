@@ -4193,7 +4193,7 @@ end;
 
 
 //* Version: 6216
-//* Returns a random integer such that: 0 <= Number
+//* Returns a random integer Number, such that: 0 <= Number < aMax
 //* Result: Number 0 to aMax
 function TKMScriptStates.KaMRandomI(aMax: Integer): Integer;
 begin
