@@ -981,9 +981,8 @@ begin
     MP_FindServerCancelClick(nil)
   else if Button_MP_PasswordCancel.IsClickable then
     MP_PasswordClick(Button_MP_PasswordCancel)
-  else begin
+  else
     BackClick(nil);
-  end;
 end;
 
 
