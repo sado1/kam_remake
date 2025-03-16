@@ -35,13 +35,14 @@ type
   private
     // Saved in CMP
     fCampaignId: TKMCampaignId; // Used to identify the campaign
-    fCampIDStr: UnicodeString;
 
     fMapCount: Byte;
 
     fTextLib: TKMTextLibrarySingle;
 
     fMapsInfo: TKMCampaignMapDataArray; // Missions info (name + TxtInfo)
+
+    function GetIDStr(): UnicodeString;
 
     procedure SetMapCount(aValue: Byte);
     procedure SetCampaignId(aCampaignId: TKMCampaignId);
@@ -60,12 +61,14 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure LoadFromFile(const aDir, aFileName: UnicodeString);
+    procedure LoadCMP(const filePath: UnicodeString);
+    procedure LoadFromFile(const aPath: UnicodeString); overload;
+    procedure LoadFromFile(const aDir, aFileName: UnicodeString); overload;
     procedure SaveToFile(const aFileName: UnicodeString);
 
     property MissionsCount: Byte read fMapCount write SetMapCount;
     property CampaignId: TKMCampaignId read fCampaignId write SetCampaignId;
-    property IdStr: UnicodeString read fCampIDStr;
+    property IdStr: UnicodeString read GetIDStr;
     property MapsInfo: TKMCampaignMapDataArray read fMapsInfo;
     property TextLib: TKMTextLibrarySingle read fTextLib;
 
@@ -491,20 +494,14 @@ end;
 procedure TKMCampaignSpec.SetCampaignId(aCampaignId: TKMCampaignId);
 begin
   fCampaignId := aCampaignId;
-  fCampIDStr := UnicodeString(fCampaignID.ID);
 end;
 
 
-//Load campaign info from *.cmp file
-//It should be private, but it is used by CampaignBuilder
-procedure TKMCampaignSpec.LoadFromFile(const aDir, aFileName: UnicodeString);
+procedure TKMCampaignSpec.LoadCMP(const filePath: UnicodeString);
 var
-  filePath: String;
   M: TKMemoryStream;
-  I, K: Integer;
   cmp: TBytes;
 begin
-  filePath := aDir + aFileName;
   if not FileExists(filePath) then Exit;
 
   M := TKMemoryStreamBinary.Create;
@@ -514,29 +511,48 @@ begin
   M.ReadBytes(cmp);
   Assert(Length(cmp) = 3);
 
-  fCampIDStr := WideChar(cmp[0]) + WideChar(cmp[1]) + WideChar(cmp[2]);
+  var campIDStr := WideChar(cmp[0]) + WideChar(cmp[1]) + WideChar(cmp[2]);
 
-  fCampaignId := TKMCampaignId.Create(AnsiString(fCampIDStr));
+  fCampaignId := TKMCampaignId.Create(AnsiString(campIDStr));
 
   M.Read(fMapCount);
   SetMapCount(fMapCount); //Update array's sizes
 
-  for I := 0 to fMapCount - 1 do
+  for var I := 0 to fMapCount - 1 do
   begin
     M.Read(Maps[I].Flag);
     M.Read(Maps[I].NodeCount);
-    for K := 0 to Maps[I].NodeCount - 1 do
+    for var K := 0 to Maps[I].NodeCount - 1 do
       M.Read(Maps[I].Nodes[K]);
     M.Read(Maps[I].TextPos, SizeOf(TKMBriefingCorner));
   end;
 
   M.Free;
+end;
 
-  LoadMapsInfo(aDir);
+
+procedure TKMCampaignSpec.LoadFromFile(const aPath: UnicodeString);
+begin
+  LoadFromFile(ExtractFilePath(aPath), ExtractFileName(aPath));
+end;
+
+
+//Load campaign info from *.cmp file
+//It should be private, but it is used by CampaignBuilder
+procedure TKMCampaignSpec.LoadFromFile(const aDir, aFileName: UnicodeString);
+var
+  filePath: String;
+begin
+  filePath := aDir + aFileName;
+  if not FileExists(filePath) then Exit;
+
+  LoadCMP(filePath);
 
   FreeAndNil(fTextLib);
   fTextLib := TKMTextLibrarySingle.Create;
   fTextLib.LoadLocale(aDir + 'text.%s.libx');
+
+  LoadMapsInfo(aDir);
 end;
 
 
@@ -556,13 +572,13 @@ begin
       else
         fMapsInfo[I].TxtInfo.ResetInfo;
 
-      fMapsInfo[I].TxtInfo.LoadTXTInfo(TKMCampaignUtils.GetMissionFile(aPath, fCampIDStr, I, '.txt'));
+      fMapsInfo[I].TxtInfo.LoadTXTInfo(TKMCampaignUtils.GetMissionFile(aPath, IdStr, I, '.txt'));
 
       fMapsInfo[I].MissionName := '';
 
       textMission.Clear; // Better clear object, than rectreate it for every map
       // Make a full scan for Libx top ID, to allow unordered Libx ID's by not carefull campaign makers
-      textMission.LoadLocale(TKMCampaignUtils.GetMissionFile(aPath, fCampIDStr, I, '.%s.libx'));
+      textMission.LoadLocale(TKMCampaignUtils.GetMissionFile(aPath, IdStr, I, '.%s.libx'));
 
       if textMission.HasText(MISSION_NAME_LIBX_ID) then
         fMapsInfo[I].MissionName := StringReplace(textMission[MISSION_NAME_LIBX_ID], '|', ' ', [rfReplaceAll]); //Replace | with space
@@ -623,6 +639,12 @@ begin
     //Have nothing - use default mission name
     //Otherwise just Append (by default MissionName is empty anyway)
     Result := Format(gResTexts[TX_GAME_MISSION], [aIndex + 1]) + fMapsInfo[aIndex].MissionName;
+end;
+
+
+function TKMCampaignSpec.GetIDStr(): UnicodeString;
+begin
+  Result := UnicodeString(fCampaignId.ID);
 end;
 
 
@@ -812,7 +834,8 @@ begin
     end;
 
     nScriptData := nCamp.AddOrFindChild('scriptData');
-    fIsScriptDataBase64Compressed := nScriptData.Attributes['compressed'].AsBoolean(True);
+
+    fIsScriptDataBase64Compressed := IfThenB(ALLOW_CAMP_SCRIPT_DATE_UNCOMPRESSED, nScriptData.Attributes['compressed'].AsBoolean(True), True);
 
     fScriptDataStream.Clear;
 

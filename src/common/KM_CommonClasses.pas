@@ -581,12 +581,17 @@ var
   Encoding: TBase64Encoding;
 begin
   Result := '';
+  {$IFDEF WDC}
   Encoding := TBase64Encoding.Create(0);
   try
     Result := Encoding.EncodeBytesToString(Memory, Size);
   finally
     Encoding.Free;
   end;
+  {$ENDIF}
+  {$IFDEF FPC}
+  // Not supported yet (no support was needed yet)
+  {$ENDIF}
 end;
 
 
@@ -606,10 +611,13 @@ end;
 
 
 procedure TKMemoryStream.LoadFromBase64(aBase64: string);
+{$IFDEF WDC}
 var
   Bytes: TBytes;
   Encoding: TBase64Encoding;
+{$ENDIF}
 begin
+  {$IFDEF WDC}
   Encoding := TBase64Encoding.Create(0);
   try
     Bytes := Encoding.DecodeStringToBytes(aBase64);
@@ -618,6 +626,10 @@ begin
   finally
     Encoding.Free;
   end;
+  {$ENDIF}
+  {$IFDEF FPC}
+  // Not supported yet (no support was needed yet)
+  {$ENDIF}
 end;
 
 
