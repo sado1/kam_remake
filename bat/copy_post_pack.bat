@@ -63,6 +63,16 @@ xcopy "%KMRPrevVersionDir%"\data\sfx "%kam_folder%"\data\sfx\ /y /r /s
 xcopy "%KMRPrevVersionDir%"\Music "%kam_folder%"\Music\ /y /r /s
 xcopy "%KMRPrevVersionDir%"\Campaigns\*.mp3 "%kam_folder%"\Campaigns\ /y /r /s
 
+@echo off
+setlocal
+
+REM Delete all count.dat files from sfx folders recursively, they are temp game files 
+for /r "%kam_folder%"\data\sfx\ %%f in ("count.dat") do (
+    del "%%f"
+)
+
+endlocal
+
 
 @REM ============================================================
 @REM Erase source-code files from copied "data\"
