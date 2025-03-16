@@ -257,7 +257,6 @@ const
   function GetAIPlayerIcon(aNetPlayerType: TKMNetPlayerType): Word;
 
 implementation
-
 uses
   SysUtils;
 
