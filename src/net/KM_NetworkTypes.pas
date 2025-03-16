@@ -26,14 +26,11 @@ const
   MAX_CHUNKS_BEFORE_ACK = 80; //Number of chunks of a file that can be in flight
   DEFAULT_PACKET_ACC_DELAY = 20;
 
-  //Client-Server-Client exchange packets. Each packet is a certain type
 type
-
-  // Attention!
+  // Client-Server-Client exchange packets. Each packet is a certain type
   //
-  // *********************************************************
+  // Attention!!!
   // Add any new message kinds to the end of the next enum !!!
-  // *********************************************************
   //
   // Real situation example:
   // ************************************************************************************************************************
@@ -49,8 +46,8 @@ type
   // ************************************************************************************************************************
   //
   // Alternative solution could be to send message kind as a text, to avoid such errors in the future
-  // Or even better solution is to use fixed IDs for an enum values
-
+  // Or even better solution is to use fixed IDs for enum values
+  //
   TKMessageKind = (
     mkAskToJoin,       //Client asks Host if he can join
     mkAllowToJoin,     //Host allows Client to join
@@ -132,8 +129,6 @@ type
   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   // ^^^ Add new network command types to the end of the list. Check explanation above ^^^
   // ************************************************************************************************************************
-
-
 
   TKMPacketFormat = (
     pfNoData,   // Packet contains no data
