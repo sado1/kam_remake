@@ -137,10 +137,16 @@ var
 begin
   if (fResFrom <> wtNone) and (fResTo <> wtNone) then
   begin
-    //When trading target ware is priced higher
-    costFrom := gRes.Wares[fResFrom].MarketPrice;
-    costTo := gRes.Wares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
-    Result := Round(costTo / Min(costFrom, costTo));
+    // Trunk and Timber -> GoldOre have hardcoded ratio = 3
+    if (fResFrom in [wtTrunk, wtTimber]) and (fResTo = wtGoldOre) then
+      Result := 3
+    else
+    begin
+      //When trading target ware is priced higher
+      costFrom := gRes.Wares[fResFrom].MarketPrice;
+      costTo := gRes.Wares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
+      Result := Round(costTo / Min(costFrom, costTo));
+    end;
   end else
     Result := 1;
 end;
