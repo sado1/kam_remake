@@ -353,7 +353,7 @@ begin
 
   HandleSoundVolumeKeys(Key, aHandled);
 
-  if aIsFirst then Exit;
+  if not aIsFirst then Exit;
 
   HandleSoundKeys(Key, aHandled);
 end;
