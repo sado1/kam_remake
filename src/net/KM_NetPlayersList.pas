@@ -113,7 +113,7 @@ type
 
     function CheckCanJoin(const aNick: AnsiString; aServerIndex: TKMNetHandleIndex): Integer;
     function CheckCanReconnect(aLocalIndex: Integer): Integer;
-    function LocAvailable(aIndex: Integer): Boolean;
+    function LocAvailable(aLoc: Integer): Boolean;
     function ColorAvailable(aColor: Cardinal): Boolean;
     function AllReady: Boolean;
     function AllReadyToPlay: Boolean;
@@ -780,15 +780,15 @@ begin
 end;
 
 
-function TKMNetPlayersList.LocAvailable(aIndex: Integer): Boolean;
+function TKMNetPlayersList.LocAvailable(aLoc: Integer): Boolean;
 var
   I: Integer;
 begin
   Result := True;
-  if (aIndex = LOC_RANDOM) or (aIndex = LOC_SPECTATE) then Exit;
+  if (aLoc = LOC_RANDOM) or (aLoc = LOC_SPECTATE) then Exit;
 
   for I := 1 to fCount do
-    Result := Result and (aIndex <> fNetPlayers[I].StartLocation);
+    Result := Result and (aLoc <> fNetPlayers[I].StartLocation);
 end;
 
 
