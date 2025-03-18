@@ -95,23 +95,23 @@ type
     procedure Clear;
     property Count: Integer read fCount;
 
-    procedure AddPlayer(const aNick: AnsiString; aIndexOnServer: TKMNetHandleIndex; const aLang: AnsiString; aAsSpectator: Boolean = False);
+    procedure AddPlayer(const aNick: AnsiString; aServerIndex: TKMNetHandleIndex; const aLang: AnsiString; aAsSpectator: Boolean = False);
     procedure AddAIPlayer(aAdvancedAI: Boolean; aSlot: Integer = -1);
     procedure AddClosedPlayer(aSlot: Integer = -1);
-    procedure DisconnectPlayer(aIndexOnServer: TKMNetHandleIndex);
+    procedure DisconnectPlayer(aServerIndex: TKMNetHandleIndex);
     procedure DisconnectAllClients(const aOwnNickname: AnsiString);
-    procedure DropPlayer(aIndexOnServer: TKMNetHandleIndex; aLastSentCommandsTick: Integer = LAST_SENT_COMMANDS_TICK_NONE);
+    procedure DropPlayer(aServerIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer = LAST_SENT_COMMANDS_TICK_NONE);
     procedure RemPlayer(aIndex: Integer);
-    procedure RemServerPlayer(aIndexOnServer: TKMNetHandleIndex);
+    procedure RemServerPlayer(aServerIndex: TKMNetHandleIndex);
     property Player[aIndex: Integer]: TKMNetPlayerInfo read GetPlayer; default;
 
     //Getters
-    function ServerToLocal(aIndexOnServer: TKMNetHandleIndex): Integer;
+    function ServerToLocal(aServerIndex: TKMNetHandleIndex): Integer;
     function NicknameToLocal(const aNickname: AnsiString): Integer;
     function StartingLocToLocal(aLoc: Integer): Integer;
-    function PlayerIndexToLocal(aIndex: TKMHandID): Integer;
+    function PlayerIndexToLocal(aHandIndex: TKMHandID): Integer;
 
-    function CheckCanJoin(const aNick: AnsiString; aIndexOnServer: TKMNetHandleIndex): Integer;
+    function CheckCanJoin(const aNick: AnsiString; aServerIndex: TKMNetHandleIndex): Integer;
     function CheckCanReconnect(aLocalIndex: Integer): Integer;
     function LocAvailable(aIndex: Integer): Boolean;
     function ColorAvailable(aColor: Cardinal): Boolean;
@@ -558,13 +558,13 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.AddPlayer(const aNick: AnsiString; aIndexOnServer: TKMNetHandleIndex; const aLang: AnsiString; aAsSpectator: Boolean = False);
+procedure TKMNetPlayersList.AddPlayer(const aNick: AnsiString; aServerIndex: TKMNetHandleIndex; const aLang: AnsiString; aAsSpectator: Boolean = False);
 begin
   Assert(fCount <= MAX_LOBBY_SLOTS, 'Can''t add player');
   Inc(fCount);
   fNetPlayers[fCount].fNickname := aNick;
   fNetPlayers[fCount].fLangCode := aLang;
-  fNetPlayers[fCount].fIndexOnServer := aIndexOnServer;
+  fNetPlayers[fCount].fIndexOnServer := aServerIndex;
   fNetPlayers[fCount].PlayerNetType := nptHuman;
   fNetPlayers[fCount].Team := 0;
   fNetPlayers[fCount].FlagColor := 0; // Transparent color
@@ -641,13 +641,13 @@ end;
 
 
 //Set player to no longer be connected, but do not remove them from the game
-procedure TKMNetPlayersList.DisconnectPlayer(aIndexOnServer: TKMNetHandleIndex);
+procedure TKMNetPlayersList.DisconnectPlayer(aServerIndex: TKMNetHandleIndex);
 var
-  ID: Integer;
+  localIndex: Integer;
 begin
-  ID := ServerToLocal(aIndexOnServer);
-  Assert(ID <> -1, 'Cannot disconnect player');
-  fNetPlayers[ID].Connected := False;
+  localIndex := ServerToLocal(aServerIndex);
+  Assert(localIndex <> -1, 'Cannot disconnect player');
+  fNetPlayers[localIndex].Connected := False;
 end;
 
 //Mark all human players as disconnected (used when reconnecting if all clients were lost)
@@ -662,15 +662,15 @@ end;
 
 
 //Set player to no longer be on the server, but do not remove their assets from the game
-procedure TKMNetPlayersList.DropPlayer(aIndexOnServer: TKMNetHandleIndex; aLastSentCommandsTick: Integer = LAST_SENT_COMMANDS_TICK_NONE);
+procedure TKMNetPlayersList.DropPlayer(aServerIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer = LAST_SENT_COMMANDS_TICK_NONE);
 var
-  ID: Integer;
+  localIndex: Integer;
 begin
-  ID := ServerToLocal(aIndexOnServer);
-  Assert(ID <> -1, 'Cannot drop player');
-  fNetPlayers[ID].Connected := False;
-  fNetPlayers[ID].Dropped := True;
-  fNetPlayers[ID].LastSentCommandsTick := aLastSentCommandsTick;
+  localIndex := ServerToLocal(aServerIndex);
+  Assert(localIndex <> -1, 'Cannot drop player');
+  fNetPlayers[localIndex].Connected := False;
+  fNetPlayers[localIndex].Dropped := True;
+  fNetPlayers[localIndex].LastSentCommandsTick := aLastSentCommandsTick;
 end;
 
 
@@ -687,23 +687,23 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.RemServerPlayer(aIndexOnServer: TKMNetHandleIndex);
+procedure TKMNetPlayersList.RemServerPlayer(aServerIndex: TKMNetHandleIndex);
 var
-  ID: Integer;
+  localIndex: Integer;
 begin
-  ID := ServerToLocal(aIndexOnServer);
-  Assert(ID <> -1, 'Cannot remove non-existing player');
-  RemPlayer(ID);
+  localIndex := ServerToLocal(aServerIndex);
+  Assert(localIndex <> -1, 'Cannot remove non-existing player');
+  RemPlayer(localIndex);
 end;
 
 
-function TKMNetPlayersList.ServerToLocal(aIndexOnServer: TKMNetHandleIndex): Integer;
+function TKMNetPlayersList.ServerToLocal(aServerIndex: TKMNetHandleIndex): Integer;
 var
   I: Integer;
 begin
   Result := -1;
   for I := 1 to fCount do
-    if fNetPlayers[I].fIndexOnServer = aIndexOnServer then
+    if fNetPlayers[I].fIndexOnServer = aServerIndex then
       Exit(I);
 end;
 
@@ -732,24 +732,24 @@ begin
 end;
 
 
-function TKMNetPlayersList.PlayerIndexToLocal(aIndex: TKMHandID): Integer;
+function TKMNetPlayersList.PlayerIndexToLocal(aHandIndex: TKMHandID): Integer;
 var
   I: Integer;
 begin
   Result := -1;
   for I := 1 to Count do
-    if (aIndex = fNetPlayers[I].HandIndex) then
+    if (aHandIndex = fNetPlayers[I].HandIndex) then
       Exit(I);
 end;
 
 
 //See if player can join our game
-function TKMNetPlayersList.CheckCanJoin(const aNick: AnsiString; aIndexOnServer: TKMNetHandleIndex): Integer;
+function TKMNetPlayersList.CheckCanJoin(const aNick: AnsiString; aServerIndex: TKMNetHandleIndex): Integer;
 begin
   if fCount >= MAX_LOBBY_SLOTS then
     Result := TX_NET_ROOM_FULL
   else
-  if ServerToLocal(aIndexOnServer) <> -1 then
+  if ServerToLocal(aServerIndex) <> -1 then
     Result := TX_NET_SAME_NAME
   else
   if NicknameToLocal(aNick) <> -1 then
