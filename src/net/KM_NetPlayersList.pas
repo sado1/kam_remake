@@ -96,12 +96,12 @@ type
     property Count: Integer read fCount;
 
     procedure AddPlayer(const aNick: AnsiString; aServerIndex: TKMNetHandleIndex; const aLang: AnsiString; aAsSpectator: Boolean = False);
-    procedure AddAIPlayer(aAdvancedAI: Boolean; aSlot: Integer = -1);
-    procedure AddClosedPlayer(aSlot: Integer = -1);
+    procedure AddAIPlayer(aAdvancedAI: Boolean; aLocalIndex: Integer = -1);
+    procedure AddClosedPlayer(aLocalIndex: Integer = -1);
     procedure DisconnectPlayer(aServerIndex: TKMNetHandleIndex);
     procedure DisconnectAllClients(const aOwnNickname: AnsiString);
     procedure DropPlayer(aServerIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer = LAST_SENT_COMMANDS_TICK_NONE);
-    procedure RemPlayer(aIndex: Integer);
+    procedure RemPlayer(aLocalIndex: Integer);
     procedure RemServerPlayer(aServerIndex: TKMNetHandleIndex);
     property Player[aIndex: Integer]: TKMNetPlayerInfo read GetPlayer; default;
 
@@ -585,58 +585,58 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.AddAIPlayer(aAdvancedAI: Boolean; aSlot: Integer = -1);
+procedure TKMNetPlayersList.AddAIPlayer(aAdvancedAI: Boolean; aLocalIndex: Integer = -1);
 begin
-  if aSlot = -1 then
+  if aLocalIndex = -1 then
   begin
     Assert(fCount <= MAX_LOBBY_SLOTS, 'Can''t add AI player');
     Inc(fCount);
-    aSlot := fCount;
+    aLocalIndex := fCount;
   end;
-  fNetPlayers[aSlot].fNickname := '';
-  fNetPlayers[aSlot].fLangCode := '';
-  fNetPlayers[aSlot].fIndexOnServer := -1;
+  fNetPlayers[aLocalIndex].fNickname := '';
+  fNetPlayers[aLocalIndex].fLangCode := '';
+  fNetPlayers[aLocalIndex].fIndexOnServer := -1;
   if aAdvancedAI then
-    fNetPlayers[aSlot].PlayerNetType := nptComputerAdvanced
+    fNetPlayers[aLocalIndex].PlayerNetType := nptComputerAdvanced
   else
-    fNetPlayers[aSlot].PlayerNetType := nptComputerClassic;
-  fNetPlayers[aSlot].Team := 0;
-  fNetPlayers[aSlot].FlagColor := 0;
-  fNetPlayers[aSlot].StartLocation := 0;
-  fNetPlayers[aSlot].ReadyToStart := True;
-  fNetPlayers[aSlot].HasMapOrSave := True;
-  fNetPlayers[aSlot].ReadyToPlay := True;
-  fNetPlayers[aSlot].Connected := True;
-  fNetPlayers[aSlot].Dropped := False;
-  fNetPlayers[aSlot].LastSentCommandsTick := LAST_SENT_COMMANDS_TICK_NONE;
-  fNetPlayers[aSlot].DownloadInProgress := False;
-  fNetPlayers[aSlot].ResetPingRecord;
+    fNetPlayers[aLocalIndex].PlayerNetType := nptComputerClassic;
+  fNetPlayers[aLocalIndex].Team := 0;
+  fNetPlayers[aLocalIndex].FlagColor := 0;
+  fNetPlayers[aLocalIndex].StartLocation := 0;
+  fNetPlayers[aLocalIndex].ReadyToStart := True;
+  fNetPlayers[aLocalIndex].HasMapOrSave := True;
+  fNetPlayers[aLocalIndex].ReadyToPlay := True;
+  fNetPlayers[aLocalIndex].Connected := True;
+  fNetPlayers[aLocalIndex].Dropped := False;
+  fNetPlayers[aLocalIndex].LastSentCommandsTick := LAST_SENT_COMMANDS_TICK_NONE;
+  fNetPlayers[aLocalIndex].DownloadInProgress := False;
+  fNetPlayers[aLocalIndex].ResetPingRecord;
 end;
 
 
-procedure TKMNetPlayersList.AddClosedPlayer(aSlot: Integer = -1);
+procedure TKMNetPlayersList.AddClosedPlayer(aLocalIndex: Integer = -1);
 begin
-  if aSlot = -1 then
+  if aLocalIndex = -1 then
   begin
     Assert(fCount < MAX_LOBBY_SLOTS, 'Can''t add closed player');
     Inc(fCount);
-    aSlot := fCount;
+    aLocalIndex := fCount;
   end;
-  fNetPlayers[aSlot].fNickname := '';
-  fNetPlayers[aSlot].fLangCode := '';
-  fNetPlayers[aSlot].fIndexOnServer := -1;
-  fNetPlayers[aSlot].PlayerNetType := nptClosed;
-  fNetPlayers[aSlot].Team := 0;
-  fNetPlayers[aSlot].FlagColor := 0;
-  fNetPlayers[aSlot].StartLocation := 0;
-  fNetPlayers[aSlot].ReadyToStart := True;
-  fNetPlayers[aSlot].HasMapOrSave := True;
-  fNetPlayers[aSlot].ReadyToPlay := True;
-  fNetPlayers[aSlot].Connected := True;
-  fNetPlayers[aSlot].Dropped := False;
-  fNetPlayers[aSlot].LastSentCommandsTick := LAST_SENT_COMMANDS_TICK_NONE;
-  fNetPlayers[aSlot].DownloadInProgress := False;
-  fNetPlayers[aSlot].ResetPingRecord;
+  fNetPlayers[aLocalIndex].fNickname := '';
+  fNetPlayers[aLocalIndex].fLangCode := '';
+  fNetPlayers[aLocalIndex].fIndexOnServer := -1;
+  fNetPlayers[aLocalIndex].PlayerNetType := nptClosed;
+  fNetPlayers[aLocalIndex].Team := 0;
+  fNetPlayers[aLocalIndex].FlagColor := 0;
+  fNetPlayers[aLocalIndex].StartLocation := 0;
+  fNetPlayers[aLocalIndex].ReadyToStart := True;
+  fNetPlayers[aLocalIndex].HasMapOrSave := True;
+  fNetPlayers[aLocalIndex].ReadyToPlay := True;
+  fNetPlayers[aLocalIndex].Connected := True;
+  fNetPlayers[aLocalIndex].Dropped := False;
+  fNetPlayers[aLocalIndex].LastSentCommandsTick := LAST_SENT_COMMANDS_TICK_NONE;
+  fNetPlayers[aLocalIndex].DownloadInProgress := False;
+  fNetPlayers[aLocalIndex].ResetPingRecord;
 end;
 
 
@@ -674,12 +674,12 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.RemPlayer(aIndex: Integer);
+procedure TKMNetPlayersList.RemPlayer(aLocalIndex: Integer);
 var
   I: Integer;
 begin
-  fNetPlayers[aIndex].Free;
-  for I := aIndex to fCount - 1 do
+  fNetPlayers[aLocalIndex].Free;
+  for I := aLocalIndex to fCount - 1 do
     fNetPlayers[I] := fNetPlayers[I + 1]; // Shift only pointers
 
   fNetPlayers[fCount] := TKMNetPlayerInfo.Create; // Empty players are created but not used
