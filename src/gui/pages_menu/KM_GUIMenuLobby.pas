@@ -2020,8 +2020,7 @@ begin
     else
       Label_Ping[I].Caption := '';
 
-  Label_ServerName.Caption := UnicodeString(gNetworking.ServerName) + ' #' + IntToStr(gNetworking.ServerRoom+1) +
-                                   '  ' + gNetworking.ServerAddress + ' : ' + IntToStr(gNetworking.ServerPort);
+  Label_ServerName.Caption := gNetworking.GetFullServerName;
 end;
 
 

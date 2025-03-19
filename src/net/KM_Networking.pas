@@ -155,11 +155,7 @@ type
     property HostIndex: Integer read fHostIndex;
     property NetGameState: TKMNetGameState read fNetGameState;
     property NetGameFilter: TKMPGameFilter read fNetGameFilter;
-    function MyIPString: string;
-    property ServerName: AnsiString read fServerName;
-    property ServerAddress: string read fServerAddress;
-    property ServerPort: Word read fServerPort;
-    property ServerRoom: Integer read fRoomToJoin;
+    function GetFullServerName: string;
     function IsHost: Boolean;
     function IsReconnecting: Boolean;
     function CalculateGameCRC: Cardinal;
@@ -309,12 +305,6 @@ begin
   gNetworking := nil;
 
   inherited;
-end;
-
-
-function TKMNetworking.MyIPString: string;
-begin
-  Result := fNetClient.MyIPString;
 end;
 
 
@@ -2752,6 +2742,12 @@ end;
 procedure TKMNetworking.AskToSendCrashreport(aOtherPlayerIndex: Integer; aErrorStr: UnicodeString);
 begin
   PacketSendW(fNetPlayers[aOtherPlayerIndex].IndexOnServer, mkAskToSendCrashreport, aErrorStr);
+end;
+
+
+function TKMNetworking.GetFullServerName: string;
+begin
+  Result := Format('%s #%d  %s : %d', [fServerName, fRoomToJoin + 1, fServerAddress, fServerPort]);
 end;
 
 
