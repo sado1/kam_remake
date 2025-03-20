@@ -1094,7 +1094,7 @@ procedure TKMArmyVectorField.FindPositions();
           Inc(InPositionCnt, SoldiersCnt);
           InPlace := True;
         end;
-        if not Groups[K].Group.CanTakeOrders OR (fVectorField[InitIdx].Enemy < ENEMY_NEARBY_COMBAT_DISTANCE) then // Group in combat
+        if not Groups[K].Group.CanTakePlayerOrders OR (fVectorField[InitIdx].Enemy < ENEMY_NEARBY_COMBAT_DISTANCE) then // Group in combat
         begin
           Inc(NearEnemyCnt, SoldiersCnt);
           InPlace := True;

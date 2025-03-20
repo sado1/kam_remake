@@ -289,7 +289,7 @@ end;
 
 function TKMCombatGroup.SquadInFight(): Boolean;
 begin
-  Result := not fGroup.CanTakeOrders;
+  Result := not fGroup.CanTakePlayerOrders;
 end;
 
 

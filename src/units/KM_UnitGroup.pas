@@ -125,7 +125,8 @@ type
 
     function IsPositioned(const aLoc: TKMPoint; Dir: TKMDirection): Boolean;
     function IsAllyTo(aEntity: TKMHandEntity): Boolean;
-    function CanTakeOrders: Boolean;
+    function CanTakePlayerOrders: Boolean;
+    function CanTakeOrdersByScript: Boolean;
     function CanWalkTo(const aTo: TKMPoint; aDistance: Single): Boolean;
     function FightMaxRange: Single;
     function IsRanged: Boolean;
@@ -699,9 +700,16 @@ end;
 
 
 //If the player is allowed to issue orders to group
-function TKMUnitGroup.CanTakeOrders: Boolean;
+function TKMUnitGroup.CanTakePlayerOrders: Boolean;
 begin
   Result := (IsRanged or not InFight) and not fBlockPlayerOrders;
+end;
+
+
+//If the script is allowed to issue orders to group
+function TKMUnitGroup.CanTakeOrdersByScript: Boolean;
+begin
+  Result := (IsRanged or not InFight);
 end;
 
 
@@ -805,7 +813,7 @@ begin
     OnGroupDied(Self);
 
   //Only repeat the order if we are not in a fight (since bowmen can still take orders when fighting)
-  if not IsDead and CanTakeOrders and not InFight then
+  if not IsDead and CanTakePlayerOrders and not InFight then
     OrderRepeat(False);
 end;
 
@@ -1238,7 +1246,7 @@ begin
   //Can attack only enemy houses
   if gHands[Owner].Alliances[aHouse.Owner] <> atEnemy then Exit;
 
-  if aClearOffenders and CanTakeOrders then
+  if aClearOffenders and CanTakePlayerOrders then
     ClearOffenders;
 
   SetGroupOrder(goAttackHouse);
@@ -1267,7 +1275,7 @@ begin
   //Can attack only enemy units
   if gHands[Owner].Alliances[aUnit.Owner] <> atEnemy then Exit;
 
-  if aClearOffenders and CanTakeOrders then
+  if aClearOffenders and CanTakePlayerOrders then
     ClearOffenders;
 
   if IsRanged then
@@ -1369,7 +1377,7 @@ procedure TKMUnitGroup.OrderFood(aClearOffenders: Boolean; aHungryOnly: Boolean 
 var
   I: Integer;
 begin
-  if aClearOffenders and CanTakeOrders then
+  if aClearOffenders and CanTakePlayerOrders then
     ClearOffenders;
 
   for I := 0 to Count - 1 do
@@ -1381,7 +1389,7 @@ end;
 procedure TKMUnitGroup.OrderFormation(aTurnAmount, aColumnsChange: ShortInt; aClearOffenders: Boolean);
 begin
   if IsDead then Exit;
-  if aClearOffenders and CanTakeOrders then
+  if aClearOffenders and CanTakePlayerOrders then
     ClearOffenders;
 
   //If it is yet unset - use first members direction
@@ -1402,7 +1410,7 @@ end;
 //Forcefull termination of any activity
 procedure TKMUnitGroup.OrderHalt(aClearOffenders: Boolean; aForced: Boolean = True);
 begin
-  if aClearOffenders and CanTakeOrders then
+  if aClearOffenders and CanTakePlayerOrders then
     ClearOffenders;
 
   //Halt is not a True order, it is just OrderWalk
@@ -1424,7 +1432,7 @@ procedure TKMUnitGroup.OrderLinkTo(aTargetGroup: TKMUnitGroup; aClearOffenders: 
 var
   U: TKMUnit;
 begin
-  if aClearOffenders and CanTakeOrders then
+  if aClearOffenders and CanTakePlayerOrders then
     ClearOffenders;
 
   //Any could have died since the time order was issued due to Net delay
@@ -1544,7 +1552,7 @@ begin
   //If leader is storming don't allow splitting the group (makes it too easy to withdraw)
   if fMembers[0].Action is TKMUnitActionStormAttack then Exit;
 
-  if CanTakeOrders then
+  if CanTakePlayerOrders then
     ClearOffenders;
 
   memberUTypes := TKMListUnique<TKMUnitType>.Create;
@@ -1713,7 +1721,7 @@ begin
   if IsDead then Exit;
   if Count < 2 then Exit;
 
-  if aClearOffenders and CanTakeOrders then
+  if aClearOffenders and CanTakePlayerOrders then
     ClearOffenders;
 
   //Delete from group
@@ -1763,7 +1771,7 @@ var
 begin
   //Make sure to leave someone in the group
   Assert(aCount < Count);
-  if aClearOffenders and CanTakeOrders then
+  if aClearOffenders and CanTakePlayerOrders then
     ClearOffenders;
 
   //Take units from the end, to keep flagholder
@@ -1789,8 +1797,8 @@ var
   I: Integer;
 begin
   //Don't allow ordering a second storm attack while there is still one active (possible due to network lag)
-  if not CanTakeOrders then Exit;
-  if aClearOffenders and CanTakeOrders then
+  if not CanTakePlayerOrders then Exit;
+  if aClearOffenders and CanTakePlayerOrders then
     ClearOffenders;
 
   SetGroupOrder(goStorm);
@@ -1814,7 +1822,7 @@ begin
 
   fOrderWalkKind := aOrderWalkKind;
 
-  if aClearOffenders and CanTakeOrders then
+  if aClearOffenders and CanTakePlayerOrders then
     ClearOffenders;
 
   if aDir = dirNA then
@@ -2150,7 +2158,7 @@ begin
                    'Offenders = [%s]',
                    [aSeparator,
                     fUnitsPerRow, aSeparator,
-                    BoolToStr(CanTakeOrders, True), aSeparator,
+                    BoolToStr(CanTakePlayerOrders, True), aSeparator,
                     BoolToStr(InFight, True), aSeparator,
                     GetEnumName(TypeInfo(TKMGroupOrder), Integer(fOrder)), aSeparator,
                     TypeToString(fOrderLoc), aSeparator,

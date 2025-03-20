@@ -764,7 +764,7 @@ begin
     and (fUIMode in [umSP, umMP]) and not HasLostMPGame then
   begin
     group := TKMUnitGroup(gMySpectator.Selected);
-    if group.CanTakeOrders and (group.Owner = gMySpectator.HandID)
+    if group.CanTakePlayerOrders and (group.Owner = gMySpectator.HandID)
       and group.CanWalkTo(loc, 0) then
     begin
       gGame.GameInputProcess.CmdArmy(gicArmyWalk, group, loc, dirNA);
@@ -4376,7 +4376,7 @@ begin
           group := TKMUnitGroup(gMySpectator.Selected);
 
           // Attack or Walk
-          if group.CanTakeOrders and (group.Owner = gMySpectator.HandID) then
+          if group.CanTakePlayerOrders and (group.Owner = gMySpectator.HandID) then
           begin
             // Try to Attack unit
             pbj := gMySpectator.HitTestCursor;

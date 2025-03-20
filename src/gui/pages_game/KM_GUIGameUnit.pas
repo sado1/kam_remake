@@ -305,7 +305,7 @@ begin
 
   // While selecting target to join we could get attacked
   // Then we must cancel the dialog
-  if not Sender.CanTakeOrders then
+  if not Sender.CanTakePlayerOrders then
     Army_HideJoinMenu(nil); // Cannot be joining while in combat/charging
 
   Label_UnitDescription.Hide;
@@ -519,7 +519,7 @@ procedure TKMGUIGameUnit.Army_ActivateControls(aGroup: TKMUnitGroup);
 var
   acceptOrders: Boolean;
 begin
-  acceptOrders :=     aGroup.CanTakeOrders
+  acceptOrders :=     aGroup.CanTakePlayerOrders
                   and OnArmyCanTakeOrder(nil)
                   and (gMySpectator.Selected <> nil) // just in case
                   and gMySpectator.IsSelectedMyObj;  // do not allow orders for allied units (for now)
