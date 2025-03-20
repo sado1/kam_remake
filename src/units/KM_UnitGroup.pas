@@ -24,7 +24,7 @@ type
     fTimeSinceHungryReminder: Integer;
     fGroupType: TKMGroupType;
     fDisableHungerMessage: Boolean;
-    fBlockOrders: Boolean; // Block orders from the script
+    fBlockPlayerOrders: Boolean; // Block orders from the script
     fManualFormation: Boolean;
     fMembersPushbackCommandsCnt: Word; //Number of 'push back' commands ordered to group members when executing goWalkTo
 
@@ -146,7 +146,7 @@ type
     property Condition: Integer read GetCondition write SetCondition;
     property Order: TKMGroupOrder read fOrder;
     property DisableHungerMessage: Boolean read fDisableHungerMessage write fDisableHungerMessage;
-    property BlockOrders: Boolean read fBlockOrders write fBlockOrders;
+    property BlockPlayerOrders: Boolean read fBlockPlayerOrders write fBlockPlayerOrders;
     property ManualFormation: Boolean read fManualFormation write fManualFormation;
     property FlagColor: Cardinal read GetFlagColor;
     class function IsFlagRenderBeforeUnit(aDir: TKMDirection): Boolean; static;
@@ -367,7 +367,7 @@ begin
   LoadStream.Read(fTimeSinceHungryReminder);
   LoadStream.Read(fUnitsPerRow);
   LoadStream.Read(fDisableHungerMessage);
-  LoadStream.Read(fBlockOrders);
+  LoadStream.Read(fBlockPlayerOrders);
   LoadStream.Read(fManualFormation);
   LoadStream.Read(fMembersPushbackCommandsCnt);
 end;
@@ -448,7 +448,7 @@ begin
   SaveStream.Write(fTimeSinceHungryReminder);
   SaveStream.Write(fUnitsPerRow);
   SaveStream.Write(fDisableHungerMessage);
-  SaveStream.Write(fBlockOrders);
+  SaveStream.Write(fBlockPlayerOrders);
   SaveStream.Write(fManualFormation);
   SaveStream.Write(fMembersPushbackCommandsCnt);
 end;
@@ -701,7 +701,7 @@ end;
 //If the player is allowed to issue orders to group
 function TKMUnitGroup.CanTakeOrders: Boolean;
 begin
-  Result := (IsRanged or not InFight) and not fBlockOrders;
+  Result := (IsRanged or not InFight) and not fBlockPlayerOrders;
 end;
 
 

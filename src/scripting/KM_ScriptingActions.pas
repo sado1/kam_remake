@@ -5016,7 +5016,7 @@ begin
     begin
       G := fIDCache.GetGroup(aGroupID);
       if G <> nil then
-        G.BlockOrders := aBlock;
+        G.BlockPlayerOrders := aBlock;
     end
     else
       LogIntParamWarn('Actions.GroupBlockOrders', [aGroupID, Byte(aBlock)]);
