@@ -24,7 +24,7 @@ type
     fTimeSinceHungryReminder: Integer;
     fGroupType: TKMGroupType;
     fDisableHungerMessage: Boolean;
-    fBlockOrders: Boolean;
+    fBlockOrders: Boolean; // Block orders from the script
     fManualFormation: Boolean;
     fMembersPushbackCommandsCnt: Word; //Number of 'push back' commands ordered to group members when executing goWalkTo
 
