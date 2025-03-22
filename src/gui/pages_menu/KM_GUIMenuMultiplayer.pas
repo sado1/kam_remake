@@ -893,7 +893,7 @@ end;
 
 procedure TKMMenuMultiplayer.UpdateGameTimeLabel;
 begin
-  Label_MP_GameTime.Width := S_DETAILS_W_INT - 20*Byte(Panel_MPServerDetails.ScrollV.Visible);
+  Label_MP_GameTime.Width := S_DETAILS_W_INT - 20 * Ord(Panel_MPServerDetails.ScrollV.Visible);
 end;
 
 
