@@ -180,7 +180,7 @@ type
     procedure SelectMap(const aName: UnicodeString; aMapKind: TKMMapKind; aSendPlayerSetup: Boolean = False);
     procedure SelectSave(const aName: UnicodeString);
     procedure SelectLoc(aIndex: Integer; aPlayerIndex: Integer);
-    procedure SelectTeam(aIndex: Integer; aPlayerIndex: Integer);
+    procedure SelectTeam(aTeam: Integer; aPlayerIndex: Integer);
     procedure SelectColor(aColor: Cardinal; aPlayerIndex: Integer);
     procedure KickPlayer(aPlayerIndex: Integer);
     procedure BanPlayer(aPlayerIndex: Integer);
@@ -759,20 +759,21 @@ begin
 end;
 
 
-//Tell other players which team we are on. Player selections need not be unique
-procedure TKMNetworking.SelectTeam(aIndex:integer; aPlayerIndex:integer);
+// Tell other players which team we want to be on. Does not need to be unique
+// Use aPlayerIndex not fMyIndex because it could be an AI
+procedure TKMNetworking.SelectTeam(aTeam: Integer; aPlayerIndex: Integer);
 begin
-  fNetPlayers[aPlayerIndex].Team := aIndex; //Use aPlayerIndex not fMyIndex because it could be an AI
+  fNetPlayers[aPlayerIndex].Team := aTeam;
 
   case fNetPlayerKind of
     lpkHost:   begin
-                  //If host pushes player to a different team, the player should be set to not ready (they must agree to change)
+                  // If Host pushes player to a different team, the player should be set to not ready (they must agree to change)
                   if (aPlayerIndex <> fMyIndex) and not fNetPlayers[aPlayerIndex].IsComputer then
                     fNetPlayers[aPlayerIndex].ReadyToStart := False;
 
                   SendPlayerListAndRefreshPlayersSetup;
                 end;
-    lpkJoiner: PacketSend(NET_ADDRESS_HOST, mkSetTeam, aIndex);
+    lpkJoiner: PacketSend(NET_ADDRESS_HOST, mkSetTeam, aTeam);
   end;
 end;
 
