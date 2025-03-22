@@ -1657,6 +1657,8 @@ begin
       Exit;
     end;
 
+    LogPacket(False, kind, aSenderIndex);
+
     HandleMessage(kind, M, aSenderIndex);
   finally
     M.Free;
@@ -1676,8 +1678,6 @@ var
   tmpChatMode: TKMChatMode;
   chatSound: TKMChatSound;
 begin
-  LogPacket(False, aMessageKind, aSenderIndex);
-
   case aMessageKind of
     mkGameVersion:
             begin
