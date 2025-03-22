@@ -152,6 +152,7 @@ type
     procedure SaveHTMLStatus;
     procedure SetPacketsAccumulatingDelay(aValue: Integer);
     procedure SetGameFilter(aGameFilter: TKMPGameFilter);
+    procedure HandleMessage(messageKind: TKMessageKind; M: TKMemoryStream; aSenderHandle: TKMNetHandleIndex);
   public
     constructor Create(aMaxRooms, aKickTimeout: Word; const aHTMLStatusFile, aWelcomeMessage: UnicodeString;
                        aPacketsAccDelay: Integer);
@@ -818,7 +819,33 @@ end;
 procedure TKMNetServer.RecieveMessage(aSenderHandle: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
 var
   messageKind: TKMessageKind;
-  M, M2: TKMemoryStream;
+  M: TKMemoryStream;
+begin
+  Assert(aLength >= 1, 'Unexpectedly short message');
+
+  M := TKMemoryStreamBinary.Create;
+  try
+    M.WriteBuffer(aData^, aLength);
+    M.Position := 0;
+    M.Read(messageKind, SizeOf(messageKind));
+
+    //Sometimes client disconnects then we recieve a late packet (e.g. mkPong), in which case ignore it
+    if fClientList.GetByHandle(aSenderHandle) = nil then
+    begin
+      Status('Warning: Received data from an unassigned client');
+      Exit;
+    end;
+
+    HandleMessage(messageKind, M, aSenderHandle);
+  finally
+    M.Free;
+  end;
+end;
+
+
+procedure TKMNetServer.HandleMessage(messageKind: TKMessageKind; M: TKMemoryStream; aSenderHandle: TKMNetHandleIndex);
+var
+  M2: TKMemoryStream;
   tmpInt: Integer;
   gameRev: TKMGameRevision;
   tmpSmallInt: TKMNetHandleIndex;
@@ -827,20 +854,6 @@ var
   senderIsHost: Boolean;
   senderRoom: Integer;
 begin
-  Assert(aLength >= 1, 'Unexpectedly short message');
-
-  M := TKMemoryStreamBinary.Create;
-  M.WriteBuffer(aData^, aLength);
-  M.Position := 0;
-  M.Read(messageKind, SizeOf(messageKind));
-
-  //Sometimes client disconnects then we recieve a late packet (e.g. mkPong), in which case ignore it
-  if fClientList.GetByHandle(aSenderHandle) = nil then
-  begin
-    Status('Warning: Received data from an unassigned client');
-    exit;
-  end;
-
   senderRoom := fClientList.GetByHandle(aSenderHandle).Room;
   senderIsHost := (senderRoom <> -1) and (fRoomInfo[senderRoom].HostHandle = aSenderHandle);
 
@@ -946,8 +959,6 @@ begin
               end;
             end;
   end;
-
-  M.Free;
 end;
 
 
