@@ -848,14 +848,17 @@ end;
 function TKMMenuMultiplayer.ValidatePlayerName(const aName: UnicodeString): Boolean;
 
   function IsReserved(const aName: String): Boolean; inline;
+  const
+    MP_PLAYER_NAME_TX_RESERVED: array [0..3] of Word =
+      (TX_LOBBY_SLOT_CLOSED, TX_LOBBY_SLOT_OPEN, TX_AI_PLAYER_CLASSIC, TX_AI_PLAYER_ADVANCED);
   var
     I: Integer;
     Str: String;
   begin
     Result := False;
     Str := Trim(aName);
-    for I := Low(LOBBY_PLAYER_NAMES_TEXT_ID_RESERVED) to High(LOBBY_PLAYER_NAMES_TEXT_ID_RESERVED) do
-      if Str = gResTexts[LOBBY_PLAYER_NAMES_TEXT_ID_RESERVED[I]] then
+    for I := Low(MP_PLAYER_NAME_TX_RESERVED) to High(MP_PLAYER_NAME_TX_RESERVED) do
+      if Str = gResTexts[MP_PLAYER_NAME_TX_RESERVED[I]] then
         Exit(True);
   end;
 
