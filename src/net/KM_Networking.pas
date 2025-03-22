@@ -1628,28 +1628,28 @@ end;
 
 procedure TKMNetworking.PacketRecieve(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
 var
-  M: TKMemoryStream;
-  kind: TKMessageKind;
+  dataStream: TKMemoryStream;
+  messageKind: TKMessageKind;
   err: UnicodeString;
 begin
-  Assert(aLength >= 1, 'Unexpectedly short message'); //Kind, Message
+  Assert(aLength >= 1, 'Unexpectedly short message'); // There needs to be at least 1 byte for TKMMessageKind
   if not Connected then Exit;
 
-  M := TKMemoryStreamBinary.Create;
+  dataStream := TKMemoryStreamBinary.Create;
   try
-    M.WriteBuffer(aData^, aLength);
-    M.Position := 0;
-    M.Read(kind, SizeOf(TKMessageKind)); //Depending on kind message contains either Text or a Number
+    dataStream.WriteBuffer(aData^, aLength);
+    dataStream.Position := 0;
+    dataStream.Read(messageKind, SizeOf(TKMessageKind));
 
-    //Make sure we are allowed to receive this packet at this point
-    if not (kind in NET_ALLOWED_PACKETS_SET[fNetGameState]) then
+    // Make sure we are allowed to receive this packet at this point
+    if not (messageKind in NET_ALLOWED_PACKETS_SET[fNetGameState]) then
     begin
       //When querying or reconnecting to a host we may receive data such as commands, player setup, etc. These should be ignored.
       if not (fNetGameState in [lgsQuery, lgsReconnecting]) then
       begin
         err := 'Received a packet not intended for this state (' +
           GetEnumName(TypeInfo(TKMNetGameState), Integer(fNetGameState)) + '): ' +
-          GetEnumName(TypeInfo(TKMessageKind), Integer(kind));
+          GetEnumName(TypeInfo(TKMessageKind), Integer(messageKind));
         //These warnings sometimes happen when returning to lobby, log them but don't show user
         gLog.AddTime(err);
         //PostLocalMessage('Error: ' + err, csSystem);
@@ -1657,11 +1657,11 @@ begin
       Exit;
     end;
 
-    LogPacket(False, kind, aSenderIndex);
+    LogPacket(False, messageKind, aSenderIndex);
 
-    HandleMessage(kind, M, aSenderIndex);
+    HandleMessage(messageKind, dataStream, aSenderIndex);
   finally
-    M.Free;
+    dataStream.Free;
   end;
 end;
 
