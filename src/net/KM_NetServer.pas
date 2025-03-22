@@ -842,8 +842,7 @@ begin
   end;
 
   senderRoom := fClientList.GetByHandle(aSenderHandle).Room;
-  senderIsHost := (senderRoom <> -1) and
-                  (fRoomInfo[senderRoom].HostHandle = aSenderHandle);
+  senderIsHost := (senderRoom <> -1) and (fRoomInfo[senderRoom].HostHandle = aSenderHandle);
 
   case messageKind of
     mkJoinRoom:
