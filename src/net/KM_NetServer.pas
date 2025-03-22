@@ -152,7 +152,7 @@ type
     procedure SaveHTMLStatus;
     procedure SetPacketsAccumulatingDelay(aValue: Integer);
     procedure SetGameFilter(aGameFilter: TKMPGameFilter);
-    procedure HandleMessage(messageKind: TKMessageKind; M: TKMemoryStream; aSenderHandle: TKMNetHandleIndex);
+    procedure HandleMessage(aMessageKind: TKMessageKind; aData: TKMemoryStream; aSenderHandle: TKMNetHandleIndex);
   public
     constructor Create(aMaxRooms, aKickTimeout: Word; const aHTMLStatusFile, aWelcomeMessage: UnicodeString;
                        aPacketsAccDelay: Integer);
@@ -819,15 +819,15 @@ end;
 procedure TKMNetServer.RecieveMessage(aSenderHandle: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
 var
   messageKind: TKMessageKind;
-  M: TKMemoryStream;
+  dataStream: TKMemoryStream;
 begin
   Assert(aLength >= 1, 'Unexpectedly short message');
 
-  M := TKMemoryStreamBinary.Create;
+  dataStream := TKMemoryStreamBinary.Create;
   try
-    M.WriteBuffer(aData^, aLength);
-    M.Position := 0;
-    M.Read(messageKind, SizeOf(messageKind));
+    dataStream.WriteBuffer(aData^, aLength);
+    dataStream.Position := 0;
+    dataStream.Read(messageKind, SizeOf(messageKind));
 
     //Sometimes client disconnects then we recieve a late packet (e.g. mkPong), in which case ignore it
     if fClientList.GetByHandle(aSenderHandle) = nil then
@@ -836,14 +836,14 @@ begin
       Exit;
     end;
 
-    HandleMessage(messageKind, M, aSenderHandle);
+    HandleMessage(messageKind, dataStream, aSenderHandle);
   finally
-    M.Free;
+    dataStream.Free;
   end;
 end;
 
 
-procedure TKMNetServer.HandleMessage(messageKind: TKMessageKind; M: TKMemoryStream; aSenderHandle: TKMNetHandleIndex);
+procedure TKMNetServer.HandleMessage(aMessageKind: TKMessageKind; aData: TKMemoryStream; aSenderHandle: TKMNetHandleIndex);
 var
   M2: TKMemoryStream;
   tmpInt: Integer;
@@ -857,11 +857,11 @@ begin
   senderRoom := fClientList.GetByHandle(aSenderHandle).Room;
   senderIsHost := (senderRoom <> -1) and (fRoomInfo[senderRoom].HostHandle = aSenderHandle);
 
-  case messageKind of
+  case aMessageKind of
     mkJoinRoom:
             begin
-              M.Read(tmpInt); //Room to join
-              M.Read(gameRev);
+              aData.Read(tmpInt); //Room to join
+              aData.Read(gameRev);
               if InRange(tmpInt, 0, Length(fRoomInfo)-1)
                 and (fRoomInfo[tmpInt].HostHandle <> NET_ADDRESS_EMPTY)
                 //Once game has started don't ask for passwords so clients can reconnect
@@ -873,9 +873,9 @@ begin
             end;
     mkPassword:
             begin
-              M.Read(tmpInt); //Room to join
-              M.Read(gameRev);
-              M.ReadA(tmpStringA); //Password
+              aData.Read(tmpInt); //Room to join
+              aData.Read(gameRev);
+              aData.ReadA(tmpStringA); //Password
               if InRange(tmpInt, 0, Length(fRoomInfo)-1)
                 and (fRoomInfo[tmpInt].HostHandle <> NET_ADDRESS_EMPTY)
                 and (fRoomInfo[tmpInt].Password = tmpStringA) then
@@ -886,19 +886,19 @@ begin
     mkSetPassword:
             if senderIsHost then
             begin
-              M.ReadA(tmpStringA); //Password
+              aData.ReadA(tmpStringA); //Password
               fRoomInfo[senderRoom].Password := tmpStringA;
             end;
     mkSetGameInfo:
             if senderIsHost then
             begin
-              fRoomInfo[senderRoom].GameInfo.LoadFromStream(M);
+              fRoomInfo[senderRoom].GameInfo.LoadFromStream(aData);
               SaveHTMLStatus;
             end;
     mkKickPlayer:
             if senderIsHost then
             begin
-              M.Read(tmpSmallInt);
+              aData.Read(tmpSmallInt);
               if fClientList.GetByHandle(tmpSmallInt) <> nil then
               begin
                 SendMessage(tmpSmallInt, mkKicked, TX_NET_KICK_BY_HOST, True);
@@ -908,7 +908,7 @@ begin
     mkBanPlayer:
             if senderIsHost then
             begin
-              M.Read(tmpSmallInt);
+              aData.Read(tmpSmallInt);
               if fClientList.GetByHandle(tmpSmallInt) <> nil then
               begin
                 BanPlayerFromRoom(tmpSmallInt, senderRoom);
@@ -919,7 +919,7 @@ begin
     mkGiveHost:
             if senderIsHost then
             begin
-              M.Read(tmpSmallInt);
+              aData.Read(tmpSmallInt);
               if fClientList.GetByHandle(tmpSmallInt) <> nil then
               begin
                 fRoomInfo[senderRoom].HostHandle := tmpSmallInt;
@@ -946,7 +946,7 @@ begin
             end;
     mkFPS:  begin
               client := fClientList.GetByHandle(aSenderHandle);
-              M.Read(tmpInt);
+              aData.Read(tmpInt);
               client.FPS := tmpInt;
             end;
     mkPong:
