@@ -88,7 +88,7 @@ type
     function GetMyNetPlayer: TKMNetPlayerInfo;
     procedure SetDownloadlInProgress(aSenderIndex: TKMNetHandleIndex; aValue: Boolean);
     procedure FileRequestReceived(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStream);
-    procedure HandleMessage(kind: TKMessageKind; M: TKMemoryStream; aSenderIndex: TKMNetHandleIndex);
+    procedure HandleMessage(aMessageKind: TKMessageKind; aStream: TKMemoryStream; aSenderIndex: TKMNetHandleIndex);
 
     procedure ConnectSucceed(Sender:TObject);
     procedure ConnectFailed(const aText: string);
@@ -1664,7 +1664,7 @@ begin
 end;
 
 
-procedure TKMNetworking.HandleMessage(kind: TKMessageKind; M: TKMemoryStream; aSenderIndex: TKMNetHandleIndex);
+procedure TKMNetworking.HandleMessage(aMessageKind: TKMessageKind; aStream: TKMemoryStream; aSenderIndex: TKMNetHandleIndex);
 var
   I, locID, teamID, playerIndex: Integer;
   M2: TKMemoryStream;
@@ -1676,12 +1676,12 @@ var
   tmpChatMode: TKMChatMode;
   chatSound: TKMChatSound;
 begin
-  LogPacket(False, kind, aSenderIndex);
+  LogPacket(False, aMessageKind, aSenderIndex);
 
-  case kind of
+  case aMessageKind of
     mkGameVersion:
             begin
-              M.ReadA(tmpStringA);
+              aStream.ReadA(tmpStringA);
               if tmpStringA <> NET_PROTOCOL_REVISON then
               begin
                 Assert(not IsHost);
@@ -1693,19 +1693,19 @@ begin
 
     mkWelcomeMessage:
             begin
-              M.ReadW(tmpStringW);
+              aStream.ReadW(tmpStringW);
               fWelcomeMessage := tmpStringW;
             end;
 
     mkServerName:
             begin
-              M.ReadA(tmpStringA);
+              aStream.ReadA(tmpStringA);
               fServerName := TKMNetworkUtils.GetEscapedNewLineServerNameA(tmpStringA);
             end;
 
     mkIndexOnServer:
             begin
-              M.Read(tmpHandleIndex);
+              aStream.Read(tmpHandleIndex);
               fMyIndexOnServer := tmpHandleIndex;
               //PostLocalMessage('Index on Server - ' + inttostr(fMyIndexOnServer));
               //Now join the room we planned to
@@ -1718,8 +1718,8 @@ begin
 
     mkConnectedToRoom:
             begin
-              M.Read(tmpHandleIndex); //Host's index
-              fNetGameFilter.Load(M);
+              aStream.Read(tmpHandleIndex); //Host's index
+              fNetGameFilter.Load(aStream);
               //See if the server assigned hosting rights to us
               if tmpHandleIndex = fMyIndexOnServer then
               begin
@@ -1780,7 +1780,7 @@ begin
 
     mkAskToReconnect:
             begin
-              M.ReadA(tmpStringA);
+              aStream.ReadA(tmpStringA);
               playerIndex := fNetPlayers.NicknameToLocal(tmpStringA);
               tmpInteger := fNetPlayers.CheckCanReconnect(playerIndex);
               if tmpInteger = -1 then
@@ -1803,7 +1803,7 @@ begin
 
     mkRefuseReconnect:
             begin
-              M.Read(tmpInteger);
+              aStream.Read(tmpInteger);
               //If the result is < 1 is means silently ignore and keep retrying
               if tmpInteger > 0 then
                 PostLocalMessage(Format(gResTexts[TX_NET_RECONNECTION_FAILED], [gResTexts[tmpInteger]]), csSystem);
@@ -1814,11 +1814,11 @@ begin
     mkAskToJoin:
             if IsHost then
             begin
-              if not TKMNetSecurity.ValidateSolution(M, aSenderIndex) then
+              if not TKMNetSecurity.ValidateSolution(aStream, aSenderIndex) then
                 tmpInteger := TX_NET_YOUR_DATA_FILES
               else
               begin
-                M.ReadA(tmpStringA);
+                aStream.ReadA(tmpStringA);
                 tmpInteger := fNetPlayers.CheckCanJoin(tmpStringA, aSenderIndex);
                 if (tmpInteger = -1) and (fNetGameState <> lgsLobby) then
                   tmpInteger := TX_NET_GAME_IN_PROGRESS;
@@ -1837,7 +1837,7 @@ begin
             end;
 
     mkFileRequest:
-            FileRequestReceived(aSenderIndex, M);
+            FileRequestReceived(aSenderIndex, aStream);
 
     mkFileChunk:
             if not IsHost and (fFileReceiver <> nil) then
@@ -1845,7 +1845,7 @@ begin
               if SLOW_MAP_SAVE_LOAD then
                 Sleep(50);
                   
-              fFileReceiver.DataReceived(M);
+              fFileReceiver.DataReceived(aStream);
               PacketSend(aSenderIndex, mkFileAck);
               M2 := TKMemoryStreamBinary.Create;
               M2.Write(fFileReceiver.TotalSize);
@@ -1871,8 +1871,8 @@ begin
     mkFileProgress:
             if Assigned(OnPlayerFileTransferProgress) then
             begin
-              M.Read(tmpCardinal);
-              M.Read(tmpCardinal2);
+              aStream.Read(tmpCardinal);
+              aStream.Read(tmpCardinal2);
               playerIndex := fNetPlayers.ServerToLocal(aSenderIndex);
               if (playerIndex <> -1) and fNetPlayers[playerIndex].DownloadInProgress then
                 OnPlayerFileTransferProgress(playerIndex, tmpCardinal, tmpCardinal2);
@@ -1881,13 +1881,13 @@ begin
     mkFileSendStarted:
             if not IsHost then //Host will mark NetPlayers before file send
             begin
-              M.Read(tmpCardinal);
+              aStream.Read(tmpCardinal);
               SetDownloadlInProgress(tmpCardinal, True);
             end;
 
     mkLangCode:
             begin
-              M.ReadA(tmpStringA);
+              aStream.ReadA(tmpStringA);
               playerIndex := fNetPlayers.ServerToLocal(aSenderIndex);
               if playerIndex <> -1 then
                 fNetPlayers[playerIndex].LangCode := tmpStringA;
@@ -1907,7 +1907,7 @@ begin
     mkRefuseToJoin:
             if fNetPlayerKind = lpkJoiner then
             begin
-              M.Read(tmpInteger);
+              aStream.Read(tmpInteger);
               fNetClient.Disconnect;
               OnJoinFail(gResTexts[tmpInteger]);
             end;
@@ -1927,7 +1927,7 @@ begin
               else
               begin
                 //Solve joiner's challenge
-                M2 := TKMemoryStreamBinary(TKMNetSecurity.SolveChallenge(M, aSenderIndex));
+                M2 := TKMemoryStreamBinary(TKMNetSecurity.SolveChallenge(aStream, aSenderIndex));
                 //Send our own challenge
                 TKMNetSecurity.GenerateChallenge(M2, aSenderIndex);
                 PacketSend(aSenderIndex, mkAuthChallenge, M2);
@@ -1938,10 +1938,10 @@ begin
     mkAuthChallenge:
             begin
               //Validate solution the host sent back to us
-              if TKMNetSecurity.ValidateSolution(M, aSenderIndex) then
+              if TKMNetSecurity.ValidateSolution(aStream, aSenderIndex) then
               begin
                 //Solve host's challenge and ask to join
-                M2 := TKMemoryStreamBinary(TKMNetSecurity.SolveChallenge(M, aSenderIndex));
+                M2 := TKMemoryStreamBinary(TKMNetSecurity.SolveChallenge(aStream, aSenderIndex));
                 M2.WriteA(fMyNickname);
                 PacketSend(NET_ADDRESS_HOST, mkAskToJoin, M2);
                 M2.Free;
@@ -1952,13 +1952,13 @@ begin
 
     mkKicked:
             begin
-              M.Read(tmpInteger);
+              aStream.Read(tmpInteger);
               OnDisconnect(gResTexts[tmpInteger]);
             end;
 
     mkClientLost:
             begin
-              M.Read(tmpHandleIndex);
+              aStream.Read(tmpHandleIndex);
               if IsHost then
               begin
                 fFileSenderManager.ClientDisconnected(tmpHandleIndex);
@@ -1996,24 +1996,24 @@ begin
 
     mkDisconnect:
             begin
-              M.Read(tmpInteger);
+              aStream.Read(tmpInteger);
               PlayerDisconnected(aSenderIndex, tmpInteger);
             end;
 
     mkReassignHost:
-            ReassignHost(aSenderIndex, M);
+            ReassignHost(aSenderIndex, aStream);
 
     mkPing:  PacketSend(aSenderIndex, mkPong);
 
     mkPingInfo:
             begin
-              DecodePingInfo(M);
+              DecodePingInfo(aStream);
               if Assigned(OnPingInfo) then OnPingInfo;
             end;
 
 //    mkFPS:
 //            begin
-//              M.Read(tmpInteger);
+//              aStream.Read(tmpInteger);
 //              PlayerIndex := fNetPlayers.ServerToLocal(aSenderIndex);
 //              if PlayerIndex = -1 then Exit;
 //              fNetPlayers[PlayerIndex].FPS := Cardinal(tmpInteger);
@@ -2021,12 +2021,12 @@ begin
 //            end;
 
     mkPlayersList:
-            PlayersListReceived(M);
+            PlayersListReceived(aStream);
 
     mkGameOptions:
             if fNetPlayerKind = lpkJoiner then
             begin
-              fNetGameOptions.Load(M);
+              fNetGameOptions.Load(aStream);
               if Assigned(OnGameOptions) then OnGameOptions;
             end;
 
@@ -2043,8 +2043,8 @@ begin
             if fNetPlayerKind = lpkJoiner then
             begin
               FreeAndNil(fFileReceiver); //Any ongoing transfer is cancelled
-              M.ReadW(tmpStringW); //Map name
-              M.Read(tmpCardinal); //CRC
+              aStream.ReadW(tmpStringW); //Map name
+              aStream.Read(tmpCardinal); //CRC
               //Try to load map from MP or DL folder
               FreeAndNil(fMapInfo);
               fMapInfo := TKMMapInfo.Create(tmpStringW, True, mkMP);
@@ -2080,8 +2080,8 @@ begin
             if fNetPlayerKind = lpkJoiner then
             begin
               FreeAndNil(fFileReceiver); //Any ongoing transfer is cancelled
-              M.ReadW(tmpStringW); //Save name
-              M.Read(tmpCardinal); //CRC
+              aStream.ReadW(tmpStringW); //Save name
+              aStream.Read(tmpCardinal); //CRC
 
               //See if we already have the save file the host selected
               FreeAndNil(fSaveInfo);
@@ -2131,7 +2131,7 @@ begin
     mkStartingLocQuery:
             if IsHost and not fNetPlayers.HostDoesSetup then
             begin
-              M.Read(tmpInteger);
+              aStream.Read(tmpInteger);
               locID := tmpInteger;
               playerIndex := fNetPlayers.ServerToLocal(aSenderIndex);
               if CanTakeLocation(playerIndex, locID, False) then
@@ -2149,7 +2149,7 @@ begin
     mkSetTeam:
             if IsHost and not fNetPlayers.HostDoesSetup then
             begin
-              M.Read(tmpInteger);
+              aStream.Read(tmpInteger);
               teamID := tmpInteger;
               //Update Players setup
               fNetPlayers[fNetPlayers.ServerToLocal(aSenderIndex)].Team := teamID;
@@ -2159,7 +2159,7 @@ begin
     mkFlagColorQuery:
             if IsHost then
             begin
-              M.Read(tmpCardinal);
+              aStream.Read(tmpCardinal);
               //The player list could have changed since the joiner sent this request (over slow connection)
               if fNetPlayers.ColorAvailable(tmpCardinal)
               and ((fSelectGameKind <> ngkSave) or not SaveInfo.IsValid or not SaveInfo.GameInfo.ColorUsed(tmpCardinal)) then
@@ -2190,8 +2190,8 @@ begin
     mkStart:
             if fNetPlayerKind = lpkJoiner then
             begin
-              M.Read(fHostIndex);
-              fNetPlayers.LoadFromStream(M);
+              aStream.Read(fHostIndex);
+              fNetPlayers.LoadFromStream(aStream);
               fMyIndex := fNetPlayers.NicknameToLocal(fMyNickname);
               StartGame;
             end;
@@ -2199,7 +2199,7 @@ begin
     mkSetPassword:
             if not IsHost then //Save password for joiner's only, as it's used to show Lock image
             begin
-              M.ReadA(tmpStringA); //Password
+              aStream.ReadA(tmpStringA); //Password
               fPassword := tmpStringA;
               if Assigned(OnSetPassword) then
                 OnSetPassword(fPassword);
@@ -2230,19 +2230,19 @@ begin
             begin
               playerIndex := fNetPlayers.ServerToLocal(aSenderIndex);
               if (playerIndex<>-1) and not fNetPlayers[playerIndex].Dropped then
-                if Assigned(OnCommands) then OnCommands(M, playerIndex);
+                if Assigned(OnCommands) then OnCommands(aStream, playerIndex);
             end;
     mkAskToSendCrashreport:
             begin
               // We were asked to send crashreport. Raise new Exception then
-              M.ReadW(tmpStringW);
+              aStream.ReadW(tmpStringW);
               gLog.AddTime('Received mkAskToSendCrashreport with player error msg: ' + tmpStringW);
               raise Exception.Create(Format(gResTexts[TX_ERROR_ASK_TO_SEND_RNGCHECK_REPORT], [#13#10#13#10, tmpStringW]));
             end;
 
     mkResyncFromTick:
             begin
-              M.Read(tmpInteger);
+              aStream.Read(tmpInteger);
               gLog.LogNetConnection('Asked to resync from tick ' + IntToStr(tmpInteger));
               playerIndex := fNetPlayers.ServerToLocal(aSenderIndex);
               if Assigned(OnResyncFromTick) and (playerIndex<>-1) then
@@ -2264,7 +2264,7 @@ begin
 
     mkClientReconnected:
             begin
-              M.Read(tmpHandleIndex);
+              aStream.Read(tmpHandleIndex);
               //The host has accepted a disconnected client back into the game. Request this client to resync us
               if tmpHandleIndex = fMyIndexOnServer then exit;
               gLog.LogNetConnection('Requesting resync for reconnected client');
@@ -2298,11 +2298,11 @@ begin
 
     mkTextTranslated:
             begin
-              M.Read(tmpInteger);
-              M.Read(chatSound, SizeOf(chatSound));
-              M.ReadW(tmpStringW);
-              M.ReadW(replyStringW);
-              M.Read(tmpInteger2);
+              aStream.Read(tmpInteger);
+              aStream.Read(chatSound, SizeOf(chatSound));
+              aStream.ReadW(tmpStringW);
+              aStream.ReadW(replyStringW);
+              aStream.Read(tmpInteger2);
               if tmpInteger2 = -1 then
                 PostLocalMessage(Format(gResTexts[tmpInteger], [tmpStringW, replyStringW]), chatSound)
               else
@@ -2311,9 +2311,9 @@ begin
 
     mkTextChat:
             begin
-              M.Read(tmpChatMode, SizeOf(tmpChatMode));
-              M.Read(tmpHandleIndex);
-              M.ReadW(tmpStringW);
+              aStream.Read(tmpChatMode, SizeOf(tmpChatMode));
+              aStream.Read(tmpHandleIndex);
+              aStream.ReadW(tmpStringW);
 
               case tmpChatMode of
                 cmTeam:
