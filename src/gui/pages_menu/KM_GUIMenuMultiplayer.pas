@@ -115,7 +115,7 @@ type
 
 implementation
 uses
-  KM_Main, 
+  KM_Main,
   KM_GameSettings,
   KM_ControlsTypes,
   KM_ServerSettings,
@@ -1015,7 +1015,7 @@ begin
 
   if aText = '' then
     //Entering MP anew
-    MP_UpdateStatus(gResTexts[TX_MP_MENU_STATUS_READY],icGreen,False)
+    MP_UpdateStatus(gResTexts[TX_MP_MENU_STATUS_READY], icGreen, False)
   else
     //We are in event handler of Lobby.BackClick (show status warning)
     MP_UpdateStatus(aText, icYellow, False);
