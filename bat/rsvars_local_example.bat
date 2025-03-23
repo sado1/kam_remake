@@ -50,4 +50,6 @@
 @SET BuildFullDir_LOCAL=F:\KaM_Remake Beta
 
 @REM Path to Pandoc folder, for documentation generation
-@SET PandocDir_LOCAL=F:\Development_Win7\pandoc-3.6.4
+@SET PandocDir_LOCAL=%APPDATA%\Pandoc
+@REM or
+@REM @SET PandocDir_LOCAL=C:\Users\your_user_name\AppData\Local\Pandoc
