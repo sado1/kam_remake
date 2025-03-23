@@ -24,8 +24,8 @@ type
     procedure MP_Init;
     procedure MP_SaveSettings;
     procedure MP_UpdateStatus(const aStatus: string; aColor: TColor4; aBusy: Boolean);
-    procedure MP_ServersUpdateList(Sender: TObject);
-    procedure MP_AnnouncementsUpdated(const S: UnicodeString);
+    procedure MP_ReceiveServerList(Sender: TObject);
+    procedure MP_ReceiveAnnouncements(const aText: UnicodeString);
     procedure MP_CreateServerClick(Sender: TObject);
     procedure MP_FindServerClick(Sender: TObject);
     procedure MP_CreateServerCancelClick(Sender: TObject);
@@ -372,8 +372,8 @@ begin
 
   Button_MP_Join.Disable;
 
-  //Fetch the announcements display
-  gNetworking.ServerQuery.OnAnnouncements := MP_AnnouncementsUpdated;
+  // Fetch the announcements display
+  gNetworking.ServerQuery.OnAnnouncements := MP_ReceiveAnnouncements;
   gNetworking.ServerQuery.FetchAnnouncements(gResLocales.UserLocale);
   Memo_MP_Announcement.Clear;
   Memo_MP_Announcement.Add(gResTexts[TX_MP_MENU_LOADING_ANNOUNCEMENTS]);
@@ -505,8 +505,8 @@ end;
 
 procedure TKMMenuMultiplayer.MP_ServersRefresh(Sender: TObject);
 begin
-  gNetworking.ServerQuery.OnListUpdated := MP_ServersUpdateList;
-  gNetworking.ServerQuery.RefreshList;
+  gNetworking.ServerQuery.OnListUpdated := MP_ReceiveServerList;
+  gNetworking.ServerQuery.FetchServerList;
   ColumnBox_Servers.Clear;
   MP_ClearServerDetailsPanel;
 
@@ -518,8 +518,8 @@ begin
 end;
 
 
-//Refresh the display for the list of servers
-procedure TKMMenuMultiplayer.MP_ServersUpdateList(Sender: TObject);
+// Refresh the display for the list of servers
+procedure TKMMenuMultiplayer.MP_ReceiveServerList(Sender: TObject);
 const
   GAME_STATE_TEXT_IDS: array [TMPGameState] of Integer = (TX_MP_STATE_NONE, TX_MP_STATE_LOBBY, TX_MP_STATE_LOADING, TX_MP_STATE_GAME);
 var
@@ -585,10 +585,10 @@ begin
 end;
 
 
-procedure TKMMenuMultiplayer.MP_AnnouncementsUpdated(const S: UnicodeString);
+procedure TKMMenuMultiplayer.MP_ReceiveAnnouncements(const aText: UnicodeString);
 begin
   Memo_MP_Announcement.Clear;
-  Memo_MP_Announcement.Add(S);
+  Memo_MP_Announcement.Add(aText);
 end;
 
 
@@ -628,7 +628,7 @@ begin
 
   //Refresh the display only if there are rooms to be sorted (otherwise it shows "no servers found" immediately)
   if gNetworking.ServerQuery.Rooms.Count > 0 then
-    MP_ServersUpdateList(nil);
+    MP_ReceiveServerList(nil);
 end;
 
 

@@ -133,7 +133,7 @@ type
 
     property SortMethod: TServerSortMethod read fSortMethod write SetSortMethod;
 
-    procedure RefreshList;
+    procedure FetchServerList;
     procedure FetchAnnouncements(const aLocale: AnsiString);
     procedure AnnounceGame(const aMapName: UnicodeString; aCRC: Cardinal; aPlayerCount: Integer);
     procedure UpdateStateIdle;
@@ -448,7 +448,7 @@ begin
 end;
 
 
-procedure TKMServerQuery.RefreshList;
+procedure TKMServerQuery.FetchServerList;
 var
   I: Integer;
 begin
@@ -462,7 +462,8 @@ begin
 
   fUDPScanner.ScanForServers;
   if LOCAL_SERVER_LIST then
-    ReceiveServerList('Localhost,127.0.0.1,56789,0,Windows') //For debugging
+    // Pretend we already received it (for debug)
+    ReceiveServerList('Localhost,127.0.0.1,56789,0,Windows')
     //+#13+'Localhost,127.0.0.1,56788,1,Windows'+#13+'Localhost,127.0.0.1,56787,1,Unix'
   else
     fMasterServer.FetchServerList; //Start the query
