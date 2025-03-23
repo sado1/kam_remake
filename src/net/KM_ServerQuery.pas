@@ -348,13 +348,13 @@ var
   dataStream: TKMemoryStream;
   messageKind: TKMessageKind;
 begin
-  Assert(aLength >= 1, 'Unexpectedly short message'); //messageKind, Message
+  Assert(aLength >= SizeOf(messageKind), 'Unexpectedly short message');
 
   dataStream := TKMemoryStreamBinary.Create;
   try
     dataStream.WriteBuffer(aData^, aLength);
     dataStream.Position := 0;
-    dataStream.Read(messageKind, SizeOf(TKMessageKind)); //Depending on messageKind message contains either Text or a Number
+    dataStream.Read(messageKind, SizeOf(messageKind));
 
     HandleMessage(messageKind, dataStream);
   finally

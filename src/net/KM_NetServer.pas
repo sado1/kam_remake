@@ -818,10 +818,10 @@ end;
 
 procedure TKMNetServer.RecieveMessage(aSenderHandle: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
 var
-  messageKind: TKMessageKind;
   dataStream: TKMemoryStream;
+  messageKind: TKMessageKind;
 begin
-  Assert(aLength >= 1, 'Unexpectedly short message');
+  Assert(aLength >= SizeOf(messageKind), 'Unexpectedly short message');
 
   dataStream := TKMemoryStreamBinary.Create;
   try

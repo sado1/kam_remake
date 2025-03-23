@@ -1632,14 +1632,14 @@ var
   messageKind: TKMessageKind;
   err: UnicodeString;
 begin
-  Assert(aLength >= 1, 'Unexpectedly short message'); // There needs to be at least 1 byte for TKMMessageKind
+  Assert(aLength >= SizeOf(messageKind), 'Unexpectedly short message');
   if not Connected then Exit;
 
   dataStream := TKMemoryStreamBinary.Create;
   try
     dataStream.WriteBuffer(aData^, aLength);
     dataStream.Position := 0;
-    dataStream.Read(messageKind, SizeOf(TKMessageKind));
+    dataStream.Read(messageKind, SizeOf(messageKind));
 
     // Make sure we are allowed to receive this packet at this point
     if not (messageKind in NET_ALLOWED_PACKETS_SET[fNetGameState]) then
