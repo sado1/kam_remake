@@ -52,7 +52,7 @@ type
     fOnQueryDone: TNotifyEvent;
     procedure NetClientReceive(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
     procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind); overload;
-    procedure HandleMessage(kind: TKMessageKind; M: TKMemoryStream);
+    procedure HandleMessage(aMessageKind: TKMessageKind; aStream: TKMemoryStream);
   public
     constructor Create;
     destructor Destroy; override;
@@ -345,38 +345,40 @@ end;
 
 procedure TKMQuery.NetClientReceive(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
 var
-  M: TKMemoryStream;
-  kind: TKMessageKind;
+  dataStream: TKMemoryStream;
+  messageKind: TKMessageKind;
 begin
-  Assert(aLength >= 1, 'Unexpectedly short message'); //Kind, Message
+  Assert(aLength >= 1, 'Unexpectedly short message'); //messageKind, Message
 
-  M := TKMemoryStreamBinary.Create;
-  M.WriteBuffer(aData^, aLength);
-  M.Position := 0;
-  M.Read(kind, SizeOf(TKMessageKind)); //Depending on kind message contains either Text or a Number
+  dataStream := TKMemoryStreamBinary.Create;
+  try
+    dataStream.WriteBuffer(aData^, aLength);
+    dataStream.Position := 0;
+    dataStream.Read(messageKind, SizeOf(TKMessageKind)); //Depending on messageKind message contains either Text or a Number
 
-  HandleMessage(kind, M);
-
-  M.Free;
+    HandleMessage(messageKind, dataStream);
+  finally
+    dataStream.Free;
+  end;
 end;
 
 
-procedure TKMQuery.HandleMessage(kind: TKMessageKind; M: TKMemoryStream);
+procedure TKMQuery.HandleMessage(aMessageKind: TKMessageKind; aStream: TKMemoryStream);
 var
   tmpHandleIndex: TKMNetHandleIndex;
   tmpString: AnsiString;
 begin
-  case kind of
+  case aMessageKind of
     mkGameVersion:
       begin
-        M.ReadA(tmpString);
+        aStream.ReadA(tmpString);
         if tmpString <> NET_PROTOCOL_REVISON then
           fQueryIsDone := True;
       end;
 
     mkIndexOnServer:
       begin
-        M.Read(tmpHandleIndex);
+        aStream.Read(tmpHandleIndex);
         fIndexOnServer := tmpHandleIndex;
         fPingStarted := TimeGet;
         PacketSend(NET_ADDRESS_SERVER, mkGetServerInfo);
@@ -384,7 +386,7 @@ begin
 
     mkServerInfo:
       begin
-        fOnServerData(fServerID, M, fPingStarted);
+        fOnServerData(fServerID, aStream, fPingStarted);
         fQueryIsDone := True; //We cannot call fOnQueryDone now because that would disconnect the socket halfway through the receive procedure (crashes)
       end;
   end;
