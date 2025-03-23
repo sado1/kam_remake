@@ -14,12 +14,13 @@ type
   //Interaction with MasterServer
   TKMMasterServer = class
   private
+    fMasterServerAddress: string;
     fIsDedicated: Boolean;
 
     fHTTPClient: TKMHTTPClient; //To update server status and fetch server list
     fHTTPAnnouncementsClient: TKMHTTPClient; //To fetch the annoucenemnts at the same time as the server list
     fHTTPMapsClient: TKMHTTPClient; //To tell master server about the map we played
-    fMasterServerAddress: string;
+
     fOnError: TGetStrProc;
     fOnServerList: TGetStrProc;
     fOnAnnouncements: TGetStrProc;
