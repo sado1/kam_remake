@@ -11,7 +11,7 @@ uses
 
 
 type
-  //Interaction with MasterServer
+  // Class responsible for interaction with MasterServer
   TKMMasterServer = class
   private
     fMasterServerAddress: string;
@@ -32,16 +32,17 @@ type
     constructor Create(const aMasterServerAddress: string; aDedicated:Boolean);
     destructor Destroy; override;
 
+    property MasterServerAddress: string write fMasterServerAddress;
     property OnError: TGetStrProc write fOnError;
     property OnServerList: TGetStrProc write fOnServerList;
     property OnAnnouncements: TGetStrProc write fOnAnnouncements;
-    procedure AnnounceServer(const aName: string; aPort: Word; aPlayerCount, aTTL: Integer);
-    procedure QueryServerList;
-    procedure FetchAnnouncements(const aLang: AnsiString);
-    procedure SendMapInfo(const aMapName: string; aCRC: Cardinal; aPlayerCount: Integer);
-    procedure UpdateStateIdle;
 
-    property MasterServerAddress: string write fMasterServerAddress;
+    procedure AnnounceServer(const aName: string; aPort: Word; aPlayerCount, aTTL: Integer);
+    procedure AnnounceGame(const aMapName: string; aCRC: Cardinal; aPlayerCount: Integer);
+    procedure FetchAnnouncements(const aLang: AnsiString);
+    procedure FetchServerList;
+
+    procedure UpdateStateIdle;
   end;
 
 
@@ -107,7 +108,7 @@ begin
 end;
 
 
-procedure TKMMasterServer.QueryServerList;
+procedure TKMMasterServer.FetchServerList;
 begin
   fHTTPClient.OnReceive := ReceiveServerList;
   fHTTPClient.GetURL(fMasterServerAddress+'serverquery.php?rev='+UrlEncode(NET_PROTOCOL_REVISON)+'&coderev='+UrlEncode(GAME_REVISION)
@@ -125,7 +126,7 @@ begin
 end;
 
 
-procedure TKMMasterServer.SendMapInfo(const aMapName: string; aCRC: Cardinal; aPlayerCount: Integer);
+procedure TKMMasterServer.AnnounceGame(const aMapName: string; aCRC: Cardinal; aPlayerCount: Integer);
 begin
   fHTTPMapsClient.OnReceive := nil; //We don't care about the response
   fHTTPMapsClient.GetURL(fMasterServerAddress+'maps.php?map='+UrlEncode(aMapName)
