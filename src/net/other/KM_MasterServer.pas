@@ -3,12 +3,7 @@ unit KM_MasterServer;
 {$WARN IMPLICIT_STRING_CAST OFF}
 interface
 uses
-  Classes, SysUtils,
-  URLUtils, //This is a common URLUtils file used by both Delphi and Lazarus for two reasons:
-            //1. Library specific stuff should all be done in wrappers (e.g. KM_NetServer_Overbyte) so we can easily switch systems.
-            //2. Lazarus' LNet library has broken/incorrectly implemented URLUtils at the moment, so we can't rely on them.
-  KM_Defaults, KM_HTTPClient;
-
+  Classes, KM_HTTPClient;
 
 type
   // Class responsible for interaction with MasterServer
@@ -47,6 +42,13 @@ type
 
 
 implementation
+uses
+  SysUtils,
+  URLUtils, //This is a common URLUtils file used by both Delphi and Lazarus for two reasons:
+            //1. Library specific stuff should all be done in wrappers (e.g. KM_NetServer_Overbyte) so we can easily switch systems.
+            //2. Lazarus' LNet library has broken/incorrectly implemented URLUtils at the moment, so we can't rely on them.
+  KM_Defaults;
+
 
 const
   {$IFDEF MSWindows} OS = 'Windows'; {$ENDIF}
