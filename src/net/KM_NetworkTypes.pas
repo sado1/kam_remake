@@ -72,7 +72,7 @@ type
     mkLangCode,        //Client tells host his language code
     mkAuthChallenge,   //Host sends solution and own challenge back to joiner
 
-    mkGetServerInfo,   //Client askes for server for the server details (for querying)
+    mkGetServerInfo,   //Client askes the server for the server info
     mkServerInfo,      //Server sends client the server info on request
 
     mkDisconnect,      //Joiner tells Host that he is leaving the lobby/game deliberately
