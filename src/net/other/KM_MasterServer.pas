@@ -25,9 +25,9 @@ type
     fOnServerList: TGetStrProc;
     fOnAnnouncements: TGetStrProc;
 
-    procedure ReceiveServerList(const S: string);
-    procedure ReceiveAnnouncements(const S: string);
-    procedure Error(const S: string);
+    procedure ReceiveServerList(const aText: string);
+    procedure ReceiveAnnouncements(const aText: string);
+    procedure Error(const aText: string);
   public
     constructor Create(const aMasterServerAddress: string; aDedicated:Boolean);
     destructor Destroy; override;
@@ -78,21 +78,21 @@ begin
 end;
 
 
-procedure TKMMasterServer.Error(const S: string);
+procedure TKMMasterServer.Error(const aText: string);
 begin
-  if Assigned(fOnError) then fOnError(S);
+  if Assigned(fOnError) then fOnError(aText);
 end;
 
 
-procedure TKMMasterServer.ReceiveServerList(const S: string);
+procedure TKMMasterServer.ReceiveServerList(const aText: string);
 begin
-  if Assigned(fOnServerList) then fOnServerList(S);
+  if Assigned(fOnServerList) then fOnServerList(aText);
 end;
 
 
-procedure TKMMasterServer.ReceiveAnnouncements(const S: string);
+procedure TKMMasterServer.ReceiveAnnouncements(const aText: string);
 begin
-  if Assigned(fOnAnnouncements) then fOnAnnouncements(S);
+  if Assigned(fOnAnnouncements) then fOnAnnouncements(aText);
 end;
 
 
