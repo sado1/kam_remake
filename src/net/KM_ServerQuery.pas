@@ -52,6 +52,7 @@ type
     fOnQueryDone: TNotifyEvent;
     procedure NetClientReceive(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
     procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind); overload;
+    procedure HandleMessage(kind: TKMessageKind; M: TKMemoryStream);
   public
     constructor Create;
     destructor Destroy; override;
@@ -346,9 +347,6 @@ procedure TKMQuery.NetClientReceive(aNetClient: TKMNetClient; aSenderIndex: TKMN
 var
   M: TKMemoryStream;
   kind: TKMessageKind;
-//  tmpInteger: Integer;
-  tmpHandleIndex: TKMNetHandleIndex;
-  tmpString: AnsiString;
 begin
   Assert(aLength >= 1, 'Unexpectedly short message'); //Kind, Message
 
@@ -357,6 +355,17 @@ begin
   M.Position := 0;
   M.Read(kind, SizeOf(TKMessageKind)); //Depending on kind message contains either Text or a Number
 
+  HandleMessage(kind, M);
+
+  M.Free;
+end;
+
+
+procedure TKMQuery.HandleMessage(kind: TKMessageKind; M: TKMemoryStream);
+var
+  tmpHandleIndex: TKMNetHandleIndex;
+  tmpString: AnsiString;
+begin
   case kind of
     mkGameVersion:
       begin
@@ -379,8 +388,6 @@ begin
         fQueryIsDone := True; //We cannot call fOnQueryDone now because that would disconnect the socket halfway through the receive procedure (crashes)
       end;
   end;
-
-  M.Free;
 end;
 
 
