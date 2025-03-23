@@ -7,7 +7,7 @@ uses
 
 const
   NET_MP_GAME_STATE: array [TKMNetGameState] of TMPGameState = (mgsNone, mgsNone, mgsNone, mgsLobby, mgsLoading, mgsGame, mgsGame);
-  NET_ALLOWED_PACKETS_SET: array [TKMNetGameState] of set of TKMessageKind = (
+  NET_ALLOWED_PACKETS_SET: array [TKMNetGameState] of set of TKMNetMessageKind = (
     //lgsNone
     [],
     //lgsConnecting

@@ -48,7 +48,7 @@ type
   // Alternative solution could be to send message kind as a text, to avoid such errors in the future
   // Or even better solution is to use fixed IDs for enum values
   //
-  TKMessageKind = (
+  TKMNetMessageKind = (
     mkAskToJoin,       //Client asks Host if he can join
     mkAllowToJoin,     //Host allows Client to join
     mkRefuseToJoin,    //Host can refuse when e.g. Nickname is already taken
@@ -139,7 +139,7 @@ type
   );
 
 const
-  NetPacketType: array [TKMessageKind] of TKMPacketFormat = (
+  NetPacketType: array [TKMNetMessageKind] of TKMPacketFormat = (
     pfBinary,   //mkAskToJoin
     pfNoData,   //mkAllowToJoin
     pfNumber,   //mkRefuseToJoin

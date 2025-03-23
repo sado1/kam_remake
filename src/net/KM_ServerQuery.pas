@@ -51,8 +51,8 @@ type
     fOnServerData: TServerDataEvent;
     fOnQueryDone: TNotifyEvent;
     procedure NetClientReceive(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
-    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind); overload;
-    procedure HandleMessage(aMessageKind: TKMessageKind; aStream: TKMemoryStream);
+    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind); overload;
+    procedure HandleMessage(aMessageKind: TKMNetMessageKind; aStream: TKMemoryStream);
   public
     constructor Create;
     destructor Destroy; override;
@@ -346,7 +346,7 @@ end;
 procedure TKMQuery.NetClientReceive(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
 var
   dataStream: TKMemoryStream;
-  messageKind: TKMessageKind;
+  messageKind: TKMNetMessageKind;
 begin
   Assert(aLength >= SizeOf(messageKind), 'Unexpectedly short message');
 
@@ -363,7 +363,7 @@ begin
 end;
 
 
-procedure TKMQuery.HandleMessage(aMessageKind: TKMessageKind; aStream: TKMemoryStream);
+procedure TKMQuery.HandleMessage(aMessageKind: TKMNetMessageKind; aStream: TKMemoryStream);
 var
   tmpHandleIndex: TKMNetHandleIndex;
   tmpString: AnsiString;
@@ -393,14 +393,14 @@ begin
 end;
 
 
-procedure TKMQuery.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind);
+procedure TKMQuery.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind);
 var
   M: TKMemoryStream;
 begin
   Assert(NetPacketType[aKind] = pfNoData);
 
   M := TKMemoryStreamBinary.Create;
-  M.Write(aKind, SizeOf(TKMessageKind));
+  M.Write(aKind, SizeOf(aKind));
 
   fNetClient.SendData(fIndexOnServer, aRecipient, M.Memory, M.Size);
   M.Free;

@@ -24,8 +24,8 @@ type
   // Should handle message exchange and routing, interacting with UI
   TKMNetworking = class
   private
-    fPacketsReceived: array[TKMessageKind] of Cardinal;
-    fPacketsSent: array[TKMessageKind] of Cardinal;
+    fPacketsReceived: array [TKMNetMessageKind] of Cardinal;
+    fPacketsSent: array [TKMNetMessageKind] of Cardinal;
     fPacketsStatsStartTime: Cardinal;
 
     fNetServer: TKMDedicatedServer;
@@ -88,26 +88,26 @@ type
     function GetMyNetPlayer: TKMNetPlayerInfo;
     procedure SetDownloadlInProgress(aSenderIndex: TKMNetHandleIndex; aValue: Boolean);
     procedure FileRequestReceived(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStream);
-    procedure HandleMessage(aMessageKind: TKMessageKind; aStream: TKMemoryStream; aSenderIndex: TKMNetHandleIndex);
+    procedure HandleMessage(aMessageKind: TKMNetMessageKind; aStream: TKMemoryStream; aSenderIndex: TKMNetHandleIndex);
 
     procedure ConnectSucceed(Sender:TObject);
     procedure ConnectFailed(const aText: string);
     function GetNetAddressPrintDescr(aNetworkAddress: Integer): String;
-    procedure LogPacket(aIsSending: Boolean; aKind: TKMessageKind; aNetworkAddress: TKMNetHandleIndex);
+    procedure LogPacket(aIsSending: Boolean; aKind: TKMNetMessageKind; aNetworkAddress: TKMNetHandleIndex);
     procedure PostLogMessageToChat(const aLogMessage: UnicodeString);
     procedure PacketRecieve(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal); //Process all commands
-    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind); overload;
-    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStream); overload;
-    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aParam: Integer); overload;
-    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aParam: Cardinal); overload;
-//    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aParams: array of Integer);
-    procedure PacketSendInd(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aIndexOnServer: TKMNetHandleIndex);
-    procedure PacketSendA(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: AnsiString);
-    procedure PacketSendW(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: UnicodeString);
+    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind); overload;
+    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream); overload;
+    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer); overload;
+    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Cardinal); overload;
+//    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aParams: array of Integer);
+    procedure PacketSendInd(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aIndexOnServer: TKMNetHandleIndex);
+    procedure PacketSendA(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: AnsiString);
+    procedure PacketSendW(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: UnicodeString);
     procedure SetDescription(const Value: UnicodeString);
 
-    function GetPacketsReceived(aKind: TKMessageKind): Cardinal;
-    function GetPacketsSent(aKind: TKMessageKind): Cardinal;
+    function GetPacketsReceived(aKind: TKMNetMessageKind): Cardinal;
+    function GetPacketsSent(aKind: TKMNetMessageKind): Cardinal;
 
     procedure WriteInfoToJoinRoom(aM: TKMemoryStream);
     function GetMapInfo: TKMMapInfo;
@@ -227,8 +227,8 @@ type
     procedure AttemptReconnection;
     procedure ReturnToLobby;
 
-    property PacketsReceived[aKind: TKMessageKind]: Cardinal read GetPacketsReceived;
-    property PacketsSent[aKind: TKMessageKind]: Cardinal read GetPacketsSent;
+    property PacketsReceived[aKind: TKMNetMessageKind]: Cardinal read GetPacketsReceived;
+    property PacketsSent[aKind: TKMNetMessageKind]: Cardinal read GetPacketsSent;
     property PacketsStatsStartTime: Cardinal read fPacketsStatsStartTime;
     procedure ResetPacketsStats;
 
@@ -1573,9 +1573,9 @@ begin
 end;
 
 
-procedure TKMNetworking.LogPacket(aIsSending: Boolean; aKind: TKMessageKind; aNetworkAddress: TKMNetHandleIndex);
+procedure TKMNetworking.LogPacket(aIsSending: Boolean; aKind: TKMNetMessageKind; aNetworkAddress: TKMNetHandleIndex);
 const
-  LOGGED_PACKET_KINDS: set of TKMessageKind = [mkReadyToPlay,
+  LOGGED_PACKET_KINDS: set of TKMNetMessageKind = [mkReadyToPlay,
                                                mkPlay,
                                                mkReconnectionAccepted,
                                                mkResyncFromTick,
@@ -1602,7 +1602,7 @@ begin
   else
     logMessage := 'Packet received: %-23s from %s';
 
-  logMessage := Format(logMessage, [GetEnumName(TypeInfo(TKMessageKind), Integer(aKind)),
+  logMessage := Format(logMessage, [GetEnumName(TypeInfo(TKMNetMessageKind), Integer(aKind)),
                                     GetNetAddressPrintDescr(aNetworkAddress)]);
 
   if aKind in LOGGED_PACKET_KINDS then
@@ -1629,7 +1629,7 @@ end;
 procedure TKMNetworking.PacketRecieve(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
 var
   dataStream: TKMemoryStream;
-  messageKind: TKMessageKind;
+  messageKind: TKMNetMessageKind;
   err: UnicodeString;
 begin
   Assert(aLength >= SizeOf(messageKind), 'Unexpectedly short message');
@@ -1649,7 +1649,7 @@ begin
       begin
         err := 'Received a packet not intended for this state (' +
           GetEnumName(TypeInfo(TKMNetGameState), Integer(fNetGameState)) + '): ' +
-          GetEnumName(TypeInfo(TKMessageKind), Integer(messageKind));
+          GetEnumName(TypeInfo(TKMNetMessageKind), Integer(messageKind));
         //These warnings sometimes happen when returning to lobby, log them but don't show user
         gLog.AddTime(err);
         //PostLocalMessage('Error: ' + err, csSystem);
@@ -1666,7 +1666,7 @@ begin
 end;
 
 
-procedure TKMNetworking.HandleMessage(aMessageKind: TKMessageKind; aStream: TKMemoryStream; aSenderIndex: TKMNetHandleIndex);
+procedure TKMNetworking.HandleMessage(aMessageKind: TKMNetMessageKind; aStream: TKMemoryStream; aSenderIndex: TKMNetHandleIndex);
 var
   I, locID, teamID, playerIndex: Integer;
   M2: TKMemoryStream;
@@ -2369,7 +2369,7 @@ end;
 
 
 //MessageKind.Data(depends on Kind)
-procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind);
+procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind);
 var
   M: TKMemoryStream;
 begin
@@ -2378,14 +2378,14 @@ begin
   LogPacket(True, aKind, aRecipient);
 
   M := TKMemoryStreamBinary.Create;
-  M.Write(aKind, SizeOf(TKMessageKind));
+  M.Write(aKind, SizeOf(aKind));
 
   fNetClient.SendData(fMyIndexOnServer, aRecipient, M.Memory, M.Size);
   M.Free;
 end;
 
 
-procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStream);
+procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream);
 var
   M: TKMemoryStream;
 begin
@@ -2394,7 +2394,7 @@ begin
   LogPacket(True, aKind, aRecipient);
 
   M := TKMemoryStreamBinary.Create;
-  M.Write(aKind, SizeOf(TKMessageKind));
+  M.Write(aKind, SizeOf(aKind));
 
   aStream.Position := 0;
   M.CopyFrom(aStream, aStream.Size);
@@ -2404,7 +2404,7 @@ begin
 end;
 
 
-procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aParam: Cardinal);
+procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Cardinal);
 var
   M: TKMemoryStream;
 begin
@@ -2413,7 +2413,7 @@ begin
   LogPacket(True, aKind, aRecipient);
 
   M := TKMemoryStreamBinary.Create;
-  M.Write(aKind, SizeOf(TKMessageKind));
+  M.Write(aKind, SizeOf(aKind));
 
   M.Write(aParam);
 
@@ -2422,7 +2422,7 @@ begin
 end;
 
 
-procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aParam: Integer);
+procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer);
 var
   M: TKMemoryStream;
 begin
@@ -2431,7 +2431,7 @@ begin
   LogPacket(True, aKind, aRecipient);
 
   M := TKMemoryStreamBinary.Create;
-  M.Write(aKind, SizeOf(TKMessageKind));
+  M.Write(aKind, SizeOf(aKind));
 
   M.Write(aParam);
 
@@ -2440,7 +2440,7 @@ begin
 end;
 
 
-//procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aParams: array of Integer);
+//procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aParams: array of Integer);
 //var
 //  I: Integer;
 //  M: TKMemoryStream;
@@ -2450,7 +2450,7 @@ end;
 //  LogPacket(True, aKind, aRecipient);
 //
 //  M := TKMemoryStreamBinary.Create;
-//  M.Write(aKind, SizeOf(TKMessageKind));
+//  M.Write(aKind, SizeOf(aKind));
 //
 //  for I := 0 to Length(aParams) - 1 do
 //    M.Write(aParams[I]);
@@ -2460,7 +2460,7 @@ end;
 //end;
 
 
-procedure TKMNetworking.PacketSendInd(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aIndexOnServer: TKMNetHandleIndex);
+procedure TKMNetworking.PacketSendInd(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aIndexOnServer: TKMNetHandleIndex);
 var
   M: TKMemoryStream;
 begin
@@ -2469,7 +2469,7 @@ begin
   LogPacket(True, aKind, aRecipient);
 
   M := TKMemoryStreamBinary.Create;
-  M.Write(aKind, SizeOf(TKMessageKind));
+  M.Write(aKind, SizeOf(aKind));
 
   M.Write(aIndexOnServer);
 
@@ -2478,7 +2478,7 @@ begin
 end;
 
 
-procedure TKMNetworking.PacketSendA(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: AnsiString);
+procedure TKMNetworking.PacketSendA(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: AnsiString);
 var
   M: TKMemoryStream;
 begin
@@ -2487,7 +2487,7 @@ begin
   LogPacket(True, aKind, aRecipient);
 
   M := TKMemoryStreamBinary.Create;
-  M.Write(aKind, SizeOf(TKMessageKind));
+  M.Write(aKind, SizeOf(aKind));
 
   M.WriteA(aText);
 
@@ -2496,7 +2496,7 @@ begin
 end;
 
 
-procedure TKMNetworking.PacketSendW(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: UnicodeString);
+procedure TKMNetworking.PacketSendW(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: UnicodeString);
 var
   M: TKMemoryStream;
 begin
@@ -2505,7 +2505,7 @@ begin
   LogPacket(True, aKind, aRecipient);
 
   M := TKMemoryStreamBinary.Create;
-  M.Write(aKind, SizeOf(TKMessageKind));
+  M.Write(aKind, SizeOf(aKind));
 
   M.WriteW(aText);
 
@@ -2892,13 +2892,13 @@ begin
 end;
 
 
-function TKMNetworking.GetPacketsReceived(aKind: TKMessageKind): Cardinal;
+function TKMNetworking.GetPacketsReceived(aKind: TKMNetMessageKind): Cardinal;
 begin
   Result := fPacketsReceived[aKind];
 end;
 
 
-function TKMNetworking.GetPacketsSent(aKind: TKMessageKind): Cardinal;
+function TKMNetworking.GetPacketsSent(aKind: TKMNetMessageKind): Cardinal;
 begin
   Result := fPacketsSent[aKind];
 end;
@@ -2906,9 +2906,9 @@ end;
 
 procedure TKMNetworking.ResetPacketsStats;
 var
-  mKind: TKMessageKind;
+  mKind: TKMNetMessageKind;
 begin
-  for mKind := Low(TKMessageKind) to High(TKMessageKind) do
+  for mKind := Low(TKMNetMessageKind) to High(TKMNetMessageKind) do
   begin
     fPacketsReceived[mKind] := 0;
     fPacketsSent[mKind] := 0;

@@ -128,14 +128,14 @@ type
     procedure Status(const S: string);
     procedure ClientConnect(aHandle: TKMNetHandleIndex);
     procedure ClientDisconnect(aHandle: TKMNetHandleIndex);
-    procedure SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind); overload;
-    procedure SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aParam: Integer; aImmediate: Boolean = False); overload;
-    procedure SendMessageInd(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aIndexOnServer: TKMNetHandleIndex; aImmediate: Boolean = False);
-    procedure SendMessageA(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: AnsiString);
-    procedure SendMessageW(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: UnicodeString);
-    procedure SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStream); overload;
-    procedure SendMessageToRoom(aKind: TKMessageKind; aRoom: Integer; aStream: TKMemoryStream); overload;
-    procedure SendMessageAct(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStream; aImmediate: Boolean = False);
+    procedure SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind); overload;
+    procedure SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer; aImmediate: Boolean = False); overload;
+    procedure SendMessageInd(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aIndexOnServer: TKMNetHandleIndex; aImmediate: Boolean = False);
+    procedure SendMessageA(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: AnsiString);
+    procedure SendMessageW(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: UnicodeString);
+    procedure SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream); overload;
+    procedure SendMessageToRoom(aKind: TKMNetMessageKind; aRoom: Integer; aStream: TKMemoryStream); overload;
+    procedure SendMessageAct(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream; aImmediate: Boolean = False);
     procedure ScheduleSendData(aRecipient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal; aFlushQueue: Boolean = False);
     procedure SendScheduledData(aServerClient: TKMServerClient);
     procedure DoSendData(aRecipient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
@@ -152,7 +152,7 @@ type
     procedure SaveHTMLStatus;
     procedure SetPacketsAccumulatingDelay(aValue: Integer);
     procedure SetGameFilter(aGameFilter: TKMPGameFilter);
-    procedure HandleMessage(aMessageKind: TKMessageKind; aData: TKMemoryStream; aSenderHandle: TKMNetHandleIndex);
+    procedure HandleMessage(aMessageKind: TKMNetMessageKind; aData: TKMemoryStream; aSenderHandle: TKMNetHandleIndex);
   public
     constructor Create(aMaxRooms, aKickTimeout: Word; const aHTMLStatusFile, aWelcomeMessage: UnicodeString;
                        aPacketsAccDelay: Integer);
@@ -625,7 +625,7 @@ begin
 end;
 
 
-procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind);
+procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind);
 var
   M: TKMemoryStream;
 begin
@@ -635,7 +635,7 @@ begin
 end;
 
 
-procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aParam: Integer; aImmediate: Boolean = False);
+procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer; aImmediate: Boolean = False);
 var
   M: TKMemoryStream;
 begin
@@ -646,7 +646,7 @@ begin
 end;
 
 
-procedure TKMNetServer.SendMessageInd(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aIndexOnServer: TKMNetHandleIndex; aImmediate: Boolean = False);
+procedure TKMNetServer.SendMessageInd(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aIndexOnServer: TKMNetHandleIndex; aImmediate: Boolean = False);
 var
   M: TKMemoryStream;
 begin
@@ -657,7 +657,7 @@ begin
 end;
 
 
-procedure TKMNetServer.SendMessageA(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: AnsiString);
+procedure TKMNetServer.SendMessageA(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: AnsiString);
 var
   M: TKMemoryStream;
 begin
@@ -670,7 +670,7 @@ begin
 end;
 
 
-procedure TKMNetServer.SendMessageW(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: UnicodeString);
+procedure TKMNetServer.SendMessageW(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: UnicodeString);
 var
   M: TKMemoryStream;
 begin
@@ -683,14 +683,14 @@ begin
 end;
 
 
-procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStream);
+procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream);
 begin
   //Send stream without changes
   SendMessageAct(aRecipient, aKind, aStream);
 end;
 
 
-procedure TKMNetServer.SendMessageToRoom(aKind: TKMessageKind; aRoom: Integer; aStream: TKMemoryStream);
+procedure TKMNetServer.SendMessageToRoom(aKind: TKMNetMessageKind; aRoom: Integer; aStream: TKMemoryStream);
 var
   I: Integer;
 begin
@@ -702,7 +702,7 @@ end;
 
 
 //Assemble the packet as [Sender.Recepient.Length.Data]
-procedure TKMNetServer.SendMessageAct(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStream; aImmediate: Boolean = False);
+procedure TKMNetServer.SendMessageAct(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream; aImmediate: Boolean = False);
 var
   I: Integer;
   M: TKMemoryStream;
@@ -819,7 +819,7 @@ end;
 procedure TKMNetServer.RecieveMessage(aSenderHandle: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
 var
   dataStream: TKMemoryStream;
-  messageKind: TKMessageKind;
+  messageKind: TKMNetMessageKind;
 begin
   Assert(aLength >= SizeOf(messageKind), 'Unexpectedly short message');
 
@@ -843,7 +843,7 @@ begin
 end;
 
 
-procedure TKMNetServer.HandleMessage(aMessageKind: TKMessageKind; aData: TKMemoryStream; aSenderHandle: TKMNetHandleIndex);
+procedure TKMNetServer.HandleMessage(aMessageKind: TKMNetMessageKind; aData: TKMemoryStream; aSenderHandle: TKMNetHandleIndex);
 var
   M2: TKMemoryStream;
   tmpInt: Integer;
@@ -965,14 +965,14 @@ end;
 //Someone has send us something
 //Send only complete messages to allow to add server messages inbetween
 procedure TKMNetServer.DataAvailable(aHandle: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
-//  function GetMessKind(aSenderHandle: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal): TKMessageKind;
+//  function GetMessKind(aSenderHandle: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal): TKMNetMessageKind;
 //  var
 //    M: TKMemoryStream;
 //  begin
 //    M := TKMemoryStream.Create;
 //    M.WriteBuffer(aData^, aLength);
 //    M.Position := 0;
-//    M.Read(Result, SizeOf(TKMessageKind));
+//    M.Read(Result, SizeOf(Result));
 //    M.Free;
 //  end;
 
@@ -981,7 +981,7 @@ var
   packetSender, packetRecipient: TKMNetHandleIndex;
   packetLength: Word;
   senderClient: TKMServerClient;
-//  Kind: TKMessageKind;
+//  Kind: TKMNetMessageKind;
 begin
   Inc(BytesRX, aLength);
   senderClient := fClientList.GetByHandle(aHandle);
@@ -1027,7 +1027,7 @@ begin
     begin
 //      Kind := GetMessKind(PacketSender, @SenderClient.fBuffer[6], PacketLength);
 //      gLog.AddTime(Format('Got msg %s from %d to %d',
-//                          [GetEnumName(TypeInfo(TKMessageKind), Integer(Kind)), PacketSender, PacketRecipient]));
+//                          [GetEnumName(TypeInfo(TKMNetMessageKind), Integer(Kind)), PacketSender, PacketRecipient]));
       case packetRecipient of
         NET_ADDRESS_OTHERS: //Transmit to all except sender
                 //Iterate backwards because sometimes calling Send results in ClientDisconnect (LNet only?)

@@ -4667,7 +4667,7 @@ end;
 
 function TKMGamePlayInterface.GetDebugInfo: string;
 var
-  mKind: TKMessageKind;
+  mKind: TKMNetMessageKind;
   received, sent, receivedTotal, sentTotal, period: Cardinal;
   sPackets, S2: String;
   objToShowInfo: TObject;
@@ -4728,17 +4728,17 @@ begin
     receivedTotal := 0;
     sentTotal := 0;
     period := TimeSince(gNetworking.PacketsStatsStartTime);
-    for mKind := Low(TKMessageKind) to High(TKMessageKind) do
+    for mKind := Low(TKMNetMessageKind) to High(TKMNetMessageKind) do
     begin
       received := gNetworking.PacketsReceived[mKind];
       sent := gNetworking.PacketsSent[mKind];
       receivedTotal := receivedTotal + received;
       sentTotal := sentTotal + sent;
-      S2 := S2 + Format('%-25s: R: %s S:%s|', [GetEnumName(TypeInfo(TKMessageKind), Integer(mKind)),
+      S2 := S2 + Format('%-25s: R: %s S:%s|', [GetEnumName(TypeInfo(TKMNetMessageKind), Integer(mKind)),
                                                FormatFloat('##0.#', received),
                                                FormatFloat('##0.#', sent)]);
       if (received >= SHOW_NET_PACKETS_LIMIT) or (sent >= SHOW_NET_PACKETS_LIMIT) then
-        sPackets := sPackets + Format('%-23s: R: %d S:%d|', [GetEnumName(TypeInfo(TKMessageKind), Integer(mKind)),
+        sPackets := sPackets + Format('%-23s: R: %d S:%d|', [GetEnumName(TypeInfo(TKMNetMessageKind), Integer(mKind)),
                                                                  received, sent]);
       S2 := S2 + sLineBreak;
     end;
