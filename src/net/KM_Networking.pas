@@ -1176,7 +1176,7 @@ end;
 
 
 //We route the message through Server to ensure everyone sees messages in the same order
-//with exact same timestamps (possibly added by Server?)
+//with exact same timestamps (possibly added by the Server?)
 procedure TKMNetworking.PostChat(const aText: UnicodeString; aMode: TKMChatMode; aRecipientServerIndex: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
 var
   I: Integer;
