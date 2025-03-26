@@ -780,7 +780,6 @@ end;
 
 
 //Tell other players which color we will be using
-//For now players colors are not unique, many players may have one color
 procedure TKMNetworking.SelectColor(aColor: Cardinal; aPlayerIndex: Integer);
 begin
   if not fNetPlayers.ColorAvailable(aColor) then Exit;
