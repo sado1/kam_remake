@@ -786,7 +786,7 @@ end;
 
 procedure TFormLogistics.vstPageCtrlChange(Sender: TObject);
 begin
-  //todo: Replace ActivePageIndex (0,1,2) with TKMLogisticsPage(ActivePageIndex) (lpDeliveries, lpOffers, lpDemands)
+  //todo -cPractical: Replace ActivePageIndex (0,1,2) with TKMLogisticsPage(ActivePageIndex) (lpDeliveries, lpOffers, lpDemands)
   case vstPageCtrl.ActivePageIndex of
     0:  begin
           // Deliveries

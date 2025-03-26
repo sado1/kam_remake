@@ -169,7 +169,7 @@ begin
 
     s := RightStr(s, Length(s) - firstDelimiter);
     // Required characters that can't be stored in plain text
-    //todo: Remove them in favor of | for eol (and update libx files)
+    //todo -cComplicated: Remove them in favor of | for eol (and update libx files)
     {$IFDEF WDC}
     s := StringReplace(s, '\n', EolW, [rfReplaceAll, rfIgnoreCase]); // EOL
     s := StringReplace(s, '\\', '\', [rfReplaceAll, rfIgnoreCase]); // Slash

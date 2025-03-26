@@ -607,7 +607,7 @@ begin
 //  for I:=1 to 4 do LoadStream.Read(fWareOrderDesired[I], SizeOf(fWareOrderDesired[I]));
 
   if gRes.Houses[fType].IsWorkshop then
-    LoadStream.Read(fWareOutPool, 20); //todo: Should be SizeOf()
+    LoadStream.Read(fWareOutPool, 20); //todo -cPractical: Should be SizeOf() instead of hardcode
 
   LoadStream.Read(fLastOrderProduced);
   LoadStream.Read(FlagAnimStep);
@@ -1665,7 +1665,7 @@ end;
 
 function TKMHouse.GetMaxInWare: Word;
 begin
-  //todo: This belongs to gRes.Houses[]
+  //todo -cPractical: This belongs to gRes.Houses[]
   if fType in [htStore, htBarracks, htMarket, htTownhall] then
     Result := High(Word)
   else
@@ -2149,7 +2149,7 @@ begin
 //  for I:=1 to 4 do SaveStream.Write(fWareOrderDesired[I], SizeOf(fWareOrderDesired[I]));
 
   if gRes.Houses[fType].IsWorkshop then
-    SaveStream.Write(fWareOutPool, 20); //todo: Should be SizeOf()
+    SaveStream.Write(fWareOutPool, 20); //todo -cPractical: Should be SizeOf() instead of hardcode
 
   SaveStream.Write(fLastOrderProduced);
   SaveStream.Write(FlagAnimStep);

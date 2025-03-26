@@ -12,8 +12,8 @@ type
     fRXData: PRXData;
 
     fOnlyShadows: boolean;
-    TempShadowMap: array {X} of array {Y} of Boolean; //todo: Flip to be common pattern of [Y,X]
-    ShadowMap: array {X} of array {Y} of Boolean; //todo: Flip to be common pattern of [Y,X]
+    TempShadowMap: array {X} of array {Y} of Boolean; //todo -cPractical: Flip to be common pattern of [Y,X]
+    ShadowMap: array {X} of array {Y} of Boolean; //todo -cPractical: Flip to be common pattern of [Y,X]
 
     function ReadPixelSafe(aIndex, aX, aY: Integer): Cardinal;
 

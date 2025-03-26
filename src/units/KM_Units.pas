@@ -740,7 +740,7 @@ begin
     fHome.ResourceDepleted := False;
 
   // Verify the task can be done
-  if not ( //todo: Invert negation here
+  if not ( //todo -cPractical: Invert negation here, it is hard to read
   tm.WorkPlan.IsIssued
   and ((tm.WorkPlan.Resource1 = wtNone) or (fHome.CheckWareIn(tm.WorkPlan.Resource1) >= tm.WorkPlan.Count1))
   and ((tm.WorkPlan.Resource2 = wtNone) or (fHome.CheckWareIn(tm.WorkPlan.Resource2) >= tm.WorkPlan.Count2))
@@ -1906,7 +1906,7 @@ begin
   if (Action is TKMUnitActionWalkTo) and not TKMUnitActionWalkTo(Action).CanAbandonExternal then
     raise Exception.Create('');
 
-  //todo: Make unit walk away from House
+  //todo -cComplicated: Make unit walk away from House
   SetActionStay(20, aActionType);
 end;
 
@@ -1940,7 +1940,7 @@ begin
   if (Action is TKMUnitActionWalkTo) and not TKMUnitActionWalkTo(Action).CanAbandonExternal then
     raise Exception.Create('');
 
-  //todo: Make unit walk away from Unit
+  //todo -cComplicated: Make unit walk away from Unit
   SetActionStay(20, aActionType);
 end;
 

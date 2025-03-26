@@ -329,7 +329,7 @@ end;
 procedure TKMMapEdHouse.ShowCommonResources;
 var
   I: Integer;
-  ware: TKMWareType; //todo: Change to wareSpec
+  ware: TKMWareType;
   houseSpec: TKMHouseSpec;
 begin
   houseSpec := gRes.Houses[fHouse.HouseType];

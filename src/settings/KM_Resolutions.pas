@@ -89,7 +89,7 @@ begin
   I := 0;
   fCount := 0;
   while EnumDisplaySettings(nil, I, devMode) do
-  with devMode do //todo: Thats bad code, better get rid of this "with"
+  with devMode do //todo -cPractical: Would be good to get rid of this "with"
   begin
     Inc(I);
     // Take only 32bpp modes

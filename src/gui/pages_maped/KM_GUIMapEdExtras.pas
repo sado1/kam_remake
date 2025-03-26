@@ -129,8 +129,8 @@ begin
 
   Dropbox_PlayerFOW.Hint := gResTexts[TX_REPLAY_PLAYER_PERSPECTIVE];
   Dropbox_PlayerFOW.OnChange := Extra_FOWChange;
-  //todo: This feature isn't working properly yet so it's hidden. FOW should be set by
-  //revealers list and current locations of units/houses (must update when they move)
+  //todo -cComplicated: This feature isn't working properly yet so it's hidden. FOW should be set by
+  // revealers list and current locations of units/houses (must update when they move)
   Dropbox_PlayerFOW.Hide;
 end;
 

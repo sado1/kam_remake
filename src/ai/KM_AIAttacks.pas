@@ -5,7 +5,6 @@ uses
   KM_Defaults, KM_CommonClasses, KM_Points, KM_AITypes;
 
 
-
 const
   //KaM uses 0 for repeating attack in TSK (disused and replaced with later by Remake), 1 for once and 2 for repeating in TPR
   RemakeAttackType: array [0..2] of TKMAIAttackType = (aatRepeating, aatOnce, aatRepeating);
@@ -59,7 +58,7 @@ uses
   Math, KM_Game, KM_GameUIDTracker;
 
 
-{ TAIAttacks }
+{ TKMAIAttacks }
 function TKMAIAttacks.CanOccur(aIndex: Integer; const aMenAvailable: TKMGroupTypeArray; const aGroupsAvailable: TKMGroupTypeArray; aTick: Cardinal): Boolean;
 var
   GT: TKMGroupType;
@@ -81,7 +80,7 @@ begin
     for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
       Result := Result and (aGroupsAvailable[GT] >= fAttacks[aIndex].GroupAmounts[GT]);
 
-  //todo: Add support for the AI attack feature Range
+  //todo -cComplicated: Add support for the AI attack feature Range
 end;
 
 

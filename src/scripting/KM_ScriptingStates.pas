@@ -463,7 +463,7 @@ procedure TKMScriptStates.AIDefencePositionGet(aHand, aID: Byte; out aX, aY: Int
 var
   DP: TAIDefencePosition;
 begin
-  //todo: Should return all zeroes in case of bad arguments
+  //todo -cPractical: Should return all zeroes in case of bad arguments
   try
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and InRange(aID, 0, gHands[aHand].AI.General.DefencePositions.Count - 1) then
@@ -495,7 +495,7 @@ function TKMScriptStates.AIDefencePositionGetByIndex(aHand, aIndex: Integer): TK
 var
   DP: TAIDefencePosition;
 begin
-  //todo: Should return default(TKMDefencePositionInfo) in case of bad arguments
+  //todo -cPractical: Should return default(TKMDefencePositionInfo) in case of bad arguments
   try
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and InRange(aIndex, 0, gHands[aHand].AI.General.DefencePositions.Count - 1) then
@@ -579,7 +579,7 @@ var
   gt: TKMGroupType;
   succeed: Boolean;
 begin
-  //todo: LogIntParamWarn is good, but the func should return all zeroes in case of bad arguments anyway
+  //todo -cPractical: LogIntParamWarn is good, but the func should return all zeroes in case of bad arguments anyway
   try
     gt := gtNone;
 
@@ -603,7 +603,7 @@ procedure TKMScriptStates.AIGroupsFormationGetEx(aHand: Integer; aGroupType: TKM
 var
   succeed: Boolean;
 begin
-  //todo: LogIntParamWarn is good, but the func should return all zeroes in case of bad arguments anyway
+  //todo -cPractical: LogParamWarn is good, but the func should return all zeroes in case of bad arguments anyway
   try
     _AIGroupsFormationGet(aHand, aGroupType, aCount, aColumns, succeed);
     if not succeed then

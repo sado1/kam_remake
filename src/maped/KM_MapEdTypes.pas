@@ -67,7 +67,7 @@ type
     caUnits,
     caHouses
 //    caFields
-    //todo -cPractical: Other areas
+    //todo -cPractical: Expand to include other areas
     // Dispositions
     // CenterScreen
     // FOW Revealers
