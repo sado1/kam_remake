@@ -1706,7 +1706,8 @@ begin
               aStream.Read(tmpHandleIndex);
               fMyIndexOnServer := tmpHandleIndex;
               //PostLocalMessage('Index on Server - ' + inttostr(fMyIndexOnServer));
-              //Now join the room we planned to
+
+              // Now we can join the room we planned to
               M2 := TKMemoryStreamBinary.Create;
               WriteInfoToJoinRoom(M2);
 
@@ -2009,14 +2010,7 @@ begin
               if Assigned(OnPingInfo) then OnPingInfo;
             end;
 
-//    mkFPS:
-//            begin
-//              aStream.Read(tmpInteger);
-//              PlayerIndex := fNetPlayers.ServerToLocal(aSenderIndex);
-//              if PlayerIndex = -1 then Exit;
-//              fNetPlayers[PlayerIndex].FPS := Cardinal(tmpInteger);
-//              if Assigned(OnPingInfo) then OnPingInfo;
-//            end;
+//    mkFPS: Moved to server in 2017
 
     mkPlayersList:
             PlayersListReceived(aStream);

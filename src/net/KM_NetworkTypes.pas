@@ -82,8 +82,8 @@ type
 
     mkPing,            //Server pings Clients
     mkPong,            //Clients reply to Server with pong
-    mkPingInfo,        //Server sends list of ping times to Clients
-    mkFPS,             //Client tells other clients his FPS
+    mkPingInfo,        //Server sends list of ping/fps to Clients
+    mkFPS,             //Client tells server his FPS
 
     mkPlayersList,     //Host keeps the players list and sends it to everyone on change
     mkGameOptions,     //Host keeps the game options and sends it to everyone on change
