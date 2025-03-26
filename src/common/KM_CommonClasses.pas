@@ -253,13 +253,12 @@ type
     procedure Read(out Value: ShortInt      ); override;
     procedure Read(out Value: SmallInt      ); override;
     procedure Read(out Value: TDateTime     ); override;
-
-
   end;
 
 
   TStreamEvent = procedure (aData: TKMemoryStream) of object;
   TStreamIntEvent = procedure (aData: TKMemoryStream; aSenderIndex: ShortInt) of object;
+
 
   //TXStringList using integer values, instead of its String represantation, when sorted
   TXStringList = class(TStringList)
