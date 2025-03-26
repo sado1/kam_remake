@@ -874,14 +874,13 @@ begin
 end;
 
 
-//Joiner indicates that he is ready to start
+// Joiner indicates that he is ready to start
 function TKMNetworking.ReadyToStart: Boolean;
 begin
-  if (fSelectGameKind = ngkSave) and (MyNetPlayer.StartLocation = 0) then
+  if (fSelectGameKind = ngkSave) and (MyNetPlayer.StartLocation = LOC_RANDOM) then
   begin
     PostLocalMessage(gResTexts[TX_LOBBY_ERROR_SELECT_PLAYER], csSystem);
-    Result := False;
-    Exit;
+    Exit(False);
   end;
 
   if ((fSelectGameKind = ngkMap) and fMapInfo.IsValid) or
