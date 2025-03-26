@@ -180,7 +180,7 @@ type
     procedure SelectNoMap(const aErrorMessage: UnicodeString);
     procedure SelectMap(const aName: UnicodeString; aMapKind: TKMMapKind; aSendPlayerSetup: Boolean = False);
     procedure SelectSave(const aName: UnicodeString);
-    procedure SelectLoc(aIndex: Integer; aPlayerIndex: Integer);
+    procedure SelectHand(aHandIndex: Integer; aPlayerIndex: Integer);
     procedure SelectTeam(aTeam: Integer; aPlayerIndex: Integer);
     procedure SelectColor(aColor: Cardinal; aPlayerIndex: Integer);
     procedure KickPlayer(aPlayerIndex: Integer);
@@ -706,23 +706,23 @@ begin
 end;
 
 
-//Tell other players which start position we would like to use
-//Each players choice should be unique
-procedure TKMNetworking.SelectLoc(aIndex: Integer; aPlayerIndex: Integer);
+// Tell other players which Hand (start position) we would like to use
+// Each players choice should be unique
+procedure TKMNetworking.SelectHand(aHandIndex: Integer; aPlayerIndex: Integer);
 var
   netPlayerIndex: Integer;
 begin
   //Check if position can be taken before doing anything
-  if not CanTakeLocation(aPlayerIndex, aIndex, IsHost and fNetPlayers.HostDoesSetup) then
+  if not CanTakeLocation(aPlayerIndex, aHandIndex, IsHost and fNetPlayers.HostDoesSetup) then
   begin
     if Assigned(OnPlayersSetup) then OnPlayersSetup;
     Exit;
   end;
 
-  //If someone else has this index, switch them (only when HostDoesSetup)
-  if IsHost and fNetPlayers.HostDoesSetup and (aIndex <> LOC_RANDOM) and (aIndex <> LOC_SPECTATE) then
+  // If someone else has this HandIndex, switch them (only when HostDoesSetup)
+  if IsHost and fNetPlayers.HostDoesSetup and (aHandIndex <> LOC_RANDOM) and (aHandIndex <> LOC_SPECTATE) then
   begin
-    netPlayerIndex := fNetPlayers.StartingLocToLocal(aIndex);
+    netPlayerIndex := fNetPlayers.StartingLocToLocal(aHandIndex);
     if netPlayerIndex <> -1 then
     begin
       fNetPlayers[netPlayerIndex].StartLocation := fNetPlayers[aPlayerIndex].StartLocation;
@@ -740,14 +740,14 @@ begin
   case fNetPlayerKind of
     lpkHost:   begin
                   //Host makes rules, Joiner will get confirmation from Host
-                  fNetPlayers[aPlayerIndex].StartLocation := aIndex; //Use aPlayerIndex not fMyIndex because it could be an AI
+                  fNetPlayers[aPlayerIndex].StartLocation := aHandIndex; //Use aPlayerIndex not fMyIndex because it could be an AI
 
                   //If host pushes player to a different loc, the player should be set to not ready (they must agree to change)
                   if (aPlayerIndex <> fMyIndex) and not fNetPlayers[aPlayerIndex].IsComputer then
                     fNetPlayers[aPlayerIndex].ReadyToStart := False;
 
-                  if aIndex = LOC_SPECTATE then
-                    fNetPlayers[aPlayerIndex].Team := 0; //Spectators can't have team
+                  if aHandIndex = LOC_SPECTATE then
+                    fNetPlayers[aPlayerIndex].Team := 0; // Spectators can't have team
 
                   // Update minimap
                   if (aPlayerIndex = fMyIndex) and Assigned(OnUpdateMinimap) then
@@ -755,7 +755,7 @@ begin
 
                   SendPlayerListAndRefreshPlayersSetup;
                 end;
-    lpkJoiner: PacketSend(NET_ADDRESS_HOST, mkStartingLocQuery, aIndex);
+    lpkJoiner: PacketSend(NET_ADDRESS_HOST, mkStartingLocQuery, aHandIndex);
   end;
 end;
 

@@ -1533,7 +1533,7 @@ begin
       if (DropBox_Loc[I].GetSelectedTag <> LOC_SPECTATE) and (gChat.Mode = cmSpectators) then
         ChatMenuSelect(CHAT_MENU_ALL);
 
-      gNetworking.SelectLoc(DropBox_Loc[I].GetSelectedTag, netI);
+      gNetworking.SelectHand(DropBox_Loc[I].GetSelectedTag, netI);
       //Host with HostDoesSetup could have given us some location we don't know about
       //from a map/save we don't have, so make sure SelectGameKind is valid
       if (gNetworking.SelectGameKind <> ngkNone)
@@ -2129,7 +2129,7 @@ begin
 
   if canEdit then
   begin
-    gNetworking.SelectLoc(aValue + 1, I);
+    gNetworking.SelectHand(aValue + 1, I);
     //Host with HostDoesSetup could have given us some location we don't know about from a map/save we don't have
     if gNetworking.SelectGameKind <> ngkNone then
       DropBox_Loc[fNetPlayersToLocal[I]].SelectByTag(gNetworking.NetPlayers[I].StartLocation);
