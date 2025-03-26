@@ -260,6 +260,7 @@ type
   TStreamIntEvent = procedure (aData: TKMemoryStream; aSenderIndex: ShortInt) of object;
 
 
+  //todo -cPractical: Replace usages with TList<Integer>
   //TXStringList using integer values, instead of its String represantation, when sorted
   TXStringList = class(TStringList)
   protected
