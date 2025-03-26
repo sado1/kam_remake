@@ -760,7 +760,7 @@ begin
 end;
 
 
-// Tell other players which team we want to be on. Does not need to be unique
+// Tell other players which team we want to be on
 // Use aPlayerIndex not fMyIndex because it could be an AI
 procedure TKMNetworking.SelectTeam(aTeam: Integer; aPlayerIndex: Integer);
 begin
