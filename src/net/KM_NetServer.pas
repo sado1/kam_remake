@@ -947,7 +947,8 @@ begin
     mkFPS:  begin
               client := fClientList.GetByHandle(aSenderHandle);
               aData.Read(tmpInt);
-              client.FPS := tmpInt;
+              // We use Integer for exchange (standard data type), but we can store and send out Word for compactness
+              client.FPS := Word(tmpInt);
             end;
     mkPong:
             begin

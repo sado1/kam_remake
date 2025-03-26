@@ -500,16 +500,19 @@ begin
     Dec(fIgnorePings);
     Exit;
   end;
-  if fIgnorePings <> 0 then exit; //-1 means ignore all pings
+  if fIgnorePings <> 0 then Exit; //-1 means ignore all pings
 
   aStream.Read(pingCount);
-  for I:=1 to pingCount do
+  for I := 1 to pingCount do
   begin
+    // Read first
     aStream.Read(playerHandle);
-    localHandle := fNetPlayers.ServerToLocal(playerHandle);
     aStream.Read(pingValue);
     aStream.Read(fpsValue);
-    //This player might not be in the lobby yet, could still be asking to join. If so we do not care about their ping.
+
+    // Process second
+    // This player might not be in the lobby yet, could still be asking to join. If so we do not care about their ping
+    localHandle := fNetPlayers.ServerToLocal(playerHandle);
     if localHandle <> -1 then
     begin
       fNetPlayers[localHandle].AddPing(pingValue);
