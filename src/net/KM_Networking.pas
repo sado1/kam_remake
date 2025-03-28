@@ -452,19 +452,19 @@ begin
   Assert(IsHost, 'Only the host is allowed to drop players');
   for I := Low(aPlayers) to High(aPlayers) do
   begin
-    if NetPlayers[aPlayers[I]].Dropped then
+    if fNetPlayers[aPlayers[I]].Dropped then
     begin
       //Reset NetPlayer LastSentCommandsTick, so we are not going to wait its last commands anymore... Let's hope for the best...
-      NetPlayers[aPlayers[I]].LastSentCommandsTick := LAST_SENT_COMMANDS_TICK_NONE;
+      fNetPlayers[aPlayers[I]].LastSentCommandsTick := LAST_SENT_COMMANDS_TICK_NONE;
     end
     else
     begin
-      serverIndex := NetPlayers[aPlayers[I]].IndexOnServer;
+      serverIndex := fNetPlayers[aPlayers[I]].IndexOnServer;
       //Make sure this player is properly disconnected from the server
       PacketSendInd(NET_ADDRESS_SERVER, mkKickPlayer, serverIndex);
-      NetPlayers.DropPlayer(serverIndex);
+      fNetPlayers.DropPlayer(serverIndex);
     end;
-    PostMessage(TX_NET_DROPPED, csLeave, NetPlayers[aPlayers[I]].NicknameColoredU);
+    PostMessage(TX_NET_DROPPED, csLeave, fNetPlayers[aPlayers[I]].NicknameColoredU);
   end;
   SendPlayerListAndRefreshPlayersSetup;
 
@@ -695,7 +695,7 @@ begin
   MyNetPlayer.HasMapOrSave := True;
 
   //Randomise locations within team is disabled for saves
-  NetPlayers.RandomizeTeamLocations := False;
+  fNetPlayers.RandomizeTeamLocations := False;
   AbortAllTransfers; //Any ongoing transfer is cancelled
 
   SendMapOrSave;
@@ -1037,19 +1037,19 @@ begin
 
   //In saves we should load team and color from the SaveInfo
   if (fNetGameState = lgsLobby) and (fSelectGameKind = ngkSave) then
-    for I := 1 to NetPlayers.Count do
-      if (NetPlayers[I].StartLocation <> LOC_RANDOM) and (NetPlayers[I].StartLocation <> LOC_SPECTATE) then
+    for I := 1 to fNetPlayers.Count do
+      if (fNetPlayers[I].StartLocation <> LOC_RANDOM) and (fNetPlayers[I].StartLocation <> LOC_SPECTATE) then
       begin
-        NetPlayers[I].FlagColor := fSaveInfo.GameInfo.Color[NetPlayers[I].HandIndex];
-        NetPlayers[I].Team := fSaveInfo.GameInfo.Team[NetPlayers[I].HandIndex];
+        fNetPlayers[I].FlagColor := fSaveInfo.GameInfo.Color[fNetPlayers[I].HandIndex];
+        fNetPlayers[I].Team := fSaveInfo.GameInfo.Team[fNetPlayers[I].HandIndex];
       end
       else
       begin
-        NetPlayers[I].Team := 0;
+        fNetPlayers[I].Team := 0;
         //Spectators may still change their color, but may not use one from the save
-        if NetPlayers[I].IsColorSet
-          and SaveInfo.GameInfo.ColorUsed(NetPlayers[I].FlagColor) then
-          NetPlayers[I].FlagColor := 0;
+        if fNetPlayers[I].IsColorSet
+          and SaveInfo.GameInfo.ColorUsed(fNetPlayers[I].FlagColor) then
+          fNetPlayers[I].FlagColor := 0;
       end;
 
   // Map change could casue, that some colors are not valid anymore
@@ -1057,11 +1057,11 @@ begin
   if (fNetGameState = lgsLobby) and (fSelectGameKind = ngkMap) then
   begin
     aiOnlyColors := MapInfo.AIOnlyLocsColors; // save it locally to avoid multiple calculations
-    for I := 1 to NetPlayers.Count do
+    for I := 1 to fNetPlayers.Count do
     begin
-      if NetPlayers[I].IsColorSet
-        and IsColorCloseToColors(NetPlayers[I].FlagColor, aiOnlyColors, MIN_PLAYER_COLOR_DIST) then
-        NetPlayers[I].ResetColor;
+      if fNetPlayers[I].IsColorSet
+        and IsColorCloseToColors(fNetPlayers[I].FlagColor, aiOnlyColors, MIN_PLAYER_COLOR_DIST) then
+        fNetPlayers[I].ResetColor;
     end;
   end;
 
@@ -1152,14 +1152,14 @@ begin
       if MyNetPlayer.Team = 0 then
         PacketSend(fMyIndexOnServer, mkTextChat, M) //Send to self only if we have no team
       else
-        for I := 1 to NetPlayers.Count do
-          if (NetPlayers[I].Team = MyNetPlayer.Team) and NetPlayers[I].IsHuman and (NetPlayers[I].IndexOnServer <> -1) then
-            PacketSend(NetPlayers[I].IndexOnServer, mkTextChat, M); //Send to each player on team (includes self)
+        for I := 1 to fNetPlayers.Count do
+          if (fNetPlayers[I].Team = MyNetPlayer.Team) and fNetPlayers[I].IsHuman and (fNetPlayers[I].IndexOnServer <> -1) then
+            PacketSend(fNetPlayers[I].IndexOnServer, mkTextChat, M); //Send to each player on team (includes self)
 
     cmSpectators:
-      for I := 1 to NetPlayers.Count do
-        if NetPlayers[I].IsSpectator and NetPlayers[I].IsHuman and (NetPlayers[I].IndexOnServer <> -1) then
-          PacketSend(NetPlayers[I].IndexOnServer, mkTextChat, M); //Send to each spectator (includes self)
+      for I := 1 to fNetPlayers.Count do
+        if fNetPlayers[I].IsSpectator and fNetPlayers[I].IsHuman and (fNetPlayers[I].IndexOnServer <> -1) then
+          PacketSend(fNetPlayers[I].IndexOnServer, mkTextChat, M); //Send to each spectator (includes self)
 
     cmWhisper:
       begin
@@ -1466,7 +1466,7 @@ begin
 
   //If we are currently a spectator wanting to be a non-spectator, make sure there is a slot for us
   if fNetPlayers[aPlayer].IsSpectator and (aLoc <> LOC_SPECTATE) then
-    Result := Result and (NetPlayers.Count-NetPlayers.GetSpectatorCount < MAX_LOBBY_PLAYERS);
+    Result := Result and (fNetPlayers.Count-fNetPlayers.GetSpectatorCount < MAX_LOBBY_PLAYERS);
 
   //Can't be a spectator if they are disabled
   if (aLoc = LOC_SPECTATE) and not fNetPlayers.SpectatorsAllowed then
@@ -1474,8 +1474,8 @@ begin
 
   //If we are trying to be a spectator and aren't one already, make sure there is an open spectator slot
   if (aLoc = LOC_SPECTATE) and not fNetPlayers[aPlayer].IsSpectator then
-    Result := Result and ((NetPlayers.SpectatorSlotsOpen = MAX_LOBBY_SPECTATORS) //Means infinite spectators allowed
-                          or (NetPlayers.SpectatorSlotsOpen-NetPlayers.GetSpectatorCount > 0));
+    Result := Result and ((fNetPlayers.SpectatorSlotsOpen = MAX_LOBBY_SPECTATORS) //Means infinite spectators allowed
+                          or (fNetPlayers.SpectatorSlotsOpen-fNetPlayers.GetSpectatorCount > 0));
 
   //Check with NetPlayers that the location isn't taken already, unless it's our current location
   //Host may be allowed to swap when HostDoesSetup is set, meaning it doesn't matter if loc is taken
@@ -2279,10 +2279,10 @@ begin
                 cmWhisper:
                   begin
                     chatSound := csChatWhisper;
-                    I := NetPlayers.ServerToLocal(tmpHandleIndex);
+                    I := fNetPlayers.ServerToLocal(tmpHandleIndex);
                     if I <> -1 then
                       //we want to show colored nickname, so prepare nickname string
-                      tmpStringA := '[]' + NetPlayers[I].NicknameColored + '[$00B9FF]'
+                      tmpStringA := '[]' + fNetPlayers[I].NicknameColored + '[$00B9FF]'
                     else
                       tmpStringA := '';
                     tmpStringW := ' [$00B9FF](' + Format(gResTexts[TX_CHAT_WHISPER_TO], [UnicodeString(tmpStringA)]) + ')[]: ' + tmpStringW;
@@ -2300,10 +2300,10 @@ begin
               begin
                 if not IsMuted(playerIndex) then
                 begin
-                  if NetPlayers[playerIndex].IsColorSet then
-                    tmpStringW := WrapColor(NetPlayers[playerIndex].NicknameU, FlagColorToTextColor(NetPlayers[playerIndex].FlagColor)) + tmpStringW
+                  if fNetPlayers[playerIndex].IsColorSet then
+                    tmpStringW := WrapColor(fNetPlayers[playerIndex].NicknameU, FlagColorToTextColor(fNetPlayers[playerIndex].FlagColor)) + tmpStringW
                   else
-                    tmpStringW := NetPlayers[playerIndex].NicknameU + tmpStringW;
+                    tmpStringW := fNetPlayers[playerIndex].NicknameU + tmpStringW;
                   PostLocalMessage(tmpStringW, chatSound);
                 end
                 else
@@ -2575,7 +2575,7 @@ begin
     MPGameInfo.GameTime := aGameTime;
     MPGameInfo.GameState := NET_MP_GAME_STATE[fNetGameState];
     MPGameInfo.PasswordLocked := (fPassword <> '');
-    MPGameInfo.PlayerCount := NetPlayers.Count;
+    MPGameInfo.PlayerCount := fNetPlayers.Count;
 
     MPGameInfo.GameOptions.Peacetime := fNetGameOptions.Peacetime;
     MPGameInfo.GameOptions.SpeedPT := fNetGameOptions.SpeedPT;
@@ -2583,22 +2583,22 @@ begin
     MPGameInfo.GameOptions.RandomSeed := fNetGameOptions.RandomSeed; //not needed, but we send it anyway
     MPGameInfo.GameOptions.MissionDifficulty := fNetGameOptions.MissionDifficulty;
 
-    for I := 1 to NetPlayers.Count do
+    for I := 1 to fNetPlayers.Count do
     begin
-      MPGameInfo.Players[I].Name        := NetPlayers[I].Nickname;
-      MPGameInfo.Players[I].Color       := NetPlayers[I].FlagColorDef;
-      MPGameInfo.Players[I].Connected   := NetPlayers[I].Connected;
-      MPGameInfo.Players[I].LangCode    := NetPlayers[I].LangCode;
-      MPGameInfo.Players[I].Team        := NetPlayers[I].Team;
-      MPGameInfo.Players[I].IsSpectator := NetPlayers[I].IsSpectator;
+      MPGameInfo.Players[I].Name        := fNetPlayers[I].Nickname;
+      MPGameInfo.Players[I].Color       := fNetPlayers[I].FlagColorDef;
+      MPGameInfo.Players[I].Connected   := fNetPlayers[I].Connected;
+      MPGameInfo.Players[I].LangCode    := fNetPlayers[I].LangCode;
+      MPGameInfo.Players[I].Team        := fNetPlayers[I].Team;
+      MPGameInfo.Players[I].IsSpectator := fNetPlayers[I].IsSpectator;
       MPGameInfo.Players[I].IsHost      := HostIndex = I;
-      MPGameInfo.Players[I].PlayerType  := NetPlayers[I].PlayerNetType;
+      MPGameInfo.Players[I].PlayerType  := fNetPlayers[I].PlayerNetType;
       if (gHands = nil) //Game is not loaded yet...
         or MPGameInfo.Players[I].IsSpectator
-        or (NetPlayers[I].HandIndex = -1) then
+        or (fNetPlayers[I].HandIndex = -1) then
         MPGameInfo.Players[I].WonOrLost := wolNone
       else
-        MPGameInfo.Players[I].WonOrLost := gHands[NetPlayers[I].HandIndex].AI.WonOrLost;
+        MPGameInfo.Players[I].WonOrLost := gHands[fNetPlayers[I].HandIndex].AI.WonOrLost;
     end;
 
     M := TKMemoryStreamBinary.Create;
@@ -2777,7 +2777,7 @@ end;
 procedure TKMNetworking.ReturnToLobbyVoteSucceeded;
 begin
   // Don't run NetPlayers.ResetVote here, wait until we actually return to the lobby so the vote can't start again
-  NetPlayers.ResetReadyToReturnToLobby;
+  fNetPlayers.ResetReadyToReturnToLobby;
   fVoteReturnToLobbySucceeded := True;
   SendPlayerListAndRefreshPlayersSetup;
   OnAnnounceReturnToLobby; // Sends GIC command to create synchronised save file
@@ -2804,9 +2804,9 @@ begin
   fReturnedToLobby := True; //Expect pause.sav to match host
   if IsHost then
   begin
-    NetPlayers.RemAllAIs; //AIs are included automatically when you start the save
-    NetPlayers.RemDisconnectedPlayers; //Disconnected players must not be shown in lobby
-    NetPlayers.ResetVote; //Only reset the vote now that the game has exited
+    fNetPlayers.RemAllAIs; //AIs are included automatically when you start the save
+    fNetPlayers.RemDisconnectedPlayers; //Disconnected players must not be shown in lobby
+    fNetPlayers.ResetVote; //Only reset the vote now that the game has exited
     //Don't refresh player setup here since events aren't attached to lobby yet
   end;
 end;
