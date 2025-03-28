@@ -88,9 +88,9 @@ type
     mkPlayersList,     //Host keeps the players list and sends it to everyone on change
     mkGameOptions,     //Host keeps the game options and sends it to everyone on change
 
-    mkStartingLocQuery,//Joiner asks Host if he can take that starting location
-    mkSetTeam,         //Joiner tells Host which team he is on
-    mkFlagColorQuery,  //Joiner asks Host if he can take specific color
+    mkRequestStartingLoc,  // Joiner tells Host he wants to select some starting location
+    mkRequestTeam,         // Joiner tells Host he wants to select some team
+    mkRequestFlagColor,    // Joiner tells Host he wants to select some color
 
     mkResetMap,        //Reset the map selection to blank
     mkMapSelect,       //Host selects the map to play

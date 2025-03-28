@@ -17,7 +17,7 @@ const
     [mkAllowToJoin,mkRefuseToJoin,mkAuthChallenge,mkPing,mkPingInfo,mkKicked],
     //lgsLobby
     [mkAskForAuth,mkAskToJoin,mkClientLost,mkReassignHost,mkDisconnect,mkPing,mkPingInfo,mkPlayersList,
-     mkStartingLocQuery,mkSetTeam,mkFlagColorQuery,mkResetMap,mkMapSelect,mkSaveSelect,
+     mkRequestStartingLoc,mkRequestTeam,mkRequestFlagColor,mkResetMap,mkMapSelect,mkSaveSelect,
      mkReadyToStart,mkStart,mkTextChat,mkKicked,mkLangCode,mkGameOptions,mkServerName,
      mkFileRequest,mkFileSendStarted,mkFileChunk,mkFileEnd,mkFileAck,mkFileProgress,
      mkTextTranslated,mkHasMapOrSave,mkSetPassword],

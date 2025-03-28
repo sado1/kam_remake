@@ -717,7 +717,9 @@ begin
   //Check if position can be taken before doing anything
   if not CanTakeLocation(aPlayerIndex, aHandIndex, IsHost and fNetPlayers.HostDoesSetup) then
   begin
-    if Assigned(OnPlayersSetup) then OnPlayersSetup;
+    // Early fail, without disturbing the Host
+    if Assigned(OnPlayersSetup) then
+      OnPlayersSetup;
     Exit;
   end;
 
@@ -757,7 +759,7 @@ begin
 
                   SendPlayerListAndRefreshPlayersSetup;
                 end;
-    lpkJoiner: PacketSend(NET_ADDRESS_HOST, mkStartingLocQuery, aHandIndex);
+    lpkJoiner: PacketSend(NET_ADDRESS_HOST, mkRequestStartingLoc, aHandIndex);
   end;
 end;
 
@@ -776,7 +778,7 @@ begin
 
                   SendPlayerListAndRefreshPlayersSetup;
                 end;
-    lpkJoiner: PacketSend(NET_ADDRESS_HOST, mkSetTeam, aTeam);
+    lpkJoiner: PacketSend(NET_ADDRESS_HOST, mkRequestTeam, aTeam);
   end;
 end;
 
@@ -795,7 +797,7 @@ begin
   case fNetPlayerKind of
     lpkHost:   SendPlayerListAndRefreshPlayersSetup;
     lpkJoiner: begin
-                  PacketSend(NET_ADDRESS_HOST, mkFlagColorQuery, aColor);
+                  PacketSend(NET_ADDRESS_HOST, mkRequestFlagColor, aColor);
                   if Assigned(OnPlayersSetup) then OnPlayersSetup;
                 end;
   end;
@@ -1065,7 +1067,8 @@ begin
     end;
   end;
 
-  fMyIndex := fNetPlayers.NicknameToLocal(fMyNickname); //The host's index can change when players are removed
+  // The host's index can change when players are removed
+  fMyIndex := fNetPlayers.NicknameToLocal(fMyNickname);
   fHostIndex := fMyIndex;
 
   OnMPGameInfoChanged; //Tell the server about the changes
@@ -2076,7 +2079,7 @@ begin
               end;
             end;
 
-    mkStartingLocQuery:
+    mkRequestStartingLoc:
             if IsHost and not fNetPlayers.HostDoesSetup then
             begin
               aStream.Read(tmpInteger);
@@ -2090,32 +2093,33 @@ begin
                   fNetPlayers[playerIndex].Team := 0;
                 SendPlayerListAndRefreshPlayersSetup;
               end
-              else //Quietly refuse
+              else
+                // Ignore the request and send out actual setup
                 SendPlayerListAndRefreshPlayersSetup(aSenderIndex);
             end;
 
-    mkSetTeam:
+    mkRequestTeam:
             if IsHost and not fNetPlayers.HostDoesSetup then
             begin
               aStream.Read(tmpInteger);
               teamID := tmpInteger;
-              //Update Players setup
               fNetPlayers[fNetPlayers.ServerToLocal(aSenderIndex)].Team := teamID;
               SendPlayerListAndRefreshPlayersSetup;
             end;
 
-    mkFlagColorQuery:
+    mkRequestFlagColor:
             if IsHost then
             begin
               aStream.Read(tmpCardinal);
-              //The player list could have changed since the joiner sent this request (over slow connection)
+              // Availability could have changed since the joiner sent this request (over slow connection)
               if fNetPlayers.ColorAvailable(tmpCardinal)
               and ((fSelectGameKind <> ngkSave) or not SaveInfo.IsValid or not SaveInfo.GameInfo.ColorUsed(tmpCardinal)) then
               begin
                 fNetPlayers[fNetPlayers.ServerToLocal(aSenderIndex)].FlagColor := tmpCardinal;
                 SendPlayerListAndRefreshPlayersSetup;
               end
-              else //Quietly refuse
+              else
+                // Ignore the request and send out actual setup
                 SendPlayerListAndRefreshPlayersSetup(aSenderIndex);
             end;
 
