@@ -78,7 +78,7 @@ type
   TKMNetRoom = class
   private
     fCount: Integer;
-    fNetPlayers: array [1..MAX_LOBBY_SLOTS] of TKMNetRoomSlot;
+    fSlots: array [1..MAX_LOBBY_SLOTS] of TKMNetRoomSlot;
     function GetRoomSlot(aIndex: Integer): TKMNetRoomSlot;
     procedure ValidateColors(var aFixedLocsColors: TKMCardinalArray);
     procedure RemAllClosedPlayers;
@@ -402,7 +402,7 @@ begin
   inherited;
 
   for I := 1 to MAX_LOBBY_SLOTS do
-    fNetPlayers[I] := TKMNetRoomSlot.Create;
+    fSlots[I] := TKMNetRoomSlot.Create;
 
   Clear;
 end;
@@ -413,7 +413,7 @@ var
   I: Integer;
 begin
   for I := 1 to MAX_LOBBY_SLOTS do
-    fNetPlayers[I].Free;
+    fSlots[I].Free;
 
   inherited;
 end;
@@ -434,7 +434,7 @@ function TKMNetRoom.GetRoomSlot(aIndex: Integer): TKMNetRoomSlot;
 begin
   if (Self = nil) or not InRange(aIndex, 1, MAX_LOBBY_SLOTS) then Exit(nil);
 
-  Result := fNetPlayers[aIndex];
+  Result := fSlots[aIndex];
 end;
 
 
@@ -465,9 +465,9 @@ var
     fixedColorsSet: Boolean;
   begin
     fixedColorsSet := Length(aFixedLocsColors) > 0;
-    Result := not fNetPlayers[aLocIndex].IsSpectator // we should always count on specs color
+    Result := not fSlots[aLocIndex].IsSpectator // we should always count on specs color
               and fixedColorsSet
-              and (aFixedLocsColors[fNetPlayers[aLocIndex].HandIndex] <> 0);
+              and (aFixedLocsColors[fSlots[aLocIndex].HandIndex] <> 0);
   end;
 
 var
@@ -480,12 +480,12 @@ begin
   // and every loc color, if BlockPlayerColor parametr is set
   for I := 1 to fCount do
     if IsFixedPlayerColor(I) then
-      fNetPlayers[I].FlagColor := aFixedLocsColors[fNetPlayers[I].HandIndex];
+      fSlots[I].FlagColor := aFixedLocsColors[fSlots[I].HandIndex];
 
   //All wrong colors will be reset to random
   for I := 1 to fCount do
-    if (fNetPlayers[I].FlagColor shr 24) <> $FF then
-      fNetPlayers[I].ResetColor;
+    if (fSlots[I].FlagColor shr 24) <> $FF then
+      fSlots[I].ResetColor;
 
   FillChar(usedColor, SizeOf(usedColor), #0);
 
@@ -493,18 +493,18 @@ begin
   //Remember all used colors and drop duplicates
   for I := 1 to fCount do
   begin
-    if not fNetPlayers[I].IsColorSet then
+    if not fSlots[I].IsColorSet then
       Inc(colorsNeeded);
 
     // Ignore fixed colors for non-specs
     if IsFixedPlayerColor(I) then
       Continue;
 
-    colorID := FindMPColor(fNetPlayers[I].FlagColor);
+    colorID := FindMPColor(fSlots[I].FlagColor);
 
     if usedColor[colorID] then
     begin
-      fNetPlayers[I].ResetColor;
+      fSlots[I].ResetColor;
     end else begin
       usedColor[colorID] := True;
     end;
@@ -529,19 +529,19 @@ begin
     if IsFixedPlayerColor(I) then
       Continue;
 
-    if not fNetPlayers[I].IsColorSet then
+    if not fSlots[I].IsColorSet then
     begin
       Inc(K);
       if K <= colorCount then
-        fNetPlayers[I].FlagColor := MP_PLAYER_COLORS[availableColor[K]]
+        fSlots[I].FlagColor := MP_PLAYER_COLORS[availableColor[K]]
       else
-        fNetPlayers[I].FlagColor := GetRandomColor; // That should not be happening/ But just in case - set random color then
+        fSlots[I].FlagColor := GetRandomColor; // That should not be happening/ But just in case - set random color then
     end;
   end;
 
   //Check for odd players
   for I := 1 to fCount do
-    Assert(fNetPlayers[I].IsColorSet, 'Everyone should have a color now!');
+    Assert(fSlots[I].IsColorSet, 'Everyone should have a color now!');
 end;
 
 
@@ -550,7 +550,7 @@ var
   I: Integer;
 begin
   for I := fCount downto 1 do
-    if fNetPlayers[I].IsClosed then
+    if fSlots[I].IsClosed then
       RemPlayer(I);
 end;
 
@@ -559,26 +559,26 @@ procedure TKMNetRoom.AddPlayer(const aNick: AnsiString; aServerIndex: TKMNetHand
 begin
   Assert(fCount <= MAX_LOBBY_SLOTS, 'Can''t add player');
   Inc(fCount);
-  fNetPlayers[fCount].fNickname := aNick;
-  fNetPlayers[fCount].fLangCode := aLang;
-  fNetPlayers[fCount].fIndexOnServer := aServerIndex;
-  fNetPlayers[fCount].PlayerNetType := nptHuman;
-  fNetPlayers[fCount].Team := 0;
-  fNetPlayers[fCount].FlagColor := 0; // Transparent color
-  fNetPlayers[fCount].ReadyToStart := False;
-  fNetPlayers[fCount].HasMapOrSave := False;
-  fNetPlayers[fCount].ReadyToPlay := False;
-  fNetPlayers[fCount].ReadyToReturnToLobby := False;
-  fNetPlayers[fCount].Connected := True;
-  fNetPlayers[fCount].Dropped := False;
-  fNetPlayers[fCount].LastSentCommandsTick := LAST_SENT_COMMANDS_TICK_NONE;
-  fNetPlayers[fCount].DownloadInProgress := False;
-  fNetPlayers[fCount].ResetPingRecord;
+  fSlots[fCount].fNickname := aNick;
+  fSlots[fCount].fLangCode := aLang;
+  fSlots[fCount].fIndexOnServer := aServerIndex;
+  fSlots[fCount].PlayerNetType := nptHuman;
+  fSlots[fCount].Team := 0;
+  fSlots[fCount].FlagColor := 0; // Transparent color
+  fSlots[fCount].ReadyToStart := False;
+  fSlots[fCount].HasMapOrSave := False;
+  fSlots[fCount].ReadyToPlay := False;
+  fSlots[fCount].ReadyToReturnToLobby := False;
+  fSlots[fCount].Connected := True;
+  fSlots[fCount].Dropped := False;
+  fSlots[fCount].LastSentCommandsTick := LAST_SENT_COMMANDS_TICK_NONE;
+  fSlots[fCount].DownloadInProgress := False;
+  fSlots[fCount].ResetPingRecord;
   //Check if this player must go in a spectator slot
   if aAsSpectator or (fCount - GetSpectatorCount > MAX_LOBBY_PLAYERS) then
-    fNetPlayers[fCount].StartLocation := LOC_SPECTATE
+    fSlots[fCount].StartLocation := LOC_SPECTATE
   else
-    fNetPlayers[fCount].StartLocation := LOC_RANDOM;
+    fSlots[fCount].StartLocation := LOC_RANDOM;
 end;
 
 
@@ -590,24 +590,24 @@ begin
     Inc(fCount);
     aLocalIndex := fCount;
   end;
-  fNetPlayers[aLocalIndex].fNickname := '';
-  fNetPlayers[aLocalIndex].fLangCode := '';
-  fNetPlayers[aLocalIndex].fIndexOnServer := -1;
+  fSlots[aLocalIndex].fNickname := '';
+  fSlots[aLocalIndex].fLangCode := '';
+  fSlots[aLocalIndex].fIndexOnServer := -1;
   if aAdvancedAI then
-    fNetPlayers[aLocalIndex].PlayerNetType := nptComputerAdvanced
+    fSlots[aLocalIndex].PlayerNetType := nptComputerAdvanced
   else
-    fNetPlayers[aLocalIndex].PlayerNetType := nptComputerClassic;
-  fNetPlayers[aLocalIndex].Team := 0;
-  fNetPlayers[aLocalIndex].FlagColor := 0;
-  fNetPlayers[aLocalIndex].StartLocation := 0;
-  fNetPlayers[aLocalIndex].ReadyToStart := True;
-  fNetPlayers[aLocalIndex].HasMapOrSave := True;
-  fNetPlayers[aLocalIndex].ReadyToPlay := True;
-  fNetPlayers[aLocalIndex].Connected := True;
-  fNetPlayers[aLocalIndex].Dropped := False;
-  fNetPlayers[aLocalIndex].LastSentCommandsTick := LAST_SENT_COMMANDS_TICK_NONE;
-  fNetPlayers[aLocalIndex].DownloadInProgress := False;
-  fNetPlayers[aLocalIndex].ResetPingRecord;
+    fSlots[aLocalIndex].PlayerNetType := nptComputerClassic;
+  fSlots[aLocalIndex].Team := 0;
+  fSlots[aLocalIndex].FlagColor := 0;
+  fSlots[aLocalIndex].StartLocation := 0;
+  fSlots[aLocalIndex].ReadyToStart := True;
+  fSlots[aLocalIndex].HasMapOrSave := True;
+  fSlots[aLocalIndex].ReadyToPlay := True;
+  fSlots[aLocalIndex].Connected := True;
+  fSlots[aLocalIndex].Dropped := False;
+  fSlots[aLocalIndex].LastSentCommandsTick := LAST_SENT_COMMANDS_TICK_NONE;
+  fSlots[aLocalIndex].DownloadInProgress := False;
+  fSlots[aLocalIndex].ResetPingRecord;
 end;
 
 
@@ -619,21 +619,21 @@ begin
     Inc(fCount);
     aLocalIndex := fCount;
   end;
-  fNetPlayers[aLocalIndex].fNickname := '';
-  fNetPlayers[aLocalIndex].fLangCode := '';
-  fNetPlayers[aLocalIndex].fIndexOnServer := -1;
-  fNetPlayers[aLocalIndex].PlayerNetType := nptClosed;
-  fNetPlayers[aLocalIndex].Team := 0;
-  fNetPlayers[aLocalIndex].FlagColor := 0;
-  fNetPlayers[aLocalIndex].StartLocation := 0;
-  fNetPlayers[aLocalIndex].ReadyToStart := True;
-  fNetPlayers[aLocalIndex].HasMapOrSave := True;
-  fNetPlayers[aLocalIndex].ReadyToPlay := True;
-  fNetPlayers[aLocalIndex].Connected := True;
-  fNetPlayers[aLocalIndex].Dropped := False;
-  fNetPlayers[aLocalIndex].LastSentCommandsTick := LAST_SENT_COMMANDS_TICK_NONE;
-  fNetPlayers[aLocalIndex].DownloadInProgress := False;
-  fNetPlayers[aLocalIndex].ResetPingRecord;
+  fSlots[aLocalIndex].fNickname := '';
+  fSlots[aLocalIndex].fLangCode := '';
+  fSlots[aLocalIndex].fIndexOnServer := -1;
+  fSlots[aLocalIndex].PlayerNetType := nptClosed;
+  fSlots[aLocalIndex].Team := 0;
+  fSlots[aLocalIndex].FlagColor := 0;
+  fSlots[aLocalIndex].StartLocation := 0;
+  fSlots[aLocalIndex].ReadyToStart := True;
+  fSlots[aLocalIndex].HasMapOrSave := True;
+  fSlots[aLocalIndex].ReadyToPlay := True;
+  fSlots[aLocalIndex].Connected := True;
+  fSlots[aLocalIndex].Dropped := False;
+  fSlots[aLocalIndex].LastSentCommandsTick := LAST_SENT_COMMANDS_TICK_NONE;
+  fSlots[aLocalIndex].DownloadInProgress := False;
+  fSlots[aLocalIndex].ResetPingRecord;
 end;
 
 
@@ -644,7 +644,7 @@ var
 begin
   localIndex := ServerToLocal(aServerIndex);
   Assert(localIndex <> -1, 'Cannot disconnect player');
-  fNetPlayers[localIndex].Connected := False;
+  fSlots[localIndex].Connected := False;
 end;
 
 //Mark all human players as disconnected (used when reconnecting if all clients were lost)
@@ -653,8 +653,8 @@ var
   I: Integer;
 begin
   for I := 1 to fCount do
-    if (fNetPlayers[I].IsHuman) and (fNetPlayers[I].Nickname <> aOwnNickname) then
-      fNetPlayers[I].Connected := False;
+    if (fSlots[I].IsHuman) and (fSlots[I].Nickname <> aOwnNickname) then
+      fSlots[I].Connected := False;
 end;
 
 
@@ -665,9 +665,9 @@ var
 begin
   localIndex := ServerToLocal(aServerIndex);
   Assert(localIndex <> -1, 'Cannot drop player');
-  fNetPlayers[localIndex].Connected := False;
-  fNetPlayers[localIndex].Dropped := True;
-  fNetPlayers[localIndex].LastSentCommandsTick := aLastSentCommandsTick;
+  fSlots[localIndex].Connected := False;
+  fSlots[localIndex].Dropped := True;
+  fSlots[localIndex].LastSentCommandsTick := aLastSentCommandsTick;
 end;
 
 
@@ -675,11 +675,11 @@ procedure TKMNetRoom.RemPlayer(aLocalIndex: Integer);
 var
   I: Integer;
 begin
-  fNetPlayers[aLocalIndex].Free;
+  fSlots[aLocalIndex].Free;
   for I := aLocalIndex to fCount - 1 do
-    fNetPlayers[I] := fNetPlayers[I + 1]; // Shift only pointers
+    fSlots[I] := fSlots[I + 1]; // Shift only pointers
 
-  fNetPlayers[fCount] := TKMNetRoomSlot.Create; // Empty slots are created but not used
+  fSlots[fCount] := TKMNetRoomSlot.Create; // Empty slots are created but not used
   Dec(fCount);
 end;
 
@@ -700,7 +700,7 @@ var
 begin
   Result := -1;
   for I := 1 to fCount do
-    if fNetPlayers[I].fIndexOnServer = aServerIndex then
+    if fSlots[I].fIndexOnServer = aServerIndex then
       Exit(I);
 end;
 
@@ -712,7 +712,7 @@ var
 begin
   Result := -1;
   for I := 1 to fCount do
-    if fNetPlayers[I].fNickname = aNickname then
+    if fSlots[I].fNickname = aNickname then
       Exit(I);
 end;
 
@@ -724,7 +724,7 @@ var
 begin
   Result := -1;
   for I := 1 to fCount do
-    if fNetPlayers[I].StartLocation = aLoc then
+    if fSlots[I].StartLocation = aLoc then
       Exit(I);
 end;
 
@@ -735,7 +735,7 @@ var
 begin
   Result := -1;
   for I := 1 to Count do
-    if (aHandIndex = fNetPlayers[I].HandIndex) then
+    if (aHandIndex = fSlots[I].HandIndex) then
       Exit(I);
 end;
 
@@ -767,10 +767,10 @@ begin
   if aLocalIndex = -1 then
     Result := -2 //Silent failure, client should try again
   else
-  if fNetPlayers[aLocalIndex].Connected then
+  if fSlots[aLocalIndex].Connected then
     Result := -2 //Silent failure, client should try again
   else
-  if fNetPlayers[aLocalIndex].Dropped then
+  if fSlots[aLocalIndex].Dropped then
     Result := TX_NET_RECONNECTION_DROPPED
   else
     Result := -1; //Success
@@ -785,7 +785,7 @@ begin
   if (aLoc = LOC_RANDOM) or (aLoc = LOC_SPECTATE) then Exit;
 
   for I := 1 to fCount do
-    Result := Result and (aLoc <> fNetPlayers[I].StartLocation);
+    Result := Result and (aLoc <> fSlots[I].StartLocation);
 end;
 
 
@@ -797,7 +797,7 @@ begin
   if (aColor shr 24) <> $FF then Exit; // Color with transparency
 
   for I := 1 to fCount do
-    Result := Result and (aColor <> fNetPlayers[I].FlagColor);
+    Result := Result and (aColor <> fSlots[I].FlagColor);
 end;
 
 
@@ -807,8 +807,8 @@ var
 begin
   Result := True;
   for I := 1 to fCount do
-    if fNetPlayers[I].Connected and fNetPlayers[I].IsHuman then
-      Result := Result and fNetPlayers[I].ReadyToStart and fNetPlayers[I].HasMapOrSave;
+    if fSlots[I].Connected and fSlots[I].IsHuman then
+      Result := Result and fSlots[I].ReadyToStart and fSlots[I].HasMapOrSave;
 end;
 
 
@@ -818,8 +818,8 @@ var
 begin
   Result := True;
   for I := 1 to fCount do
-    if fNetPlayers[I].Connected and fNetPlayers[I].IsHuman then
-      Result := Result and fNetPlayers[I].ReadyToPlay;
+    if fSlots[I].Connected and fSlots[I].IsHuman then
+      Result := Result and fSlots[I].ReadyToPlay;
 end;
 
 
@@ -829,8 +829,8 @@ var
 begin
   Result := True;
   for I := 1 to fCount do
-    if fNetPlayers[I].Connected and fNetPlayers[I].IsHuman then
-      Result := Result and fNetPlayers[I].ReadyToReturnToLobby;
+    if fSlots[I].Connected and fSlots[I].IsHuman then
+      Result := Result and fSlots[I].ReadyToReturnToLobby;
 end;
 
 
@@ -842,9 +842,9 @@ begin
   worstPing1 := 0;
   worstPing2 := 0;
   for I := 1 to fCount do
-    if fNetPlayers[I].Connected and fNetPlayers[I].IsHuman then
+    if fSlots[I].Connected and fSlots[I].IsHuman then
     begin
-      newPing := fNetPlayers[I].GetMaxPing;
+      newPing := fSlots[I].GetMaxPing;
 
       if newPing > worstPing1 then
         worstPing1 := newPing
@@ -864,7 +864,7 @@ begin
 
   K := 0;
   for I := 1 to fCount do
-    if (not fNetPlayers[I].ReadyToPlay) and fNetPlayers[I].IsHuman and fNetPlayers[I].Connected then
+    if (not fSlots[I].ReadyToPlay) and fSlots[I].IsHuman and fSlots[I].Connected then
     begin
       Result[K] := I;
       Inc(K)
@@ -886,7 +886,7 @@ var
 begin
   Result := 0;
   for I := 1 to fCount do
-    if fNetPlayers[I].PlayerNetType in aPlayerTypes then
+    if fSlots[I].PlayerNetType in aPlayerTypes then
       Inc(Result);
 end;
 
@@ -897,7 +897,7 @@ var
 begin
   Result := 0;
   for I := 1 to fCount do
-    if fNetPlayers[I].PlayerNetType = nptClosed then
+    if fSlots[I].PlayerNetType = nptClosed then
       Inc(Result);
 end;
 
@@ -908,7 +908,7 @@ var
 begin
   Result := 0;
   for I := 1 to fCount do
-    if fNetPlayers[I].IsSpectator then
+    if fSlots[I].IsSpectator then
       Inc(Result);
 end;
 
@@ -919,7 +919,7 @@ var
 begin
   Result := 0;
   for I := 1 to fCount do
-    if fNetPlayers[I].IsHuman and fNetPlayers[I].Connected then
+    if fSlots[I].IsHuman and fSlots[I].Connected then
       Inc(Result);
 end;
 
@@ -930,9 +930,9 @@ var
 begin
   Result := 0;
   for I := 1 to fCount do
-    if fNetPlayers[I].IsHuman
-      and fNetPlayers[I].Connected
-      and not fNetPlayers[I].IsSpectator then
+    if fSlots[I].IsHuman
+      and fSlots[I].Connected
+      and not fSlots[I].IsSpectator then
       Inc(Result);
 end;
 
@@ -945,7 +945,7 @@ var
 begin
   Result := 0;
   for I := 1 to fCount do
-    if fNetPlayers[I].IsHuman and not fNetPlayers[I].Dropped then
+    if fSlots[I].IsHuman and not fSlots[I].Dropped then
       Inc(Result);
 end;
 
@@ -959,12 +959,12 @@ begin
   votedYes := 0;
   onlySpecsLeft := HasOnlySpectators; //Store value locally
   for I := 1 to fCount do
-    if (fNetPlayers[I].PlayerNetType = nptHuman)
-    and (onlySpecsLeft or (fNetPlayers[I].StartLocation <> LOC_SPECTATE))
-    and not fNetPlayers[I].Dropped then
+    if (fSlots[I].PlayerNetType = nptHuman)
+    and (onlySpecsLeft or (fSlots[I].StartLocation <> LOC_SPECTATE))
+    and not fSlots[I].Dropped then
     begin
       Inc(total);
-      if fNetPlayers[I].VotedYes then
+      if fSlots[I].VotedYes then
         Inc(votedYes);
     end;
   Result := (total div 2) + 1 - votedYes;
@@ -977,8 +977,8 @@ var
   I: Integer;
 begin
   for I := 1 to fCount do
-    if (fNetPlayers[I].PlayerNetType = nptHuman) and (fNetPlayers[I].StartLocation <> LOC_SPECTATE)
-    and not fNetPlayers[I].Dropped then
+    if (fSlots[I].PlayerNetType = nptHuman) and (fSlots[I].StartLocation <> LOC_SPECTATE)
+    and not fSlots[I].Dropped then
     begin
       Result := False;
       Exit;
@@ -992,7 +992,7 @@ var
   I: Integer;
 begin
   for I := 1 to fCount do
-    fNetPlayers[I].DownloadInPRogress := False;
+    fSlots[I].DownloadInPRogress := False;
 end;
 
 
@@ -1002,15 +1002,15 @@ var
 begin
   for I := 1 to fCount do
   begin
-    if fNetPlayers[I].PlayerNetType = nptHuman then
-      fNetPlayers[I].HasMapOrSave := False;
+    if fSlots[I].PlayerNetType = nptHuman then
+      fSlots[I].HasMapOrSave := False;
 
-    if fNetPlayers[I].StartLocation <> LOC_SPECTATE then
-      fNetPlayers[I].StartLocation := LOC_RANDOM;
+    if fSlots[I].StartLocation <> LOC_SPECTATE then
+      fSlots[I].StartLocation := LOC_RANDOM;
 
     //AI/closed players are always ready, spectator ready status is not reset by map change
-    if (fNetPlayers[I].PlayerNetType = nptHuman) and (fNetPlayers[I].StartLocation <> LOC_SPECTATE) then
-      fNetPlayers[I].ReadyToStart := False;
+    if (fSlots[I].PlayerNetType = nptHuman) and (fSlots[I].StartLocation <> LOC_SPECTATE) then
+      fSlots[I].ReadyToStart := False;
   end;
 end;
 
@@ -1021,8 +1021,8 @@ var
 begin
   for I := 1 to fCount do
     //AI/closed players are always ready, spectator ready status is not reset by options change
-    if (fNetPlayers[I].PlayerNetType = nptHuman) and (fNetPlayers[I].StartLocation <> LOC_SPECTATE) then
-      fNetPlayers[I].ReadyToStart := False;
+    if (fSlots[I].PlayerNetType = nptHuman) and (fSlots[I].StartLocation <> LOC_SPECTATE) then
+      fSlots[I].ReadyToStart := False;
 end;
 
 
@@ -1031,7 +1031,7 @@ var
   I: Integer;
 begin
   for I := 1 to fCount do
-    fNetPlayers[I].ReadyToPlay := False;
+    fSlots[I].ReadyToPlay := False;
 end;
 
 
@@ -1040,7 +1040,7 @@ var
   I: Integer;
 begin
   for I := 1 to fCount do
-    fNetPlayers[I].ReadyToReturnToLobby := False;
+    fSlots[I].ReadyToReturnToLobby := False;
 end;
 
 
@@ -1050,7 +1050,7 @@ var
 begin
   VoteActive := False;
   for I := 1 to fCount do
-    fNetPlayers[I].VotedYes := False;
+    fSlots[I].VotedYes := False;
 end;
 
 
@@ -1059,10 +1059,10 @@ var
   I: Integer;
 begin
   for I := 1 to fCount do
-    if fNetPlayers[I].PlayerNetType in [nptComputerClassic, nptComputerAdvanced, nptClosed] then
+    if fSlots[I].PlayerNetType in [nptComputerClassic, nptComputerAdvanced, nptClosed] then
     begin
-      fNetPlayers[I].ReadyToStart := True;
-      fNetPlayers[I].ReadyToPlay := True;
+      fSlots[I].ReadyToStart := True;
+      fSlots[I].ReadyToPlay := True;
     end;
 end;
 
@@ -1072,7 +1072,7 @@ var
   I: Integer;
 begin
   for I := fCount downto 1 do
-    if fNetPlayers[I].IsComputer then
+    if fSlots[I].IsComputer then
       RemPlayer(I);
 end;
 
@@ -1082,7 +1082,7 @@ var
   I: Integer;
 begin
   for I := fCount downto 1 do
-    if not fNetPlayers[I].Connected then
+    if not fSlots[I].Connected then
       RemPlayer(I);
 end;
 
@@ -1555,16 +1555,16 @@ begin
   end;
 
   for I := 1 to fCount do
-    if fNetPlayers[I].IsSpectator then
-      Assert((fNetPlayers[I].PlayerNetType = nptHuman), 'Only humans can spectate');
+    if fSlots[I].IsSpectator then
+      Assert((fSlots[I].PlayerNetType = nptHuman), 'Only humans can spectate');
 
   //All wrong start locations will be reset to random (fallback since UI should block that anyway)
   for I := 1 to fCount do
-    if (fNetPlayers[I].StartLocation <> LOC_RANDOM) and (fNetPlayers[I].StartLocation <> LOC_SPECTATE) then
-      if (fNetPlayers[I].IsHuman and not IsHumanLoc(fNetPlayers[I].StartLocation))
-        or (fNetPlayers[I].IsClassicComputer and not IsAILoc(fNetPlayers[I].StartLocation))
-        or (fNetPlayers[I].IsAdvancedComputer and not IsAdvAILoc(fNetPlayers[I].StartLocation)) then
-        fNetPlayers[I].StartLocation := LOC_RANDOM;
+    if (fSlots[I].StartLocation <> LOC_RANDOM) and (fSlots[I].StartLocation <> LOC_SPECTATE) then
+      if (fSlots[I].IsHuman and not IsHumanLoc(fSlots[I].StartLocation))
+        or (fSlots[I].IsClassicComputer and not IsAILoc(fSlots[I].StartLocation))
+        or (fSlots[I].IsAdvancedComputer and not IsAdvAILoc(fSlots[I].StartLocation)) then
+        fSlots[I].StartLocation := LOC_RANDOM;
 
   for I := 1 to MAX_HANDS do
     usedLoc[I] := False;
@@ -1574,19 +1574,19 @@ begin
   try
     //Remember all used locations and drop duplicates (fallback since UI should block that anyway)
     for I := 1 to fCount do
-      if (fNetPlayers[I].StartLocation <> LOC_RANDOM) and (fNetPlayers[I].StartLocation <> LOC_SPECTATE) then
+      if (fSlots[I].StartLocation <> LOC_RANDOM) and (fSlots[I].StartLocation <> LOC_SPECTATE) then
       begin
-        if usedLoc[fNetPlayers[I].StartLocation] then
-          fNetPlayers[I].StartLocation := LOC_RANDOM
+        if usedLoc[fSlots[I].StartLocation] then
+          fSlots[I].StartLocation := LOC_RANDOM
         else
-          usedLoc[fNetPlayers[I].StartLocation] := True;
+          usedLoc[fSlots[I].StartLocation] := True;
       end
       else
-      if (fNetPlayers[I].StartLocation = LOC_RANDOM) and not fNetPlayers[I].IsClosed then
+      if (fSlots[I].StartLocation = LOC_RANDOM) and not fSlots[I].IsClosed then
       begin
         player.ID := I;
         player.LocID := -1;
-        player.PlayerType := ConvertPlayerType(fNetPlayers[I].PlayerNetType);
+        player.PlayerType := ConvertPlayerType(fSlots[I].PlayerNetType);
         locFiller.AddPlayer(player);
       end;
 
@@ -1633,7 +1633,7 @@ begin
 
     //Fill all locs
     for I := 0 to High(locFiller.Players) do
-      fNetPlayers[locFiller.Players[I].ID].StartLocation := locFiller.Players[I].LocID;
+      fSlots[locFiller.Players[I].ID].StartLocation := locFiller.Players[I].LocID;
 
     if gLog.IsDegubLogEnabled then
       gLog.LogDebug('Randomized locs: ' + locFiller.FillerToString);
@@ -1645,7 +1645,7 @@ begin
 
   //Check for odd players
   for I := 1 to fCount do
-    Assert(fNetPlayers[I].StartLocation <> LOC_RANDOM, 'Everyone should have a starting location!');
+    Assert(fSlots[I].StartLocation <> LOC_RANDOM, 'Everyone should have a starting location!');
 
   //Shuffle locations within each team if requested
   if RandomizeTeamLocations then
@@ -1653,10 +1653,10 @@ begin
     begin
       SetLength(TeamLocs, 0); //Reset
       for K := 1 to fCount do
-        if (fNetPlayers[K].Team = I) and not fNetPlayers[K].IsSpectator then
+        if (fSlots[K].Team = I) and not fSlots[K].IsSpectator then
         begin
           SetLength(TeamLocs, Length(TeamLocs)+1);
-          TeamLocs[Length(TeamLocs)-1] := fNetPlayers[K].StartLocation;
+          TeamLocs[Length(TeamLocs)-1] := fSlots[K].StartLocation;
         end;
       //Shuffle the locations
       for K := 0 to Length(TeamLocs)-1 do
@@ -1664,9 +1664,9 @@ begin
       //Assign each location back to a player
       J := 0;
       for K := 1 to fCount do
-        if (fNetPlayers[K].Team = I) and not fNetPlayers[K].IsSpectator then
+        if (fSlots[K].Team = I) and not fSlots[K].IsSpectator then
         begin
-          fNetPlayers[K].StartLocation := TeamLocs[J];
+          fSlots[K].StartLocation := TeamLocs[J];
           Inc(J);
         end;
     end;
@@ -1690,7 +1690,7 @@ begin
   aStream.Write(VoteActive);
   aStream.Write(fCount);
   for I := 1 to fCount do
-    fNetPlayers[I].Save(aStream);
+    fSlots[I].Save(aStream);
 end;
 
 
@@ -1705,7 +1705,7 @@ begin
   aStream.Read(VoteActive);
   aStream.Read(fCount);
   for I := 1 to fCount do
-    fNetPlayers[I].Load(aStream);
+    fSlots[I].Load(aStream);
 end;
 
 
