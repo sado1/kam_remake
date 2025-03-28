@@ -220,7 +220,7 @@ uses
   KM_Sound,
   KM_RenderUI,
   KM_Resource, KM_ResFonts, KM_ResLocales, KM_ResSound, KM_ResTypes,
-  KM_Networking, KM_NetPlayersList,
+  KM_Networking, KM_NetRoom,
   KM_MapTypes, KM_MapUtilsExt,
   KM_GameAppSettings,
   KM_ServerSettings;

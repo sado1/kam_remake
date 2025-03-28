@@ -1,4 +1,4 @@
-unit KM_NetPlayersList;
+unit KM_NetRoom;
 {$I KaM_Remake.inc}
 interface
 uses

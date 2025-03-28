@@ -471,7 +471,7 @@
         <DCCReference Include="src\net\KM_NetClientOverbyte.pas"/>
         <DCCReference Include="src\net\KM_NetClientLNet.pas"/>
         <DCCReference Include="src\net\KM_NetFileTransfer.pas"/>
-        <DCCReference Include="src\net\KM_NetPlayersList.pas"/>
+        <DCCReference Include="src\net\KM_NetRoom.pas"/>
         <DCCReference Include="src\net\KM_NetServer.pas"/>
         <DCCReference Include="src\net\KM_NetServerOverbyte.pas"/>
         <DCCReference Include="src\net\KM_NetServerLNet.pas"/>

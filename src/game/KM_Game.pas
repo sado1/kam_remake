@@ -341,7 +341,7 @@ uses
   KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils,
   {$IFDEF RNG_SPY} KM_RandomChecks, {$ENDIF}
   KM_DevPerfLog, KM_DevPerfLogTypes,
-  KM_NetPlayersList,
+  KM_NetRoom,
   KM_HandTypes, KM_ResLocales,
   KM_ServerSettings,
   KM_CampaignTypes,
