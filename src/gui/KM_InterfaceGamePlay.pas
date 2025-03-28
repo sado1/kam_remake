@@ -151,7 +151,7 @@ type
     procedure Allies_Close(Sender: TObject);
     procedure Allies_Mute(Sender: TObject);
     procedure Update_Image_AlliesMute(aImage: TKMImage);
-    procedure UpdateNetPlayersMapping;
+    procedure UpdateRoomMapping;
     procedure Menu_Update;
     procedure DirectionCursorShow(X,Y: Integer; aDir: TKMDirection);
     procedure DirectionCursorHide;
@@ -1905,11 +1905,11 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.UpdateNetPlayersMapping;
+procedure TKMGamePlayInterface.UpdateRoomMapping;
 var
   I, J, K: Integer;
   teams: TKMByteSetArray;
-  handIdToNetPlayersId: array [0..MAX_HANDS - 1] of Integer;
+  handIdToRoomId: array [0..MAX_HANDS - 1] of Integer;
 begin
   // First empty everything
   fPlayerLinesCnt := 0;
@@ -1918,20 +1918,20 @@ begin
     fLineIdToNetPlayerId[I] := -1;
 
   for I := 0 to MAX_HANDS - 1 do
-    handIdToNetPlayersId[I] := -1;
+    handIdToRoomId[I] := -1;
 
   for I := 1 to gNetworking.Room.Count do
     if not gNetworking.Room[I].IsSpectator then
-      handIdToNetPlayersId[gNetworking.Room[I].HandIndex] := I;
+      handIdToRoomId[gNetworking.Room[I].HandIndex] := I;
 
   teams := gHands.Teams;
 
   K := 0;
   for J := Low(teams) to High(teams) do
     for I in teams[J] do
-      if handIdToNetPlayersId[I] <> -1 then //HandIdToNetPlayersId could -1, if we play in the save, where 1 player left
+      if handIdToRoomId[I] <> -1 then //handIdToRoomId could -1, if we play in the save, where 1 player left
       begin
-        fLineIdToNetPlayerId[K] := handIdToNetPlayersId[I];
+        fLineIdToNetPlayerId[K] := handIdToRoomId[I];
         Inc(K);
       end;
 
@@ -3221,7 +3221,7 @@ begin
                                      and (gNetworking.Room.HasOnlySpectators
                                           or not gNetworking.MyRoomSlot.IsSpectator);
 
-  UpdateNetPlayersMapping;
+  UpdateRoomMapping;
 
   //Hide extra player lines
   for I := fPlayerLinesCnt to MAX_LOBBY_SLOTS - 1 do
@@ -3249,7 +3249,7 @@ begin
       else
         Image_AlliesFlag[I].TexID := 0;
     end;
-    if gNetworking.HostIndex = netI then
+    if gNetworking.HostSlotIndex = netI then
     begin
       Image_AlliesHostStar.Visible := True;
       Image_AlliesHostStar.Left := 190 + (I div ALLIES_ROWS)*380;
@@ -3261,7 +3261,7 @@ begin
     else
       Label_AlliesPlayer[I].Caption := gHands[gNetworking.Room[netI].HandIndex].OwnerName;
 
-    if (gNetworking.MyIndex <> netI)                // If not my player
+    if (gNetworking.MySlotIndex <> netI)                // If not my player
       and gNetworking.Room[netI].IsHuman then // and is not Computer
     begin
       Update_Image_AlliesMute(Image_AlliesMute[I]);
@@ -3308,7 +3308,7 @@ begin
                                          and (gNetworking.Room[netI].Team <> 0);
     Label_AlliesPing[I].Strikethrough := gNetworking.Room[netI].Dropped;
     Label_AlliesFPS[I].Strikethrough := gNetworking.Room[netI].Dropped;
-    DropBox_AlliesTeam[I].Enabled := (netI = gNetworking.MyIndex); // Our index
+    DropBox_AlliesTeam[I].Enabled := (netI = gNetworking.MySlotIndex);
     DropBox_AlliesTeam[I].Hide; // Use label for demos until we fix exploits
 
     Inc(I);
@@ -3324,7 +3324,7 @@ var
   ping: Word;
   fps: Cardinal;
 begin
-  UpdateNetPlayersMapping;
+  UpdateRoomMapping;
 
   I := 0;
   for K := 0 to fPlayerLinesCnt - 1 do

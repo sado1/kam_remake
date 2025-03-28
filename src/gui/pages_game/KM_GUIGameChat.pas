@@ -367,7 +367,7 @@ begin
 
   //Fill
   for I := 1 to gNetworking.Room.Count do
-  if I <> gNetworking.MyIndex then //Can't whisper to self
+  if I <> gNetworking.MySlotIndex then //Can't whisper to self
   begin
     slot := gNetworking.Room[I];
 

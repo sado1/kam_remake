@@ -1072,7 +1072,7 @@ begin
       gicGameLoadSave:            ; //Just a marker to know when game was loaded
       gicGameTeamChange:          begin
                                     //Currently unused, disabled to prevent potential exploitation
-                                    {fGame.Networking.NetPlayers[Params[0]].Team := Params[1];
+                                    {fGame.Networking.Room[Params[0]].Team := Params[1];
                                     fGame.UpdateMultiplayerTeams;
                                     fPlayers.SyncFogOfWar;
                                     if fGame.Networking.IsHost then

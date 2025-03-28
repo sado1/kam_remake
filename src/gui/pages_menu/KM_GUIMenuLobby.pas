@@ -29,8 +29,8 @@ type
 
     fLobbyTab: TKMLobbyTab;
 
-    fLocalToNetPlayers: array [1..MAX_LOBBY_SLOTS] of Integer;
-    fNetPlayersToLocal: array [1..MAX_LOBBY_SLOTS] of Integer;
+    fLocalToSlot: array [1..MAX_LOBBY_SLOTS] of Integer;
+    fSlotToLocal: array [1..MAX_LOBBY_SLOTS] of Integer;
 
     fDropBoxPlayers_LastItemIndex: Integer;
 
@@ -280,55 +280,55 @@ end;
 procedure TKMMenuLobby.UpdateMappings;
 var
   I, K: Integer;
-  oldLocalToNetPlayers: array[1..MAX_LOBBY_SLOTS] of Integer;
+  oldLocalToSlotIndex: array[1..MAX_LOBBY_SLOTS] of Integer;
 begin
   //First empty everything
   for I:=1 to MAX_LOBBY_SLOTS do
   begin
-    oldLocalToNetPlayers[I] := fLocalToNetPlayers[I];
-    fLocalToNetPlayers[I] := -1;
-    fNetPlayersToLocal[I] := -1;
+    oldLocalToSlotIndex[I] := fLocalToSlot[I];
+    fLocalToSlot[I] := -1;
+    fSlotToLocal[I] := -1;
   end;
   K := 1;
 
   //Host (unless host is spectator)
-  if (gNetworking.HostIndex <> -1) and not gNetworking.Room[gNetworking.HostIndex].IsSpectator then
+  if (gNetworking.HostSlotIndex <> -1) and not gNetworking.Room[gNetworking.HostSlotIndex].IsSpectator then
   begin
-    fLocalToNetPlayers[K] := gNetworking.HostIndex;
-    fNetPlayersToLocal[gNetworking.HostIndex] := K;
+    fLocalToSlot[K] := gNetworking.HostSlotIndex;
+    fSlotToLocal[gNetworking.HostSlotIndex] := K;
     Inc(K);
   end;
 
   //Normal players
   for I:=1 to gNetworking.Room.Count do
-    if (I <> gNetworking.HostIndex) and not gNetworking.Room[I].IsSpectator then
+    if (I <> gNetworking.HostSlotIndex) and not gNetworking.Room[I].IsSpectator then
     begin
-      fLocalToNetPlayers[K] := I;
-      fNetPlayersToLocal[I] := K;
+      fLocalToSlot[K] := I;
+      fSlotToLocal[I] := K;
       Inc(K);
     end;
 
   //Host if spectator, always goes at the end
-  if (gNetworking.HostIndex <> -1) and gNetworking.Room[gNetworking.HostIndex].IsSpectator then
+  if (gNetworking.HostSlotIndex <> -1) and gNetworking.Room[gNetworking.HostSlotIndex].IsSpectator then
   begin
-    fLocalToNetPlayers[MAX_LOBBY_SLOTS] := gNetworking.HostIndex;
-    fNetPlayersToLocal[gNetworking.HostIndex] := MAX_LOBBY_SLOTS;
+    fLocalToSlot[MAX_LOBBY_SLOTS] := gNetworking.HostSlotIndex;
+    fSlotToLocal[gNetworking.HostSlotIndex] := MAX_LOBBY_SLOTS;
   end;
 
   //Spectators, place them at the end
   K := MAX_LOBBY_SLOTS - gNetworking.Room.GetSpectatorCount + 1;
   for I:=1 to gNetworking.Room.Count do
-    if (I <> gNetworking.HostIndex) and gNetworking.Room[I].IsSpectator then
+    if (I <> gNetworking.HostSlotIndex) and gNetworking.Room[I].IsSpectator then
     begin
-      Assert((K <= MAX_LOBBY_SLOTS) and (fLocalToNetPlayers[K] = -1), 'Too many spectators');
-      fLocalToNetPlayers[K] := I;
-      fNetPlayersToLocal[I] := K;
+      Assert((K <= MAX_LOBBY_SLOTS) and (fLocalToSlot[K] = -1), 'Too many spectators');
+      fLocalToSlot[K] := I;
+      fSlotToLocal[I] := K;
       Inc(K);
     end;
 
   //If a player has moved slots on the list the dropboxes can get stuck open
   for I:=1 to MAX_LOBBY_SLOTS do
-    if oldLocalToNetPlayers[I] <> fLocalToNetPlayers[I] then
+    if oldLocalToSlotIndex[I] <> fLocalToSlot[I] then
     begin
       DropBox_PlayerSlot[I].CloseList;
       DropBox_Loc[I].CloseList;
@@ -371,7 +371,7 @@ begin
     Image_Ready[I].Top           := offY;
     Label_Ping[I].Top            := offY;
 
-    if (gNetworking <> nil) and (fLocalToNetPlayers[I] = gNetworking.HostIndex) then
+    if (gNetworking <> nil) and (fLocalToSlot[I] = gNetworking.HostSlotIndex) then
     begin
       Image_HostStar.Top := offY+2;
       Image_HostStar.Show;
@@ -830,7 +830,7 @@ begin
     PopUpMenu_Chat.AddItem('[$66FF66]' + gResTexts[TX_CHAT_SPECTATORS], CHAT_MENU_SPECTATORS);
 
   for I := 1 to gNetworking.Room.Count do
-  if I <> gNetworking.MyIndex then // Can't whisper to yourself
+  if I <> gNetworking.MySlotIndex then // Can't whisper to yourself
   begin
     slot := gNetworking.Room[I];
 
@@ -940,8 +940,8 @@ begin
 
   for I := 1 to MAX_LOBBY_SLOTS do
   begin
-    fLocalToNetPlayers[I] := -1;
-    fNetPlayersToLocal[I] := -1;
+    fLocalToSlot[I] := -1;
+    fSlotToLocal[I] := -1;
   end;
 
   Panel_Lobby.Show;
@@ -1259,16 +1259,16 @@ var
 begin
   Result := True;
   ctrl := TKMControl(Sender);
-  if fLocalToNetPlayers[ctrl.Tag] = -1 then
+  if fLocalToSlot[ctrl.Tag] = -1 then
   begin
     Result := False;
     Exit;
   end;
 
   //Only human players (excluding ourselves) have the player menu
-  if not gNetworking.Room[fLocalToNetPlayers[ctrl.Tag]].IsHuman //No menu for AI players
-  or (gNetworking.MyIndex = fLocalToNetPlayers[ctrl.Tag]) //No menu for ourselves
-  or not gNetworking.Room[fLocalToNetPlayers[ctrl.Tag]].Connected then //Don't show menu for empty slots
+  if not gNetworking.Room[fLocalToSlot[ctrl.Tag]].IsHuman //No menu for AI players
+  or (gNetworking.MySlotIndex = fLocalToSlot[ctrl.Tag]) //No menu for ourselves
+  or not gNetworking.Room[fLocalToSlot[ctrl.Tag]].Connected then //Don't show menu for empty slots
   begin
     Result := False;
     Exit;
@@ -1296,7 +1296,7 @@ var
   ctrl: TKMControl;
 begin
   ctrl := TKMControl(Sender);
-  if fLocalToNetPlayers[ctrl.Tag] = -1 then Exit;
+  if fLocalToSlot[ctrl.Tag] = -1 then Exit;
 
   if not CanShowPlayerMenu(Sender) then Exit;
 
@@ -1304,18 +1304,18 @@ begin
   begin
     //Remember which player it is by his server index
     //since order of players can change. If someone above leaves we still have the proper Id
-    PopUpMenu_Host.Tag := gNetworking.Room[fLocalToNetPlayers[ctrl.Tag]].IndexOnServer;
+    PopUpMenu_Host.Tag := gNetworking.Room[fLocalToSlot[ctrl.Tag]].IndexOnServer;
 
-    UpdateMuteMenuItem(PopUpMenu_Host, 3, gNetworking.IsMuted(fLocalToNetPlayers[ctrl.Tag]));
+    UpdateMuteMenuItem(PopUpMenu_Host, 3, gNetworking.IsMuted(fLocalToSlot[ctrl.Tag]));
 
     //Position the menu next to the icon, but do not overlap players name
     PopUpMenu_Host.ShowAt(ctrl.AbsLeft, ctrl.AbsTop + ctrl.Height);
   end else begin
     //Remember which player it is by his server index
     //since order of players can change. If someone above leaves we still have the proper Id
-    PopUpMenu_Joiner.Tag := gNetworking.Room[fLocalToNetPlayers[ctrl.Tag]].IndexOnServer;
+    PopUpMenu_Joiner.Tag := gNetworking.Room[fLocalToSlot[ctrl.Tag]].IndexOnServer;
 
-    UpdateMuteMenuItem(PopUpMenu_Joiner, 0, gNetworking.IsMuted(fLocalToNetPlayers[ctrl.Tag]));
+    UpdateMuteMenuItem(PopUpMenu_Joiner, 0, gNetworking.IsMuted(fLocalToSlot[ctrl.Tag]));
     
     //Position the menu next to the icon, but do not overlap players name
     PopUpMenu_Joiner.ShowAt(ctrl.AbsLeft, ctrl.AbsTop + ctrl.Height);
@@ -1326,7 +1326,7 @@ end;
 procedure TKMMenuLobby.ToggleMutePlayer(aPlayerIndex: Integer);
 begin
   gNetworking.ToggleMuted(aPlayerIndex);
-  UpdateImageLobbyFlag(fNetPlayersToLocal[aPlayerIndex]);
+  UpdateImageLobbyFlag(fSlotToLocal[aPlayerIndex]);
 end;
 
 
@@ -1342,7 +1342,7 @@ end;
 procedure TKMMenuLobby.UpdateImageLobbyFlag(aIndex: Integer);
 begin
   // Darken player flag when muted
-  if (fLocalToNetPlayers[aIndex] <> -1) and gNetworking.IsMuted(fLocalToNetPlayers[aIndex]) then
+  if (fLocalToSlot[aIndex] <> -1) and gNetworking.IsMuted(fLocalToSlot[aIndex]) then
     Image_Flag[aIndex].Lightness := -0.66
   else
     Image_Flag[aIndex].Lightness := 0;
@@ -1427,7 +1427,7 @@ begin
       end;
 
       RowChanged := False;
-      NetI := fLocalToNetPlayers[J];
+      NetI := fLocalToSlot[J];
       if (NetI = -1) or not gNetworking.Room[NetI].IsHuman then
       begin
         if DropBox_PlayerSlot[J].ItemIndex <> Y then //Do not count this slot as changed, if it already has same AI value
@@ -1464,7 +1464,7 @@ begin
       ResetDropColorRandom(I)
     else
     begin
-      ID := fLocalToNetPlayers[I];
+      ID := fLocalToSlot[I];
       case gNetworking.SelectGameKind of
         ngkMap:   color := gNetworking.MapInfo.FlagColors[DropBox_Loc[I].GetSelectedTag - 1];
         ngkSave:  color := gNetworking.SaveInfo.GameInfo.Color[DropBox_Loc[I].GetSelectedTag - 1];
@@ -1525,7 +1525,7 @@ var
 begin
   for I := 1 to MAX_LOBBY_SLOTS do
   begin
-    netI := fLocalToNetPlayers[I];
+    netI := fLocalToSlot[I];
     //Starting location
     if (Sender = DropBox_Loc[I]) and DropBox_Loc[I].Enabled then
     begin
@@ -1631,7 +1631,7 @@ procedure TKMMenuLobby.Lobby_OnPlayersSetup;
 
   procedure AddLocation(LocationName: UnicodeString; aIndex, aLocation: Integer);
   begin
-    if not gNetworking.CanTakeLocation(fLocalToNetPlayers[aIndex], aLocation, False) then
+    if not gNetworking.CanTakeLocation(fLocalToSlot[aIndex], aLocation, False) then
       LocationName := '[$707070]' + LocationName + '[]';
     DropBox_Loc[aIndex].Add(LocationName, aLocation);
   end;
@@ -1686,7 +1686,7 @@ begin
 
   firstUnused := True;
   for I := 1 to MAX_LOBBY_SLOTS do
-    if fLocalToNetPlayers[I] = -1 then
+    if fLocalToSlot[I] = -1 then
     begin
       //This player is unused
       Label_Player[I].Caption := '';
@@ -1740,7 +1740,7 @@ begin
     else
     begin
       //This slot is used
-      curSlot := gNetworking.Room[fLocalToNetPlayers[I]];
+      curSlot := gNetworking.Room[fLocalToSlot[I]];
 
       DropBox_Team[I].Visible := not curSlot.IsSpectator; // Spectators don't get a team
       DropBox_Loc[I].Show;
@@ -1868,7 +1868,7 @@ begin
       else
         Image_Ready[I].TexID := ImgReadyToStart(curSlot);
 
-      myNik := (fLocalToNetPlayers[I] = gNetworking.MyIndex); //Our index
+      myNik := (fLocalToSlot[I] = gNetworking.MySlotIndex); //Our index
       //We are allowed to edit if it is our nickname and we are set as NOT ready,
       //or we are the host and this player is an AI
       canEdit := (myNik and (gNetworking.IsHost or not gNetworking.Room.HostDoesSetup) and
@@ -2007,11 +2007,11 @@ var
   I: Integer;
 begin
   for I := 1 to MAX_LOBBY_SLOTS do
-    if (gNetworking.Connected) and (fLocalToNetPlayers[I] <> -1) and
-       (gNetworking.Room[fLocalToNetPlayers[I]].IsHuman) then
+    if (gNetworking.Connected) and (fLocalToSlot[I] <> -1) and
+       (gNetworking.Room[fLocalToSlot[I]].IsHuman) then
     begin
-      Label_Ping[I].Caption := IntToStr(gNetworking.Room[fLocalToNetPlayers[I]].GetInstantPing);
-      Label_Ping[I].FontColor := GetPingColor(gNetworking.Room[fLocalToNetPlayers[I]].GetInstantPing);
+      Label_Ping[I].Caption := IntToStr(gNetworking.Room[fLocalToSlot[I]].GetInstantPing);
+      Label_Ping[I].FontColor := GetPingColor(gNetworking.Room[fLocalToSlot[I]].GetInstantPing);
     end
     else
       Label_Ping[I].Caption := '';
@@ -2122,7 +2122,7 @@ var
   I: Integer;
   canEdit: Boolean;
 begin
-  I := gNetworking.MyIndex;
+  I := gNetworking.MySlotIndex;
 
   canEdit := ((gNetworking.IsHost or not gNetworking.Room.HostDoesSetup) and
               (gNetworking.IsHost or not gNetworking.Room[I].ReadyToStart));
@@ -2132,7 +2132,7 @@ begin
     gNetworking.SelectHand(aValue + 1, I);
     //Host with HostDoesSetup could have given us some location we don't know about from a map/save we don't have
     if gNetworking.SelectGameKind <> ngkNone then
-      DropBox_Loc[fNetPlayersToLocal[I]].SelectByTag(gNetworking.Room[I].StartLocation);
+      DropBox_Loc[fSlotToLocal[I]].SelectByTag(gNetworking.Room[I].StartLocation);
   end;
 end;
 
@@ -2525,7 +2525,7 @@ begin
   si := gNetworking.SaveInfo;
 
   if si.IsValid
-  and (gNetworking.MyIndex > 0)
+  and (gNetworking.MySlotIndex > 0)
   and si.LoadMinimap(fMinimap, gNetworking.MyRoomSlot.StartLocation) then
     MinimapView.Show
   else
@@ -2875,7 +2875,7 @@ procedure TKMMenuLobby.Lobby_OnPlayerFileTransferProgress(aNetPlayerIndex: Integ
 var
   row: Integer;
 begin
-  row := fNetPlayersToLocal[aNetPlayerIndex];
+  row := fSlotToLocal[aNetPlayerIndex];
   if (aProgress >= aTotal) or (aTotal = 0) then
   begin
     PercentBar_DownloadProgress[row].Position := 0;

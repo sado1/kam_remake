@@ -243,10 +243,10 @@ begin
   if not fCommandIssued[tick] then
   begin
     // Clear old data (it was kept in case it was required for resync)
-    fSchedule[tick, gNetworking.MyIndex].Clear;
+    fSchedule[tick, gNetworking.MySlotIndex].Clear;
     fCommandIssued[tick] := True;
   end;
-  fSchedule[tick, gNetworking.MyIndex].Add(aCommand);
+  fSchedule[tick, gNetworking.MySlotIndex].Add(aCommand);
 //  gLog.AddTime(Format('Scheduled cmd Tick: %d, CMD_TYPE = %s',
 //                      [Tick, GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aCommand.CommandType))]));
 end;
@@ -295,7 +295,7 @@ begin
     // Target Tick in 1..n range
     sendStream.Write(aTick);
     // Write all commands to the stream
-    fSchedule[aTick mod MAX_SCHEDULE, gNetworking.MyIndex].Save(sendStream);
+    fSchedule[aTick mod MAX_SCHEDULE, gNetworking.MySlotIndex].Save(sendStream);
 
     gNetworking.SendCommands(sendStream, aPlayerIndex); //Send to all players by default
   finally
@@ -329,7 +329,7 @@ begin
   begin
     if OurCheck <> PlayerCheck[aPlayerIndex] then
     begin
-      myData.PlayerIndex := gNetworking.MyIndex;
+      myData.PlayerIndex := gNetworking.MySlotIndex;
       myData.HandID      := gNetworking.MyRoomSlot.HandIndex;
       myData.Nickname    := gNetworking.MyRoomSlot.Nickname;
       myData.Check       := OurCheck;
@@ -502,14 +502,14 @@ begin
     begin
       if not fCommandIssued[I mod MAX_SCHEDULE] then
         // No one has used it since last time through the ring buffer
-        fSchedule[I mod MAX_SCHEDULE, gNetworking.MyIndex].Clear;
+        fSchedule[I mod MAX_SCHEDULE, gNetworking.MySlotIndex].Clear;
       fCommandIssued[I mod MAX_SCHEDULE] := False; //Make it as requiring clearing next time around
 
       fLastSentCmdsTick := I;
       SendCommands(I);
 //      gLog.AddTime(Format('fDelay = %d; Send Commands for Tick = %d', [fDelay, I]));
       fSent[I mod MAX_SCHEDULE] := True;
-      fRecievedData[I mod MAX_SCHEDULE, gNetworking.MyIndex] := True; //Recieved commands from self
+      fRecievedData[I mod MAX_SCHEDULE, gNetworking.MySlotIndex] := True; //Recieved commands from self
     end;
 end;
 

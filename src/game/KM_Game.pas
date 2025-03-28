@@ -970,7 +970,7 @@ const
       else
         playersInfo := playersInfo + sLineBreak + Format('netI: %d P: %s is spectator', [I, gNetworking.Room[I].NicknameU]);
 
-    gLog.AddTime('NetPlayersInfo: cnt = ' + IntToStr(gNetworking.Room.Count) + playersInfo);
+    gLog.AddTime('NetRoom: cnt = ' + IntToStr(gNetworking.Room.Count) + playersInfo);
   end;
 
   procedure DisableUnusedHandsGoals;
