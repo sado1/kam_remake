@@ -205,7 +205,6 @@ type
     procedure AskToSendCrashreport(aOtherPlayerIndex: Integer; aErrorStr: UnicodeString);
 
     //Common
-    procedure ConsoleCommand(const aText: UnicodeString);
     procedure PostMessage(aTextID: Integer; aSound: TKMChatSound; const aText1: UnicodeString = ''; const aText2: UnicodeString = '';
                           aRecipient: TKMNetHandleIndex = NET_ADDRESS_ALL; aTextID2: Integer = -1);
     procedure PostChat(const aText: UnicodeString; aMode: TKMChatMode; aRecipientServerIndex: TKMNetHandleIndex = NET_ADDRESS_OTHERS); overload;
@@ -1129,52 +1128,6 @@ procedure TKMNetworking.VoteReturnToLobby;
 begin
   //Even if we are the host we still send our vote through the network, that's simpler
   PacketSend(NET_ADDRESS_HOST, mkVote);
-end;
-
-
-procedure TKMNetworking.ConsoleCommand(const aText: UnicodeString);
-{var
-  s,PlayerID: Integer;
-  ConsoleCmd: UnicodeString;}
-begin
-  {PostLocalMessage('[$808080]' + aText + '[]');
-  s := PosEx(' ', aText);
-  if s = 0 then s := Length(aText) + 1;
-
-  ConsoleCmd := LowerCase(LeftStr(aText, s-1));
-
-  if ConsoleCmd = '/kick' then
-  begin
-    if not IsHost then
-    begin
-      PostLocalMessage('Only the host can kick players', False);
-      Exit;
-    end;
-    if (Length(aText) >= s+1) and TryStrToInt(aText[s+1], PlayerID)
-    and InRange(PlayerID, 1, fNetPlayers.Count) then
-    begin
-      if fNetPlayers[PlayerID].IsHuman
-      and (PlayerID <> MyIndex) then
-        KickPlayer(PlayerID)
-      else
-        PostLocalMessage('You cannot kick yourself or AI players', False);
-    end
-    else
-      PostLocalMessage('Invalid syntax. Type /help for more info', False);
-  end
-  else
-  if ConsoleCmd = '/help' then
-    PostLocalMessage('The following console commands are available:|' +
-                     '    /kick <Player ID> - Kicks a player from the lobby|' +
-                   //'    /ban <Player ID> - Kicks and bans a player from the lobby|'+
-                   //'    /newhost <Player ID> - Changes the host player|'+
-                     '    /help - Displays this page|' +
-                     'Player IDs:|' +
-                     fNetPlayers.GetPlayersWithIDs, False)
-  else
-  begin
-    PostLocalMessage('Unknown console command "' + aText + '". Type /help for more info', False);
-  end;}
 end;
 
 

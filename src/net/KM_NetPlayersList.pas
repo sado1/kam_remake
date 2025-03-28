@@ -145,7 +145,6 @@ type
     //Import/Export
     procedure SaveToStream(aStream: TKMemoryStream); //Gets all relevant information as text string
     procedure LoadFromStream(aStream: TKMemoryStream); //Sets all relevant information
-    function GetPlayersWithIDs: UnicodeString;
   end;
 
 
@@ -1709,20 +1708,6 @@ begin
   aStream.Read(fCount);
   for I := 1 to fCount do
     fNetPlayers[I].Load(aStream);
-end;
-
-
-function TKMNetPlayersList.GetPlayersWithIDs: UnicodeString;
-var
-  I: Integer;
-begin
-  Result := '';
-  for I := 1 to fCount do
-  begin
-    Result := Result + '   ' + IntToStr(I) + ': ' + fNetPlayers[I].NicknameU;
-    if I < fCount then
-      Result := Result + '|';
-  end;
 end;
 
 
