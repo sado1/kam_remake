@@ -10,8 +10,7 @@ const
   PING_COUNT = 20; //Number of pings to store and take the maximum over for latency calculation (pings are measured once per second)
 
 type
-  //Multiplayer info that is filled in Lobby before TKMPlayers are created (thats why it has many mirror fields)
-  //@Rey: This class can actually be renamed to TKMLobbySlot
+  // Multiplayer info that is filled in before Hands are created (thats why it has many mirror fields)
   TKMNetPlayerInfo = class
   private
     fNickname: AnsiString;
@@ -74,9 +73,8 @@ type
   end;
 
 
-  //Handles everything related to players list,
-  //but knows nothing about networking nor game setup. Only players.
-  //@Rey: This class can actually be renamed to TKMLobbySlots
+  // Handles everything related to players list in the room,
+  // but knows nothing about networking nor game setup. Only players.
   TKMNetPlayersList = class
   private
     fCount: Integer;
