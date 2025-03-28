@@ -1920,9 +1920,9 @@ begin
   for I := 0 to MAX_HANDS - 1 do
     handIdToNetPlayersId[I] := -1;
 
-  for I := 1 to gNetworking.NetPlayers.Count do
-    if not gNetworking.NetPlayers[I].IsSpectator then
-      handIdToNetPlayersId[gNetworking.NetPlayers[I].HandIndex] := I;
+  for I := 1 to gNetworking.Room.Count do
+    if not gNetworking.Room[I].IsSpectator then
+      handIdToNetPlayersId[gNetworking.Room[I].HandIndex] := I;
 
   teams := gHands.Teams;
 
@@ -1936,8 +1936,8 @@ begin
       end;
 
   // Spectators
-  for I := 1 to gNetworking.NetPlayers.Count do
-    if gNetworking.NetPlayers[I].IsSpectator then
+  for I := 1 to gNetworking.Room.Count do
+    if gNetworking.Room[I].IsSpectator then
     begin
       fLineIdToNetPlayerId[K] := I;
       Inc(K);
@@ -2846,10 +2846,10 @@ begin
     waitPlayersMsg := '';
     waitDCPlayersMsg := '';
     for I := Low(aPlayers) to High(aPlayers) do
-      if not gNetworking.NetPlayers[aPlayers[I]].Dropped then
-        waitPlayersMsg := waitPlayersMsg + gNetworking.NetPlayers[aPlayers[I]].NicknameU + IfThen(I <> High(aPlayers), ', ')
+      if not gNetworking.Room[aPlayers[I]].Dropped then
+        waitPlayersMsg := waitPlayersMsg + gNetworking.Room[aPlayers[I]].NicknameU + IfThen(I <> High(aPlayers), ', ')
       else
-        waitDCPlayersMsg := waitDCPlayersMsg + gNetworking.NetPlayers[aPlayers[I]].NicknameU + IfThen(I <> High(aPlayers), ', ');
+        waitDCPlayersMsg := waitDCPlayersMsg + gNetworking.Room[aPlayers[I]].NicknameU + IfThen(I <> High(aPlayers), ', ');
 
     if waitPlayersMsg <> '' then
       waitPlayersMsg := gResTexts[TX_MULTIPLAYER_WAITING] + ' ' + waitPlayersMsg;
@@ -3218,7 +3218,7 @@ begin
   Image_AlliesHostStar.Hide;
   // Can't vote if we already have, and spectators don't get to vote unless there's only spectators left
   Button_Menu_ReturnLobby.Enabled := not gNetworking.MyRoomSlot.VotedYes
-                                     and (gNetworking.NetPlayers.HasOnlySpectators
+                                     and (gNetworking.Room.HasOnlySpectators
                                           or not gNetworking.MyRoomSlot.IsSpectator);
 
   UpdateNetPlayersMapping;
@@ -3239,11 +3239,11 @@ begin
     if netI = -1 then Continue; //In case we have AI players at hand, without NetI
 
     // Show players locale flag
-    if gNetworking.NetPlayers[netI].IsComputer then
-      Image_AlliesFlag[I].TexID := GetAIPlayerIcon(gNetworking.NetPlayers[netI].PlayerNetType)
+    if gNetworking.Room[netI].IsComputer then
+      Image_AlliesFlag[I].TexID := GetAIPlayerIcon(gNetworking.Room[netI].PlayerNetType)
     else
     begin
-      localeID := gResLocales.IndexByCode(gNetworking.NetPlayers[netI].LangCode);
+      localeID := gResLocales.IndexByCode(gNetworking.Room[netI].LangCode);
       if localeID <> -1 then
         Image_AlliesFlag[I].TexID := gResLocales[localeID].FlagSpriteID
       else
@@ -3256,34 +3256,34 @@ begin
       Image_AlliesHostStar.Top := 80 + (I mod ALLIES_ROWS)*20;
     end;
 
-    if gNetworking.NetPlayers[netI].IsHuman then
-      Label_AlliesPlayer[I].Caption := gNetworking.NetPlayers[netI].NicknameU
+    if gNetworking.Room[netI].IsHuman then
+      Label_AlliesPlayer[I].Caption := gNetworking.Room[netI].NicknameU
     else
-      Label_AlliesPlayer[I].Caption := gHands[gNetworking.NetPlayers[netI].HandIndex].OwnerName;
+      Label_AlliesPlayer[I].Caption := gHands[gNetworking.Room[netI].HandIndex].OwnerName;
 
     if (gNetworking.MyIndex <> netI)                // If not my player
-      and gNetworking.NetPlayers[netI].IsHuman then // and is not Computer
+      and gNetworking.Room[netI].IsHuman then // and is not Computer
     begin
       Update_Image_AlliesMute(Image_AlliesMute[I]);
       Image_AlliesMute[I].DoSetVisible; //Do not use .Show here, because we do not want change Parent.Visible status from here
     end;
 
-    if gNetworking.NetPlayers[netI].IsSpectator then
+    if gNetworking.Room[netI].IsSpectator then
     begin
-      Label_AlliesPlayer[I].FontColor := gNetworking.NetPlayers[netI].FlagColorDef;
+      Label_AlliesPlayer[I].FontColor := gNetworking.Room[netI].FlagColorDef;
       DropBox_AlliesTeam[I].ItemIndex := 0;
       Label_AlliesTeam[I].Caption := gResTexts[TX_LOBBY_SPECTATOR];
     end
     else
     begin
-      Label_AlliesPlayer[I].FontColor := gHands[gNetworking.NetPlayers[netI].HandIndex].FlagColor;
-      DropBox_AlliesTeam[I].ItemIndex := gNetworking.NetPlayers[netI].Team;
-      if gNetworking.NetPlayers[netI].Team = 0 then
+      Label_AlliesPlayer[I].FontColor := gHands[gNetworking.Room[netI].HandIndex].FlagColor;
+      DropBox_AlliesTeam[I].ItemIndex := gNetworking.Room[netI].Team;
+      if gNetworking.Room[netI].Team = 0 then
         Label_AlliesTeam[I].Caption := '-'
       else
-        Label_AlliesTeam[I].Caption := IntToStr(gNetworking.NetPlayers[netI].Team);
+        Label_AlliesTeam[I].Caption := IntToStr(gNetworking.Room[netI].Team);
 
-      case gHands[gNetworking.NetPlayers[netI].HandIndex].AI.WonOrLost of
+      case gHands[gNetworking.Room[netI].HandIndex].AI.WonOrLost of
         wolNone: Image_AlliesWinLoss[I].Hide;
         wolWon:  begin
                     Image_AlliesWinLoss[I].TexId := 8;
@@ -3298,16 +3298,16 @@ begin
       end;
     end;
     // Strikethrough for disconnected players
-    Image_AlliesMute[I].Enabled := not gNetworking.NetPlayers[netI].Dropped;
-    if gNetworking.NetPlayers[netI].Dropped then
+    Image_AlliesMute[I].Enabled := not gNetworking.Room[netI].Dropped;
+    if gNetworking.Room[netI].Dropped then
       Image_AlliesMute[I].Hint := '';
-    Image_AlliesFlag[I].Enabled := not gNetworking.NetPlayers[netI].Dropped;
-    Label_AlliesPlayer[I].Strikethrough := gNetworking.NetPlayers[netI].Dropped;
+    Image_AlliesFlag[I].Enabled := not gNetworking.Room[netI].Dropped;
+    Label_AlliesPlayer[I].Strikethrough := gNetworking.Room[netI].Dropped;
     // Do not strike throught '-' symbol, when player has no team
-    Label_AlliesTeam[I].Strikethrough := gNetworking.NetPlayers[netI].Dropped
-                                         and (gNetworking.NetPlayers[netI].Team <> 0);
-    Label_AlliesPing[I].Strikethrough := gNetworking.NetPlayers[netI].Dropped;
-    Label_AlliesFPS[I].Strikethrough := gNetworking.NetPlayers[netI].Dropped;
+    Label_AlliesTeam[I].Strikethrough := gNetworking.Room[netI].Dropped
+                                         and (gNetworking.Room[netI].Team <> 0);
+    Label_AlliesPing[I].Strikethrough := gNetworking.Room[netI].Dropped;
+    Label_AlliesFPS[I].Strikethrough := gNetworking.Room[netI].Dropped;
     DropBox_AlliesTeam[I].Enabled := (netI = gNetworking.MyIndex); // Our index
     DropBox_AlliesTeam[I].Hide; // Use label for demos until we fix exploits
 
@@ -3333,10 +3333,10 @@ begin
 
     if netI = -1 then Continue; //In case we have AI players at hand, without NetI
 
-    if (I < gNetworking.NetPlayers.Count) and (gNetworking.NetPlayers[netI].IsHuman) then
+    if (I < gNetworking.Room.Count) and (gNetworking.Room[netI].IsHuman) then
     begin
-      ping := gNetworking.NetPlayers[netI].GetInstantPing;
-      fps := gNetworking.NetPlayers[netI].FPS;
+      ping := gNetworking.Room[netI].GetInstantPing;
+      fps := gNetworking.Room[netI].FPS;
       Label_AlliesPing[I].Caption := WrapColor(IntToStr(ping), GetPingColor(ping));
       Label_AlliesPingFpsSlash[I].Caption := '/';
       Label_AlliesFPS[I].Caption := WrapColor(IntToStr(fps), GetFPSColor(fps));

@@ -197,7 +197,7 @@ end;
 
 function TKMGUIGameChat.DoPost: Boolean;
 var
-  netI: Integer;
+  indexInRoom: Integer;
 begin
   Result := False;
   if not gGameApp.Chat.IsPostAllowed then
@@ -207,16 +207,16 @@ begin
   begin
     if gGameApp.Chat.Mode = cmWhisper then
     begin
-      netI := gNetworking.NetPlayers.ServerToLocal(gGameApp.Chat.WhisperRecipient);
+      indexInRoom := gNetworking.Room.ServerToLocal(gGameApp.Chat.WhisperRecipient);
 
       // Do not allow to whisper to disconnected player
-      if netI = -1 then Exit;
+      if indexInRoom = -1 then Exit;
       
-      if not gNetworking.NetPlayers[netI].Connected
-        or gNetworking.NetPlayers[netI].Dropped then
+      if not gNetworking.Room[indexInRoom].Connected
+      or gNetworking.Room[indexInRoom].Dropped then
       begin
         gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_CHAT_PLAYER_NOT_CONNECTED_ANYMORE],
-                                            [gNetworking.NetPlayers[netI].NicknameColored]),
+                                            [gNetworking.Room[indexInRoom].NicknameColored]),
                                      csSystem);
         Chat_MenuSelect(CHAT_MENU_ALL);
       end else
@@ -295,7 +295,7 @@ procedure TKMGUIGameChat.Chat_MenuSelect(aItemTag: TKMNetHandleIndex);
   end;
 
 var
-  netI: Integer;
+  indexInRoom: Integer;
 begin
   case aItemTag of
     CHAT_MENU_ALL:        begin //All
@@ -315,21 +315,21 @@ begin
                             Edit_ChatMsg.DrawOutline := True;
                             Edit_ChatMsg.OutlineColor := $FF66FF66;
                           end;
-    else  begin //Whisper to player
-            netI := gNetworking.NetPlayers.ServerToLocal(aItemTag);
-            if netI <> -1 then
-            begin
-              gGameApp.Chat.Mode := cmWhisper;
-              Edit_ChatMsg.DrawOutline := True;
-              Edit_ChatMsg.OutlineColor := $FF00B9FF;
-              with gNetworking.NetPlayers[netI] do
-              begin
-                gGameApp.Chat.WhisperRecipient := aItemTag;
-                UpdateButtonCaption(NicknameU, IfThen(IsColorSet, FlagColorToTextColor(FlagColor), 0));
-              end;
-            end;
-          end;
+  else
+    // Whisper to player
+    indexInRoom := gNetworking.Room.ServerToLocal(aItemTag);
+    if indexInRoom <> -1 then
+    begin
+      gGameApp.Chat.Mode := cmWhisper;
+      Edit_ChatMsg.DrawOutline := True;
+      Edit_ChatMsg.OutlineColor := $FF00B9FF;
+      with gNetworking.Room[indexInRoom] do
+      begin
+        gGameApp.Chat.WhisperRecipient := aItemTag;
+        UpdateButtonCaption(NicknameU, IfThen(IsColorSet, FlagColorToTextColor(FlagColor), 0));
+      end;
     end;
+  end;
 end;
 
 
@@ -366,10 +366,10 @@ begin
     Menu_Chat.AddItem('[$66FF66]' + gResTexts[TX_CHAT_SPECTATORS], CHAT_MENU_SPECTATORS);
 
   //Fill
-  for I := 1 to gNetworking.NetPlayers.Count do
+  for I := 1 to gNetworking.Room.Count do
   if I <> gNetworking.MyIndex then //Can't whisper to self
   begin
-    slot := gNetworking.NetPlayers[I];
+    slot := gNetworking.Room[I];
 
     if slot.IsHuman and slot.Connected and not slot.Dropped then
       Menu_Chat.AddItem(slot.NicknameColoredU, slot.IndexOnServer);

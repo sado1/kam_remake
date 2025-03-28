@@ -600,9 +600,9 @@ begin
                 gNetworking.ResetPacketsStats;
                 fParams.DynamicFOW := gNetworking.NetGameFilter.DynamicFOW;
                 FillChar(playerEnabled, SizeOf(playerEnabled), #0);
-                for I := 1 to gNetworking.NetPlayers.Count do
-                  if not gNetworking.NetPlayers[I].IsSpectator then
-                    playerEnabled[gNetworking.NetPlayers[I].HandIndex] := True;
+                for I := 1 to gNetworking.Room.Count do
+                  if not gNetworking.Room[I].IsSpectator then
+                    playerEnabled[gNetworking.Room[I].HandIndex] := True;
 
                 // Fixed AIs are always enabled (e.g. coop missions)
                 for I := 0 to gNetworking.MapInfo.LocCount - 1 do
@@ -924,17 +924,17 @@ const
     playerNickname: AnsiString;
   begin
     playersInfo := '';
-    // Assign existing NetPlayers(1..N) to map players(0..N-1)
-    for I := 1 to gNetworking.NetPlayers.Count do
-      if not gNetworking.NetPlayers[I].IsSpectator then
+    // Assign existing Players from the Room(1..N) to map players(0..N-1)
+    for I := 1 to gNetworking.Room.Count do
+      if not gNetworking.Room[I].IsSpectator then
       begin
-        handIndex := gNetworking.NetPlayers[I].HandIndex;
-        gHands[handIndex].FlagColor := gNetworking.NetPlayers[I].FlagColor;
+        handIndex := gNetworking.Room[I].HandIndex;
+        gHands[handIndex].FlagColor := gNetworking.Room[I].FlagColor;
         // Store Team in the hand info
         // We will need to save hand team into save file,
         // to be able to restore team of this hand in the lobby
         // (and there is no network team info, f.e. after disconnection or new player joined the lobby as a replacement)
-        gHands[handIndex].Team := gNetworking.NetPlayers[I].Team;
+        gHands[handIndex].Team := gNetworking.Room[I].Team;
 
         // In saves players can be changed to AIs, which needs to be stored in the replay
         // Also one player could replace another, we have to update its player name
@@ -943,34 +943,34 @@ const
           // No need to send this command by every player
           if gNetworking.IsHost then
           begin
-            if gNetworking.NetPlayers[I].IsHuman then
-              playerNickname := gNetworking.NetPlayers[I].Nickname
+            if gNetworking.Room[I].IsHuman then
+              playerNickname := gNetworking.Room[I].Nickname
             else
               playerNickname := '';
 
             // Command execution will update player, same way as it will be updated in the replay
-            fGameInputProcess.CmdPlayerChanged(handIndex, playerNickname, gNetworking.NetPlayers[I].GetPlayerType,
-                                              NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
+            fGameInputProcess.CmdPlayerChanged(handIndex, playerNickname, gNetworking.Room[I].GetPlayerType,
+                                              NETPLAYERTYPE_TO_AITYPE[gNetworking.Room[I].PlayerNetType]);
           end;
         end
         else
-          gHands.UpdateHandState(handIndex, gNetworking.NetPlayers[I].GetPlayerType, NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
+          gHands.UpdateHandState(handIndex, gNetworking.Room[I].GetPlayerType, NETPLAYERTYPE_TO_AITYPE[gNetworking.Room[I].PlayerNetType]);
 
         // Update player nickname to show in the list for specs, in the stats etc
-        gHands[handIndex].OwnerNickname := gNetworking.NetPlayers[I].Nickname;
+        gHands[handIndex].OwnerNickname := gNetworking.Room[I].Nickname;
 
         playersInfo := playersInfo + sLineBreak +
                        Format('netI: %d P: %s hand: %d',
-                              [I, gHands[handIndex].GetHandOwnerName(gNetworking.NetPlayers[I].IsHuman,
-                                                                     gNetworking.NetPlayers[I].IsAdvancedComputer,
+                              [I, gHands[handIndex].GetHandOwnerName(gNetworking.Room[I].IsHuman,
+                                                                     gNetworking.Room[I].IsAdvancedComputer,
                                                                      True,
                                                                      False),
                                handIndex]);
       end
       else
-        playersInfo := playersInfo + sLineBreak + Format('netI: %d P: %s is spectator', [I, gNetworking.NetPlayers[I].NicknameU]);
+        playersInfo := playersInfo + sLineBreak + Format('netI: %d P: %s is spectator', [I, gNetworking.Room[I].NicknameU]);
 
-    gLog.AddTime('NetPlayersInfo: cnt = ' + IntToStr(gNetworking.NetPlayers.Count) + playersInfo);
+    gLog.AddTime('NetPlayersInfo: cnt = ' + IntToStr(gNetworking.Room.Count) + playersInfo);
   end;
 
   procedure DisableUnusedHandsGoals;
@@ -983,7 +983,7 @@ const
     begin
       if gHands[I].Enabled and gHands[I].IsHuman then
       begin
-        if gNetworking.NetPlayers.PlayerIndexToLocal(I) = -1 then
+        if gNetworking.Room.PlayerIndexToLocal(I) = -1 then
           gHands.UpdateGoalsForHand(I, False);
       end;
     end;
@@ -1037,19 +1037,19 @@ var
   playerI: TKMHand;
   playerK: Integer;
 begin
-  for I := 1 to gNetworking.NetPlayers.Count do
-    if not gNetworking.NetPlayers[I].IsSpectator then
+  for I := 1 to gNetworking.Room.Count do
+    if not gNetworking.Room[I].IsSpectator then
     begin
-      playerI := gHands[gNetworking.NetPlayers[I].HandIndex];
-      for K := 1 to gNetworking.NetPlayers.Count do
-        if not gNetworking.NetPlayers[K].IsSpectator then
+      playerI := gHands[gNetworking.Room[I].HandIndex];
+      for K := 1 to gNetworking.Room.Count do
+        if not gNetworking.Room[K].IsSpectator then
         begin
-          playerK := gNetworking.NetPlayers[K].HandIndex;
+          playerK := gNetworking.Room[K].HandIndex;
 
           // Players are allies if they belong to same team (team 0 means free-for-all)
           if (I = K)
-          or ((gNetworking.NetPlayers[I].Team <> 0)
-          and (gNetworking.NetPlayers[I].Team = gNetworking.NetPlayers[K].Team)) then
+          or ((gNetworking.Room[I].Team <> 0)
+          and (gNetworking.Room[I].Team = gNetworking.Room[K].Team)) then
             playerI.Alliances[playerK] := atAlly
           else
             playerI.Alliances[playerK] := atEnemy;
@@ -1105,22 +1105,22 @@ end;
 function TKMGame.GetActiveHandIDs: TKMByteSet;
 var
   I: Integer;
-  netSlot: TKMNetRoomSlot;
+  roomSlot: TKMNetRoomSlot;
 begin
   Result := [];
   if fParams.IsMultiPlayerOrSpec then
   begin
-    for I := 1 to gNetworking.NetPlayers.Count do
+    for I := 1 to gNetworking.Room.Count do
     begin
-      netSlot := gNetworking.NetPlayers[I];
-      if not netSlot.IsHuman
-      or netSlot.IsSpectator
-      or not netSlot.Connected
-      or (netSlot.HandIndex = -1)
-      or not gHands[netSlot.HandIndex].Enabled then
+      roomSlot := gNetworking.Room[I];
+      if not roomSlot.IsHuman
+      or roomSlot.IsSpectator
+      or not roomSlot.Connected
+      or (roomSlot.HandIndex = -1)
+      or not gHands[roomSlot.HandIndex].Enabled then
         Continue;
 
-      Include(Result, netSlot.HandIndex);
+      Include(Result, roomSlot.HandIndex);
     end;
   end
   else
@@ -1227,7 +1227,7 @@ procedure TKMGame.PlayerVictory(aHandIndex: TKMHandID);
 begin
   if fParams.IsMultiPlayerOrSpec then
   begin
-    if gNetworking.NetPlayers.PlayerIndexToLocal(aHandIndex) = -1 then
+    if gNetworking.Room.PlayerIndexToLocal(aHandIndex) = -1 then
       Exit;
 
     gNetworking.PostLocalMessage(
@@ -1327,7 +1327,7 @@ begin
         Result := TKMGameInputProcess_Multi(fGameInputProcess).GetWaitingPlayers(fParams.Tick + 1);
     lgsLoading:
         // We are waiting during inital loading
-        Result := gNetworking.NetPlayers.GetNotReadyToPlayPlayers;
+        Result := gNetworking.Room.GetNotReadyToPlayPlayers;
     else  begin
             SetLength(Result, 0);
             errorMsg := 'GetWaitingPlayersList from wrong state: '
@@ -1693,21 +1693,20 @@ begin
   if Self = nil then Exit;
 
   if not fParams.IsMultiPlayerOrSpec
-    or (gHands = nil) // Game is not started yet
-    or (gHands.Count = 0) then Exit; // Game is not loaded yet
+  or (gHands = nil) // Game is not started yet
+  or (gHands.Count = 0) then
+    Exit; // Game is not loaded yet
 
   // Allow to speedup game if there is only 1 MP human connected to the game (player or spectator)
-  if gNetworking.NetPlayers.GetConnectedCount = 1 then
+  if gNetworking.Room.GetConnectedCount = 1 then
     Exit(True);
 
   for I := 0 to gHands.Count - 1 do
   begin
-    if    gHands[I].Enabled
-      and gHands[I].IsHuman
-      and not gHands[I].AI.HasLost then
+    if gHands[I].Enabled and gHands[I].IsHuman and not gHands[I].AI.HasLost then
     begin
       netI := gNetworking.GetRoomSlotIndex(I);
-      if (netI <> -1) and gNetworking.NetPlayers[netI].Connected then
+      if (netI <> -1) and gNetworking.Room[netI].Connected then
         Exit;
     end;
   end;
@@ -2123,17 +2122,17 @@ begin
       end
       else
       begin
-        netIndex := gNetworking.NetPlayers.PlayerIndexToLocal(I);
+        netIndex := gNetworking.Room.PlayerIndexToLocal(I);
         if netIndex <> -1 then
         begin
           gameInfo.Enabled[I] := True;
-          gameInfo.CanBeHuman[I] := gNetworking.NetPlayers[netIndex].IsHuman;
-          gameInfo.CanBeClassicAI[I] := gNetworking.NetPlayers[netIndex].IsClassicComputer;
-          gameInfo.CanBeAdvancedAI[I] := gNetworking.NetPlayers[netIndex].IsAdvancedComputer;
-          gameInfo.OwnerNickname[I] := gNetworking.NetPlayers[netIndex].Nickname;
-          gameInfo.HandTypes[I] := gNetworking.NetPlayers[netIndex].GetPlayerType;
-          gameInfo.Color[I] := gNetworking.NetPlayers[netIndex].FlagColor;
-          gameInfo.Team[I] := gNetworking.NetPlayers[netIndex].Team;
+          gameInfo.CanBeHuman[I] := gNetworking.Room[netIndex].IsHuman;
+          gameInfo.CanBeClassicAI[I] := gNetworking.Room[netIndex].IsClassicComputer;
+          gameInfo.CanBeAdvancedAI[I] := gNetworking.Room[netIndex].IsAdvancedComputer;
+          gameInfo.OwnerNickname[I] := gNetworking.Room[netIndex].Nickname;
+          gameInfo.HandTypes[I] := gNetworking.Room[netIndex].GetPlayerType;
+          gameInfo.Color[I] := gNetworking.Room[netIndex].FlagColor;
+          gameInfo.Team[I] := gNetworking.Room[netIndex].Team;
         end
         else
         begin
@@ -3124,7 +3123,7 @@ begin
       if fParams.IsMultiPlayerOrSpec and gNetworking.IsHost
         and ((fParams.IsNormalMission and (fParams.Tick = ANNOUNCE_BUILD_MAP))
         or (fParams.IsTactic and (fParams.Tick = ANNOUNCE_BATTLE_MAP))) then
-      gNetworking.ServerQuery.AnnounceGame(fParams.Name, fParams.MapFullCRC, gNetworking.NetPlayers.GetConnectedCount);
+      gNetworking.ServerQuery.AnnounceGame(fParams.Name, fParams.MapFullCRC, gNetworking.Room.GetConnectedCount);
 
       fScripting.UpdateState;
       gTerrain.UpdateState;

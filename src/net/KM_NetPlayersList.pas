@@ -75,7 +75,7 @@ type
 
   // Handles everything related to players list in the room,
   // but knows nothing about networking nor game setup. Only players.
-  TKMNetPlayersList = class
+  TKMNetRoom = class
   private
     fCount: Integer;
     fNetPlayers: array [1..MAX_LOBBY_SLOTS] of TKMNetRoomSlot;
@@ -394,8 +394,8 @@ begin
 end;
 
 
-{ TKMNetPlayersList }
-constructor TKMNetPlayersList.Create;
+{ TKMNetRoom }
+constructor TKMNetRoom.Create;
 var
   I: Integer;
 begin
@@ -408,7 +408,7 @@ begin
 end;
 
 
-destructor TKMNetPlayersList.Destroy;
+destructor TKMNetRoom.Destroy;
 var
   I: Integer;
 begin
@@ -419,7 +419,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.Clear;
+procedure TKMNetRoom.Clear;
 begin
   HostDoesSetup := False;
   RandomizeTeamLocations := False;
@@ -430,7 +430,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.GetRoomSlot(aIndex: Integer): TKMNetRoomSlot;
+function TKMNetRoom.GetRoomSlot(aIndex: Integer): TKMNetRoomSlot;
 begin
   if (Self = nil) or not InRange(aIndex, 1, MAX_LOBBY_SLOTS) then Exit(nil);
 
@@ -438,7 +438,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.ValidateColors(var aFixedLocsColors: TKMCardinalArray);
+procedure TKMNetRoom.ValidateColors(var aFixedLocsColors: TKMCardinalArray);
 
 var
   colorCount: Integer;
@@ -545,7 +545,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.RemAllClosedPlayers;
+procedure TKMNetRoom.RemAllClosedPlayers;
 var
   I: Integer;
 begin
@@ -555,7 +555,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.AddPlayer(const aNick: AnsiString; aServerIndex: TKMNetHandleIndex; const aLang: AnsiString; aAsSpectator: Boolean = False);
+procedure TKMNetRoom.AddPlayer(const aNick: AnsiString; aServerIndex: TKMNetHandleIndex; const aLang: AnsiString; aAsSpectator: Boolean = False);
 begin
   Assert(fCount <= MAX_LOBBY_SLOTS, 'Can''t add player');
   Inc(fCount);
@@ -582,7 +582,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.AddAIPlayer(aAdvancedAI: Boolean; aLocalIndex: Integer = -1);
+procedure TKMNetRoom.AddAIPlayer(aAdvancedAI: Boolean; aLocalIndex: Integer = -1);
 begin
   if aLocalIndex = -1 then
   begin
@@ -611,7 +611,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.AddClosedPlayer(aLocalIndex: Integer = -1);
+procedure TKMNetRoom.AddClosedPlayer(aLocalIndex: Integer = -1);
 begin
   if aLocalIndex = -1 then
   begin
@@ -638,7 +638,7 @@ end;
 
 
 //Set player to no longer be connected, but do not remove them from the game
-procedure TKMNetPlayersList.DisconnectPlayer(aServerIndex: TKMNetHandleIndex);
+procedure TKMNetRoom.DisconnectPlayer(aServerIndex: TKMNetHandleIndex);
 var
   localIndex: Integer;
 begin
@@ -648,7 +648,7 @@ begin
 end;
 
 //Mark all human players as disconnected (used when reconnecting if all clients were lost)
-procedure TKMNetPlayersList.DisconnectAllClients(const aOwnNickname: AnsiString);
+procedure TKMNetRoom.DisconnectAllClients(const aOwnNickname: AnsiString);
 var
   I: Integer;
 begin
@@ -659,7 +659,7 @@ end;
 
 
 //Set player to no longer be on the server, but do not remove their assets from the game
-procedure TKMNetPlayersList.DropPlayer(aServerIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer = LAST_SENT_COMMANDS_TICK_NONE);
+procedure TKMNetRoom.DropPlayer(aServerIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer = LAST_SENT_COMMANDS_TICK_NONE);
 var
   localIndex: Integer;
 begin
@@ -671,7 +671,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.RemPlayer(aLocalIndex: Integer);
+procedure TKMNetRoom.RemPlayer(aLocalIndex: Integer);
 var
   I: Integer;
 begin
@@ -684,7 +684,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.RemServerPlayer(aServerIndex: TKMNetHandleIndex);
+procedure TKMNetRoom.RemServerPlayer(aServerIndex: TKMNetHandleIndex);
 var
   localIndex: Integer;
 begin
@@ -694,7 +694,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.ServerToLocal(aServerIndex: TKMNetHandleIndex): Integer;
+function TKMNetRoom.ServerToLocal(aServerIndex: TKMNetHandleIndex): Integer;
 var
   I: Integer;
 begin
@@ -706,7 +706,7 @@ end;
 
 
 //Networking needs to convert Nickname to local index in players list
-function TKMNetPlayersList.NicknameToLocal(const aNickname: AnsiString): Integer;
+function TKMNetRoom.NicknameToLocal(const aNickname: AnsiString): Integer;
 var
   I: Integer;
 begin
@@ -718,7 +718,7 @@ end;
 
 
 //Convert known starting location to local index in players list
-function TKMNetPlayersList.StartingLocToLocal(aLoc: Integer): Integer;
+function TKMNetRoom.StartingLocToLocal(aLoc: Integer): Integer;
 var
   I: Integer;
 begin
@@ -729,7 +729,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.PlayerIndexToLocal(aHandIndex: TKMHandID): Integer;
+function TKMNetRoom.PlayerIndexToLocal(aHandIndex: TKMHandID): Integer;
 var
   I: Integer;
 begin
@@ -741,7 +741,7 @@ end;
 
 
 //See if player can join our game
-function TKMNetPlayersList.CheckCanJoin(const aNick: AnsiString; aServerIndex: TKMNetHandleIndex): Integer;
+function TKMNetRoom.CheckCanJoin(const aNick: AnsiString; aServerIndex: TKMNetHandleIndex): Integer;
 begin
   if fCount >= MAX_LOBBY_SLOTS then
     Result := TX_NET_ROOM_FULL
@@ -762,7 +762,7 @@ end;
 
 
 //See if player can join our game
-function TKMNetPlayersList.CheckCanReconnect(aLocalIndex: Integer): Integer;
+function TKMNetRoom.CheckCanReconnect(aLocalIndex: Integer): Integer;
 begin
   if aLocalIndex = -1 then
     Result := -2 //Silent failure, client should try again
@@ -777,7 +777,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.LocAvailable(aLoc: Integer): Boolean;
+function TKMNetRoom.LocAvailable(aLoc: Integer): Boolean;
 var
   I: Integer;
 begin
@@ -789,7 +789,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.ColorAvailable(aColor: Cardinal): Boolean;
+function TKMNetRoom.ColorAvailable(aColor: Cardinal): Boolean;
 var
   I: Integer;
 begin
@@ -801,7 +801,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.AllReady: Boolean;
+function TKMNetRoom.AllReady: Boolean;
 var
   I: Integer;
 begin
@@ -812,7 +812,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.AllReadyToPlay: Boolean;
+function TKMNetRoom.AllReadyToPlay: Boolean;
 var
   I: Integer;
 begin
@@ -823,7 +823,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.AllReadyToReturnToLobby: Boolean;
+function TKMNetRoom.AllReadyToReturnToLobby: Boolean;
 var
   I: Integer;
 begin
@@ -834,7 +834,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.GetMaxHighestRoundTripLatency: Word;
+function TKMNetRoom.GetMaxHighestRoundTripLatency: Word;
 var
   I: Integer;
   worstPing1, worstPing2, newPing: Word;
@@ -856,7 +856,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.GetNotReadyToPlayPlayers: TKMByteArray;
+function TKMNetRoom.GetNotReadyToPlayPlayers: TKMByteArray;
 var
   I, K: Integer;
 begin
@@ -874,13 +874,13 @@ begin
 end;
 
 
-function TKMNetPlayersList.GetAICount(aAIPlayerTypes: TKMNetPlayerTypeSet = [AI_PLAYER_TYPE_MIN..AI_PLAYER_TYPE_MAX]): Integer;
+function TKMNetRoom.GetAICount(aAIPlayerTypes: TKMNetPlayerTypeSet = [AI_PLAYER_TYPE_MIN..AI_PLAYER_TYPE_MAX]): Integer;
 begin
   Result := GetPlayerCount(aAIPlayerTypes * [AI_PLAYER_TYPE_MIN..AI_PLAYER_TYPE_MAX]);
 end;
 
 
-function TKMNetPlayersList.GetPlayerCount(aPlayerTypes: TKMNetPlayerTypeSet = [Low(TKMNetPlayerType)..High(TKMNetPlayerType)]): Integer;
+function TKMNetRoom.GetPlayerCount(aPlayerTypes: TKMNetPlayerTypeSet = [Low(TKMNetPlayerType)..High(TKMNetPlayerType)]): Integer;
 var
   I: Integer;
 begin
@@ -891,7 +891,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.GetClosedCount: Integer;
+function TKMNetRoom.GetClosedCount: Integer;
 var
   I: Integer;
 begin
@@ -902,7 +902,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.GetSpectatorCount: Integer;
+function TKMNetRoom.GetSpectatorCount: Integer;
 var
   I: Integer;
 begin
@@ -913,7 +913,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.GetConnectedCount: Integer;
+function TKMNetRoom.GetConnectedCount: Integer;
 var
   I: Integer;
 begin
@@ -924,7 +924,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.GetConnectedPlayersCount: Integer;
+function TKMNetRoom.GetConnectedPlayersCount: Integer;
 var
   I: Integer;
 begin
@@ -939,7 +939,7 @@ end;
 
 //Number of not Dropped players
 //Player could be disconnected already, but not dropped yet.
-function TKMNetPlayersList.GetNotDroppedCount: Integer;
+function TKMNetRoom.GetNotDroppedCount: Integer;
 var
   I: Integer;
 begin
@@ -950,7 +950,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.FurtherVotesNeededForMajority: Integer;
+function TKMNetRoom.FurtherVotesNeededForMajority: Integer;
 var
   I, votedYes, total: Integer;
   onlySpecsLeft: Boolean;
@@ -972,7 +972,7 @@ end;
 
 
 //All human players who are not dropped are spectators
-function TKMNetPlayersList.HasOnlySpectators: Boolean;
+function TKMNetRoom.HasOnlySpectators: Boolean;
 var
   I: Integer;
 begin
@@ -987,7 +987,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.SetDownloadAborted;
+procedure TKMNetRoom.SetDownloadAborted;
 var
   I: Integer;
 begin
@@ -996,7 +996,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.ResetLocAndReady;
+procedure TKMNetRoom.ResetLocAndReady;
 var
   I: Integer;
 begin
@@ -1015,7 +1015,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.ResetReady;
+procedure TKMNetRoom.ResetReady;
 var
   I: Integer;
 begin
@@ -1026,7 +1026,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.ResetReadyToPlay;
+procedure TKMNetRoom.ResetReadyToPlay;
 var
   I: Integer;
 begin
@@ -1035,7 +1035,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.ResetReadyToReturnToLobby;
+procedure TKMNetRoom.ResetReadyToReturnToLobby;
 var
   I: Integer;
 begin
@@ -1044,7 +1044,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.ResetVote;
+procedure TKMNetRoom.ResetVote;
 var
   I: Integer;
 begin
@@ -1054,7 +1054,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.SetAIReady;
+procedure TKMNetRoom.SetAIReady;
 var
   I: Integer;
 begin
@@ -1067,7 +1067,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.RemAllAIs;
+procedure TKMNetRoom.RemAllAIs;
 var
   I: Integer;
 begin
@@ -1077,7 +1077,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.RemDisconnectedPlayers;
+procedure TKMNetRoom.RemDisconnectedPlayers;
 var
   I: Integer;
 begin
@@ -1496,7 +1496,7 @@ end;
 
 //Convert undefined/random start locations to fixed and assign random colors
 //Remove odd players
-function TKMNetPlayersList.ValidateSetup(var aHumanUsableLocs, aAIUsableLocs, aAdvancedAIUsableLocs: TKMHandIDArray;
+function TKMNetRoom.ValidateSetup(var aHumanUsableLocs, aAIUsableLocs, aAdvancedAIUsableLocs: TKMHandIDArray;
                                          var aFixedLocsColors: TKMCardinalArray; out ErrorMsg: UnicodeString): Boolean;
   function IsHumanLoc(aLoc: Byte): Boolean;
   var
@@ -1679,7 +1679,7 @@ end;
 //Save whole amount of data as string to be sent across network to other players
 //I estimate it ~50 Bytes per player at max
 //later it will be Byte array?
-procedure TKMNetPlayersList.SaveToStream(aStream: TKMemoryStream);
+procedure TKMNetRoom.SaveToStream(aStream: TKMemoryStream);
 var
   I: Integer;
 begin
@@ -1694,7 +1694,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.LoadFromStream(aStream: TKMemoryStream);
+procedure TKMNetRoom.LoadFromStream(aStream: TKMemoryStream);
 var
   I: Integer;
 begin

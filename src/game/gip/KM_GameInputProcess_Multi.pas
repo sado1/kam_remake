@@ -278,10 +278,10 @@ begin
   // Half of the maximum round trip is a good guess for delay. +1.2 is our safety net to account
   // for processing the packet and random variations in ping. It's always better for commands to
   // be slightly delayed than for the game to freeze/lag regularly.
-  if (gNetworking.NetPlayers.GetNotDroppedCount = 1) then
+  if (gNetworking.Room.GetNotDroppedCount = 1) then
     SetDelay(MIN_DELAY) //We can set the lowest delay if we are the only MP player
   else
-    SetDelay(Ceil(aGameSpeed * (gNetworking.NetPlayers.GetMaxHighestRoundTripLatency / 200 + 1.2)));
+    SetDelay(Ceil(aGameSpeed * (gNetworking.Room.GetMaxHighestRoundTripLatency / 200 + 1.2)));
 end;
 
 
@@ -335,8 +335,8 @@ begin
       myData.Check       := OurCheck;
 
       otherData.PlayerIndex := aPlayerIndex;
-      otherData.HandID      := gNetworking.NetPlayers[aPlayerIndex].HandIndex;
-      otherData.Nickname    := gNetworking.NetPlayers[aPlayerIndex].Nickname;
+      otherData.HandID      := gNetworking.Room[aPlayerIndex].HandIndex;
+      otherData.Nickname    := gNetworking.Room[aPlayerIndex].Nickname;
       otherData.Check       := PlayerCheck[aPlayerIndex];
 
       errorStr := Format(#13#10 + 'Random check mismatch for tick %d processed at tick %d:' + #13#10 +
@@ -370,7 +370,7 @@ begin
           if (tick > gGameParams.Tick) then
             // Do not check if player is dropped - we could receive scheduled commmands from already dropped player,
             // that we should store/execute to be in sync with other players
-            {and not gNetworking.NetPlayers[aSenderIndex].Dropped}
+            {and not gNetworking.Room[aSenderIndex].Dropped}
           begin
             fSchedule[tick mod MAX_SCHEDULE, aSenderIndex].Load(aStream);
             fRecievedData[tick mod MAX_SCHEDULE, aSenderIndex] := True;
@@ -405,9 +405,9 @@ var
   I: Integer;
 begin
   Result := True;
-  for I := 1 to gNetworking.NetPlayers.Count do
+  for I := 1 to gNetworking.Room.Count do
     Result := Result and
-                (fRecievedData[aTick mod MAX_SCHEDULE, I] or gNetworking.NetPlayers[I].NoNeedToWait(aTick));
+                (fRecievedData[aTick mod MAX_SCHEDULE, I] or gNetworking.Room[I].NoNeedToWait(aTick));
 end;
 
 
@@ -419,8 +419,8 @@ begin
   SetLength(Result, MAX_LOBBY_SLOTS);
 
   K := 0;
-  for I := 1 to gNetworking.NetPlayers.Count do
-    if not (fRecievedData[aTick mod MAX_SCHEDULE, I] or gNetworking.NetPlayers[I].NoNeedToWait(aTick)) then
+  for I := 1 to gNetworking.Room.Count do
+    if not (fRecievedData[aTick mod MAX_SCHEDULE, I] or gNetworking.Room[I].NoNeedToWait(aTick)) then
     begin
       Result[K] := I;
       Inc(K);
@@ -443,7 +443,7 @@ begin
   fRandomCheck[tick].OurCheck := Cardinal(KaMRandom(MaxInt{$IFDEF RNG_SPY}, 'TKMGameInputProcess_Multi.RunningTimer'{$ENDIF})); //thats our CRC (must go before commands for replay compatibility)
 
   //Execute commands, in order players go (1,2,3..)
-  for I := 1 to gNetworking.NetPlayers.Count do
+  for I := 1 to gNetworking.Room.Count do
     for K := 1 to fSchedule[tick, I].Count do
     begin
       // We should store/execute last commands from dropped players too to be in sync with other players,
@@ -456,9 +456,9 @@ begin
       //   (There was a bug, that gicGameSpeed / gicWareDistribution commands from dropped player
       //    were stored/executed after he left the game every MAX_SCHEDULE ticks,
       //    because they were stored in the ring buffer of fSchedule)
-      if (not gNetworking.NetPlayers[I].Dropped or gNetworking.NetPlayers[I].NeedWaitForLastCommands(aTick))
+      if (not gNetworking.Room[I].Dropped or gNetworking.Room[I].NeedWaitForLastCommands(aTick))
       //Don't allow exploits like moving enemy soldiers (but maybe one day you can control disconnected allies?)
-        and ((gNetworking.NetPlayers[I].HandIndex = fSchedule[tick, I].Items[K].HandIndex)
+        and ((gNetworking.Room[I].HandIndex = fSchedule[tick, I].Items[K].HandIndex)
            or (fSchedule[tick, I].Items[K].CommandType in ALLOWED_BY_SPECTATORS)) then
       begin
         // Store the command first so if Exec fails we still have it in the replay
@@ -475,9 +475,9 @@ begin
     SendRandomCheck(aTick);
 
   //It is possible that we have already recieved other player's random checks, if so check them now
-  for I := 1 to gNetworking.NetPlayers.Count do
+  for I := 1 to gNetworking.Room.Count do
   begin
-    if not gNetworking.NetPlayers[I].Dropped and fRandomCheck[tick].PlayerCheckPending[I] then
+    if not gNetworking.Room[I].Dropped and fRandomCheck[tick].PlayerCheckPending[I] then
       DoRandomCheck(aTick, I);
   end;
 

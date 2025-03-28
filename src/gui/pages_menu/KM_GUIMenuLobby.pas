@@ -292,7 +292,7 @@ begin
   K := 1;
 
   //Host (unless host is spectator)
-  if (gNetworking.HostIndex <> -1) and not gNetworking.NetPlayers[gNetworking.HostIndex].IsSpectator then
+  if (gNetworking.HostIndex <> -1) and not gNetworking.Room[gNetworking.HostIndex].IsSpectator then
   begin
     fLocalToNetPlayers[K] := gNetworking.HostIndex;
     fNetPlayersToLocal[gNetworking.HostIndex] := K;
@@ -300,8 +300,8 @@ begin
   end;
 
   //Normal players
-  for I:=1 to gNetworking.NetPlayers.Count do
-    if (I <> gNetworking.HostIndex) and not gNetworking.NetPlayers[I].IsSpectator then
+  for I:=1 to gNetworking.Room.Count do
+    if (I <> gNetworking.HostIndex) and not gNetworking.Room[I].IsSpectator then
     begin
       fLocalToNetPlayers[K] := I;
       fNetPlayersToLocal[I] := K;
@@ -309,16 +309,16 @@ begin
     end;
 
   //Host if spectator, always goes at the end
-  if (gNetworking.HostIndex <> -1) and gNetworking.NetPlayers[gNetworking.HostIndex].IsSpectator then
+  if (gNetworking.HostIndex <> -1) and gNetworking.Room[gNetworking.HostIndex].IsSpectator then
   begin
     fLocalToNetPlayers[MAX_LOBBY_SLOTS] := gNetworking.HostIndex;
     fNetPlayersToLocal[gNetworking.HostIndex] := MAX_LOBBY_SLOTS;
   end;
 
   //Spectators, place them at the end
-  K := MAX_LOBBY_SLOTS - gNetworking.NetPlayers.GetSpectatorCount + 1;
-  for I:=1 to gNetworking.NetPlayers.Count do
-    if (I <> gNetworking.HostIndex) and gNetworking.NetPlayers[I].IsSpectator then
+  K := MAX_LOBBY_SLOTS - gNetworking.Room.GetSpectatorCount + 1;
+  for I:=1 to gNetworking.Room.Count do
+    if (I <> gNetworking.HostIndex) and gNetworking.Room[I].IsSpectator then
     begin
       Assert((K <= MAX_LOBBY_SLOTS) and (fLocalToNetPlayers[K] = -1), 'Too many spectators');
       fLocalToNetPlayers[K] := I;
@@ -347,8 +347,8 @@ var
   I, divideRow, offY: Integer;
 begin
   Image_HostStar.Hide; //In case host is unknown
-  if (gNetworking <> nil) and (gNetworking.NetPlayers <> nil) then
-    divideRow := MAX_LOBBY_SLOTS - Max(MAX_LOBBY_SPECTATORS, gNetworking.NetPlayers.GetSpectatorCount)
+  if (gNetworking <> nil) and (gNetworking.Room <> nil) then
+    divideRow := MAX_LOBBY_SLOTS - Max(MAX_LOBBY_SPECTATORS, gNetworking.Room.GetSpectatorCount)
   else
     divideRow := MAX_LOBBY_PLAYERS;
   for I := 1 to MAX_LOBBY_SLOTS do
@@ -378,8 +378,8 @@ begin
       PercentBar_PlayerDl_ChVisibility(I, False);
     end;
   end;
-  if (gNetworking <> nil) and (gNetworking.NetPlayers <> nil)
-  and gNetworking.NetPlayers.SpectatorsAllowed then
+  if (gNetworking <> nil) and (gNetworking.Room <> nil)
+  and gNetworking.Room.SpectatorsAllowed then
   begin
     Panel_Players.Height := TOP_OFF + LINE_Y*MAX_LOBBY_SLOTS + DIVIDE_Y + 2;
     Bevel_SpecsDivide.Show;
@@ -786,13 +786,13 @@ begin
                             Edit_Post.OutlineColor := $FF66FF66;
                           end;
     else  begin //Whisper to player
-            netI := gNetworking.NetPlayers.ServerToLocal(aItemTag);
+            netI := gNetworking.Room.ServerToLocal(aItemTag);
             if netI <> -1 then
             begin
               gChat.Mode := cmWhisper;
               Edit_Post.DrawOutline := True;
               Edit_Post.OutlineColor := $FF00B9FF;
-              with gNetworking.NetPlayers[netI] do
+              with gNetworking.Room[netI] do
               begin
                 gChat.WhisperRecipient := IndexOnServer;
                 UpdateButtonCaption(NicknameU, IfThen(IsColorSet, FlagColorToTextColor(FlagColor), 0));
@@ -829,10 +829,10 @@ begin
   if gNetworking.MyRoomSlot.IsSpectator then
     PopUpMenu_Chat.AddItem('[$66FF66]' + gResTexts[TX_CHAT_SPECTATORS], CHAT_MENU_SPECTATORS);
 
-  for I := 1 to gNetworking.NetPlayers.Count do
+  for I := 1 to gNetworking.Room.Count do
   if I <> gNetworking.MyIndex then // Can't whisper to yourself
   begin
-    slot := gNetworking.NetPlayers[I];
+    slot := gNetworking.Room[I];
 
     if slot.IsHuman and slot.Connected and not slot.Dropped then
       PopUpMenu_Chat.AddItem(slot.NicknameColoredU, slot.IndexOnServer);
@@ -1228,7 +1228,7 @@ begin
   // In any way banlist should be editable from within the lobby, so we will need methods to get the list
   // from the server and allow to remove items from it.
 
-  id := gNetworking.NetPlayers.ServerToLocal(TKMControl(Sender).Tag);
+  id := gNetworking.Room.ServerToLocal(TKMControl(Sender).Tag);
   if id = -1 then Exit; // Player has quit the lobby
 
   case PopUpMenu_Host.ItemIndex of
@@ -1244,7 +1244,7 @@ procedure TKMMenuLobby.JoinerMenuClick(Sender: TObject);
 var
   id: Integer;
 begin
-  id := gNetworking.NetPlayers.ServerToLocal(TKMControl(Sender).Tag);
+  id := gNetworking.Room.ServerToLocal(TKMControl(Sender).Tag);
   if id = -1 then Exit; // Player has quit the lobby
 
   // Mute/Unmute
@@ -1266,9 +1266,9 @@ begin
   end;
 
   //Only human players (excluding ourselves) have the player menu
-  if not gNetworking.NetPlayers[fLocalToNetPlayers[ctrl.Tag]].IsHuman //No menu for AI players
+  if not gNetworking.Room[fLocalToNetPlayers[ctrl.Tag]].IsHuman //No menu for AI players
   or (gNetworking.MyIndex = fLocalToNetPlayers[ctrl.Tag]) //No menu for ourselves
-  or not gNetworking.NetPlayers[fLocalToNetPlayers[ctrl.Tag]].Connected then //Don't show menu for empty slots
+  or not gNetworking.Room[fLocalToNetPlayers[ctrl.Tag]].Connected then //Don't show menu for empty slots
   begin
     Result := False;
     Exit;
@@ -1304,7 +1304,7 @@ begin
   begin
     //Remember which player it is by his server index
     //since order of players can change. If someone above leaves we still have the proper Id
-    PopUpMenu_Host.Tag := gNetworking.NetPlayers[fLocalToNetPlayers[ctrl.Tag]].IndexOnServer;
+    PopUpMenu_Host.Tag := gNetworking.Room[fLocalToNetPlayers[ctrl.Tag]].IndexOnServer;
 
     UpdateMuteMenuItem(PopUpMenu_Host, 3, gNetworking.IsMuted(fLocalToNetPlayers[ctrl.Tag]));
 
@@ -1313,7 +1313,7 @@ begin
   end else begin
     //Remember which player it is by his server index
     //since order of players can change. If someone above leaves we still have the proper Id
-    PopUpMenu_Joiner.Tag := gNetworking.NetPlayers[fLocalToNetPlayers[ctrl.Tag]].IndexOnServer;
+    PopUpMenu_Joiner.Tag := gNetworking.Room[fLocalToNetPlayers[ctrl.Tag]].IndexOnServer;
 
     UpdateMuteMenuItem(PopUpMenu_Joiner, 0, gNetworking.IsMuted(fLocalToNetPlayers[ctrl.Tag]));
     
@@ -1359,15 +1359,15 @@ begin
 
   if (gNetworking.MapInfo <> nil) and gNetworking.MapInfo.IsValid then
   begin
-    openedHumansAtAISlots := Max(0, gNetworking.MapInfo.CanBeHumanAndAICount - gNetworking.NetPlayers.GetConnectedPlayersCount);
+    openedHumansAtAISlots := Max(0, gNetworking.MapInfo.CanBeHumanAndAICount - gNetworking.Room.GetConnectedPlayersCount);
     Result := Max(0, openedHumansAtAISlots
                    //+ gNetworking.MapInfo.CanBeOnlyAICount // Only AI is added at the start of the game...
-                   - gNetworking.NetPlayers.GetAICount(aAIPlayerTypes));
+                   - gNetworking.Room.GetAICount(aAIPlayerTypes));
   end else if (gNetworking.SaveInfo <> nil) and gNetworking.SaveInfo.IsValid then
   begin
     Result := Max(0, gNetworking.SaveInfo.GameInfo.HumanCount
-                   - gNetworking.NetPlayers.GetConnectedPlayersCount
-                   - gNetworking.NetPlayers.GetAICount(aAIPlayerTypes));
+                   - gNetworking.Room.GetConnectedPlayersCount
+                   - gNetworking.Room.GetAICount(aAIPlayerTypes));
   end;
 end;
 
@@ -1428,7 +1428,7 @@ begin
 
       RowChanged := False;
       NetI := fLocalToNetPlayers[J];
-      if (NetI = -1) or not gNetworking.NetPlayers[NetI].IsHuman then
+      if (NetI = -1) or not gNetworking.Room[NetI].IsHuman then
       begin
         if DropBox_PlayerSlot[J].ItemIndex <> Y then //Do not count this slot as changed, if it already has same AI value
         begin
@@ -1473,7 +1473,7 @@ begin
 
       DropBox_Colors[I][0].Cells[0].Color := color;
       DropBox_Colors[I][0].Cells[0].Pic.Id := 30;
-      gNetworking.NetPlayers[ID].FlagColor := color;
+      gNetworking.Room[ID].FlagColor := color;
     end;
     DropBox_Colors[I].ItemIndex := 0;
     DropBox_Colors[I].Disable;
@@ -1488,26 +1488,26 @@ begin
   //Host control toggle
   if Sender = CheckBox_HostControl then
   begin
-    gNetworking.NetPlayers.HostDoesSetup := CheckBox_HostControl.Checked;
+    gNetworking.Room.HostDoesSetup := CheckBox_HostControl.Checked;
     gNetworking.SendPlayerListAndRefreshPlayersSetup;
   end;
 
   if Sender = CheckBox_RandomizeTeamLocations then
   begin
-    gNetworking.NetPlayers.RandomizeTeamLocations := CheckBox_RandomizeTeamLocations.Checked;
+    gNetworking.Room.RandomizeTeamLocations := CheckBox_RandomizeTeamLocations.Checked;
     gNetworking.SendPlayerListAndRefreshPlayersSetup;
   end;
 
   if Sender = CheckBox_Spectators then
   begin
-    if not CheckBox_Spectators.Checked and (gNetworking.NetPlayers.GetSpectatorCount > 0) then
+    if not CheckBox_Spectators.Checked and (gNetworking.Room.GetSpectatorCount > 0) then
     begin
       gNetworking.PostLocalMessage(gResTexts[TX_LOBBY_CANNOT_DISABLE_SPECTATORS], csSystem);
       CheckBox_Spectators.Checked := True;
     end
     else
     begin
-      gNetworking.NetPlayers.SpectatorsAllowed := CheckBox_Spectators.Checked;
+      gNetworking.Room.SpectatorsAllowed := CheckBox_Spectators.Checked;
       gNetworking.SendPlayerListAndRefreshPlayersSetup;
     end;
   end;
@@ -1538,8 +1538,8 @@ begin
       //from a map/save we don't have, so make sure SelectGameKind is valid
       if (gNetworking.SelectGameKind <> ngkNone)
         and not gNetworking.IsHost then //Changes are applied instantly for host
-        //Set loc back to NetPlayers value until host processes our request
-        DropBox_Loc[I].SelectByTag(gNetworking.NetPlayers[netI].StartLocation);
+        //Set loc back to Room value until host processes our request
+        DropBox_Loc[I].SelectByTag(gNetworking.Room[netI].StartLocation);
     end;
 
     //Team
@@ -1562,21 +1562,21 @@ begin
     if Sender = DropBox_PlayerSlot[I] then
     begin
       //Modify an existing player
-      if (netI <> -1) and (netI <= gNetworking.NetPlayers.Count) then
+      if (netI <> -1) and (netI <= gNetworking.Room.Count) then
       begin
         case DropBox_PlayerSlot[I].ItemIndex of
           0:  //Open
               begin
-                if gNetworking.NetPlayers[netI].IsComputer
-                  or gNetworking.NetPlayers[netI].IsClosed then
-                  gNetworking.NetPlayers.RemPlayer(netI);
+                if gNetworking.Room[netI].IsComputer
+                  or gNetworking.Room[netI].IsClosed then
+                  gNetworking.Room.RemPlayer(netI);
               end;
           1:  //Closed
-              gNetworking.NetPlayers.AddClosedPlayer(netI); //Replace it
+              gNetworking.Room.AddClosedPlayer(netI); //Replace it
           2:  //AI
-              gNetworking.NetPlayers.AddAIPlayer(False, netI); //Replace it
+              gNetworking.Room.AddAIPlayer(False, netI); //Replace it
           3:  //Advanced AI
-              gNetworking.NetPlayers.AddAIPlayer(True, netI); //Replace it
+              gNetworking.Room.AddAIPlayer(True, netI); //Replace it
         end;
       end
       else
@@ -1585,17 +1585,17 @@ begin
         begin
           //These are spectator only slots
           case DropBox_PlayerSlot[I].ItemIndex of
-            0: gNetworking.NetPlayers.SpectatorSlotsOpen := MAX_LOBBY_SLOTS - I + 1;
-            1: gNetworking.NetPlayers.SpectatorSlotsOpen := MAX_LOBBY_SLOTS - I;
+            0: gNetworking.Room.SpectatorSlotsOpen := MAX_LOBBY_SLOTS - I + 1;
+            1: gNetworking.Room.SpectatorSlotsOpen := MAX_LOBBY_SLOTS - I;
           end;
         end
         else
         begin
           //Add a new player
           case DropBox_PlayerSlot[I].ItemIndex of
-            1: gNetworking.NetPlayers.AddClosedPlayer;
-            2: gNetworking.NetPlayers.AddAIPlayer(False);
-            3: gNetworking.NetPlayers.AddAIPlayer(True);
+            1: gNetworking.Room.AddClosedPlayer;
+            2: gNetworking.Room.AddAIPlayer(False);
+            3: gNetworking.Room.AddAIPlayer(True);
           end;
         end;
       end;
@@ -1697,22 +1697,22 @@ begin
       if I > MAX_LOBBY_PLAYERS then
       begin
         //Spectator slots. Is this one open?
-        if MAX_LOBBY_SLOTS - I < gNetworking.NetPlayers.SpectatorSlotsOpen then
+        if MAX_LOBBY_SLOTS - I < gNetworking.Room.SpectatorSlotsOpen then
         begin
           DropBox_PlayerSlot[I].ItemIndex := 0; //Spectator
-          DropBox_PlayerSlot[I].Enabled := gNetworking.IsHost and (MAX_LOBBY_SLOTS - I + 1 = gNetworking.NetPlayers.SpectatorSlotsOpen);
+          DropBox_PlayerSlot[I].Enabled := gNetworking.IsHost and (MAX_LOBBY_SLOTS - I + 1 = gNetworking.Room.SpectatorSlotsOpen);
         end
         else
         begin
           DropBox_PlayerSlot[I].ItemIndex := 1; //Closed
-          DropBox_PlayerSlot[I].Enabled := gNetworking.IsHost and (MAX_LOBBY_SLOTS - I = gNetworking.NetPlayers.SpectatorSlotsOpen);
+          DropBox_PlayerSlot[I].Enabled := gNetworking.IsHost and (MAX_LOBBY_SLOTS - I = gNetworking.Room.SpectatorSlotsOpen);
         end;
         DropBox_Loc[I].Clear;
         DropBox_Loc[I].Add(gResTexts[TX_LOBBY_SPECTATE], LOC_SPECTATE);
 
-        DropBox_PlayerSlot[I].Visible := gNetworking.NetPlayers.SpectatorsAllowed;
-        DropBox_Loc[I].Visible        := gNetworking.NetPlayers.SpectatorsAllowed;
-        DropBox_Colors[I].Visible     := gNetworking.NetPlayers.SpectatorsAllowed;
+        DropBox_PlayerSlot[I].Visible := gNetworking.Room.SpectatorsAllowed;
+        DropBox_Loc[I].Visible        := gNetworking.Room.SpectatorsAllowed;
+        DropBox_Colors[I].Visible     := gNetworking.Room.SpectatorsAllowed;
       end
       else
       begin
@@ -1740,7 +1740,7 @@ begin
     else
     begin
       //This slot is used
-      curSlot := gNetworking.NetPlayers[fLocalToNetPlayers[I]];
+      curSlot := gNetworking.Room[fLocalToNetPlayers[I]];
 
       DropBox_Team[I].Visible := not curSlot.IsSpectator; // Spectators don't get a team
       DropBox_Loc[I].Show;
@@ -1819,7 +1819,7 @@ begin
                         AddLocation(gNetworking.MapInfo.LocationName(K), I, K+1);
                   end;
       end;
-      if curSlot.IsHuman and gNetworking.NetPlayers.SpectatorsAllowed then
+      if curSlot.IsHuman and gNetworking.Room.SpectatorsAllowed then
         AddLocation(gResTexts[TX_LOBBY_SPECTATE], I, LOC_SPECTATE);
 
       if isValid or curSlot.IsSpectator then
@@ -1850,7 +1850,7 @@ begin
         freeColorsCnt := 0;
         for K := 0 to DropBox_Colors[I].List.RowCount - 1 do
           if (K <> colorID) and (K <> 0)
-          and (not gNetworking.NetPlayers.ColorAvailable(MP_PLAYER_COLORS[K])
+          and (not gNetworking.Room.ColorAvailable(MP_PLAYER_COLORS[K])
                or ((gNetworking.SelectGameKind = ngkSave) and gNetworking.SaveInfo.GameInfo.ColorUsed(K))
                or IsColorCloseToColors(MP_PLAYER_COLORS[K], fixedLocsColors, MIN_PLAYER_COLOR_DIST)) then // Disable for AIOnly locs color (close to them)
             DropBox_Colors[I].List.Rows[K].Cells[0].Enabled := False
@@ -1871,10 +1871,10 @@ begin
       myNik := (fLocalToNetPlayers[I] = gNetworking.MyIndex); //Our index
       //We are allowed to edit if it is our nickname and we are set as NOT ready,
       //or we are the host and this player is an AI
-      canEdit := (myNik and (gNetworking.IsHost or not gNetworking.NetPlayers.HostDoesSetup) and
+      canEdit := (myNik and (gNetworking.IsHost or not gNetworking.Room.HostDoesSetup) and
                             (gNetworking.IsHost or not curSlot.ReadyToStart)) or
                  (gNetworking.IsHost and curSlot.IsComputer);
-      hostCanEdit := (gNetworking.IsHost and gNetworking.NetPlayers.HostDoesSetup and
+      hostCanEdit := (gNetworking.IsHost and gNetworking.Room.HostDoesSetup and
                       not curSlot.IsClosed);
       DropBox_Loc[I].Enabled := (canEdit or hostCanEdit);
       //Can't change color or teams in a loaded save (spectators can set color)
@@ -1905,18 +1905,18 @@ begin
     UpdateImageLobbyFlag(I);
 
   // If PopUp menu was opened, check if player still connected, otherwise - close PopUp menu
-  if PopUpMenu_Host.Visible and (gNetworking.NetPlayers.ServerToLocal(PopUpMenu_Host.Tag) = -1) then
+  if PopUpMenu_Host.Visible and (gNetworking.Room.ServerToLocal(PopUpMenu_Host.Tag) = -1) then
     PopUpMenu_Host.Hide;
 
-  if PopUpMenu_Joiner.Visible and (gNetworking.NetPlayers.ServerToLocal(PopUpMenu_Joiner.Tag) = -1) then
+  if PopUpMenu_Joiner.Visible and (gNetworking.Room.ServerToLocal(PopUpMenu_Joiner.Tag) = -1) then
     PopUpMenu_Joiner.Hide;
 
   //Update the minimap preview with player colors
   for I := 0 to MAX_HANDS - 1 do
   begin
-    ID := gNetworking.NetPlayers.StartingLocToLocal(I+1);
+    ID := gNetworking.Room.StartingLocToLocal(I+1);
     if (ID <> -1) then
-      fMinimap.HandColors[I] := gNetworking.NetPlayers[ID].FlagColorDef(icBlack)
+      fMinimap.HandColors[I] := gNetworking.Room[ID].FlagColorDef(icBlack)
     else
       fMinimap.HandColors[I] := $7F000000; //Semi-transparent when not selected
   end;
@@ -1940,9 +1940,9 @@ begin
       end;
 
     // Find rngPlayersTeam
-    for I := 1 to gNetworking.NetPlayers.Count do
+    for I := 1 to gNetworking.Room.Count do
     begin
-      startLoc := gNetworking.NetPlayers[I].StartLocation;
+      startLoc := gNetworking.Room[I].StartLocation;
       if startLoc > 0 then //Not LOC_RANDOM and not LOC_SPECTATE
       begin
         Exclude(players, I);
@@ -1950,19 +1950,19 @@ begin
       end
       else
       if (startLoc = LOC_RANDOM)
-        and (gNetworking.NetPlayers[I].Team <> 0)
-        and ((rngPlayersTeam = 0) or (rngPlayersTeam = gNetworking.NetPlayers[I].Team)) then
+        and (gNetworking.Room[I].Team <> 0)
+        and ((rngPlayersTeam = 0) or (rngPlayersTeam = gNetworking.Room[I].Team)) then
       begin
         Dec(playersCnt);
-        rngPlayersTeam := gNetworking.NetPlayers[I].Team;
+        rngPlayersTeam := gNetworking.Room[I].Team;
       end;
     end;
 
     for I := 0 to MAX_HANDS - 1 do
     begin
-      ID := gNetworking.NetPlayers.StartingLocToLocal(I+1);
+      ID := gNetworking.Room.StartingLocToLocal(I+1);
       if ID <> -1 then
-        fMinimap.HandTeam[I] := gNetworking.NetPlayers[ID].Team
+        fMinimap.HandTeam[I] := gNetworking.Room[ID].Team
       else
       begin
         if (playersCnt = 0) then
@@ -1980,15 +1980,15 @@ begin
   //If we are in whisper chat mode and find the player has left, switch back to all
   if gChat.Mode = cmWhisper then
   begin
-    if gNetworking.NetPlayers.ServerToLocal(gChat.WhisperRecipient) = -1 then
+    if gNetworking.Room.ServerToLocal(gChat.WhisperRecipient) = -1 then
       ChatMenuSelect(CHAT_MENU_ALL)
     else
       ChatMenuSelect(gChat.WhisperRecipient); //In case that player changed his color
   end;
 
-  CheckBox_HostControl.Checked := gNetworking.NetPlayers.HostDoesSetup;
-  CheckBox_RandomizeTeamLocations.Checked := gNetworking.NetPlayers.RandomizeTeamLocations;
-  CheckBox_Spectators.Checked := gNetworking.NetPlayers.SpectatorsAllowed;
+  CheckBox_HostControl.Checked := gNetworking.Room.HostDoesSetup;
+  CheckBox_RandomizeTeamLocations.Checked := gNetworking.Room.RandomizeTeamLocations;
+  CheckBox_Spectators.Checked := gNetworking.Room.SpectatorsAllowed;
   if gNetworking.IsHost then
   begin
     Button_Start.Enabled := IsGameStartAllowed(gNetworking.CanStart);
@@ -2008,10 +2008,10 @@ var
 begin
   for I := 1 to MAX_LOBBY_SLOTS do
     if (gNetworking.Connected) and (fLocalToNetPlayers[I] <> -1) and
-       (gNetworking.NetPlayers[fLocalToNetPlayers[I]].IsHuman) then
+       (gNetworking.Room[fLocalToNetPlayers[I]].IsHuman) then
     begin
-      Label_Ping[I].Caption := IntToStr(gNetworking.NetPlayers[fLocalToNetPlayers[I]].GetInstantPing);
-      Label_Ping[I].FontColor := GetPingColor(gNetworking.NetPlayers[fLocalToNetPlayers[I]].GetInstantPing);
+      Label_Ping[I].Caption := IntToStr(gNetworking.Room[fLocalToNetPlayers[I]].GetInstantPing);
+      Label_Ping[I].FontColor := GetPingColor(gNetworking.Room[fLocalToNetPlayers[I]].GetInstantPing);
     end
     else
       Label_Ping[I].Caption := '';
@@ -2124,15 +2124,15 @@ var
 begin
   I := gNetworking.MyIndex;
 
-  canEdit := ((gNetworking.IsHost or not gNetworking.NetPlayers.HostDoesSetup) and
-              (gNetworking.IsHost or not gNetworking.NetPlayers[I].ReadyToStart));
+  canEdit := ((gNetworking.IsHost or not gNetworking.Room.HostDoesSetup) and
+              (gNetworking.IsHost or not gNetworking.Room[I].ReadyToStart));
 
   if canEdit then
   begin
     gNetworking.SelectHand(aValue + 1, I);
     //Host with HostDoesSetup could have given us some location we don't know about from a map/save we don't have
     if gNetworking.SelectGameKind <> ngkNone then
-      DropBox_Loc[fNetPlayersToLocal[I]].SelectByTag(gNetworking.NetPlayers[I].StartLocation);
+      DropBox_Loc[fNetPlayersToLocal[I]].SelectByTag(gNetworking.Room[I].StartLocation);
   end;
 end;
 
@@ -2822,12 +2822,12 @@ begin
 
   if gChat.Mode = cmWhisper then
   begin
-    recipientNetIndex := gNetworking.NetPlayers.ServerToLocal(gChat.WhisperRecipient);
-    if not gNetworking.NetPlayers[recipientNetIndex].Connected
-      or gNetworking.NetPlayers[recipientNetIndex].Dropped then
+    recipientNetIndex := gNetworking.Room.ServerToLocal(gChat.WhisperRecipient);
+    if not gNetworking.Room[recipientNetIndex].Connected
+      or gNetworking.Room[recipientNetIndex].Dropped then
     begin
       gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_CHAT_PLAYER_NOT_CONNECTED_ANYMORE],
-                                          [gNetworking.NetPlayers[recipientNetIndex].NicknameColored]),
+                                          [gNetworking.Room[recipientNetIndex].NicknameColored]),
                                     csSystem);
       ChatMenuSelect(CHAT_MENU_ALL);
     end else
@@ -2902,7 +2902,7 @@ var
 begin
   for I := 1 to MAX_LOBBY_SLOTS do
     PercentBar_PlayerDl_ChVisibility(I, False);
-  gNetworking.NetPlayers.SetDownloadAborted; //Mark all players as not downloading
+  gNetworking.Room.SetDownloadAborted; //Mark all players as not downloading
 end;
 
 
@@ -2910,7 +2910,7 @@ procedure TKMMenuLobby.StartBtnChangeEnabled(Sender: TObject; aEnable: Boolean);
 begin
   Button_SettingsAskReady.Enabled := (((gNetworking.MapInfo <> nil) and gNetworking.MapInfo.IsValid)
                                         or ((gNetworking.SaveInfo <> nil) and gNetworking.SaveInfo.IsValid))
-                                     and not gNetworking.NetPlayers.AllReady;
+                                     and not gNetworking.Room.AllReady;
 end;
 
 
