@@ -330,8 +330,8 @@ begin
     if OurCheck <> PlayerCheck[aPlayerIndex] then
     begin
       myData.PlayerIndex := gNetworking.MyIndex;
-      myData.HandID      := gNetworking.MyNetPlayer.HandIndex;
-      myData.Nickname    := gNetworking.MyNetPlayer.Nickname;
+      myData.HandID      := gNetworking.MyRoomSlot.HandIndex;
+      myData.Nickname    := gNetworking.MyRoomSlot.Nickname;
       myData.Check       := OurCheck;
 
       otherData.PlayerIndex := aPlayerIndex;

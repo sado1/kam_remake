@@ -814,7 +814,7 @@ procedure TKMMenuLobby.ChatMenuShow(Sender: TObject);
 var
   C: TKMControl;
   I: Integer;
-  n: TKMNetPlayerInfo;
+  slot: TKMNetRoomSlot;
 begin
   // Populate menu with right options
   PopUpMenu_Chat.Clear;
@@ -822,20 +822,20 @@ begin
   PopUpMenu_Chat.AddItem(gResTexts[TX_CHAT_ALL], CHAT_MENU_ALL);
 
   // Only show "Team" if the player is on a team
-  if gNetworking.MyNetPlayer.Team <> 0 then
+  if gNetworking.MyRoomSlot.Team <> 0 then
     PopUpMenu_Chat.AddItem('[$66FF66]' + gResTexts[TX_CHAT_TEAM], CHAT_MENU_TEAM);
 
   // Only show "Spectators" if the player is a spectator
-  if gNetworking.MyNetPlayer.IsSpectator then
+  if gNetworking.MyRoomSlot.IsSpectator then
     PopUpMenu_Chat.AddItem('[$66FF66]' + gResTexts[TX_CHAT_SPECTATORS], CHAT_MENU_SPECTATORS);
 
   for I := 1 to gNetworking.NetPlayers.Count do
   if I <> gNetworking.MyIndex then // Can't whisper to yourself
   begin
-    n := gNetworking.NetPlayers[I];
+    slot := gNetworking.NetPlayers[I];
 
-    if n.IsHuman and n.Connected and not n.Dropped then
-      PopUpMenu_Chat.AddItem(n.NicknameColoredU, n.IndexOnServer);
+    if slot.IsHuman and slot.Connected and not slot.Dropped then
+      PopUpMenu_Chat.AddItem(slot.NicknameColoredU, slot.IndexOnServer);
   end;
 
   C := TKMControl(Sender);
@@ -1636,28 +1636,28 @@ procedure TKMMenuLobby.Lobby_OnPlayersSetup;
     DropBox_Loc[aIndex].Add(LocationName, aLocation);
   end;
 
-  function ImgReadyToStart(aNetPlayer: TKMNetPlayerInfo): Integer;
+  function ImgReadyToStart(aSlot: TKMNetRoomSlot): Integer;
   begin
-    if aNetPlayer.IsSpectator then
+    if aSlot.IsSpectator then
     begin
-      if not aNetPlayer.ReadyToStart then
+      if not aSlot.ReadyToStart then
         Result := 32 //Not ready
       else
       begin
-        if aNetPlayer.HasMapOrSave then
+        if aSlot.HasMapOrSave then
           Result := 33 //Ready
         else
           Result := 88; //Spec ready, but need DL map
       end;
     end
     else
-      Result := 32 + Byte(aNetPlayer.ReadyToStart and aNetPlayer.HasMapOrSave); //Not ready or ready
+      Result := 32 + Byte(aSlot.ReadyToStart and aSlot.HasMapOrSave); //Not ready or ready
   end;
 
 var
   I, K, freeColorsCnt,ID, localeID, colorID: Integer;
   myNik, canEdit, hostCanEdit, isSave, isValid: Boolean;
-  curPlayer: TKMNetPlayerInfo;
+  curSlot: TKMNetRoomSlot;
   firstUnused: Boolean;
   fixedLocsColors: TKMCardinalArray;
   colorDist: Single;
@@ -1739,18 +1739,18 @@ begin
     end
     else
     begin
-      //This player is used
-      curPlayer := gNetworking.NetPlayers[fLocalToNetPlayers[I]];
+      //This slot is used
+      curSlot := gNetworking.NetPlayers[fLocalToNetPlayers[I]];
 
-      DropBox_Team[I].Visible := not curPlayer.IsSpectator; //Spectators don't get a team
+      DropBox_Team[I].Visible := not curSlot.IsSpectator; // Spectators don't get a team
       DropBox_Loc[I].Show;
       DropBox_Colors[I].Show;
 
       //Flag icon
-      if curPlayer.IsComputer then
-        Image_Flag[I].TexID := GetAIPlayerIcon(curPlayer.PlayerNetType)
+      if curSlot.IsComputer then
+        Image_Flag[I].TexID := GetAIPlayerIcon(curSlot.PlayerNetType)
       else begin
-        localeID := gResLocales.IndexByCode(curPlayer.LangCode);
+        localeID := gResLocales.IndexByCode(curSlot.LangCode);
         if localeID <> -1 then
           Image_Flag[I].TexID := gResLocales[localeID].FlagSpriteID
         else
@@ -1758,25 +1758,25 @@ begin
       end;
 
       //Players list
-      if gNetworking.IsHost and (not curPlayer.IsHuman) then
+      if gNetworking.IsHost and (not curSlot.IsHuman) then
       begin
         Label_Player[I].Hide;
         PercentBar_PlayerDl_ChVisibility(I, False);
         DropBox_PlayerSlot[I].Enable;
         DropBox_PlayerSlot[I].Show;
         Assert(I <= MAX_LOBBY_PLAYERS, 'Spectator slots can''t have AI or closed');
-        if curPlayer.IsClassicComputer then
+        if curSlot.IsClassicComputer then
           DropBox_PlayerSlot[I].ItemIndex := 2 //Classic AI
-        else if curPlayer.IsAdvancedComputer then
+        else if curSlot.IsAdvancedComputer then
           DropBox_PlayerSlot[I].ItemIndex := 3 //Advanced AI
         else
           DropBox_PlayerSlot[I].ItemIndex := 1; //Closed
       end
       else
       begin
-        Label_Player[I].Caption := curPlayer.SlotName;
-        if curPlayer.IsColorSet then
-          Label_Player[I].FontColor := FlagColorToTextColor(curPlayer.FlagColorDef)
+        Label_Player[I].Caption := curSlot.SlotName;
+        if curSlot.IsColorSet then
+          Label_Player[I].FontColor := FlagColorToTextColor(curSlot.FlagColorDef)
         else
           Label_Player[I].FontColor := $FFFFFFFF;
 
@@ -1809,21 +1809,21 @@ begin
                     for K := 0 to gNetworking.MapInfo.LocCount - 1 do
                       //AI-only locations should not be listed for AIs in lobby, since those ones are
                       //automatically added when the game starts (so AI checks CanBeHuman too)
-                      if (curPlayer.IsHuman and (gNetworking.MapInfo.CanBeHuman[K] or ALLOW_TAKE_AI_PLAYERS))
-                        or (curPlayer.IsClassicComputer
+                      if (curSlot.IsHuman and (gNetworking.MapInfo.CanBeHuman[K] or ALLOW_TAKE_AI_PLAYERS))
+                        or (curSlot.IsClassicComputer
                           and gNetworking.MapInfo.CanBeHuman[K]
                           and gNetworking.MapInfo.CanBeClassicAI[K])
-                        or (curPlayer.IsAdvancedComputer
+                        or (curSlot.IsAdvancedComputer
                           and gNetworking.MapInfo.CanBeHuman[K]
                           and gNetworking.MapInfo.CanBeAdvancedAI[K]) then
                         AddLocation(gNetworking.MapInfo.LocationName(K), I, K+1);
                   end;
       end;
-      if curPlayer.IsHuman and gNetworking.NetPlayers.SpectatorsAllowed then
+      if curSlot.IsHuman and gNetworking.NetPlayers.SpectatorsAllowed then
         AddLocation(gResTexts[TX_LOBBY_SPECTATE], I, LOC_SPECTATE);
 
-      if isValid or curPlayer.IsSpectator then
-        DropBox_Loc[I].SelectByTag(curPlayer.StartLocation)
+      if isValid or curSlot.IsSpectator then
+        DropBox_Loc[I].SelectByTag(curSlot.StartLocation)
       else
         DropBox_Loc[I].ItemIndex := 0;
 
@@ -1831,13 +1831,13 @@ begin
       if (gNetworking.SelectGameKind = ngkMap) and gNetworking.MapInfo.TxtInfo.BlockTeamSelection then
         DropBox_Team[I].ItemIndex := 0 //Hide selected teams since they will be overridden
       else
-        DropBox_Team[I].ItemIndex := curPlayer.Team;
+        DropBox_Team[I].ItemIndex := curSlot.Team;
 
-      colorID := FindMPColor(curPlayer.FlagColor);
+      colorID := FindMPColor(curSlot.FlagColor);
       // Reset color to random, in case our color was too close to AI only locs colors
       if (colorID <> 0) and IsColorCloseToColors(MP_PLAYER_COLORS[colorID], fixedLocsColors, MIN_PLAYER_COLOR_DIST) then
         colorID := 0;
-      
+
       if (gNetworking.SelectGameKind <> ngkMap)
         or not gNetworking.MapInfo.TxtInfo.BlockColorSelection then
         DropBox_Colors[I].ItemIndex := colorID;
@@ -1863,33 +1863,33 @@ begin
         colorDist := colorDist * 0.7; // color distance is reduced to find more colors, if needed
       until (freeColorsCnt > 0) or (colorDist < 0.001); //Try to find at least 1 free color. Stop when its hard to do
 
-      if curPlayer.IsClosed then
+      if curSlot.IsClosed then
         Image_Ready[I].TexID := 0
       else
-        Image_Ready[I].TexID := ImgReadyToStart(curPlayer);
+        Image_Ready[I].TexID := ImgReadyToStart(curSlot);
 
       myNik := (fLocalToNetPlayers[I] = gNetworking.MyIndex); //Our index
       //We are allowed to edit if it is our nickname and we are set as NOT ready,
       //or we are the host and this player is an AI
       canEdit := (myNik and (gNetworking.IsHost or not gNetworking.NetPlayers.HostDoesSetup) and
-                            (gNetworking.IsHost or not curPlayer.ReadyToStart)) or
-                 (gNetworking.IsHost and curPlayer.IsComputer);
+                            (gNetworking.IsHost or not curSlot.ReadyToStart)) or
+                 (gNetworking.IsHost and curSlot.IsComputer);
       hostCanEdit := (gNetworking.IsHost and gNetworking.NetPlayers.HostDoesSetup and
-                      not curPlayer.IsClosed);
+                      not curSlot.IsClosed);
       DropBox_Loc[I].Enabled := (canEdit or hostCanEdit);
       //Can't change color or teams in a loaded save (spectators can set color)
       //Can only edit teams for maps (not saves), but the map may deny this
-      DropBox_Team[I].Enabled := (canEdit or hostCanEdit) and not curPlayer.IsSpectator
+      DropBox_Team[I].Enabled := (canEdit or hostCanEdit) and not curSlot.IsSpectator
                                       and (gNetworking.SelectGameKind = ngkMap)
                                       and not gNetworking.MapInfo.TxtInfo.BlockTeamSelection;
-      DropBox_Colors[I].Enabled := (canEdit or (myNik and not curPlayer.ReadyToStart))
-                                        and (not isSave or curPlayer.IsSpectator)
+      DropBox_Colors[I].Enabled := (canEdit or (myNik and not curSlot.ReadyToStart))
+                                        and (not isSave or curSlot.IsSpectator)
                                         and (    (gNetworking.SelectGameKind <> ngkMap)
                                            or not gNetworking.MapInfo.TxtInfo.BlockColorSelection
-                                           or curPlayer.IsSpectator);
+                                           or curSlot.IsSpectator);
       if myNik and not gNetworking.IsHost then
       begin
-        if curPlayer.ReadyToStart then
+        if curSlot.ReadyToStart then
           Button_Start.Caption := gResTexts[TX_LOBBY_NOT_READY]
         else
           Button_Start.Caption := gResTexts[TX_LOBBY_READY];
@@ -1974,7 +1974,7 @@ begin
   end;
 
   //If we are in team chat mode and find ourselves not on a team (player went back to no team), switch back to all
-  if (gChat.Mode = cmTeam) and (gNetworking.MyNetPlayer.Team = 0) then
+  if (gChat.Mode = cmTeam) and (gNetworking.MyRoomSlot.Team = 0) then
     ChatMenuSelect(CHAT_MENU_ALL);
 
   //If we are in whisper chat mode and find the player has left, switch back to all
@@ -2526,7 +2526,7 @@ begin
 
   if si.IsValid
   and (gNetworking.MyIndex > 0)
-  and si.LoadMinimap(fMinimap, gNetworking.MyNetPlayer.StartLocation) then
+  and si.LoadMinimap(fMinimap, gNetworking.MyRoomSlot.StartLocation) then
     MinimapView.Show
   else
     MinimapView.Hide;

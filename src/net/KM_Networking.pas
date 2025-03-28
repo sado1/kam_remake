@@ -85,7 +85,7 @@ type
     procedure ResetReturnToLobbyVote;
     procedure TransferOnCompleted(aClientIndex: TKMNetHandleIndex);
     procedure TransferOnPacket(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStream; out SendBufferEmpty: Boolean);
-    function GetMyNetPlayer: TKMNetPlayerInfo;
+    function GetMyRoomSlot: TKMNetRoomSlot;
     procedure SetDownloadlInProgress(aSenderIndex: TKMNetHandleIndex; aValue: Boolean);
     procedure FileRequestReceived(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStream);
     procedure HandleMessage(aMessageKind: TKMNetMessageKind; aStream: TKMemoryStream; aSenderIndex: TKMNetHandleIndex);
@@ -217,7 +217,7 @@ type
     property NetGameOptions: TKMGameOptions read fNetGameOptions;
     property SelectGameKind: TKMNetGameKind read fSelectGameKind;
     property NetPlayers: TKMNetPlayersList read fNetPlayers;
-    property MyNetPlayer: TKMNetPlayerInfo read GetMyNetPlayer;
+    property MyRoomSlot: TKMNetRoomSlot read GetMyRoomSlot;
     property LastProcessedTick: Cardinal write fLastProcessedTick;
     property MissingFileType: TKMNetGameKind read fMissingFileType;
     property MissingFileName: UnicodeString read fMissingFileName;
@@ -235,8 +235,8 @@ type
     procedure UpdateStateIdle;
     procedure FPSMeasurement(aFPS: Cardinal);
 
-    function GetNetPlayerByHandIndex(aHandIndex: Integer): TKMNetPlayerInfo;
-    function GetNetPlayerIndex(aHandIndex: Integer): Integer;
+    function GetRoomSlotByHandIndex(aHandIndex: Integer): TKMNetRoomSlot;
+    function GetRoomSlotIndex(aHandIndex: Integer): Integer;
   end;
 
 
@@ -603,8 +603,8 @@ begin
 
   PacketSend(NET_ADDRESS_OTHERS, mkResetMap);
   fNetPlayers.ResetLocAndReady; //Reset start locations
-  MyNetPlayer.ReadyToStart := True;
-  MyNetPlayer.HasMapOrSave := True;
+  MyRoomSlot.ReadyToStart := True;
+  MyRoomSlot.HasMapOrSave := True;
 
   if Assigned(OnMapName) then
     OnMapName(aErrorMessage);
@@ -643,8 +643,8 @@ begin
   fNetPlayers.ResetLocAndReady; //Reset start locations
 
   fSelectGameKind := ngkMap;
-  MyNetPlayer.ReadyToStart := True;
-  MyNetPlayer.HasMapOrSave := True;
+  MyRoomSlot.ReadyToStart := True;
+  MyRoomSlot.HasMapOrSave := True;
   AbortAllTransfers; //Any ongoing transfer is cancelled
 
   SendMapOrSave;
@@ -691,8 +691,8 @@ begin
   fMyIndex := fNetPlayers.NicknameToLocal(fMyNickname); // host's index can change when players are removed
   fHostIndex := fMyIndex;
   // Set ReadyToStart and HasMapOrSave with updated fMyIndex
-  MyNetPlayer.ReadyToStart := True;
-  MyNetPlayer.HasMapOrSave := True;
+  MyRoomSlot.ReadyToStart := True;
+  MyRoomSlot.HasMapOrSave := True;
 
   //Randomise locations within team is disabled for saves
   fNetPlayers.RandomizeTeamLocations := False;
@@ -881,7 +881,7 @@ end;
 // Joiner indicates that he is ready to start
 function TKMNetworking.ReadyToStart: Boolean;
 begin
-  if (fSelectGameKind = ngkSave) and (MyNetPlayer.StartLocation = LOC_RANDOM) then
+  if (fSelectGameKind = ngkSave) and (MyRoomSlot.StartLocation = LOC_RANDOM) then
   begin
     PostLocalMessage(gResTexts[TX_LOBBY_ERROR_SELECT_PLAYER], csSystem);
     Exit(False);
@@ -889,11 +889,11 @@ begin
 
   if ((fSelectGameKind = ngkMap) and fMapInfo.IsValid) or
      ((fSelectGameKind = ngkSave) and fSaveInfo.IsValid) or
-     MyNetPlayer.IsSpectator then //Spectators can be ready without map selected
+     MyRoomSlot.IsSpectator then //Spectators can be ready without map selected
   begin
     //Toggle it
     PacketSend(NET_ADDRESS_HOST, mkReadyToStart);
-    Result := not MyNetPlayer.ReadyToStart;
+    Result := not MyRoomSlot.ReadyToStart;
   end
   else
   begin
@@ -1091,7 +1091,7 @@ begin
   fNetGameOptions.MissionDifficulty := aDifficulty;
 
   fNetPlayers.ResetReady;
-  MyNetPlayer.ReadyToStart := True;
+  MyRoomSlot.ReadyToStart := True;
 
   SendGameOptions;
   SendPlayerListAndRefreshPlayersSetup;
@@ -1152,11 +1152,11 @@ begin
 
   case aMode of
     cmTeam:
-      if MyNetPlayer.Team = 0 then
+      if MyRoomSlot.Team = 0 then
         PacketSend(fMyIndexOnServer, mkTextChat, M) //Send to self only if we have no team
       else
         for I := 1 to fNetPlayers.Count do
-          if (fNetPlayers[I].Team = MyNetPlayer.Team) and fNetPlayers[I].IsHuman and (fNetPlayers[I].IndexOnServer <> -1) then
+          if (fNetPlayers[I].Team = MyRoomSlot.Team) and fNetPlayers[I].IsHuman and (fNetPlayers[I].IndexOnServer <> -1) then
             PacketSend(fNetPlayers[I].IndexOnServer, mkTextChat, M); //Send to each player on team (includes self)
 
     cmSpectators:
@@ -1314,7 +1314,7 @@ begin
       lgsLobby:   begin
                      if InRange(fHostIndex, 1, fNetPlayers.Count) then
                        fNetPlayers[fHostIndex].ReadyToStart := False; //Old host is not ready anymore
-                     MyNetPlayer.ReadyToStart := True; //The host is always ready
+                     MyRoomSlot.ReadyToStart := True; //The host is always ready
                      fNetPlayers.SetAIReady; //Set all AI players to ready
                      SendGameOptions; //Only needs to be sent when in the lobby. Our version becomes standard.
                    end;
@@ -1365,7 +1365,7 @@ begin
     oldLoc := -1234; // some randor value, make compiler happy
     isPlayerInitBefore := MyIndex > 0;
     if isPlayerInitBefore then
-      oldLoc := MyNetPlayer.StartLocation;
+      oldLoc := MyRoomSlot.StartLocation;
 
     aM.Read(fHostIndex);
     fNetPlayers.LoadFromStream(aM); //Our index could have changed on players add/removal
@@ -1375,7 +1375,7 @@ begin
 
     if Assigned(OnUpdateMinimap)
     and ((isPlayerInitBefore
-      and (oldLoc <> MyNetPlayer.StartLocation))
+      and (oldLoc <> MyRoomSlot.StartLocation))
       or not isPlayerInitBefore) then
       OnUpdateMinimap;
   end;
@@ -1491,14 +1491,14 @@ procedure TKMNetworking.GameCreated;
 begin
   case fNetPlayerKind of
     lpkHost:   begin
-                  MyNetPlayer.ReadyToPlay := True;
+                  MyRoomSlot.ReadyToPlay := True;
                   PacketSend(NET_ADDRESS_OTHERS, mkReadyToPlay);
                   SendPlayerListAndRefreshPlayersSetup; //Initialise the in-game player setup
                   //Check this here because it is possible to start a multiplayer game without other humans, just AI (at least for debugging)
                   TryPlayGame;
                 end;
     lpkJoiner: begin
-                  MyNetPlayer.ReadyToPlay := True;
+                  MyRoomSlot.ReadyToPlay := True;
                   PacketSend(NET_ADDRESS_OTHERS, mkReadyToPlay);
                 end;
   end;
@@ -1717,8 +1717,8 @@ begin
                         fNetPlayers.AddPlayer(fMyNickname, fMyIndexOnServer, gResLocales.UserLocale, LOBBY_HOST_AS_SPECTATOR);
                         fMyIndex := fNetPlayers.NicknameToLocal(fMyNickname);
                         fHostIndex := fMyIndex;
-                        MyNetPlayer.ReadyToStart := True;
-                        MyNetPlayer.HasMapOrSave := True;
+                        MyRoomSlot.ReadyToStart := True;
+                        MyRoomSlot.HasMapOrSave := True;
                         if Assigned(OnPlayersSetup) then OnPlayersSetup;
                         SetGameState(lgsLobby);
                         gSoundPlayer.Play(sfxnMPChatSystem); //Sound for joining the lobby
@@ -2313,7 +2313,7 @@ begin
                 else
                 if tmpChatMode = cmWhisper then
                   // Notify sender, when he is muted
-                  PostMessage(TX_NET_MUTED, csSystem, MyNetPlayer.NicknameColoredU, '', aSenderIndex);
+                  PostMessage(TX_NET_MUTED, csSystem, MyRoomSlot.NicknameColoredU, '', aSenderIndex);
               end;
             end;
   end;
@@ -2473,9 +2473,9 @@ begin
   fIgnorePings := -1; //Ignore all pings until we have finished loading
 
   case fSelectGameKind of
-    ngkMap:  OnStartMap(fMapInfo.FileNameWithoutHash, fMapInfo.Kind, fMapInfo.CRC, MyNetPlayer.IsSpectator,
+    ngkMap:  OnStartMap(fMapInfo.FileNameWithoutHash, fMapInfo.Kind, fMapInfo.CRC, MyRoomSlot.IsSpectator,
                          fNetGameOptions.MissionDifficulty);
-    ngkSave: OnStartSave(fSaveInfo.FileName, MyNetPlayer.IsSpectator);
+    ngkSave: OnStartSave(fSaveInfo.FileName, MyRoomSlot.IsSpectator);
   else
     raise Exception.Create('Unexpected fSelectGameKind');
   end;
@@ -2671,7 +2671,7 @@ begin
   if fNetGameState = lgsGame then
   begin
     PacketSend(NET_ADDRESS_SERVER, mkFPS, aFPS);
-    MyNetPlayer.FPS := aFPS;
+    MyRoomSlot.FPS := aFPS;
   end;
 end;
 
@@ -2721,7 +2721,7 @@ begin
 end;
 
 
-function TKMNetworking.GetMyNetPlayer: TKMNetPlayerInfo;
+function TKMNetworking.GetMyRoomSlot: TKMNetRoomSlot;
 begin
   Result := fNetPlayers[fMyIndex];
 end;
@@ -2816,22 +2816,22 @@ begin
 end;
 
 
-//Get NetPlayer by hand index. If no NetPlayer found for specified aHandIndex, then nil returned
-function TKMNetworking.GetNetPlayerByHandIndex(aHandIndex: Integer): TKMNetPlayerInfo;
+// If no RoomSlot found for specified aHandIndex, then nil returned
+function TKMNetworking.GetRoomSlotByHandIndex(aHandIndex: Integer): TKMNetRoomSlot;
 var
   index: Integer;
 begin
   Result := nil;
   if Self = nil then Exit;
 
-  index := GetNetPlayerIndex(aHandIndex);
+  index := GetRoomSlotIndex(aHandIndex);
   if index <> -1 then
     Result := fNetPlayers[index];
 end;
 
 
-//Get NetPlayer index by hand index. If no NetPlayer found for specified aHandIndex, then -1 returned
-function TKMNetworking.GetNetPlayerIndex(aHandIndex: Integer): Integer;
+// If no RoomSlot found for specified aHandIndex, then -1 returned
+function TKMNetworking.GetRoomSlotIndex(aHandIndex: Integer): Integer;
 var
   I: Integer;
 begin

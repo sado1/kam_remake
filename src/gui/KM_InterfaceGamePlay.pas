@@ -2410,7 +2410,7 @@ begin
     // In replays we show the beacon directly without GIP. In spectator we use -1 for hand index
     case fUIMode of
       umReplay:   Alerts.AddBeacon(aLoc, gMySpectator.HandID, gMySpectator.Hand.FlagColor, gGameApp.GlobalTickCount + ALERT_DURATION[atBeacon]);
-      umSpectate: gGame.GameInputProcess.CmdGameBeacon(aLoc, HAND_NONE, gNetworking.MyNetPlayer.FlagColor);
+      umSpectate: gGame.GameInputProcess.CmdGameBeacon(aLoc, HAND_NONE, gNetworking.MyRoomSlot.FlagColor);
       else        gGame.GameInputProcess.CmdGameBeacon(aLoc, gMySpectator.HandID, gMySpectator.Hand.FlagColor);
     end;
     Beacon_Cancel;
@@ -3217,9 +3217,9 @@ begin
 
   Image_AlliesHostStar.Hide;
   // Can't vote if we already have, and spectators don't get to vote unless there's only spectators left
-  Button_Menu_ReturnLobby.Enabled := not gNetworking.MyNetPlayer.VotedYes
+  Button_Menu_ReturnLobby.Enabled := not gNetworking.MyRoomSlot.VotedYes
                                      and (gNetworking.NetPlayers.HasOnlySpectators
-                                          or not gNetworking.MyNetPlayer.IsSpectator);
+                                          or not gNetworking.MyRoomSlot.IsSpectator);
 
   UpdateNetPlayersMapping;
 

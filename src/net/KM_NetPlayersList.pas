@@ -10,8 +10,8 @@ const
   PING_COUNT = 20; //Number of pings to store and take the maximum over for latency calculation (pings are measured once per second)
 
 type
-  // Multiplayer info that is filled in before Hands are created (thats why it has many mirror fields)
-  TKMNetPlayerInfo = class
+  // Slot in the Room. Can be taken by Human/Computer or be closed
+  TKMNetRoomSlot = class
   private
     fNickname: AnsiString;
     fLangCode: AnsiString;
@@ -78,8 +78,8 @@ type
   TKMNetPlayersList = class
   private
     fCount: Integer;
-    fNetPlayers: array [1..MAX_LOBBY_SLOTS] of TKMNetPlayerInfo;
-    function GetPlayer(aIndex: Integer): TKMNetPlayerInfo;
+    fNetPlayers: array [1..MAX_LOBBY_SLOTS] of TKMNetRoomSlot;
+    function GetRoomSlot(aIndex: Integer): TKMNetRoomSlot;
     procedure ValidateColors(var aFixedLocsColors: TKMCardinalArray);
     procedure RemAllClosedPlayers;
   public
@@ -101,7 +101,7 @@ type
     procedure DropPlayer(aServerIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer = LAST_SENT_COMMANDS_TICK_NONE);
     procedure RemPlayer(aLocalIndex: Integer);
     procedure RemServerPlayer(aServerIndex: TKMNetHandleIndex);
-    property Player[aIndex: Integer]: TKMNetPlayerInfo read GetPlayer; default;
+    property Slots[aIndex: Integer]: TKMNetRoomSlot read GetRoomSlot; default;
 
     //Getters
     function ServerToLocal(aServerIndex: TKMNetHandleIndex): Integer;
@@ -152,22 +152,22 @@ uses
   KM_Log, KM_ResTexts, KM_CommonUtils, KM_HandsCollection;
 
 
-{ TKMNetPlayerInfo }
-procedure TKMNetPlayerInfo.AddPing(aPing: Word);
+{ TKMNetRoomSlot }
+procedure TKMNetRoomSlot.AddPing(aPing: Word);
 begin
   fPingPos := (fPingPos + 1) mod PING_COUNT;
   fPings[fPingPos] := aPing;
 end;
 
 
-procedure TKMNetPlayerInfo.ResetPingRecord;
+procedure TKMNetRoomSlot.ResetPingRecord;
 begin
   fPingPos := 0;
   FillChar(fPings, SizeOf(fPings), #0);
 end;
 
 
-function TKMNetPlayerInfo.GetFlagColor: Cardinal;
+function TKMNetRoomSlot.GetFlagColor: Cardinal;
 begin
   if Self = nil then Exit(0);
 
@@ -175,7 +175,7 @@ begin
 end;
 
 
-function TKMNetPlayerInfo.FlagColorDef(aDefaultColor: Cardinal = icWhite): Cardinal;
+function TKMNetRoomSlot.FlagColorDef(aDefaultColor: Cardinal = icWhite): Cardinal;
 begin
   if IsColorSet then
     Result := GetFlagColor
@@ -184,7 +184,7 @@ begin
 end;
 
 
-procedure TKMNetPlayerInfo.SetFlagColor(const Value: Cardinal);
+procedure TKMNetRoomSlot.SetFlagColor(const Value: Cardinal);
 begin
   if Self = nil then Exit;
 
@@ -192,7 +192,7 @@ begin
 end;
 
 
-procedure TKMNetPlayerInfo.SetLangCode(const aCode: AnsiString);
+procedure TKMNetRoomSlot.SetLangCode(const aCode: AnsiString);
 begin
   if gResLocales.IndexByCode(aCode) <> -1 then
     fLangCode := aCode;
@@ -200,26 +200,26 @@ end;
 
 
 //Check if other players need to wait this player, because of his last commands before disconnection
-function TKMNetPlayerInfo.NeedWaitForLastCommands(aTick: Integer): Boolean;
+function TKMNetRoomSlot.NeedWaitForLastCommands(aTick: Integer): Boolean;
 begin
   Result := (LastSentCommandsTick <> LAST_SENT_COMMANDS_TICK_NONE) and (LastSentCommandsTick >= aTick);
 end;
 
 
 //Do other player need to wait us at game tick aTick?
-function TKMNetPlayerInfo.NoNeedToWait(aTick: Integer): Boolean;
+function TKMNetRoomSlot.NoNeedToWait(aTick: Integer): Boolean;
 begin
   Result := not IsHuman or (Dropped and not NeedWaitForLastCommands(aTick));
 end;
 
 
-function TKMNetPlayerInfo.GetInstantPing: Word;
+function TKMNetRoomSlot.GetInstantPing: Word;
 begin
   Result := fPings[fPingPos];
 end;
 
 
-function TKMNetPlayerInfo.GetMaxPing: Word;
+function TKMNetRoomSlot.GetMaxPing: Word;
 var
   I: Integer;
   worst: Word;
@@ -240,55 +240,55 @@ begin
 end;
 
 
-function TKMNetPlayerInfo.IsHuman: Boolean;
+function TKMNetRoomSlot.IsHuman: Boolean;
 begin
   Result := PlayerNetType = nptHuman;
 end;
 
 
-function TKMNetPlayerInfo.IsColorSet: Boolean;
+function TKMNetRoomSlot.IsColorSet: Boolean;
 begin
   Result := fFlagColor <> 0; // We suggest color is not set if its 0 (also means its transparent, not black)
 end;
 
 
-procedure TKMNetPlayerInfo.ResetColor;
+procedure TKMNetRoomSlot.ResetColor;
 begin
   fFlagColor := 0;
 end;
 
 
-function TKMNetPlayerInfo.IsComputer: Boolean;
+function TKMNetRoomSlot.IsComputer: Boolean;
 begin
   Result := PlayerNetType in [nptComputerClassic, nptComputerAdvanced];
 end;
 
 
-function TKMNetPlayerInfo.IsClassicComputer: Boolean;
+function TKMNetRoomSlot.IsClassicComputer: Boolean;
 begin
   Result := PlayerNetType = nptComputerClassic;
 end;
 
 
-function TKMNetPlayerInfo.IsAdvancedComputer: Boolean;
+function TKMNetRoomSlot.IsAdvancedComputer: Boolean;
 begin
   Result := PlayerNetType = nptComputerAdvanced;
 end;
 
 
-function TKMNetPlayerInfo.IsClosed: Boolean;
+function TKMNetRoomSlot.IsClosed: Boolean;
 begin
   Result := PlayerNetType = nptClosed;
 end;
 
 
-function TKMNetPlayerInfo.IsSpectator: Boolean;
+function TKMNetRoomSlot.IsSpectator: Boolean;
 begin
   Result := StartLocation = LOC_SPECTATE;
 end;
 
 
-function TKMNetPlayerInfo.GetPlayerType: TKMHandType;
+function TKMNetRoomSlot.GetPlayerType: TKMHandType;
 const
   PlayerTypes: array [TKMNetPlayerType] of TKMHandType = (hndHuman, hndComputer, hndComputer, hndComputer);
 begin
@@ -296,7 +296,7 @@ begin
 end;
 
 
-function TKMNetPlayerInfo.SlotName: UnicodeString;
+function TKMNetRoomSlot.SlotName: UnicodeString;
 begin
   case PlayerNetType of
     nptHuman:     Result := NicknameU;
@@ -310,7 +310,7 @@ begin
 end;
 
 
-function TKMNetPlayerInfo.GetNickname: AnsiString;
+function TKMNetRoomSlot.GetNickname: AnsiString;
 begin
   if Self = nil then Exit('');
 
@@ -321,7 +321,7 @@ begin
 end;
 
 
-function TKMNetPlayerInfo.GetNicknameColored: AnsiString;
+function TKMNetRoomSlot.GetNicknameColored: AnsiString;
 begin
   if IsColorSet then
     Result := WrapColorA(Nickname, FlagColorToTextColor(FlagColor))
@@ -330,19 +330,19 @@ begin
 end;
 
 
-function TKMNetPlayerInfo.GetNicknameU: UnicodeString;
+function TKMNetRoomSlot.GetNicknameU: UnicodeString;
 begin
   Result := UnicodeString(GetNickname);
 end;
 
 
-function TKMNetPlayerInfo.GetNicknameColoredU: UnicodeString;
+function TKMNetRoomSlot.GetNicknameColoredU: UnicodeString;
 begin
   Result := UnicodeString(GetNicknameColored);
 end;
 
 
-function TKMNetPlayerInfo.GetHandIndex: Integer;
+function TKMNetRoomSlot.GetHandIndex: Integer;
 begin
   if Self = nil then Exit(-1);
   
@@ -352,7 +352,7 @@ begin
 end;
 
 
-procedure TKMNetPlayerInfo.Load(LoadStream: TKMemoryStream);
+procedure TKMNetRoomSlot.Load(LoadStream: TKMemoryStream);
 begin
   LoadStream.ReadA(fNickname);
   LoadStream.ReadA(fLangCode);
@@ -373,7 +373,7 @@ begin
 end;
 
 
-procedure TKMNetPlayerInfo.Save(SaveStream: TKMemoryStream);
+procedure TKMNetRoomSlot.Save(SaveStream: TKMemoryStream);
 begin
   SaveStream.WriteA(fNickname);
   SaveStream.WriteA(fLangCode);
@@ -402,7 +402,7 @@ begin
   inherited;
 
   for I := 1 to MAX_LOBBY_SLOTS do
-    fNetPlayers[I] := TKMNetPlayerInfo.Create;
+    fNetPlayers[I] := TKMNetRoomSlot.Create;
 
   Clear;
 end;
@@ -430,7 +430,7 @@ begin
 end;
 
 
-function TKMNetPlayersList.GetPlayer(aIndex: Integer): TKMNetPlayerInfo;
+function TKMNetPlayersList.GetRoomSlot(aIndex: Integer): TKMNetRoomSlot;
 begin
   if (Self = nil) or not InRange(aIndex, 1, MAX_LOBBY_SLOTS) then Exit(nil);
 
@@ -550,7 +550,7 @@ var
   I: Integer;
 begin
   for I := fCount downto 1 do
-    if Player[I].IsClosed then
+    if fNetPlayers[I].IsClosed then
       RemPlayer(I);
 end;
 
@@ -679,7 +679,7 @@ begin
   for I := aLocalIndex to fCount - 1 do
     fNetPlayers[I] := fNetPlayers[I + 1]; // Shift only pointers
 
-  fNetPlayers[fCount] := TKMNetPlayerInfo.Create; // Empty players are created but not used
+  fNetPlayers[fCount] := TKMNetRoomSlot.Create; // Empty slots are created but not used
   Dec(fCount);
 end;
 
@@ -767,10 +767,10 @@ begin
   if aLocalIndex = -1 then
     Result := -2 //Silent failure, client should try again
   else
-  if Player[aLocalIndex].Connected then
+  if fNetPlayers[aLocalIndex].Connected then
     Result := -2 //Silent failure, client should try again
   else
-  if Player[aLocalIndex].Dropped then
+  if fNetPlayers[aLocalIndex].Dropped then
     Result := TX_NET_RECONNECTION_DROPPED
   else
     Result := -1; //Success
@@ -1072,7 +1072,7 @@ var
   I: Integer;
 begin
   for I := fCount downto 1 do
-    if Player[I].IsComputer then
+    if fNetPlayers[I].IsComputer then
       RemPlayer(I);
 end;
 
@@ -1082,7 +1082,7 @@ var
   I: Integer;
 begin
   for I := fCount downto 1 do
-    if not Player[I].Connected then
+    if not fNetPlayers[I].Connected then
       RemPlayer(I);
 end;
 

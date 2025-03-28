@@ -870,13 +870,13 @@ const
   begin
     // Update gMySpectator
     FreeAndNil(gMySpectator); // May have been created earlier
-    if gNetworking.MyNetPlayer.IsSpectator then
+    if gNetworking.MyRoomSlot.IsSpectator then
     begin
       gMySpectator := TKMSpectator.Create(FindHandToSpec);
       gMySpectator.FOWIndex := HAND_NONE; // Show all by default while spectating
     end
     else
-      gMySpectator := TKMSpectator.Create(gNetworking.MyNetPlayer.HandIndex);
+      gMySpectator := TKMSpectator.Create(gNetworking.MyRoomSlot.HandIndex);
   end;
 
   procedure UpdateSpeeds;
@@ -1105,22 +1105,22 @@ end;
 function TKMGame.GetActiveHandIDs: TKMByteSet;
 var
   I: Integer;
-  netPlayer: TKMNetPlayerInfo;
+  netSlot: TKMNetRoomSlot;
 begin
   Result := [];
   if fParams.IsMultiPlayerOrSpec then
   begin
     for I := 1 to gNetworking.NetPlayers.Count do
     begin
-      netPlayer := gNetworking.NetPlayers[I];
-      if not netPlayer.IsHuman
-      or netPlayer.IsSpectator
-      or not netPlayer.Connected
-      or (netPlayer.HandIndex = -1)
-      or not gHands[netPlayer.HandIndex].Enabled then
+      netSlot := gNetworking.NetPlayers[I];
+      if not netSlot.IsHuman
+      or netSlot.IsSpectator
+      or not netSlot.Connected
+      or (netSlot.HandIndex = -1)
+      or not gHands[netSlot.HandIndex].Enabled then
         Continue;
 
-      Include(Result, netPlayer.HandIndex);
+      Include(Result, netSlot.HandIndex);
     end;
   end
   else
@@ -1706,7 +1706,7 @@ begin
       and gHands[I].IsHuman
       and not gHands[I].AI.HasLost then
     begin
-      netI := gNetworking.GetNetPlayerIndex(I);
+      netI := gNetworking.GetRoomSlotIndex(I);
       if (netI <> -1) and gNetworking.NetPlayers[netI].Connected then
         Exit;
     end;
@@ -2307,7 +2307,7 @@ begin
   if fParams.IsMultiPlayerOrSpec and (aMPLocalDataPathName <> '') then
   begin
     try
-      gameMPLocalData := TKMGameMPLocalData.Create(fLastReplayTickLocal, gNetworking.MyNetPlayer.StartLocation, fGamePlayInterface.Minimap);
+      gameMPLocalData := TKMGameMPLocalData.Create(fLastReplayTickLocal, gNetworking.MyRoomSlot.StartLocation, fGamePlayInterface.Minimap);
       try
         gameMPLocalData.SaveToFileAsync(aMPLocalDataPathName, aSaveWorkerThread);
       finally
@@ -3397,7 +3397,7 @@ begin
       and (TimeSince(fLastTimeUserAction) > PLAYER_AFK_TIME*60*1000)
       and (TimeSince(fLastAfkMessageSent) > PLAYER_AFK_MESSAGE_DELAY) then
     begin
-      gNetworking.PostMessage(TX_PLAYER_AFK_MESSAGE, csSystem, gNetworking.MyNetPlayer.NicknameColoredU,
+      gNetworking.PostMessage(TX_PLAYER_AFK_MESSAGE, csSystem, gNetworking.MyRoomSlot.NicknameColoredU,
                               WrapColor(IntToStr(TimeSince(fLastTimeUserAction) div 60000), icGoldenYellow));
       fLastAfkMessageSent := TimeGet;
     end;

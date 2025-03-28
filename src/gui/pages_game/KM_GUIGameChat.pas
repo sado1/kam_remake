@@ -350,7 +350,7 @@ procedure TKMGUIGameChat.Chat_MenuShow(Sender: TObject);
 var
   C: TKMControl;
   I: Integer;
-  n: TKMNetPlayerInfo;
+  slot: TKMNetRoomSlot;
 begin
   Menu_Chat.Clear;
 
@@ -358,21 +358,21 @@ begin
   Menu_Chat.AddItem(gResTexts[TX_CHAT_ALL], CHAT_MENU_ALL);
 
   //Only show "Team" if the player is on a team
-  if gNetworking.MyNetPlayer.Team <> 0 then
+  if gNetworking.MyRoomSlot.Team <> 0 then
     Menu_Chat.AddItem('[$66FF66]' + gResTexts[TX_CHAT_TEAM], CHAT_MENU_TEAM);
 
   //Only show "Spectator" if the player is a spectator
-  if gNetworking.MyNetPlayer.IsSpectator then
+  if gNetworking.MyRoomSlot.IsSpectator then
     Menu_Chat.AddItem('[$66FF66]' + gResTexts[TX_CHAT_SPECTATORS], CHAT_MENU_SPECTATORS);
 
   //Fill
   for I := 1 to gNetworking.NetPlayers.Count do
   if I <> gNetworking.MyIndex then //Can't whisper to self
   begin
-    n := gNetworking.NetPlayers[I];
+    slot := gNetworking.NetPlayers[I];
 
-    if n.IsHuman and n.Connected and not n.Dropped then
-      Menu_Chat.AddItem(n.NicknameColoredU, n.IndexOnServer);
+    if slot.IsHuman and slot.Connected and not slot.Dropped then
+      Menu_Chat.AddItem(slot.NicknameColoredU, slot.IndexOnServer);
   end;
 
   C := TKMControl(Sender);
