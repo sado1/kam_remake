@@ -107,7 +107,7 @@ type
     function ServerToLocal(aServerIndex: TKMNetHandleIndex): Integer;
     function NicknameToLocal(const aNickname: AnsiString): Integer;
     function StartingLocToLocal(aLoc: Integer): Integer;
-    function PlayerIndexToLocal(aHandIndex: TKMHandID): Integer;
+    function HandIndexToLocal(aHandIndex: TKMHandID): Integer;
 
     function CheckCanJoin(const aNick: AnsiString; aServerIndex: TKMNetHandleIndex): Integer;
     function CheckCanReconnect(aLocalIndex: Integer): Integer;
@@ -729,13 +729,13 @@ begin
 end;
 
 
-function TKMNetRoom.PlayerIndexToLocal(aHandIndex: TKMHandID): Integer;
+function TKMNetRoom.HandIndexToLocal(aHandIndex: TKMHandID): Integer;
 var
   I: Integer;
 begin
   Result := -1;
   for I := 1 to Count do
-    if (aHandIndex = fSlots[I].HandIndex) then
+    if aHandIndex = fSlots[I].HandIndex then
       Exit(I);
 end;
 

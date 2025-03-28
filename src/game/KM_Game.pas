@@ -980,13 +980,9 @@ const
     // Find enabled human hands, where if there is no net player on that loc
     // then disable all goals with this hand for other hands
     for I := 0 to gHands.Count - 1 do
-    begin
       if gHands[I].Enabled and gHands[I].IsHuman then
-      begin
-        if gNetworking.Room.PlayerIndexToLocal(I) = -1 then
+        if gNetworking.Room.HandIndexToLocal(I) = -1 then
           gHands.UpdateGoalsForHand(I, False);
-      end;
-    end;
   end;
 
 begin
@@ -1227,7 +1223,7 @@ procedure TKMGame.PlayerVictory(aHandIndex: TKMHandID);
 begin
   if fParams.IsMultiPlayerOrSpec then
   begin
-    if gNetworking.Room.PlayerIndexToLocal(aHandIndex) = -1 then
+    if gNetworking.Room.HandIndexToLocal(aHandIndex) = -1 then
       Exit;
 
     gNetworking.PostLocalMessage(
@@ -1687,7 +1683,7 @@ end;
 // Defeated / or not connected human players do not considered as well
 function TKMGame.IsMPGameSpeedChangeAllowed: Boolean;
 var
-  I, netI: Integer;
+  I, indexInRoom: Integer;
 begin
   Result := False;
   if Self = nil then Exit;
@@ -1705,8 +1701,8 @@ begin
   begin
     if gHands[I].Enabled and gHands[I].IsHuman and not gHands[I].AI.HasLost then
     begin
-      netI := gNetworking.GetRoomSlotIndex(I);
-      if (netI <> -1) and gNetworking.Room[netI].Connected then
+      indexInRoom := gNetworking.Room.HandIndexToLocal(I);
+      if (indexInRoom <> -1) and gNetworking.Room[indexInRoom].Connected then
         Exit;
     end;
   end;
@@ -2075,7 +2071,7 @@ const
   EXTRA_ALLOC_FOR_SAVE = 20 * 1024 * 1024; // Empirical value
 var
   gameInfo: TKMGameInfo;
-  I, netIndex: Integer;
+  I, indexInRoom: Integer;
   gameRes: TKMGameResultMsg;
   sizeToAllocate: Cardinal;
   isMulti: Boolean;
@@ -2122,17 +2118,17 @@ begin
       end
       else
       begin
-        netIndex := gNetworking.Room.PlayerIndexToLocal(I);
-        if netIndex <> -1 then
+        indexInRoom := gNetworking.Room.HandIndexToLocal(I);
+        if indexInRoom <> -1 then
         begin
           gameInfo.Enabled[I] := True;
-          gameInfo.CanBeHuman[I] := gNetworking.Room[netIndex].IsHuman;
-          gameInfo.CanBeClassicAI[I] := gNetworking.Room[netIndex].IsClassicComputer;
-          gameInfo.CanBeAdvancedAI[I] := gNetworking.Room[netIndex].IsAdvancedComputer;
-          gameInfo.OwnerNickname[I] := gNetworking.Room[netIndex].Nickname;
-          gameInfo.HandTypes[I] := gNetworking.Room[netIndex].GetPlayerType;
-          gameInfo.Color[I] := gNetworking.Room[netIndex].FlagColor;
-          gameInfo.Team[I] := gNetworking.Room[netIndex].Team;
+          gameInfo.CanBeHuman[I] := gNetworking.Room[indexInRoom].IsHuman;
+          gameInfo.CanBeClassicAI[I] := gNetworking.Room[indexInRoom].IsClassicComputer;
+          gameInfo.CanBeAdvancedAI[I] := gNetworking.Room[indexInRoom].IsAdvancedComputer;
+          gameInfo.OwnerNickname[I] := gNetworking.Room[indexInRoom].Nickname;
+          gameInfo.HandTypes[I] := gNetworking.Room[indexInRoom].GetPlayerType;
+          gameInfo.Color[I] := gNetworking.Room[indexInRoom].FlagColor;
+          gameInfo.Team[I] := gNetworking.Room[indexInRoom].Team;
         end
         else
         begin

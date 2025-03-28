@@ -234,9 +234,6 @@ type
     procedure UpdateState(aGlobalTickCount: cardinal);
     procedure UpdateStateIdle;
     procedure FPSMeasurement(aFPS: Cardinal);
-
-    function GetRoomSlotByHandIndex(aHandIndex: Integer): TKMNetRoomSlot;
-    function GetRoomSlotIndex(aHandIndex: Integer): Integer;
   end;
 
 
@@ -2813,34 +2810,6 @@ begin
     fNetRoom.ResetVote; //Only reset the vote now that the game has exited
     //Don't refresh player setup here since events aren't attached to lobby yet
   end;
-end;
-
-
-// If no RoomSlot found for specified aHandIndex, then nil returned
-function TKMNetworking.GetRoomSlotByHandIndex(aHandIndex: Integer): TKMNetRoomSlot;
-var
-  index: Integer;
-begin
-  Result := nil;
-  if Self = nil then Exit;
-
-  index := GetRoomSlotIndex(aHandIndex);
-  if index <> -1 then
-    Result := fNetRoom[index];
-end;
-
-
-// If no RoomSlot found for specified aHandIndex, then -1 returned
-function TKMNetworking.GetRoomSlotIndex(aHandIndex: Integer): Integer;
-var
-  I: Integer;
-begin
-  Result := -1;
-  if Self = nil then Exit;
-
-  for I := 1 to MAX_LOBBY_SLOTS do
-    if aHandIndex = fNetRoom[I].HandIndex then
-      Exit(I);
 end;
 
 
