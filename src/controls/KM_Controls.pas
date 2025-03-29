@@ -14,8 +14,8 @@ uses
 type
   TKMNotifyEventShift = procedure(Sender: TObject; Shift: TShiftState) of object;
   TKMNotifyEventMouseWheel = procedure(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean) of object;
+  TKMNotifyEventMouseMove = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState) of object;
 
-  TKMMouseMoveEvent = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState) of object;
   TKMMouseUpDownEvent = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton) of object;
   TNotifyEventKey = procedure(Sender: TObject; Key: Word) of object;
   TNotifyEventKeyFunc = function(Sender: TObject; Key: Word): Boolean of object;
@@ -46,7 +46,7 @@ type
 
     fControlIDCounter: Integer;
 
-    fMouseMoveSubsList: TList<TKMMouseMoveEvent>;
+    fMouseMoveSubsList: TList<TKMNotifyEventMouseMove>;
     fMouseDownSubsList: TList<TKMMouseUpDownEvent>;
     fMouseUpSubsList: TList<TKMMouseUpDownEvent>;
 
@@ -71,7 +71,7 @@ type
     property CtrlOver: TKMControl read fCtrlOver write SetCtrlOver;
     property CtrlUp: TKMControl read fCtrlUp write SetCtrlUp;
 
-    procedure AddMouseMoveCtrlSub(const aMouseMoveEvent: TKMMouseMoveEvent);
+    procedure AddMouseMoveCtrlSub(const aMouseMoveEvent: TKMNotifyEventMouseMove);
     procedure AddMouseDownCtrlSub(const aMouseDownEvent: TKMMouseUpDownEvent);
     procedure AddMouseUpCtrlSub(const aMouseUpEvent: TKMMouseUpDownEvent);
 
@@ -1684,7 +1684,7 @@ constructor TKMMasterControl.Create;
 begin
   inherited;
 
-  fMouseMoveSubsList := TList<TKMMouseMoveEvent>.Create;
+  fMouseMoveSubsList := TList<TKMNotifyEventMouseMove>.Create;
   fMouseDownSubsList := TList<TKMMouseUpDownEvent>.Create;
   fMouseUpSubsList := TList<TKMMouseUpDownEvent>.Create;
 end;
@@ -1705,7 +1705,7 @@ begin
 end;
 
 
-procedure TKMMasterControl.AddMouseMoveCtrlSub(const aMouseMoveEvent: TKMMouseMoveEvent);
+procedure TKMMasterControl.AddMouseMoveCtrlSub(const aMouseMoveEvent: TKMNotifyEventMouseMove);
 begin
   if Self = nil then Exit;
 
