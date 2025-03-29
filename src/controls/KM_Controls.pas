@@ -19,10 +19,10 @@ type
   TKMNotifyEventKey = procedure(Sender: TObject; Key: Word) of object;
   TKMNotifyEventKeyShift = procedure(Sender: TObject; Key: Word; Shift: TShiftState) of object;
   TKMNotifyEventXY = procedure(Sender: TObject; const aX, aY: Integer) of object;
+  TKMNotifyEventButton = procedure(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean) of object;
 
   TNotifyEventKeyFunc = function(Sender: TObject; Key: Word): Boolean of object;
   TNotifyEventKeyShiftFunc = function(Sender: TObject; Key: Word; Shift: TShiftState): Boolean of object;
-  TNotifyEvenClickHold = procedure(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean) of object;
   TPointEventShiftFunc = function (Sender: TObject; Shift: TShiftState; const X,Y: Integer): Boolean of object;
 
   TKMControlState = (csDown, csFocus, csOver);
@@ -144,7 +144,7 @@ type
     fOnClick: TNotifyEvent;
     fOnClickShift: TKMNotifyEventShift;
     fOnClickRight: TKMNotifyEventXY;
-    fOnClickHold: TNotifyEvenClickHold;
+    fOnClickHold: TKMNotifyEventButton;
     fOnDoubleClick: TNotifyEvent;
     fOnMouseWheel: TKMNotifyEventMouseWheel;
     fOnFocus: TBooleanObjEvent;
@@ -345,7 +345,7 @@ type
     property OnClick: TNotifyEvent read fOnClick write fOnClick;
     property OnClickShift: TKMNotifyEventShift read fOnClickShift write fOnClickShift;
     property OnClickRight: TKMNotifyEventXY read fOnClickRight write fOnClickRight;
-    property OnClickHold: TNotifyEvenClickHold read fOnClickHold write fOnClickHold;
+    property OnClickHold: TKMNotifyEventButton read fOnClickHold write fOnClickHold;
     property OnDoubleClick: TNotifyEvent read fOnDoubleClick write fOnDoubleClick;
     property OnMouseWheel: TKMNotifyEventMouseWheel read fOnMouseWheel write fOnMouseWheel;
     property OnFocus: TBooleanObjEvent read fOnFocus write fOnFocus;
