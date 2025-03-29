@@ -79,14 +79,14 @@ type
     function IsPlayerHandStillInGame(aSlotIndex: Integer): Boolean;
     procedure HandleMessageReassignHost(aSenderIndex: TKMNetHandleIndex; aStream: TKMemoryStream);
     procedure HandleMessagePlayerDisconnected(aSenderIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer);
-    procedure HandleMessagePlayersList(aM: TKMemoryStream);
+    procedure HandleMessagePlayersList(aStream: TKMemoryStream);
     procedure ReturnToLobbyVoteSucceeded;
     procedure ResetReturnToLobbyVote;
     procedure TransferOnCompleted(aClientIndex: TKMNetHandleIndex);
     procedure TransferOnPacket(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStream; out SendBufferEmpty: Boolean);
     function GetMyRoomSlot: TKMNetRoomSlot;
     procedure SetDownloadlInProgress(aSenderIndex: TKMNetHandleIndex; aValue: Boolean);
-    procedure HandleMessageFileRequest(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStream);
+    procedure HandleMessageFileRequest(aSenderIndex: TKMNetHandleIndex; aStream: TKMemoryStream);
     procedure HandleMessage(aMessageKind: TKMNetMessageKind; aStream: TKMemoryStream; aSenderIndex: TKMNetHandleIndex);
 
     procedure ConnectSucceed(Sender:TObject);
@@ -108,7 +108,7 @@ type
     function GetPacketsReceived(aKind: TKMNetMessageKind): Cardinal;
     function GetPacketsSent(aKind: TKMNetMessageKind): Cardinal;
 
-    procedure WriteInfoToJoinRoom(aM: TKMemoryStream);
+    procedure WriteInfoToJoinRoom(aStream: TKMemoryStream);
     function GetMapInfo: TKMMapInfo;
   public
     OnJoinSucc: TKMEvent;               // We were allowed to join
@@ -840,10 +840,10 @@ begin
 end;
 
 
-procedure TKMNetworking.WriteInfoToJoinRoom(aM: TKMemoryStream);
+procedure TKMNetworking.WriteInfoToJoinRoom(aStream: TKMemoryStream);
 begin
-  aM.Write(fRoomToJoin);
-  aM.Write(TKMGameRevision(GAME_REVISION_NUM));
+  aStream.Write(fRoomToJoin);
+  aStream.Write(TKMGameRevision(GAME_REVISION_NUM));
 end;
 
 
@@ -1358,7 +1358,7 @@ end;
 
 
 // Handle mkPLayerList message
-procedure TKMNetworking.HandleMessagePlayersList(aM: TKMemoryStream);
+procedure TKMNetworking.HandleMessagePlayersList(aStream: TKMemoryStream);
 var
   oldLoc: Integer;
   isPlayerInitBefore: Boolean;
@@ -1370,8 +1370,10 @@ begin
     if isPlayerInitBefore then
       oldLoc := MyRoomSlot.StartLocation;
 
-    aM.Read(fHostSlotIndex);
-    fNetRoom.LoadFromStream(aM); //Our index could have changed on players add/removal
+    aStream.Read(fHostSlotIndex);
+    fNetRoom.LoadFromStream(aStream);
+
+    // Our index could have changed on players add/removal
     fMySlotIndex := fNetRoom.NicknameToLocal(fMyNickname);
 
     if Assigned(OnPlayersSetup) then OnPlayersSetup;
@@ -2738,7 +2740,7 @@ begin
 end;
 
 
-procedure TKMNetworking.HandleMessageFileRequest(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStream);
+procedure TKMNetworking.HandleMessageFileRequest(aSenderIndex: TKMNetHandleIndex; aStream: TKMemoryStream);
 
   procedure AbortSend;
   begin
@@ -2752,7 +2754,7 @@ begin
   if IsHost then
   begin
     //Validate request and set up file sender
-    aM.ReadW(tmpStringW);
+    aStream.ReadW(tmpStringW);
     case fSelectGameKind of
       ngkMap: if ((tmpStringW = MapInfo.Name) or (tmpStringW = MapInfo.Name + '_' + IntToHex(MapInfo.CRC, 8))) then
               begin
