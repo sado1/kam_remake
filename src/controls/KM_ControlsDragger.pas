@@ -16,7 +16,7 @@ type
     fStartDragX: Integer;
     fStartDragY: Integer;
   public
-    OnMove: TNotifyEventXY;
+    OnMove: TKMNotifyEventXY;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer);
 
     procedure SetBounds(aMinusX, aMinusY, aPlusX, aPlusY: Integer);

@@ -16,12 +16,12 @@ type
   TKMNotifyEventMouseWheel = procedure(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean) of object;
   TKMNotifyEventMouseMove = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState) of object;
   TKMNotifyEventMouseButton = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton) of object;
+  TKMNotifyEventKey = procedure(Sender: TObject; Key: Word) of object;
+  TKMNotifyEventKeyShift = procedure(Key: Word; Shift: TShiftState) of object;
+  TKMNotifyEventXY = procedure(Sender: TObject; const aX, aY: Integer) of object;
 
-  TNotifyEventKey = procedure(Sender: TObject; Key: Word) of object;
   TNotifyEventKeyFunc = function(Sender: TObject; Key: Word): Boolean of object;
-  TNotifyEventKeyShift = procedure(Key: Word; Shift: TShiftState) of object;
   TNotifyEventKeyShiftFunc = function(Sender: TObject; Key: Word; Shift: TShiftState): Boolean of object;
-  TNotifyEventXY = procedure(Sender: TObject; const aX, aY: Integer) of object;
   TNotifyEvenClickHold = procedure(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean) of object;
   TPointEventShiftFunc = function (Sender: TObject; Shift: TShiftState; const X,Y: Integer): Boolean of object;
 
@@ -143,7 +143,7 @@ type
 
     fOnClick: TNotifyEvent;
     fOnClickShift: TKMNotifyEventShift;
-    fOnClickRight: TNotifyEventXY;
+    fOnClickRight: TKMNotifyEventXY;
     fOnClickHold: TNotifyEvenClickHold;
     fOnDoubleClick: TNotifyEvent;
     fOnMouseWheel: TKMNotifyEventMouseWheel;
@@ -344,7 +344,7 @@ type
 
     property OnClick: TNotifyEvent read fOnClick write fOnClick;
     property OnClickShift: TKMNotifyEventShift read fOnClickShift write fOnClickShift;
-    property OnClickRight: TNotifyEventXY read fOnClickRight write fOnClickRight;
+    property OnClickRight: TKMNotifyEventXY read fOnClickRight write fOnClickRight;
     property OnClickHold: TNotifyEvenClickHold read fOnClickHold write fOnClickHold;
     property OnDoubleClick: TNotifyEvent read fOnDoubleClick write fOnDoubleClick;
     property OnMouseWheel: TKMNotifyEventMouseWheel read fOnMouseWheel write fOnMouseWheel;

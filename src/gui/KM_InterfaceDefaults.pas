@@ -17,7 +17,7 @@ type
   TKMMenuPageCommon = class
   protected
     fMenuType: TKMMenuPageType;
-    OnKeyDown: TNotifyEventKeyShift;
+    OnKeyDown: TKMNotifyEventKeyShift;
     OnEscKeyDown: TNotifyEvent;
   public
     constructor Create(aMenuType: TKMMenuPageType);
