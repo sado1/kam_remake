@@ -175,6 +175,7 @@ const
   INTERP_LEVEL = 8;
 
 
+{ TKMRenderPool }
 constructor TKMRenderPool.Create(aViewport: TKMViewport; aRender: TKMRender);
 var
   RT: TRXType;
@@ -1969,7 +1970,7 @@ begin
 end;
 
 
-{ TRenderList }
+{ TKMRenderList }
 constructor TKMRenderList.Create;
 begin
   inherited;
