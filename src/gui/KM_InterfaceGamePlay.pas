@@ -3318,7 +3318,7 @@ end;
 
 procedure TKMGamePlayInterface.AlliesOnPingInfo;
 var
-  I, K, netI: Integer;
+  I, K, slotIndex: Integer;
   ping: Word;
   fps: Cardinal;
 begin
@@ -3327,14 +3327,14 @@ begin
   I := 0;
   for K := 0 to fPlayerLinesCnt - 1 do
   begin
-    netI := fLineIdToNetPlayerId[K];
+    slotIndex := fLineIdToNetPlayerId[K];
 
-    if netI = -1 then Continue; //In case we have AI players at hand, without NetI
+    if slotIndex = -1 then Continue; //In case we have AI players at hand, without slotIndex
 
-    if (I < gNetworking.Room.Count) and (gNetworking.Room[netI].IsHuman) then
+    if (I < gNetworking.Room.Count) and (gNetworking.Room[slotIndex].IsHuman) then
     begin
-      ping := gNetworking.Room[netI].GetInstantPing;
-      fps := gNetworking.Room[netI].FPS;
+      ping := gNetworking.Room[slotIndex].GetInstantPing;
+      fps := gNetworking.Room[slotIndex].FPS;
       Label_AlliesPing[I].Caption := WrapColor(IntToStr(ping), GetPingColor(ping));
       Label_AlliesPingFpsSlash[I].Caption := '/';
       Label_AlliesFPS[I].Caption := WrapColor(IntToStr(fps), GetFPSColor(fps));

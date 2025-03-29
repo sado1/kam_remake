@@ -19,6 +19,7 @@ type
     fFlagColor: Cardinal; //Flag color
     fPings: array[0 .. PING_COUNT-1] of Word; //Ring buffer
     fPingPos: Byte;
+    fFPS: Integer;
     procedure SetLangCode(const aCode: AnsiString);
     function GetNicknameColored: AnsiString;
     function GetNickname: AnsiString;
@@ -39,9 +40,9 @@ type
     Dropped: Boolean;        //Host elected to continue play without this player
     LastSentCommandsTick: Integer; {Last tick when this player sent GIP commands to others}  //todo: move it somewhere...?)
     DownloadInProgress: Boolean; //Player is in map/save download progress
-    FPS: Cardinal;
     VotedYes: Boolean;
-    procedure AddPing(aPing: Word);
+    procedure PerformanceAddFps(aFps: Word);
+    procedure PerformanceAddPing(aPing: Word);
     procedure ResetPingRecord;
     function NeedWaitForLastCommands(aTick: Integer): Boolean;
     function NoNeedToWait(aTick: Integer): Boolean;
@@ -67,6 +68,7 @@ type
     function IsColorSet: Boolean;
     procedure ResetColor;
     property HandIndex: Integer read GetHandIndex;
+    property FPS: Integer read fFPS;
 
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
@@ -153,7 +155,14 @@ uses
 
 
 { TKMNetRoomSlot }
-procedure TKMNetRoomSlot.AddPing(aPing: Word);
+procedure TKMNetRoomSlot.PerformanceAddFps(aFps: Word);
+begin
+  // As with pings, we might someday expand this to include N last values
+  fFPS := aFps;
+end;
+
+
+procedure TKMNetRoomSlot.PerformanceAddPing(aPing: Word);
 begin
   fPingPos := (fPingPos + 1) mod PING_COUNT;
   fPings[fPingPos] := aPing;

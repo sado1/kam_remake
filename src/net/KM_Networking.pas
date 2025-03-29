@@ -510,9 +510,9 @@ begin
     slotIndex := fNetRoom.ServerToLocal(playerHandle);
     if slotIndex <> -1 then
     begin
-      fNetRoom[slotIndex].AddPing(pingValue);
+      fNetRoom[slotIndex].PerformanceAddPing(pingValue);
       if slotIndex <> fMySlotIndex then // our own FPS was set immediately after measurement, without delay.
-        fNetRoom[slotIndex].FPS := fpsValue;
+        fNetRoom[slotIndex].PerformanceAddFps(fpsValue);
     end;
   end;
 
@@ -2669,7 +2669,8 @@ begin
   if fNetGameState = lgsGame then
   begin
     PacketSend(NET_ADDRESS_SERVER, mkFPS, aFPS);
-    MyRoomSlot.FPS := aFPS;
+    // We can set own FPS right away
+    MyRoomSlot.PerformanceAddFps(aFPS);
   end;
 end;
 
