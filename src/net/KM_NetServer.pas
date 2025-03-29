@@ -863,10 +863,10 @@ begin
               aData.Read(tmpInt); //Room to join
               aData.Read(gameRev);
               if InRange(tmpInt, 0, Length(fRoomInfo)-1)
-                and (fRoomInfo[tmpInt].HostHandle <> NET_ADDRESS_EMPTY)
-                //Once game has started don't ask for passwords so clients can reconnect
-                and (fRoomInfo[tmpInt].GameInfo.GameState = mgsLobby)
-                and (fRoomInfo[tmpInt].Password <> '') then
+              and (fRoomInfo[tmpInt].HostHandle <> NET_ADDRESS_EMPTY)
+              //Once game has started don't ask for passwords so clients can reconnect
+              and (fRoomInfo[tmpInt].GameInfo.GameState = mgsLobby)
+              and (fRoomInfo[tmpInt].Password <> '') then
                 SendMessage(aSenderHandle, mkReqPassword)
               else
                 AddClientToRoom(aSenderHandle, tmpInt, gameRev);
@@ -877,8 +877,8 @@ begin
               aData.Read(gameRev);
               aData.ReadA(tmpStringA); //Password
               if InRange(tmpInt, 0, Length(fRoomInfo)-1)
-                and (fRoomInfo[tmpInt].HostHandle <> NET_ADDRESS_EMPTY)
-                and (fRoomInfo[tmpInt].Password = tmpStringA) then
+              and (fRoomInfo[tmpInt].HostHandle <> NET_ADDRESS_EMPTY)
+              and (fRoomInfo[tmpInt].Password = tmpStringA) then
                 AddClientToRoom(aSenderHandle, tmpInt, gameRev)
               else
                 SendMessage(aSenderHandle, mkReqPassword);

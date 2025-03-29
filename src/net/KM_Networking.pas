@@ -108,7 +108,6 @@ type
     function GetPacketsReceived(aKind: TKMNetMessageKind): Cardinal;
     function GetPacketsSent(aKind: TKMNetMessageKind): Cardinal;
 
-    procedure WriteInfoToJoinRoom(aStream: TKMemoryStream);
     function GetMapInfo: TKMMapInfo;
   public
     OnJoinSucc: TKMEvent;               // We were allowed to join
@@ -840,21 +839,13 @@ begin
 end;
 
 
-procedure TKMNetworking.WriteInfoToJoinRoom(aStream: TKMemoryStream);
-begin
-  aStream.Write(fRoomToJoin);
-  aStream.Write(TKMGameRevision(GAME_REVISION_NUM));
-end;
-
-
 procedure TKMNetworking.SendPassword(const aPassword: AnsiString);
 var
   M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create;
-
-  WriteInfoToJoinRoom(M);
-
+  M.Write(fRoomToJoin);
+  M.Write(TKMGameRevision(GAME_REVISION_NUM));
   M.WriteA(aPassword);
   PacketSendS(NET_ADDRESS_SERVER, mkPassword, M);
   M.Free;
@@ -1671,10 +1662,10 @@ begin
               fMyIndexOnServer := tmpHandleIndex;
               //PostLocalMessage('Index on Server - ' + inttostr(fMyIndexOnServer));
 
-              // Now we can join the room we planned to
+              // Now we can try to join the room we planned to
               M2 := TKMemoryStreamBinary.Create;
-              WriteInfoToJoinRoom(M2);
-
+              M2.Write(fRoomToJoin);
+              M2.Write(TKMGameRevision(GAME_REVISION_NUM));
               PacketSendS(NET_ADDRESS_SERVER, mkJoinRoom, M2);
               M2.Free;
             end;
