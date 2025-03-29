@@ -41,7 +41,6 @@ type
   TPointEventSimple = procedure (const X,Y: Integer) of object;
   TPointFEvent = procedure (const aPoint: TKMPointF) of object;
   TBooleanEvent = procedure (aValue: Boolean) of object;
-  TBooleanObjEvent = procedure (Sender: TObject; aValue: Boolean) of object;
   TIntegerEvent = procedure (aValue: Integer) of object;
   TIntBoolEvent = procedure (aIntValue: Integer; aBoolValue: Boolean) of object;
   TObjectIntegerEvent = procedure (Sender: TObject; X: Integer) of object;

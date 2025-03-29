@@ -20,6 +20,8 @@ type
   TKMNotifyEventKeyShift = procedure(Sender: TObject; Key: Word; Shift: TShiftState) of object;
   TKMNotifyEventXY = procedure(Sender: TObject; const aX, aY: Integer) of object;
   TKMNotifyEventButton = procedure(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean) of object;
+  TKMNotifyEventBoolean = procedure (Sender: TObject; aValue: Boolean) of object;
+
   TKMNotifyFuncKey = function(Sender: TObject; Key: Word): Boolean of object; //todo -cPractical: This should be reworked to use standard "var aHandled" pattern
   TKMNotifyFuncKeyShift = function(Sender: TObject; Key: Word; Shift: TShiftState): Boolean of object; //todo -cPractical: This should be reworked to use standard "var aHandled" pattern
 
@@ -145,9 +147,9 @@ type
     fOnClickHold: TKMNotifyEventButton;
     fOnDoubleClick: TNotifyEvent;
     fOnMouseWheel: TKMNotifyEventMouseWheel;
-    fOnFocus: TBooleanObjEvent;
-    fOnChangeVisibility: TBooleanObjEvent;
-    fOnChangeEnableStatus: TBooleanObjEvent;
+    fOnFocus: TKMNotifyEventBoolean;
+    fOnChangeVisibility: TKMNotifyEventBoolean;
+    fOnChangeEnableStatus: TKMNotifyEventBoolean;
     fOnKeyDown: TKMNotifyFuncKeyShift;
     fOnKeyUp: TKMNotifyFuncKeyShift;
 
@@ -346,9 +348,9 @@ type
     property OnClickHold: TKMNotifyEventButton read fOnClickHold write fOnClickHold;
     property OnDoubleClick: TNotifyEvent read fOnDoubleClick write fOnDoubleClick;
     property OnMouseWheel: TKMNotifyEventMouseWheel read fOnMouseWheel write fOnMouseWheel;
-    property OnFocus: TBooleanObjEvent read fOnFocus write fOnFocus;
-    property OnChangeVisibility: TBooleanObjEvent read fOnChangeVisibility write fOnChangeVisibility;
-    property OnChangeEnableStatus: TBooleanObjEvent read fOnChangeEnableStatus write fOnChangeEnableStatus;
+    property OnFocus: TKMNotifyEventBoolean read fOnFocus write fOnFocus;
+    property OnChangeVisibility: TKMNotifyEventBoolean read fOnChangeVisibility write fOnChangeVisibility;
+    property OnChangeEnableStatus: TKMNotifyEventBoolean read fOnChangeEnableStatus write fOnChangeEnableStatus;
     property OnKeyDown: TKMNotifyFuncKeyShift read fOnKeyDown write fOnKeyDown;
     property OnKeyUp: TKMNotifyFuncKeyShift read fOnKeyUp write fOnKeyUp;
 
@@ -1754,11 +1756,11 @@ begin
       fCtrlFocus.FocusChanged(False);
       if fCtrlFocus <> nil then
       begin
-        if  Assigned(fCtrlFocus.fOnFocus) then
-            fCtrlFocus.fOnFocus(fCtrlFocus, False);
+        if Assigned(fCtrlFocus.fOnFocus) then
+          fCtrlFocus.fOnFocus(fCtrlFocus, False);
         // Reset Parent Panel FocusedControlIndex only for different parents
         if (aCtrl = nil) or (aCtrl.Parent <> fCtrlFocus.Parent) then
-            fCtrlFocus.Parent.ResetFocusedControlIndex;
+          fCtrlFocus.Parent.ResetFocusedControlIndex;
       end;
     end;
 
