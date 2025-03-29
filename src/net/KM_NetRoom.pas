@@ -980,19 +980,16 @@ begin
 end;
 
 
-//All human players who are not dropped are spectators
+// All human players who are not dropped are spectators
 function TKMNetRoom.HasOnlySpectators: Boolean;
 var
   I: Integer;
 begin
+  Result := True;
   for I := 1 to fCount do
     if (fSlots[I].PlayerNetType = nptHuman) and (fSlots[I].StartLocation <> LOC_SPECTATE)
     and not fSlots[I].Dropped then
-    begin
-      Result := False;
-      Exit;
-    end;
-  Result := True;
+      Exit(False);
 end;
 
 
