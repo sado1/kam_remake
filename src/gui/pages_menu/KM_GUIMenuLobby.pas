@@ -96,7 +96,7 @@ type
     procedure HandleError(const aMsg: UnicodeString);
 
     function AISlotsAvailable(aAIPlayerTypes: TKMNetPlayerTypeSet = [AI_PLAYER_TYPE_MIN..AI_PLAYER_TYPE_MAX]): Byte;
-    procedure MinimapLocClick(aValue: Integer);
+    procedure MinimapLocClick(Sender: TObject; const aLoc: Integer);
 
     function Speed2TrackBarPos(aSpeed: Single): Integer;
     function TrackBarPos2Speed(aTrackPos: Integer): Single;
@@ -590,7 +590,7 @@ begin
       Panel_SetupMinimap := TKMPanel.Create(Panel_Setup, 0, offY, 270, 200);
         MinimapView := TKMMinimapView.Create(fMinimap, Panel_SetupMinimap, 39, 4, 191, 191, True);
         MinimapView.ShowLocs := True; //In the minimap we want player locations to be shown
-        MinimapView.OnLocClick := MinimapLocClick;
+        MinimapView.OnMinimapLocationClick := MinimapLocClick;
 
       Panel_SetupTransfer := TKMPanel.Create(Panel_Setup, 0, offY, 270, 200);
         Button_SetupDownload := TKMButton.Create(Panel_SetupTransfer, 10, 0, 250, 30, gResTexts[TX_LOBBY_DOWNLOAD], bsMenu);
@@ -2114,8 +2114,8 @@ begin
 end;
 
 
-//Change starting location
-procedure TKMMenuLobby.MinimapLocClick(aValue: Integer);
+// Change starting location
+procedure TKMMenuLobby.MinimapLocClick(Sender: TObject; const aLoc: Integer);
 var
   I: Integer;
   canEdit: Boolean;
@@ -2127,7 +2127,7 @@ begin
 
   if canEdit then
   begin
-    gNetworking.SelectHand(aValue + 1, I);
+    gNetworking.SelectHand(aLoc + 1, I);
     //Host with HostDoesSetup could have given us some location we don't know about from a map/save we don't have
     if gNetworking.SelectGameKind <> ngkNone then
       DropBox_Loc[fSlotToLocal[I]].SelectByTag(gNetworking.Room[I].StartLocation);

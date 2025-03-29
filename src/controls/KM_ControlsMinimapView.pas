@@ -11,6 +11,7 @@ uses
 
 type
   TKMMinimapEvent = procedure (Sender: TObject; const aLocX, aLocY: Integer) of object;
+  TKMMinimapLocEvent = procedure (Sender: TObject; const aLoc: Integer) of object;
 
   // MinimapView relies on fMinimap and fViewport that provide all the data
   // MinimapView itself is just a painter
@@ -38,7 +39,7 @@ type
   protected
     procedure SetAnchors(aValue: TKMAnchorsSet); override;
   public
-    OnLocClick: TIntegerEvent;
+    OnMinimapLocationClick: TKMMinimapLocEvent;
 
     constructor Create(aMinimap: TKMMinimap; aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aWithBevel: Boolean = False);
 
@@ -219,10 +220,10 @@ begin
     T := MapCoordsToLocal(fMinimap.HandLocs[I].X, fMinimap.HandLocs[I].Y, fLocRad);
     if Sqr(T.X - X) + Sqr(T.Y - Y) < Sqr(fLocRad) then
     begin
-      if Assigned(OnLocClick) then
-        OnLocClick(I);
+      if Assigned(OnMinimapLocationClick) then
+        OnMinimapLocationClick(Self, I);
 
-      //Do not repeat events for stacked locations
+      // Do not repeat events for overlapping locations
       Break;
     end;
   end;

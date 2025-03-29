@@ -55,7 +55,7 @@ type
 
     procedure StartClick(Sender: TObject);
     procedure ListSort(aColumn: Integer);
-    procedure MinimapLocClick(aValue: Integer);
+    procedure MinimapLocClick(Sender: TObject; const aLoc: Integer);
     procedure ReadmeClick(Sender: TObject);
 
     procedure BackClick(Sender: TObject);
@@ -217,7 +217,7 @@ begin
       //Minimap preview
       MinimapView := TKMMinimapView.Create(fMinimap, Panel_Desc, 4, 332, 191, 191, True);
       MinimapView.Anchors := [anLeft, anBottom];
-      MinimapView.OnLocClick := MinimapLocClick;
+      MinimapView.OnMinimapLocationClick := MinimapLocClick;
 
       descL := MinimapView.Right + 10;
 
@@ -834,9 +834,9 @@ begin
 end;
 
 
-procedure TKMMenuSingleMap.MinimapLocClick(aValue: Integer);
+procedure TKMMenuSingleMap.MinimapLocClick(Sender: TObject; const aLoc: Integer);
 begin
-  fSingleLoc := aValue;
+  fSingleLoc := aLoc;
 
   DropBox_Loc.SelectByTag(fSingleLoc);
 
