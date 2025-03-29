@@ -30,7 +30,7 @@ type
 
     fNetServer: TKMDedicatedServer;
     fNetClient: TKMNetClient;
-    fServerQuery: TKMServerQuery;
+    fNetServerQuery: TKMServerQuery;
     fNetPlayerKind: TKMNetPlayerKind; // Our role (Host or Joiner)
     fNetGameState: TKMNetGameState;
     fServerAddress: string; // Used for reconnecting
@@ -168,7 +168,7 @@ type
     function IsMap: Boolean;
 
     //Lobby
-    property ServerQuery: TKMServerQuery read fServerQuery;
+    property ServerQuery: TKMServerQuery read fNetServerQuery;
     procedure Host(const aServerName: AnsiString; aPort: Word; const aNickname: AnsiString; aAnnounceServer, aAnnounceUDP: Boolean);
     procedure Join(const aServerAddress: string; aPort: Word; const aNickname: AnsiString; aRoom: Integer; aIsReconnection: Boolean = False);
     procedure AnnounceDisconnect(aLastSentCmdsTick: Cardinal = LAST_SENT_COMMANDS_TICK_NONE);
@@ -272,7 +272,7 @@ begin
   // Handle all 'background (unhandled)' exceptions, so we will be able to intercept them with madExcept
   fNetClient.SetHandleBackgrounException;
   fNetRoom := TKMNetRoom.Create;
-  fServerQuery := TKMServerQuery.Create(aMasterServerAddress, aServerUDPScanPort);
+  fNetServerQuery := TKMServerQuery.Create(aMasterServerAddress, aServerUDPScanPort);
   fNetGameOptions := TKMGameOptions.Create;
   fFileSenderManager := TKMFileSenderManager.Create;
   fMutedPlayersList := TList<Integer>.Create;
@@ -291,7 +291,7 @@ begin
   fNetRoom.Free;
   fNetServer.Free;
   fNetClient.Free;
-  fServerQuery.Free;
+  fNetServerQuery.Free;
   fFileSenderManager.Free;
   fMutedPlayersList.Free;
   FreeAndNil(fMapInfo);
@@ -2655,7 +2655,7 @@ begin
   fNetServer.UpdateState; //Server measures pings etc.
   //LNet requires network update calls unless it is being used as visual components
   fNetClient.UpdateStateIdle;
-  fServerQuery.UpdateStateIdle;
+  fNetServerQuery.UpdateStateIdle;
   fFileSenderManager.UpdateStateIdle(fNetClient.SendBufferEmpty);
 end;
 
