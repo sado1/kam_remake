@@ -78,7 +78,7 @@ type
     procedure DoReconnection;
     procedure PlayerJoined(aServerIndex: TKMNetHandleIndex; const aPlayerName: AnsiString);
     function IsPlayerHandStillInGame(aSlotIndex: Integer): Boolean;
-    procedure ReassignHost(aSenderIndex: TKMNetHandleIndex; M: TKMemoryStream);
+    procedure ReassignHost(aSenderIndex: TKMNetHandleIndex; aStream: TKMemoryStream);
     procedure PlayerDisconnected(aSenderIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer);
     procedure PlayersListReceived(aM: TKMemoryStream);
     procedure ReturnToLobbyVoteSucceeded;
@@ -1275,19 +1275,20 @@ end;
 
 
 // Handle mkReassignHost message
-procedure TKMNetworking.ReassignHost(aSenderIndex: TKMNetHandleIndex; M: TKMemoryStream);
+procedure TKMNetworking.ReassignHost(aSenderIndex: TKMNetHandleIndex; aStream: TKMemoryStream);
 var
   newHostIndex, oldHostIndex: TKMNetHandleIndex;
   passwordA: AnsiString;
   descriptionW: UnicodeString;
 begin
-  M.Read(newHostIndex);
+  aStream.Read(newHostIndex);
   if fFileReceiver <> nil then
   begin
     FreeAndNil(fFileReceiver); //Transfer is aborted if host disconnects/changes
     //Reset, otherwise it will freeze in "downloading" state
     if Assigned(OnMapMissing) then OnMapMissing('', False); //Set empty str as error msg for now
   end;
+
   if IsHost then
   begin
     //We are no longer the host
@@ -1296,16 +1297,18 @@ begin
     if Assigned(OnReassignedJoiner) then OnReassignedJoiner; //Lobby/game might need to know
     if Assigned(OnPlayersSetup) then OnPlayersSetup;
   end;
+
   if newHostIndex = fMyIndexOnServer then
   begin
-    //We are now the host
+    // We are now the Host!
     fNetPlayerKind := lpkHost;
     fMySlotIndex := fNetRoom.NicknameToLocal(fMyNickname);
 
     oldHostIndex := fHostSlotIndex;
 
+    // Lobby/game might need to know that we are now hosting
     if Assigned(OnReassignedHost) then
-      OnReassignedHost; //Lobby/game might need to know that we are now hosting
+      OnReassignedHost;
 
     case fNetGameState of
       lgsLobby:   begin
@@ -1325,8 +1328,8 @@ begin
 
     //Server tells us the password and description in this packet,
     //so they aren't reset when the host is changed
-    M.ReadA(passwordA);
-    M.ReadW(descriptionW);
+    aStream.ReadA(passwordA);
+    aStream.ReadW(descriptionW);
     fPassword := passwordA;
     fDescription := descriptionW;
 
