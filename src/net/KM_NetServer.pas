@@ -128,14 +128,14 @@ type
     procedure Status(const S: string);
     procedure ClientConnect(aHandle: TKMNetHandleIndex);
     procedure ClientDisconnect(aHandle: TKMNetHandleIndex);
-    procedure SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind); overload;
-    procedure SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer; aImmediate: Boolean = False); overload;
-    procedure SendMessageInd(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aIndexOnServer: TKMNetHandleIndex; aImmediate: Boolean = False);
-    procedure SendMessageA(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: AnsiString);
-    procedure SendMessageW(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: UnicodeString);
-    procedure SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream); overload;
-    procedure SendMessageToRoom(aKind: TKMNetMessageKind; aRoom: Integer; aStream: TKMemoryStream); overload;
-    procedure SendMessageAct(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream; aImmediate: Boolean = False);
+    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind); overload;
+    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer; aImmediate: Boolean = False); overload;
+    procedure PacketSendInd(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aIndexOnServer: TKMNetHandleIndex; aImmediate: Boolean = False);
+    procedure PacketSendA(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: AnsiString);
+    procedure PacketSendW(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: UnicodeString);
+    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream); overload;
+    procedure PacketSendToRoom(aKind: TKMNetMessageKind; aRoom: Integer; aStream: TKMemoryStream); overload;
+    procedure SendData(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream; aImmediate: Boolean = False);
     procedure ScheduleSendData(aRecipient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal; aFlushQueue: Boolean = False);
     procedure SendScheduledData(aServerClient: TKMServerClient);
     procedure DoSendData(aRecipient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
@@ -413,7 +413,7 @@ begin
     M.Write(fClientList[I].FPS);
     //gLog.AddTime(Format('Client %d measured ping = %d FPS = %d', [fClientList[I].Handle, fClientList[I].Ping, fClientList[I].FPS]));
   end;
-  SendMessage(NET_ADDRESS_ALL, mkPingFpsInfo, M);
+  PacketSend(NET_ADDRESS_ALL, mkPingFpsInfo, M);
   M.Free;
 
   //Measure pings. Iterate backwards so the indexes are maintained after kicking clients
@@ -421,14 +421,14 @@ begin
     if fClientList[I].fPingStarted = 0 then //We have recieved mkPong for our previous measurement, so start a new one
     begin
       fClientList[I].fPingStarted := tickCount;
-      SendMessage(fClientList[I].fHandle, mkPing);
+      PacketSend(fClientList[I].fHandle, mkPing);
     end
     else
       //If they don't respond within a reasonable time, kick them
       if TimeSince(fClientList[I].fPingStarted) > fKickTimeout*1000 then
       begin
         Status('Client timed out ' + inttostr(fClientList[I].fHandle));
-        SendMessage(fClientList[I].fHandle, mkKicked, TX_NET_KICK_TIMEOUT, True);
+        PacketSend(fClientList[I].fHandle, mkKicked, TX_NET_KICK_TIMEOUT, True);
         fServer.Kick(fClientList[I].fHandle);
       end;
 end;
@@ -462,7 +462,7 @@ begin
   else
     PacketsAccumulatingDelay := aPacketsAccDelay;
   if fServerName <> aServerName then
-    SendMessageA(NET_ADDRESS_ALL, mkServerName, aServerName);
+    PacketSendA(NET_ADDRESS_ALL, mkServerName, aServerName);
   fServerName := aServerName;
 end;
 
@@ -482,10 +482,10 @@ end;
 procedure TKMNetServer.ClientConnect(aHandle: TKMNetHandleIndex);
 begin
   fClientList.AddPlayer(aHandle, -1); //Clients are not initially put into a room, they choose a room later
-  SendMessageA(aHandle, mkNetProtocolVersion, NET_PROTOCOL_REVISON); //First make sure they are using the right version
-  if fWelcomeMessage <> '' then SendMessageW(aHandle, mkWelcomeMessage, fWelcomeMessage); //Welcome them to the server
-  SendMessageA(aHandle, mkServerName, fServerName);
-  SendMessageInd(aHandle, mkIndexOnServer, aHandle); //This is the signal that the client may now start sending
+  PacketSendA(aHandle, mkNetProtocolVersion, NET_PROTOCOL_REVISON); //First make sure they are using the right version
+  if fWelcomeMessage <> '' then PacketSendW(aHandle, mkWelcomeMessage, fWelcomeMessage); //Welcome them to the server
+  PacketSendA(aHandle, mkServerName, fServerName);
+  PacketSendInd(aHandle, mkIndexOnServer, aHandle); //This is the signal that the client may now start sending
 end;
 
 
@@ -500,7 +500,7 @@ begin
   begin
     if not AddNewRoom then //Create a new room for this client
     begin
-      SendMessage(aHandle, mkRefuseToJoin, TX_NET_INVALID_ROOM, True);
+      PacketSend(aHandle, mkRefuseToJoin, TX_NET_INVALID_ROOM, True);
       fServer.Kick(aHandle);
       Exit;
     end;
@@ -511,7 +511,7 @@ begin
       aRoom := GetFirstAvailableRoom; //Take the first one which has a space (or create a new one if none have spaces)
       if aRoom = -1 then //No rooms available
       begin
-        SendMessage(aHandle, mkRefuseToJoin, TX_NET_INVALID_ROOM, True);
+        PacketSend(aHandle, mkRefuseToJoin, TX_NET_INVALID_ROOM, True);
         fServer.Kick(aHandle);
         Exit;
       end;
@@ -520,7 +520,7 @@ begin
       //If the room is outside the valid range
       if not InRange(aRoom, 0, fRoomCount - 1) then
       begin
-        SendMessage(aHandle, mkRefuseToJoin, TX_NET_INVALID_ROOM, True);
+        PacketSend(aHandle, mkRefuseToJoin, TX_NET_INVALID_ROOM, True);
         fServer.Kick(aHandle);
         Exit;
       end;
@@ -529,7 +529,7 @@ begin
   for I := 0 to Length(fRoomInfo[aRoom].BannedIPs) - 1 do
     if fRoomInfo[aRoom].BannedIPs[I] = fServer.GetIP(aHandle) then
     begin
-      SendMessage(aHandle, mkRefuseToJoin, TX_NET_BANNED_BY_HOST, True);
+      PacketSend(aHandle, mkRefuseToJoin, TX_NET_BANNED_BY_HOST, True);
       fServer.Kick(aHandle);
       Exit;
     end;
@@ -546,7 +546,7 @@ begin
   else
   if fRoomInfo[aRoom].GameRevision <> aGameRevision then //Usually should never happen
   begin
-    SendMessage(aHandle, mkRefuseToJoin, TX_NET_HOST_GAME_VERSION_DONT_MATCH, True);
+    PacketSend(aHandle, mkRefuseToJoin, TX_NET_HOST_GAME_VERSION_DONT_MATCH, True);
     fServer.Kick(aHandle);
     Exit;
   end;
@@ -557,7 +557,7 @@ begin
   M := TKMemoryStreamBinary.Create;
   M.Write(fRoomInfo[aRoom].HostHandle);
   fGameFilter.Save(M);
-  SendMessage(aHandle, mkConnectedToRoom, M);
+  PacketSend(aHandle, mkConnectedToRoom, M);
   M.Free;
 
   MeasurePings;
@@ -593,7 +593,7 @@ begin
   if room = -1 then Exit; //The client was not assigned a room yet
 
   //Send message to all remaining clients that client has disconnected
-  SendMessageInd(NET_ADDRESS_ALL, mkClientLost, aHandle);
+  PacketSendInd(NET_ADDRESS_ALL, mkClientLost, aHandle);
 
   //Assign a new host
   if fRoomInfo[room].HostHandle = aHandle then
@@ -615,7 +615,7 @@ begin
       M.Write(fRoomInfo[room].HostHandle);
       M.WriteA(fRoomInfo[room].Password);
       M.WriteW(fRoomInfo[room].GameInfo.Description);
-      SendMessageToRoom(mkReassignHost, room, M);
+      PacketSendToRoom(mkReassignHost, room, M);
       M.Free;
 
       Status('Reassigned hosting rights for room ' + inttostr(room) + ' to ' + inttostr(fRoomInfo[room].HostHandle));
@@ -625,39 +625,39 @@ begin
 end;
 
 
-procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind);
+procedure TKMNetServer.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind);
 var
   M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create; //Send empty stream
-  SendMessageAct(aRecipient, aKind, M);
+  SendData(aRecipient, aKind, M);
   M.Free;
 end;
 
 
-procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer; aImmediate: Boolean = False);
+procedure TKMNetServer.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer; aImmediate: Boolean = False);
 var
   M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create;
   M.Write(aParam);
-  SendMessageAct(aRecipient, aKind, M, aImmediate);
+  SendData(aRecipient, aKind, M, aImmediate);
   M.Free;
 end;
 
 
-procedure TKMNetServer.SendMessageInd(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aIndexOnServer: TKMNetHandleIndex; aImmediate: Boolean = False);
+procedure TKMNetServer.PacketSendInd(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aIndexOnServer: TKMNetHandleIndex; aImmediate: Boolean = False);
 var
   M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create;
   M.Write(aIndexOnServer);
-  SendMessageAct(aRecipient, aKind, M, aImmediate);
+  SendData(aRecipient, aKind, M, aImmediate);
   M.Free;
 end;
 
 
-procedure TKMNetServer.SendMessageA(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: AnsiString);
+procedure TKMNetServer.PacketSendA(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: AnsiString);
 var
   M: TKMemoryStream;
 begin
@@ -665,12 +665,12 @@ begin
 
   M := TKMemoryStreamBinary.Create;
   M.WriteA(aText);
-  SendMessageAct(aRecipient, aKind, M);
+  SendData(aRecipient, aKind, M);
   M.Free;
 end;
 
 
-procedure TKMNetServer.SendMessageW(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: UnicodeString);
+procedure TKMNetServer.PacketSendW(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: UnicodeString);
 var
   M: TKMemoryStream;
 begin
@@ -678,31 +678,31 @@ begin
 
   M := TKMemoryStreamBinary.Create;
   M.WriteW(aText);
-  SendMessageAct(aRecipient, aKind, M);
+  SendData(aRecipient, aKind, M);
   M.Free;
 end;
 
 
-procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream);
+procedure TKMNetServer.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream);
 begin
   //Send stream without changes
-  SendMessageAct(aRecipient, aKind, aStream);
+  SendData(aRecipient, aKind, aStream);
 end;
 
 
-procedure TKMNetServer.SendMessageToRoom(aKind: TKMNetMessageKind; aRoom: Integer; aStream: TKMemoryStream);
+procedure TKMNetServer.PacketSendToRoom(aKind: TKMNetMessageKind; aRoom: Integer; aStream: TKMemoryStream);
 var
   I: Integer;
 begin
   //Iterate backwards because sometimes calling Send results in ClientDisconnect (LNet only?)
   for I := fClientList.Count - 1 downto 0 do
     if fClientList[i].Room = aRoom then
-      SendMessage(fClientList[i].Handle, aKind, aStream);
+      PacketSend(fClientList[i].Handle, aKind, aStream);
 end;
 
 
 //Assemble the packet as [Sender.Recepient.Length.Data]
-procedure TKMNetServer.SendMessageAct(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream; aImmediate: Boolean = False);
+procedure TKMNetServer.SendData(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream; aImmediate: Boolean = False);
 var
   I: Integer;
   M: TKMemoryStream;
@@ -867,7 +867,7 @@ begin
               //Once game has started don't ask for passwords so clients can reconnect
               and (fRoomInfo[tmpInt].GameInfo.GameState = mgsLobby)
               and (fRoomInfo[tmpInt].Password <> '') then
-                SendMessage(aSenderHandle, mkReqPassword)
+                PacketSend(aSenderHandle, mkReqPassword)
               else
                 AddClientToRoom(aSenderHandle, tmpInt, gameRev);
             end;
@@ -881,7 +881,7 @@ begin
               and (fRoomInfo[tmpInt].Password = tmpStringA) then
                 AddClientToRoom(aSenderHandle, tmpInt, gameRev)
               else
-                SendMessage(aSenderHandle, mkReqPassword);
+                PacketSend(aSenderHandle, mkReqPassword);
             end;
     mkSetPassword:
             if senderIsHost then
@@ -901,7 +901,7 @@ begin
               aData.Read(tmpSmallInt);
               if fClientList.GetByHandle(tmpSmallInt) <> nil then
               begin
-                SendMessage(tmpSmallInt, mkKicked, TX_NET_KICK_BY_HOST, True);
+                PacketSend(tmpSmallInt, mkKicked, TX_NET_KICK_BY_HOST, True);
                 fServer.Kick(tmpSmallInt);
               end;
             end;
@@ -912,7 +912,7 @@ begin
               if fClientList.GetByHandle(tmpSmallInt) <> nil then
               begin
                 BanPlayerFromRoom(tmpSmallInt, senderRoom);
-                SendMessage(tmpSmallInt, mkKicked, TX_NET_BANNED_BY_HOST, True);
+                PacketSend(tmpSmallInt, mkKicked, TX_NET_BANNED_BY_HOST, True);
                 fServer.Kick(tmpSmallInt);
               end;
             end;
@@ -928,7 +928,7 @@ begin
                 M2.Write(fRoomInfo[senderRoom].HostHandle);
                 M2.WriteA(fRoomInfo[senderRoom].Password);
                 M2.WriteW(fRoomInfo[senderRoom].GameInfo.Description);
-                SendMessageToRoom(mkReassignHost, senderRoom, M2);
+                PacketSendToRoom(mkReassignHost, senderRoom, M2);
                 M2.Free;
               end;
             end;
@@ -941,7 +941,7 @@ begin
             begin
               M2 := TKMemoryStreamBinary.Create;
               SaveToStream(M2);
-              SendMessage(aSenderHandle, mkServerInfo, M2);
+              PacketSend(aSenderHandle, mkServerInfo, M2);
               M2.Free;
             end;
     mkFPS:  begin
