@@ -1173,13 +1173,10 @@ end;
 
 procedure TKMMenuLobby.FileDownloadClick(Sender: TObject);
 begin
-  if Sender = Button_SetupDownload then
-  begin
-    gNetworking.RequestFileTransfer;
-    Button_SetupDownload.Hide;
-    Lobby_OnFileTransferProgress(1, 0);
-    PercentBar_SetupProgress.Caption := gResTexts[TX_LOBBY_DOWNLOADING];
-  end;
+  gNetworking.RequestFileTransfer;
+  Button_SetupDownload.Hide;
+  Lobby_OnFileTransferProgress(1, 0);
+  PercentBar_SetupProgress.Caption := gResTexts[TX_LOBBY_DOWNLOADING];
 end;
 
 
@@ -2711,7 +2708,7 @@ begin
   Button_SetupDownload.Show;
   Lobby_OnFileTransferProgress(0, 0); //Reset progress bar
   if aStartTransfer then
-    FileDownloadClick(Button_SetupDownload);
+    FileDownloadClick(nil);
 end;
 
 
