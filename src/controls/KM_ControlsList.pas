@@ -13,6 +13,8 @@ uses
 
 
 type
+  TKMNotifyFuncShiftXY = function (Sender: TObject; Shift: TShiftState; const X,Y: Integer): Boolean of object;
+
   TKMSearchableList = class(TKMControl)
   private
     fSearch: UnicodeString; //Contains user input characters we should search for
@@ -242,7 +244,7 @@ type
     fMouseOverCell: TKMPoint;
     fScrollBar: TKMScrollBar;
     fOnCellClick: TPointEventFunc;
-    fOnCellClickShift: TPointEventShiftFunc;
+    fOnCellClickShift: TKMNotifyFuncShiftXY;
     fOnChangeInvoked: Boolean;
     procedure SetBackAlpha(aValue: Single);
     procedure SetEdgeAlpha(aValue: Single);
@@ -331,7 +333,7 @@ type
     //Sort properties are just hints to render Up/Down arrows. Actual sorting is done by client
     property OnColumnClick: TIntegerEvent read GetOnColumnClick write SetOnColumnClick;
     property OnCellClick: TPointEventFunc read fOnCellClick write fOnCellClick;
-    property OnCellClickShift: TPointEventShiftFunc read fOnCellClickShift write fOnCellClickShift;
+    property OnCellClickShift: TKMNotifyFuncShiftXY read fOnCellClickShift write fOnCellClickShift;
     property SortIndex: Integer read GetSortIndex write SetSortIndex;
     property SortDirection: TKMSortDirection read GetSortDirection write SetSortDirection;
 

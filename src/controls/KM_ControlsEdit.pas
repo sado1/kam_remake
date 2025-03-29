@@ -84,7 +84,7 @@ type
     ShowColors: Boolean;
     DrawOutline: Boolean;
     OutlineColor: Cardinal;
-    OnIsKeyEventHandled: TNotifyEventKeyFunc; //Invoked to check is key overrides default handle policy or not
+    OnIsKeyEventHandled: TKMNotifyFuncKey; //Invoked to check is key overrides default handle policy or not
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aSelectable: Boolean = True);
 
     property AllowedChars: TKMAllowedChars read fAllowedChars write fAllowedChars;

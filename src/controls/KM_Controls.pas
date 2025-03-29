@@ -21,9 +21,8 @@ type
   TKMNotifyEventXY = procedure(Sender: TObject; const aX, aY: Integer) of object;
   TKMNotifyEventButton = procedure(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean) of object;
 
-  TNotifyEventKeyFunc = function(Sender: TObject; Key: Word): Boolean of object;
-  TNotifyEventKeyShiftFunc = function(Sender: TObject; Key: Word; Shift: TShiftState): Boolean of object;
-  TPointEventShiftFunc = function (Sender: TObject; Shift: TShiftState; const X,Y: Integer): Boolean of object;
+  TKMNotifyFuncKey = function(Sender: TObject; Key: Word): Boolean of object;
+  TKMNotifyFuncKeyShift = function(Sender: TObject; Key: Word; Shift: TShiftState): Boolean of object;
 
   TKMControlState = (csDown, csFocus, csOver);
   TKMControlStateSet = set of TKMControlState;
@@ -150,8 +149,8 @@ type
     fOnFocus: TBooleanObjEvent;
     fOnChangeVisibility: TBooleanObjEvent;
     fOnChangeEnableStatus: TBooleanObjEvent;
-    fOnKeyDown: TNotifyEventKeyShiftFunc;
-    fOnKeyUp: TNotifyEventKeyShiftFunc;
+    fOnKeyDown: TKMNotifyFuncKeyShift;
+    fOnKeyUp: TKMNotifyFuncKeyShift;
 
     fOnWidthChange: TObjectIntegerEvent;
     fOnHeightChange: TObjectIntegerEvent;
@@ -351,8 +350,8 @@ type
     property OnFocus: TBooleanObjEvent read fOnFocus write fOnFocus;
     property OnChangeVisibility: TBooleanObjEvent read fOnChangeVisibility write fOnChangeVisibility;
     property OnChangeEnableStatus: TBooleanObjEvent read fOnChangeEnableStatus write fOnChangeEnableStatus;
-    property OnKeyDown: TNotifyEventKeyShiftFunc read fOnKeyDown write fOnKeyDown;
-    property OnKeyUp: TNotifyEventKeyShiftFunc read fOnKeyUp write fOnKeyUp;
+    property OnKeyDown: TKMNotifyFuncKeyShift read fOnKeyDown write fOnKeyDown;
+    property OnKeyUp: TKMNotifyFuncKeyShift read fOnKeyUp write fOnKeyUp;
 
     property OnWidthChange: TObjectIntegerEvent read fOnWidthChange write fOnWidthChange;
     property OnHeightChange: TObjectIntegerEvent read fOnHeightChange write fOnHeightChange;
