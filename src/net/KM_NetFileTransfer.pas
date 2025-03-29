@@ -40,7 +40,7 @@ type
     fTotalSize: Cardinal;
     fReceivedSize: Cardinal;
     procedure ClearExistingFiles;
-    function ValidExtension(const Ext: UnicodeString): Boolean;
+    function ValidExtension(const aExt: UnicodeString): Boolean;
   public
     constructor Create(aType: TKMTransferType; const aName: UnicodeString; aMapCRC: Cardinal = 0);
     destructor Destroy; override;
@@ -69,11 +69,13 @@ type
     property OnTransferPacket: TKMTransferPacketEvent write fOnTransferPacket;
   end;
 
+
 implementation
 uses
   KromUtils, KM_Maps, KM_Saves,
   KM_ScriptPreProcessor, KM_ScriptFilesCollection,
   KM_Log, KM_FileIO;
+
 
 const
   //todo: Add LIBX and WAV support for maps
@@ -126,78 +128,79 @@ begin
   fSendStream.WriteW(aName);
   //Fill stream with data to be sent
   case aType of
-  kttMap: begin
-            // Supports next file names:
-            // MapName.dat
-            // MapName.map
-            // MapName.txt
-            // MapName.pdf
-            // MapName.script + any included script
-            for I := Low(VALID_MAP_EXTENSIONS) to High(VALID_MAP_EXTENSIONS) do
-            begin
-              fileName := GetFullSourceFileName(aType, aName, aMapKind, '', VALID_MAP_EXTENSIONS[I]);
-              if FileExists(fileName) then
-                AddFileToStream(fileName, '', VALID_MAP_EXTENSIONS[I]);
-              //Add all included script files
-              if (VALID_MAP_EXTENSIONS[I] = EXT_FILE_SCRIPT) and FileExists(fileName) then
-              begin
-                scriptPreProcessor := TKMScriptPreProcessor.Create(False);
-                try
-                  if not scriptPreProcessor.PreProcessFile(fileName) then
-                    //throw an Exception if PreProcessor was not successful to cancel FileSender creation
-                    raise Exception.Create('Can''n start send file because of error while script pre-processing');
-                  scriptFiles := scriptPreProcessor.ScriptFilesInfo;
-                  for J := 0 to scriptFiles.IncludedCount - 1 do
-                  begin
-                    if FileExists(scriptFiles[J].FullFilePath) then
-                      AddFileToStream(scriptFiles[J].FullFilePath, '', EXT_FILE_SCRIPT);
-                  end;
-                finally
-                  scriptPreProcessor.Free;
-                end;
-              end;
-            end;
-            // Supports next file names:
-            // MapName.snd_name.wav / .ogg
-            // MapName.snd_name.eng.wav / .ogg
-            // MapName.eng.libx
-            // MapName.eng.pdf
-            for I := Low(fileName) to High(VALID_MAP_EXTENSIONS_POSTFIX) do
-            begin
-              fileName := GetFullSourceFileName(aType, aName, aMapKind, '.*', VALID_MAP_EXTENSIONS_POSTFIX[I]);
-              try
-                if FindFirst(fileName, faAnyFile, F) = 0 then
+    kttMap:   begin
+                // Supports next file names:
+                // MapName.dat
+                // MapName.map
+                // MapName.txt
+                // MapName.pdf
+                // MapName.script + any included script
+                for I := Low(VALID_MAP_EXTENSIONS) to High(VALID_MAP_EXTENSIONS) do
                 begin
-                  repeat
-                    if (F.Attr and faDirectory = 0) then
-                    begin
-                      // Find everything except map name and extension
-                      // Cut ext with dot
-                      postfix := ChangeFileExt(F.Name, '');
-                      // Find 'MapName.'
-                      if Pos(aName + '.', postfix) = 1 then
-                        // Copy '.snd_name.eng'
-                        postfix := Copy(postfix, Length(aName) + 1, Length(postfix))
-                      else
-                        // No postfix was found
-                        postfix := '';
-
-                      AddFileToStream(ExtractFilePath(fileName) + F.Name, postfix, VALID_MAP_EXTENSIONS_POSTFIX[I]);
+                  fileName := GetFullSourceFileName(aType, aName, aMapKind, '', VALID_MAP_EXTENSIONS[I]);
+                  if FileExists(fileName) then
+                    AddFileToStream(fileName, '', VALID_MAP_EXTENSIONS[I]);
+                  //Add all included script files
+                  if (VALID_MAP_EXTENSIONS[I] = EXT_FILE_SCRIPT) and FileExists(fileName) then
+                  begin
+                    scriptPreProcessor := TKMScriptPreProcessor.Create(False);
+                    try
+                      if not scriptPreProcessor.PreProcessFile(fileName) then
+                        //throw an Exception if PreProcessor was not successful to cancel FileSender creation
+                        raise Exception.Create('Can''n start send file because of error while script pre-processing');
+                      scriptFiles := scriptPreProcessor.ScriptFilesInfo;
+                      for J := 0 to scriptFiles.IncludedCount - 1 do
+                      begin
+                        if FileExists(scriptFiles[J].FullFilePath) then
+                          AddFileToStream(scriptFiles[J].FullFilePath, '', EXT_FILE_SCRIPT);
+                      end;
+                    finally
+                      scriptPreProcessor.Free;
                     end;
-                  until FindNext(F) <> 0;
+                  end;
                 end;
-              finally
-                FindClose(F);
+                // Supports next file names:
+                // MapName.snd_name.wav / .ogg
+                // MapName.snd_name.eng.wav / .ogg
+                // MapName.eng.libx
+                // MapName.eng.pdf
+                for I := Low(fileName) to High(VALID_MAP_EXTENSIONS_POSTFIX) do
+                begin
+                  fileName := GetFullSourceFileName(aType, aName, aMapKind, '.*', VALID_MAP_EXTENSIONS_POSTFIX[I]);
+                  try
+                    if FindFirst(fileName, faAnyFile, F) = 0 then
+                    begin
+                      repeat
+                        if (F.Attr and faDirectory = 0) then
+                        begin
+                          // Find everything except map name and extension
+                          // Cut ext with dot
+                          postfix := ChangeFileExt(F.Name, '');
+                          // Find 'MapName.'
+                          if Pos(aName + '.', postfix) = 1 then
+                            // Copy '.snd_name.eng'
+                            postfix := Copy(postfix, Length(aName) + 1, Length(postfix))
+                          else
+                            // No postfix was found
+                            postfix := '';
+
+                          AddFileToStream(ExtractFilePath(fileName) + F.Name, postfix, VALID_MAP_EXTENSIONS_POSTFIX[I]);
+                        end;
+                      until FindNext(F) <> 0;
+                    end;
+                  finally
+                    FindClose(F);
+                  end;
+                end;
               end;
-            end;
-          end;
-    kttSave: for I := Low(VALID_SAVE_EXTENSIONS) to High(VALID_SAVE_EXTENSIONS) do
-             begin
-               fileName := TKMSavesCollection.FullPath(aName, VALID_SAVE_EXTENSIONS[I], True);
-               if FileExists(fileName) then
-                 AddFileToStream(fileName, '', VALID_SAVE_EXTENSIONS[I]);
-             end;
+    kttSave:  for I := Low(VALID_SAVE_EXTENSIONS) to High(VALID_SAVE_EXTENSIONS) do
+              begin
+                fileName := TKMSavesCollection.FullPath(aName, VALID_SAVE_EXTENSIONS[I], True);
+                if FileExists(fileName) then
+                  AddFileToStream(fileName, '', VALID_SAVE_EXTENSIONS[I]);
+              end;
   end;
+
   //Compress fSendStream
   sourceStream := fSendStream;
   fSendStream := TKMemoryStreamBinary.Create;
@@ -226,20 +229,20 @@ end;
 
 procedure TKMFileSender.AddFileToStream(const aFileName, aPostFix, aExt: UnicodeString);
 var
-  FileStream: TKMemoryStream;
+  fileStream: TKMemoryStream;
 begin
-  FileStream := TKMemoryStreamBinary.Create;
-  FileStream.LoadFromFile(aFileName);
+  fileStream := TKMemoryStreamBinary.Create;
+  fileStream.LoadFromFile(aFileName);
 
   fSendStream.PlaceMarker('FileStart');
   fSendStream.WriteW(TruncateExt(ExtractFileName(aFileName)));
   fSendStream.WriteW(aPostFix);
   fSendStream.WriteW(aExt);
-  fSendStream.Write(Cardinal(FileStream.Size));
-  if FileStream.Size > 0 then
-    fSendStream.CopyFrom(FileStream, FileStream.Size);
+  fSendStream.Write(Cardinal(fileStream.Size));
+  if fileStream.Size > 0 then
+    fSendStream.CopyFrom(fileStream, fileStream.Size);
 
-  FileStream.Free;
+  fileStream.Free;
 end;
 
 
@@ -275,7 +278,7 @@ end;
 
 destructor TKMFileReceiver.Destroy;
 begin
-  fReceiveStream.Free;
+  FreeAndNil(fReceiveStream);
   inherited;
 end;
 
@@ -295,7 +298,7 @@ end;
 
 procedure TKMFileReceiver.ClearExistingFiles;
 var
-  F: TSearchRec;
+  searchRec: TSearchRec;
   fileName, saveFolder: UnicodeString;
 begin
   //Prepare destination
@@ -312,15 +315,15 @@ begin
                 else
                   try
                     //If any files already exist in the folder, delete them
-                    if FindFirst(fileName + PathDelim + fName + '*.*', faAnyFile, F) = 0 then
+                    if FindFirst(fileName + PathDelim + fName + '*.*', faAnyFile, searchRec) = 0 then
                     begin
                       repeat
-                        if (F.Attr and faDirectory = 0) then
-                          KMDeleteFile(fileName + PathDelim + F.Name);
-                      until FindNext(F) <> 0;
+                        if (searchRec.Attr and faDirectory = 0) then
+                          KMDeleteFile(fileName + PathDelim + searchRec.Name);
+                      until FindNext(searchRec) <> 0;
                     end;
                   finally
-                    FindClose(F);
+                    FindClose(searchRec);
                   end;
               end;
     kttSave:  begin
@@ -332,33 +335,25 @@ begin
 end;
 
 
-function TKMFileReceiver.ValidExtension(const Ext: UnicodeString): Boolean;
+function TKMFileReceiver.ValidExtension(const aExt: UnicodeString): Boolean;
 var 
   I: Integer;
 begin
+  Result := False;
+
   case fType of
     kttMap: begin
                for I := Low(VALID_MAP_EXTENSIONS) to High(VALID_MAP_EXTENSIONS) do
-                 if Ext = VALID_MAP_EXTENSIONS[I] then
-                 begin
-                   Result := True;
-                   Exit;
-                 end;
+                 if aExt = VALID_MAP_EXTENSIONS[I] then
+                   Exit(True);
                for I := Low(VALID_MAP_EXTENSIONS_POSTFIX) to High(VALID_MAP_EXTENSIONS_POSTFIX) do
-                 if Ext = VALID_MAP_EXTENSIONS_POSTFIX[I] then
-                 begin
-                   Result := True;
-                   Exit;
-                 end;
+                 if aExt = VALID_MAP_EXTENSIONS_POSTFIX[I] then
+                   Exit(True);
             end;
     kttSave: for I := Low(VALID_SAVE_EXTENSIONS) to High(VALID_SAVE_EXTENSIONS) do
-               if Ext = VALID_SAVE_EXTENSIONS[I] then
-               begin
-                 Result := True;
-                 Exit;
-               end;
+               if aExt = VALID_SAVE_EXTENSIONS[I] then
+                 Exit(True);
   end;
-  Result := False;
 end;
 
 
@@ -476,7 +471,8 @@ var
   I: Integer;
   name: String;
 begin
-  name := aName; //To save const String param locally
+  Result := False;
+  name := aName; //To save const String param locally //@Rey: There are no threads here, it is not needed?
 
   for I := Low(fSenders) to High(fSenders) do
     if (fSenders[I] = nil) or (fSenders[I].ReceiverIndex = aReceiverIndex) then
@@ -490,14 +486,12 @@ begin
         on E: Exception do
         begin
           gLog.AddTime(E.Message);
-          Result := False; // Ignore exception, just return False
-          Exit;
+          // Ignore exception, just return False
+          Exit(False);
         end;
       end;
-      Result := True;
-      Exit;
+      Exit(True);
     end;
-  Result := False;
 end;
 
 
