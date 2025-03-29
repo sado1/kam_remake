@@ -377,7 +377,7 @@ begin
     if not TryExecuteMethodProc(aDestPath, 'KMDeleteFolder', ErrorStr, KMDeleteFolder) then
       raise Exception.Create('Can''t delete folder ' + aDestPath + ': ' + ErrorStr);
 
-     //Try to rename folder up to 3 times. Sometimes folder could not be renamed for some reason
+    //Try to rename folder up to 3 times. Sometimes folder could not be renamed for some reason
     if not TryExecuteMethodProc(aSourcePath, aDestPath, 'KMRenameFolder', ErrorStr, KMRenameFolder) then
       raise Exception.Create(Format('Can''t rename folder from %s to %s: %s', [aSourcePath, aDestPath, ErrorStr]));
   end;
