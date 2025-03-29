@@ -51,8 +51,7 @@ type
     fJoinTimeout, fLastVoteTime: Cardinal;
     fReturnedToLobby: Boolean; //Did we get to the lobby by return to lobby feature?
     fNetRoom: TKMNetRoom;
-    fMutedPlayersList: TList<Integer>; // List of ServerIndexes of muted players.
-    fMyPlayerCurrentFPS: Cardinal;
+    fMutedPlayersList: TList<TKMNetHandleIndex>; // List of ServerIndexes of muted players.
 
     fMapInfo: TKMMapInfo; // Everything related to selected map
     fSaveInfo: TKMSaveInfo;
@@ -233,7 +232,7 @@ type
 
     procedure UpdateState(aGlobalTickCount: cardinal);
     procedure UpdateStateIdle;
-    procedure FPSMeasurement(aFPS: Cardinal);
+    procedure SendFPSMeasurement(aFPS: Integer);
   end;
 
 
@@ -275,7 +274,7 @@ begin
   fNetServerQuery := TKMServerQuery.Create(aMasterServerAddress, aServerUDPScanPort);
   fNetGameOptions := TKMGameOptions.Create;
   fFileSenderManager := TKMFileSenderManager.Create;
-  fMutedPlayersList := TList<Integer>.Create;
+  fMutedPlayersList := TList<TKMNetHandleIndex>.Create;
   fFileSenderManager.OnTransferCompleted := TransferOnCompleted;
   fFileSenderManager.OnTransferPacket := TransferOnPacket;
   gLog.AddOnLogEventSub(PostLogMessageToChat);
@@ -2663,11 +2662,10 @@ begin
 end;
 
 
-procedure TKMNetworking.FPSMeasurement(aFPS: Cardinal);
+procedure TKMNetworking.SendFPSMeasurement(aFPS: Integer);
 begin
   if Self = nil then Exit;
 
-  fMyPlayerCurrentFPS := aFPS;
   if fNetGameState = lgsGame then
   begin
     PacketSend(NET_ADDRESS_SERVER, mkFPS, aFPS);

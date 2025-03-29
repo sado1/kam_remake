@@ -493,7 +493,7 @@ begin
     begin
       fFPS := 1000 / (fOldFrameTimes / fFrameCount);
       if gGameApp <> nil then
-        gGameApp.FPSMeasurement(Round(fFPS));
+        gGameApp.SendFPSMeasurement(Round(fFPS));
 
       fpsLag := 1000 div gMainSettings.FPSCap;
       fFPSString := Format('%.1f FPS', [fFPS]) + IfThen(CAP_MAX_FPS, ' (' + IntToStr(fpsLag) + ')');

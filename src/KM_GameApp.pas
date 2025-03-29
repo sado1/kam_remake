@@ -138,7 +138,7 @@ type
     procedure MouseMove(Shift: TShiftState; X,Y: Integer);
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
-    procedure FPSMeasurement(aFPS: Cardinal);
+    procedure SendFPSMeasurement(aFPS: Integer);
 
     procedure UnlockAllCampaigns;
 
@@ -506,9 +506,9 @@ begin
 end;
 
 
-procedure TKMGameApp.FPSMeasurement(aFPS: Cardinal);
+procedure TKMGameApp.SendFPSMeasurement(aFPS: Integer);
 begin
-  fNetworking.FPSMeasurement(aFPS);
+  fNetworking.SendFPSMeasurement(aFPS);
 end;
 
 
