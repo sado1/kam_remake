@@ -1,4 +1,4 @@
-unit KM_ServerQuery;
+unit KM_NetServerQuery;
 {$I KaM_Remake.inc}
 interface
 uses

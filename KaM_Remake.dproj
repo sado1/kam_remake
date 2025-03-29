@@ -433,6 +433,8 @@
         <DCCReference Include="src\KM_Main.pas"/>
         <DCCReference Include="src\KM_System.pas"/>
         <DCCReference Include="src\mission\KM_Campaigns.pas"/>
+        <DCCReference Include="src\mission\KM_CampaignClasses.pas"/>
+        <DCCReference Include="src\mission\KM_CampaignUtils.pas"/>
         <DCCReference Include="src\mission\KM_CampaignTypes.pas"/>
         <DCCReference Include="src\mission\KM_Maps.pas"/>
         <DCCReference Include="src\mission\KM_MapTypes.pas"/>
@@ -475,6 +477,7 @@
         <DCCReference Include="src\net\KM_NetServer.pas"/>
         <DCCReference Include="src\net\KM_NetServerOverbyte.pas"/>
         <DCCReference Include="src\net\KM_NetServerLNet.pas"/>
+        <DCCReference Include="src\net\KM_NetServerQuery.pas"/>
         <DCCReference Include="src\net\KM_NetUDP.pas"/>
         <DCCReference Include="src\net\KM_NetUDPOverbyte.pas"/>
         <DCCReference Include="src\net\KM_NetUDPLNet.pas"/>
@@ -538,7 +541,6 @@
         <DCCReference Include="src\scripting\KM_ScriptingTypes.pas"/>
         <DCCReference Include="src\scripting\KM_ScriptingUtils.pas"/>
         <DCCReference Include="src\scripting\KM_ScriptValidatorResult.pas"/>
-        <DCCReference Include="src\net\KM_ServerQuery.pas"/>
         <DCCReference Include="src\settings\KM_Settings.pas"/>
         <DCCReference Include="src\settings\KM_SettingsXML.pas"/>
         <DCCReference Include="src\settings\KM_GameAppSettings.pas"/>

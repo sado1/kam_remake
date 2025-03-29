@@ -294,6 +294,7 @@ uses
   KM_NetServer in 'src\net\KM_NetServer.pas',
   {$IFDEF WDC} KM_NetServerOverbyte in 'src\net\KM_NetServerOverbyte.pas', {$ENDIF}
   {$IFDEF FPC} KM_NetServerLNet in 'src\net\KM_NetServerLNet.pas', {$ENDIF}
+  KM_NetServerQuery in 'src\net\KM_NetServerQuery.pas',
   KM_NetUDP in 'src\net\KM_NetUDP.pas',
   {$IFDEF WDC} KM_NetUDPOverbyte in 'src\net\KM_NetUDPOverbyte.pas', {$ENDIF}
   {$IFDEF FPC} KM_NetUDPLNet in 'src\net\KM_NetUDPLNet.pas', {$ENDIF}
@@ -365,8 +366,6 @@ uses
   KM_ScriptingUtils in 'src\scripting\KM_ScriptingUtils.pas',
   KM_ScriptValidatorResult in 'src\scripting\KM_ScriptValidatorResult.pas',
 
-  KM_ServerQuery in 'src\net\KM_ServerQuery.pas',
-  
   KM_Settings in 'src\settings\KM_Settings.pas',
   KM_SettingsXML in 'src\settings\KM_SettingsXML.pas',
   KM_GameAppSettings in 'src\settings\KM_GameAppSettings.pas',

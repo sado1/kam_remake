@@ -8,7 +8,7 @@ uses
   KromOGLUtils,
   KM_Controls, KM_ControlsBase, KM_ControlsEdit, KM_ControlsList, KM_ControlsMemo, KM_ControlsScroll,
   KM_Defaults, KM_CommonTypes, KM_Pics,
-  KM_InterfaceDefaults, KM_InterfaceTypes, KM_ServerQuery;
+  KM_InterfaceDefaults, KM_InterfaceTypes, KM_NetServerQuery;
 
 
 type

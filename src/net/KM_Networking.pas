@@ -8,7 +8,7 @@ uses
   KM_Console,
   KM_CommonClasses, KM_CommonTypes, KM_NetworkClasses, KM_NetworkTypes, KM_Defaults, KM_Points,
   KM_Saves, KM_GameOptions, KM_ResLocales, KM_NetFileTransfer, KM_Maps, KM_MapTypes, KM_NetRoom,
-  KM_DedicatedServer, KM_NetClient, KM_ServerQuery,
+  KM_DedicatedServer, KM_NetClient, KM_NetServerQuery,
   {$IFDEF USESECUREAUTH}
     // If you don't have this file - disable USESECUREAUTH in KaM_Remake.inc
     KM_NetAuthSecure
