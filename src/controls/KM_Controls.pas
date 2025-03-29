@@ -13,8 +13,8 @@ uses
 
 type
   TKMNotifyEventShift = procedure(Sender: TObject; Shift: TShiftState) of object;
+  TKMNotifyEventMouseWheel = procedure(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean) of object;
 
-  TNotifyEventMW = procedure(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean) of object;
   TKMMouseMoveEvent = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState) of object;
   TKMMouseUpDownEvent = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton) of object;
   TNotifyEventKey = procedure(Sender: TObject; Key: Word) of object;
@@ -146,7 +146,7 @@ type
     fOnClickRight: TNotifyEventXY;
     fOnClickHold: TNotifyEvenClickHold;
     fOnDoubleClick: TNotifyEvent;
-    fOnMouseWheel: TNotifyEventMW;
+    fOnMouseWheel: TKMNotifyEventMouseWheel;
     fOnFocus: TBooleanObjEvent;
     fOnChangeVisibility: TBooleanObjEvent;
     fOnChangeEnableStatus: TBooleanObjEvent;
@@ -347,7 +347,7 @@ type
     property OnClickRight: TNotifyEventXY read fOnClickRight write fOnClickRight;
     property OnClickHold: TNotifyEvenClickHold read fOnClickHold write fOnClickHold;
     property OnDoubleClick: TNotifyEvent read fOnDoubleClick write fOnDoubleClick;
-    property OnMouseWheel: TNotifyEventMW read fOnMouseWheel write fOnMouseWheel;
+    property OnMouseWheel: TKMNotifyEventMouseWheel read fOnMouseWheel write fOnMouseWheel;
     property OnFocus: TBooleanObjEvent read fOnFocus write fOnFocus;
     property OnChangeVisibility: TBooleanObjEvent read fOnChangeVisibility write fOnChangeVisibility;
     property OnChangeEnableStatus: TBooleanObjEvent read fOnChangeEnableStatus write fOnChangeEnableStatus;
