@@ -385,8 +385,6 @@ type
     procedure UpdateVisibility; override;
     procedure UpdateEnableStatus; override;
     function DoPanelHandleMouseWheelByDefault: Boolean; virtual;
-
-    procedure Enlarge(aChild: TKMControl);
   public
     PanelHandleMouseWheelByDefault: Boolean; //Do whole panel handle MW by default? Usually it is
     FocusedControlIndex: Integer; //Index of currently focused control on this Panel
@@ -1447,21 +1445,6 @@ begin
     //Need to update Focus only through UpdateFocus
     fMasterControl.UpdateFocus(Self);
   end;
-end;
-
-
-procedure TKMPanel.Enlarge(aChild: TKMControl);
-begin
-  if Self = nil then Exit;
-
-  fLeft := Left + Min(0, aChild.Left);
-  fTop := Top + Min(0, aChild.Top);
-  fWidth := Width - Min(0, aChild.Left);
-  fHeight := Height - Min(0, aChild.Top);
-  fWidth := Width + Max(0, aChild.Right - Right);
-  fHeight := Height + Max(0, aChild.Bottom - Bottom);
-
-  fParent.Enlarge(Self);
 end;
 
 

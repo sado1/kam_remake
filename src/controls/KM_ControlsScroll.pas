@@ -106,7 +106,7 @@ type
     procedure UpdateVisibility; override;
   public
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aScrollAxisSet: TKMScrollAxisSet;
-                       aStyle: TKMButtonStyle; aScrollStyle: TKMScrollStyle; aEnlargeParents: Boolean = False);
+                       aStyle: TKMButtonStyle; aScrollStyle: TKMScrollStyle);
 
     property ScrollH: TKMScrollBar read fScrollBarH;
     property ScrollV: TKMScrollBar read fScrollBarV;
@@ -388,7 +388,7 @@ end;
 
 { TKMScrollPanel }
 constructor TKMScrollPanel.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aScrollAxisSet: TKMScrollAxisSet;
-                                  aStyle: TKMButtonStyle; aScrollStyle: TKMScrollStyle; aEnlargeParents: Boolean = False);
+                                  aStyle: TKMButtonStyle; aScrollStyle: TKMScrollStyle);
 begin
   inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
 
@@ -415,15 +415,6 @@ begin
 
   fScrollV_PadTop := 0;
   fScrollV_PadBottom := 0;
-
-//  if aEnlargeParents then
-//  begin
-//    if saHorizontal in aScrollAxisSet then
-//      Enlarge(fScrollBarH);
-//
-//    if saVertical in aScrollAxisSet then
-//      Enlarge(fScrollBarV);
-//  end;
 
   fClipRect := KMRect(Left, Top, Right, Bottom);
 end;
