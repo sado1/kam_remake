@@ -204,8 +204,8 @@ type
     procedure AskToSendCrashreport(aSlotIndex: Integer; aErrorStr: UnicodeString);
 
     //Common
-    procedure PostMessage(aTextID: Integer; aSound: TKMChatSound; const aText1: UnicodeString = ''; const aText2: UnicodeString = '';
-                          aRecipient: TKMNetHandleIndex = NET_ADDRESS_ALL; aTextID2: Integer = -1);
+    procedure PostMessage(aTextID: Integer; aSound: TKMChatSound; const aArgument1: UnicodeString = ''; const aArgument2: UnicodeString = '';
+                          aRecipient: TKMNetHandleIndex = NET_ADDRESS_ALL; aArgumentInt: Integer = -1);
     procedure PostChat(const aText: UnicodeString; aMode: TKMChatMode; aRecipientServerIndex: TKMNetHandleIndex = NET_ADDRESS_OTHERS); overload;
     procedure PostLocalMessage(const aText: UnicodeString; aSound: TKMChatSound = csNone);
     procedure AnnounceGameInfo(aGameTime: TDateTime; aMap: UnicodeString);
@@ -1176,17 +1176,17 @@ begin
 end;
 
 
-procedure TKMNetworking.PostMessage(aTextID: Integer; aSound: TKMChatSound; const aText1: UnicodeString = '';
-                                    const aText2: UnicodeString = ''; aRecipient: TKMNetHandleIndex = NET_ADDRESS_ALL; aTextID2: Integer = -1);
+procedure TKMNetworking.PostMessage(aTextID: Integer; aSound: TKMChatSound; const aArgument1: UnicodeString = '';
+                                    const aArgument2: UnicodeString = ''; aRecipient: TKMNetHandleIndex = NET_ADDRESS_ALL; aArgumentInt: Integer = -1);
 var
   M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create;
   M.Write(aTextID);
   M.Write(aSound, SizeOf(aSound));
-  M.WriteW(aText1);
-  M.WriteW(aText2);
-  M.Write(aTextID2);
+  M.WriteW(aArgument1);
+  M.WriteW(aArgument2);
+  M.Write(aArgumentInt);
   PacketSend(aRecipient, mkTextTranslated, M);
   M.Free;
 end;
