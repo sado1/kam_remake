@@ -42,10 +42,10 @@ type
     procedure StepRefresh;
     procedure StepCaption(const aCaption: UnicodeString);
   public
-    OnLoadingStep: TEvent;
+    OnLoadingStep: TKMEvent;
     OnLoadingText: TUnicodeStringEvent;
 
-    constructor Create(aOnLoadingStep: TEvent; aOnLoadingText: TUnicodeStringEvent);
+    constructor Create(aOnLoadingStep: TKMEvent; aOnLoadingText: TUnicodeStringEvent);
     destructor Destroy; override;
 
     function GetDATCRC: Cardinal;
@@ -90,7 +90,7 @@ uses
 
 
 { TKMResource }
-constructor TKMResource.Create(aOnLoadingStep: TEvent; aOnLoadingText: TUnicodeStringEvent);
+constructor TKMResource.Create(aOnLoadingStep: TKMEvent; aOnLoadingText: TUnicodeStringEvent);
 begin
   inherited Create;
 

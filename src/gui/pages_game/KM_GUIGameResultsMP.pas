@@ -60,7 +60,7 @@ type
   TKMGameResultsMP = class
   private
     fOnStopGame: TUnicodeStringWDefEvent;
-    fOnShowSPStats: TEvent;
+    fOnShowSPStats: TKMEvent;
 
     fReinitedLastTime: Boolean;
 
@@ -164,7 +164,7 @@ type
       Button_Back: TKMButton;
       Button_BackToGame: TKMButton;
   public
-    constructor Create(aParent: TKMPanel; aOnStopGame: TUnicodeStringWDefEvent; aOnShowSPStats: TEvent);
+    constructor Create(aParent: TKMPanel; aOnStopGame: TUnicodeStringWDefEvent; aOnShowSPStats: TKMEvent);
     destructor Destroy; override;
 
     property GameResultMsg: TKMGameResultMsg read fGameResultMsg;
@@ -328,7 +328,7 @@ end;
 
 
 { TKMGUIMenuResultsMP }
-constructor TKMGameResultsMP.Create(aParent: TKMPanel; aOnStopGame: TUnicodeStringWDefEvent; aOnShowSPStats: TEvent);
+constructor TKMGameResultsMP.Create(aParent: TKMPanel; aOnStopGame: TUnicodeStringWDefEvent; aOnShowSPStats: TKMEvent);
 var
   ST: TKMStatType;
 begin

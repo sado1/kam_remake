@@ -33,7 +33,7 @@ type
     fTerrainPainter: TKMTerrainPainter;
     fSavePoints: TKMSavePointCollection;
     fScripting: TKMScripting;
-    fOnDestroy: TEvent;
+    fOnDestroy: TKMEvent;
 
     fIsExiting: Boolean; // Set this to True on Exit and unit/house pointers will be released without cross-checking
     fIsPaused: Boolean;
@@ -97,8 +97,8 @@ type
     fAutoSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for autosaves only
     fSavePointWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for savepoints only
 
-    fMapEdMapSaveStarted: TEvent;
-    fMapEdMapSaveEnded: TEvent;
+    fMapEdMapSaveStarted: TKMEvent;
+    fMapEdMapSaveEnded: TKMEvent;
 
     procedure IssueAutosaveCommand(aAfterPT: Boolean);
     function FindHandToSpec: Integer;
@@ -158,7 +158,7 @@ type
     StartedFromMapEditor: Boolean;    // True if we start game from map editor ('Quick Play')
     StartedFromMapEdAsMPMap: Boolean; // True if we start game from map editor ('Quick Play') with MP map
 
-    constructor Create(aGameMode: TKMGameMode; aRender: TKMRender; aOnDestroy: TEvent;
+    constructor Create(aGameMode: TKMGameMode; aRender: TKMRender; aOnDestroy: TKMEvent;
                        aSaveWorkerThreadHolder,
                        aBaseSaveWorkerThreadHolder,
                        aAutoSaveWorkerThreadHolder,
@@ -350,10 +350,11 @@ uses
 const
   LAST_SAVES_MAX_CNT = 5; // Max number of save names to collect for crashreport
 
+{ TKMGame }
 // Create template for the Game
 // aRender - who will be rendering the Game session
 // aNetworking - access to MP stuff
-constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TKMRender; aOnDestroy: TEvent;
+constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TKMRender; aOnDestroy: TKMEvent;
                            aSaveWorkerThreadHolder,
                            aBaseSaveWorkerThreadHolder,
                            aAutoSaveWorkerThreadHolder,

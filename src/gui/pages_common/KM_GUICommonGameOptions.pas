@@ -19,7 +19,7 @@ type
     PopUpPanel_Settings: TKMPopUpPanel;
     Panel_Settings: TKMPanel;
   public
-    constructor Create(aParent: TKMPanel; aCaption: string; aOnKeysUpdated: TEvent);
+    constructor Create(aParent: TKMPanel; aCaption: string; aOnKeysUpdated: TKMEvent);
     destructor Destroy; override;
 
     property GUICommonOptions: TKMGUICommonOptions read fGUICommonOptions;
@@ -39,8 +39,8 @@ uses
   KM_Resource;
 
 
-{ TKMMapEdMenuQuit }
-constructor TKMGUICommonGameOptions.Create(aParent: TKMPanel; aCaption: string; aOnKeysUpdated: TEvent);
+{ TKMGUICommonGameOptions }
+constructor TKMGUICommonGameOptions.Create(aParent: TKMPanel; aCaption: string; aOnKeysUpdated: TKMEvent);
 const
   W_PNL = 600;
   H_PNL = 510;

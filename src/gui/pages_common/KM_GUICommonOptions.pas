@@ -18,7 +18,7 @@ type
     fGuiCommonKeys: TKMGUICommonKeys;
     fOptionsKind: TKMGUIOptionsKind;
 
-    fOnClose: TEvent;
+    fOnClose: TKMEvent;
 
     fLastAlphaShadows: Boolean;
 
@@ -109,10 +109,10 @@ type
       Button_OptionsBack: TKMButton;
   public
     OnToggleLocale: TKMToggleLocaleEvent;
-    OnOptionsChange: TEvent;
-    OnPreloadGameResources: TEvent;
+    OnOptionsChange: TKMEvent;
+    OnPreloadGameResources: TKMEvent;
 
-    constructor Create(aParent: TKMPanel; aOptionsKind: TKMGUIOptionsKind; aOnClose, aOnKeysUpdated: TEvent);
+    constructor Create(aParent: TKMPanel; aOptionsKind: TKMGUIOptionsKind; aOnClose, aOnKeysUpdated: TKMEvent);
     destructor Destroy; override;
 
     property GuiCommonKeys: TKMGUICommonKeys read fGuiCommonKeys;
@@ -136,7 +136,7 @@ const
 
 
 { TKMGUIMainOptions }
-constructor TKMGUICommonOptions.Create(aParent: TKMPanel; aOptionsKind: TKMGUIOptionsKind; aOnClose, aOnKeysUpdated: TEvent);
+constructor TKMGUICommonOptions.Create(aParent: TKMPanel; aOptionsKind: TKMGUIOptionsKind; aOnClose, aOnKeysUpdated: TKMEvent);
 var
   topBlock, leftBlock, bottomLine, panelTop, wid: Integer;
   backStr: String;

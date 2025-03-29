@@ -37,7 +37,7 @@ type
     procedure DoShowSubMenu(aIndex: Byte); override;
     procedure DoExecuteSubMenuAction(aIndex: Byte; var aHandled: Boolean); override;
   public
-    constructor Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent; aHideAllPages: TEvent);
+    constructor Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent; aHideAllPages: TKMEvent);
     destructor Destroy; override;
     procedure KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
@@ -64,7 +64,7 @@ uses
 
 
 { TKMMapEdTerrain }
-constructor TKMMapEdTerrain.Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent; aHideAllPages: TEvent);
+constructor TKMMapEdTerrain.Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent; aHideAllPages: TKMEvent);
 const
   TAB_GLYPH: array [TKMTerrainTab] of Word = (383, 388, 382, 400, 385, 384);
   TB_PAD_TERRAIN_BTN_L = 9;

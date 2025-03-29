@@ -104,7 +104,7 @@ type
         Button_MP_PasswordOk: TKMButton;
         Button_MP_PasswordCancel: TKMButton;
   public
-    OnNetworkInit: TEvent;
+    OnNetworkInit: TKMEvent;
 
     constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
 
@@ -134,7 +134,7 @@ const
   S_DETAILS_W_INT = SERVER_DETAILS_W - 16;
 
 
-{ TKMGUIMainMultiplayer }
+{ TKMMenuMultiplayer }
 constructor TKMMenuMultiplayer.Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
 
   procedure CreateServerPopUp;

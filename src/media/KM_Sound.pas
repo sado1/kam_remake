@@ -50,8 +50,8 @@ type
 
     fMusicIsFaded: Boolean;
 
-    fOnFadeMusic: TEvent;
-    fOnUnfadeMusic: TEvent;
+    fOnFadeMusic: TKMEvent;
+    fOnUnfadeMusic: TKMEvent;
     procedure CheckOpenALError;
     function IsSoundPlaying(aIndex: Integer): Boolean;
 
@@ -75,8 +75,8 @@ type
     destructor Destroy; override;
     function ActiveCount: Byte;
 
-    property OnRequestFade: TEvent write fOnFadeMusic;
-    property OnRequestUnfade: TEvent write fOnUnfadeMusic;
+    property OnRequestFade: TKMEvent write fOnFadeMusic;
+    property OnRequestUnfade: TKMEvent write fOnUnfadeMusic;
     procedure AbortAllFadeSounds;
     procedure AbortAllScriptSounds;
     procedure AbortAllLongSounds;

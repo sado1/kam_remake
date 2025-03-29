@@ -128,7 +128,7 @@ type
   private
     fAlphaShadows: Boolean; //Remember which state we loaded
     fSprites: array [TRXType] of TKMSpritePack;
-    fStepProgress: TEvent;
+    fStepProgress: TKMEvent;
     fStepCaption: TUnicodeStringEvent;
     fGenTexIdStartI: Integer;
     fGenTexIdStartILegacy: Integer;
@@ -169,7 +169,7 @@ type
     function GetNextLoadRxTypeIndex(aRT: TRXType): Integer;
     {$ENDIF}
   public
-    constructor Create(aStepProgress: TEvent = nil; aStepCaption: TUnicodeStringEvent = nil; aTemp: Boolean = False);
+    constructor Create(aStepProgress: TKMEvent = nil; aStepCaption: TUnicodeStringEvent = nil; aTemp: Boolean = False);
     destructor Destroy; override;
 
     procedure LoadMenuResources;
@@ -1601,7 +1601,7 @@ end;
 
 
 { TKMResSprites }
-constructor TKMResSprites.Create(aStepProgress: TEvent = nil; aStepCaption: TUnicodeStringEvent = nil; aTemp: Boolean = False);
+constructor TKMResSprites.Create(aStepProgress: TKMEvent = nil; aStepCaption: TUnicodeStringEvent = nil; aTemp: Boolean = False);
 var
   RT: TRXType;
 begin

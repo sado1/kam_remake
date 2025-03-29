@@ -60,7 +60,7 @@ type
     fHandleCloseKey: Boolean;
     fCapOffsetY: Integer;
 
-    fOnClose: TEvent;
+    fOnClose: TKMEvent;
     procedure UpdateSizes;
     procedure Close(Sender: TObject);
 
@@ -104,7 +104,7 @@ type
     procedure ControlMouseDown(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
     procedure ControlMouseUp(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
 
-    property OnClose: TEvent read fOnClose write fOnClose;
+    property OnClose: TKMEvent read fOnClose write fOnClose;
 
     property ActualHeight: Integer read GetActualHeight write SetActualHeight;
     property ActualWidth: Integer read GetActualWidth write SetActualWidth;

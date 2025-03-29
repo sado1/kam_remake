@@ -17,7 +17,7 @@ type
 
   TKMMapEdTerrainObjects = class(TKMMapEdSubMenuPage)
   private
-    fHideAllPages: TEvent;
+    fHideAllPages: TKMEvent;
     //Objects in MapElem are placed sparsely, so we need to compact them
     //to use in MapEd palette
     fLastObjectIndex: Integer;
@@ -74,7 +74,7 @@ type
 
       Scroll_ObjectsPalette: TKMScrollBar;
   public
-    constructor Create(aParent: TKMPanel; aHideAllPages: TEvent);
+    constructor Create(aParent: TKMPanel; aHideAllPages: TKMEvent);
 
     procedure KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
@@ -153,7 +153,7 @@ const
 
 
 { TKMMapEdTerrainObjects }
-constructor TKMMapEdTerrainObjects.Create(aParent: TKMPanel; aHideAllPages: TEvent);
+constructor TKMMapEdTerrainObjects.Create(aParent: TKMPanel; aHideAllPages: TKMEvent);
 
   function GetForestAgeThumbWidth(aFont: TKMFont): Integer;
   var

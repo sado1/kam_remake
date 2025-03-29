@@ -31,8 +31,8 @@ type
     procedure WalkOut;
     function GetIsStarted: Boolean;
   public
-    OnWalkedOut: TEvent; //NOTE: Caller must sync these events after loading, used with caution
-    OnWalkedIn: TEvent;
+    OnWalkedOut: TKMEvent; //NOTE: Caller must sync these events after loading, used with caution
+    OnWalkedIn: TKMEvent;
     constructor Create(aUnit: TKMUnit; aAction: TKMUnitActionType; aDirection: TKMGoInDirection; aHouse: TKMHouse);
     constructor Load(LoadStream: TKMemoryStream); override;
     procedure SyncLoad; override;
@@ -58,7 +58,7 @@ uses
   KM_ResTypes;
 
 
-{ TUnitActionGoInOut }
+{ TKMUnitActionGoInOut }
 constructor TKMUnitActionGoInOut.Create(aUnit: TKMUnit; aAction: TKMUnitActionType; aDirection: TKMGoInDirection; aHouse: TKMHouse);
 begin
   inherited Create(aUnit, aAction, True);

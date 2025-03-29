@@ -12,7 +12,7 @@ type
   TKMGameResultsSP = class
   private
     fOnStopGame: TUnicodeStringWDefEvent; //will be in ancestor class
-    fOnShowDetailedStats: TEvent; //will be in ancestor class
+    fOnShowDetailedStats: TKMEvent; //will be in ancestor class
     fGameResultMsg: TKMGameResultMsg; //So we know where to go after results screen
     fGameMode: TKMGameMode;
 
@@ -62,7 +62,7 @@ type
       Button_Restart,
       Button_ContinueCampaign: TKMButton;
   public
-    constructor Create(aParent: TKMPanel; aOnStopGame: TUnicodeStringWDefEvent; aOnShowDetailedStats: TEvent);
+    constructor Create(aParent: TKMPanel; aOnStopGame: TUnicodeStringWDefEvent; aOnShowDetailedStats: TKMEvent);
 
     property GameResultMsg: TKMGameResultMsg read fGameResultMsg;
 
@@ -90,8 +90,8 @@ const
                                           (TX_RESULTS_MISSION_COMPLETED_IN,
                                            TX_RESULTS_MISSION_TIME);
 
-{ TKMGUIMenuResultsSP }
-constructor TKMGameResultsSP.Create(aParent: TKMPanel; aOnStopGame: TUnicodeStringWDefEvent; aOnShowDetailedStats: TEvent);
+{ TKMGameResultsSP }
+constructor TKMGameResultsSP.Create(aParent: TKMPanel; aOnStopGame: TUnicodeStringWDefEvent; aOnShowDetailedStats: TKMEvent);
 begin
   inherited Create;
 

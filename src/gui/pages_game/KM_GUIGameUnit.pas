@@ -53,7 +53,7 @@ type
         Button_Army_Join_Cancel: TKMButton;
         Label_Army_Join_Message: TKMLabel;
   public
-    OnUnitDismiss: TEvent;
+    OnUnitDismiss: TKMEvent;
     OnSelectingTroopDirection: TBooleanFunc;
     OnArmyCanTakeOrder: TBooleanFunc;
 
@@ -71,7 +71,6 @@ type
 
     procedure UpdateHotkeys;
   end;
-  
 
 
 implementation
@@ -93,7 +92,6 @@ const
 
 
 { TKMGUIGameUnit }
-
 constructor TKMGUIGameUnit.Create(aParent: TKMPanel; aSetViewportEvent: TPointFEvent);
 begin
   fSetViewportEvent := aSetViewportEvent;

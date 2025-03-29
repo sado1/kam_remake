@@ -12,8 +12,8 @@ type
     fSepia: Boolean; //Less saturated display for menu
 
     // Event handlers for MinimapView
-    fOnUpdateTextureSubs: array of TEvent; // Use plain arrays, since Generics are not good on Lazarus
-    fOnResizeSubs: array of TEvent;
+    fOnUpdateTextureSubs: array of TKMEvent; // Use plain arrays, since Generics are not good on Lazarus
+    fOnResizeSubs: array of TKMEvent;
 
     procedure ApplySepia;
     procedure UpdateTexture;
@@ -37,8 +37,8 @@ type
     property MapY: Word read fMapY;
     property Base: TKMCardinalArray read fBase;
 
-    procedure SubOnUpdateTexture(aOnUpdateTexture: TEvent);
-    procedure SubOnResize(aOnResize: TEvent);
+    procedure SubOnUpdateTexture(aOnUpdateTexture: TKMEvent);
+    procedure SubOnResize(aOnResize: TKMEvent);
 
     procedure LoadFromStream(LoadStream: TKMemoryStream);
     procedure SaveToStream(SaveStream: TKMemoryStream);
@@ -62,7 +62,7 @@ begin
 end;
 
 
-procedure TKMMinimap.SubOnUpdateTexture(aOnUpdateTexture: TEvent);
+procedure TKMMinimap.SubOnUpdateTexture(aOnUpdateTexture: TKMEvent);
 begin
   // Happens quite rare, so we don't care much
   SetLength(fOnUpdateTextureSubs, Length(fOnUpdateTextureSubs) + 1);
@@ -70,7 +70,7 @@ begin
 end;
 
 
-procedure TKMMinimap.SubOnResize(aOnResize: TEvent);
+procedure TKMMinimap.SubOnResize(aOnResize: TKMEvent);
 begin
   // Happens quite rare, so we don't care much
   SetLength(fOnResizeSubs, Length(fOnResizeSubs) + 1);

@@ -29,8 +29,8 @@ type
 
     fBlockPointerOperations: Boolean;
 
-    fOnRecalcMapCRC: TEvent;
-    fOnSetVisibleLayers: TEvent;
+    fOnRecalcMapCRC: TKMEvent;
+    fOnSetVisibleLayers: TKMEvent;
 
     // Do not saved fields
     // fMissionFullFilePath is not saved, so its only available when player start game, f.e. in the MapEditor
@@ -50,7 +50,7 @@ type
     function GetMapSimpleCRC: Cardinal;
     procedure SetVisibleLayers(const aValue: TKMMapVisibleLayerSet);
   public
-    constructor Create(aGameMode: TKMGameMode; aOnRecalcMapCRC, aOnSetVisibleLayers: TEvent; out aSetGameTickEvent: TCardinalEvent;
+    constructor Create(aGameMode: TKMGameMode; aOnRecalcMapCRC, aOnSetVisibleLayers: TKMEvent; out aSetGameTickEvent: TCardinalEvent;
                        out aSetGameTickFracEvent: TSingleEvent; out aSetGameModeEvent: TKMGameModeSetEvent;
                        out aSetMissionFileSP: TUnicodeStringEvent; out aSetBlockPointer: TBooleanEvent);
     destructor Destroy; override;
@@ -112,7 +112,7 @@ uses
 
 
 { TKMGameParams }
-constructor TKMGameParams.Create(aGameMode: TKMGameMode; aOnRecalcMapCRC, aOnSetVisibleLayers: TEvent;
+constructor TKMGameParams.Create(aGameMode: TKMGameMode; aOnRecalcMapCRC, aOnSetVisibleLayers: TKMEvent;
                                  out aSetGameTickEvent: TCardinalEvent; out aSetGameTickFracEvent: TSingleEvent;
                                  out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent;
                                  out aSetBlockPointer: TBooleanEvent);

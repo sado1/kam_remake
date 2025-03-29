@@ -62,8 +62,8 @@ type
                         aOnNewReplay: TUnicodeStringEvent;
                         aOnNewSingleSave: TUnicodeStringEvent;
                         aOnToggleLocale: TKMToggleLocaleEvent;
-                        aOnPreloadGameResources: TEvent;
-                        aOnNetworkInit: TEvent);
+                        aOnPreloadGameResources: TKMEvent;
+                        aOnNetworkInit: TKMEvent);
     destructor Destroy; override;
 
     property MenuPage: TKMMenuPageCommon read fMenuPage;
@@ -80,7 +80,7 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); override;
 
     procedure DebugControlsUpdated(aSenderTag: Integer); override;
-    procedure SetOnOptionsChange(aEvent: TEvent);
+    procedure SetOnOptionsChange(aEvent: TKMEvent);
     procedure RefreshCampaigns;
     procedure Resize(X,Y: Word); override;
     procedure UpdateHotkeys; override;
@@ -106,8 +106,8 @@ constructor TKMMainMenuInterface.Create(X,Y: Word; aCampaigns: TKMCampaignsColle
                                         aOnNewReplay: TUnicodeStringEvent;
                                         aOnNewSingleSave: TUnicodeStringEvent;
                                         aOnToggleLocale: TKMToggleLocaleEvent;
-                                        aOnPreloadGameResources: TEvent;
-                                        aOnNetworkInit: TEvent);
+                                        aOnPreloadGameResources: TKMEvent;
+                                        aOnNetworkInit: TKMEvent);
 var
   S: TKMShape;
 begin
@@ -379,7 +379,7 @@ begin
 end;
 
 
-procedure TKMMainMenuInterface.SetOnOptionsChange(aEvent: TEvent);
+procedure TKMMainMenuInterface.SetOnOptionsChange(aEvent: TKMEvent);
 begin
   fMenuOptions.GUICommonOptions.OnOptionsChange := aEvent;
 end;

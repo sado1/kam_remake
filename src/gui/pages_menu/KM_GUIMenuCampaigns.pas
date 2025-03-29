@@ -14,7 +14,7 @@ type
   TKMMenuCampaigns = class(TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText; //will be in ancestor class
-    fOnCampaignsScanComplete: TEvent;
+    fOnCampaignsScanComplete: TKMEvent;
 
     fCampaigns: TKMCampaignsCollection;
     fScanCompleted: Boolean;
@@ -34,7 +34,7 @@ type
         Memo_CampDesc: TKMMemo;
         Button_Camp_Start, Button_Camp_Back: TKMButton;
   public
-    constructor Create(aParent: TKMPanel; aCampaigns: TKMCampaignsCollection; aOnPageChange: TKMMenuChangeEventText; aOnCampaignsScanComplete: TEvent);
+    constructor Create(aParent: TKMPanel; aCampaigns: TKMCampaignsCollection; aOnPageChange: TKMMenuChangeEventText; aOnCampaignsScanComplete: TKMEvent);
 
     procedure RefreshList;
     procedure Show;
@@ -51,8 +51,8 @@ uses
   KM_CampaignClasses;
 
 
-{ TKMMainMenuInterface }
-constructor TKMMenuCampaigns.Create(aParent: TKMPanel; aCampaigns: TKMCampaignsCollection; aOnPageChange: TKMMenuChangeEventText; aOnCampaignsScanComplete: TEvent);
+{ TKMMenuCampaigns }
+constructor TKMMenuCampaigns.Create(aParent: TKMPanel; aCampaigns: TKMCampaignsCollection; aOnPageChange: TKMMenuChangeEventText; aOnCampaignsScanComplete: TKMEvent);
 const
   PAD_W = 80;
   PAN_W = 1024 - PAD_W * 2;

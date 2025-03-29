@@ -21,7 +21,7 @@ type
     function GetStackCPU: TKMPerfLogStackCPU;
     function GetStackGFX: TKMPerfLogStackGFX;
 
-    procedure SetOnFormChanged(const aValue: TEvent);
+    procedure SetOnFormChanged(const aValue: TKMEvent);
 
     procedure SectionEnter(aSection: TPerfSectionDev; aTick: Integer; aTag: Integer = 0); overload;
   public
@@ -51,7 +51,7 @@ type
     procedure SaveToFile(const aFilename: string; aSaveThreshold: Integer = 10);
 
     procedure ShowForm(aContainer: TWinControl);
-    property OnFormChanged: TEvent write SetOnFormChanged;
+    property OnFormChanged: TKMEvent write SetOnFormChanged;
     function FormHeight: Integer;
 
     procedure TickBegin(aTick: Integer);
@@ -200,7 +200,7 @@ begin
 end;
 
 
-procedure TKMPerfLogs.SetOnFormChanged(const aValue: Tevent);
+procedure TKMPerfLogs.SetOnFormChanged(const aValue: TKMEvent);
 begin
   TFormPerfLogs(fPerfLogForm).OnFormChanged := aValue;
 end;

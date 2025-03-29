@@ -37,7 +37,7 @@ type
     fOnGameStart: TKMGameModeChangeEvent;
     fOnGameEnd: TKMGameModeChangeEvent;
 
-    fOnOptionsChange: TEvent;
+    fOnOptionsChange: TKMEvent;
 
     // Worker threads
     fSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for normal saves and save at the end of PT
@@ -62,14 +62,14 @@ type
     procedure GameDestroyed;
     procedure GameFinished;
     function GetGameSettings: TKMGameSettings;
-    procedure SetOnOptionsChange(const aEvent: TEvent);
+    procedure SetOnOptionsChange(const aEvent: TKMEvent);
 
     procedure InitMainMenu(aScreenX, aScreenY: Word);
     function GetActiveInterface: TKMUserInterfaceCommon;
 
     procedure UpdatePerflog;
   public
-    constructor Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Word; aVSync: Boolean; aOnLoadingStep: TEvent;
+    constructor Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Word; aVSync: Boolean; aOnLoadingStep: TKMEvent;
                        aOnLoadingText: TUnicodeStringEvent; aOnCursorUpdate: TIntegerStringEvent; NoMusic: Boolean = False);
     destructor Destroy; override;
     procedure AfterConstruction(aReturnToOptions: Boolean); reintroduce;
@@ -147,7 +147,7 @@ type
     property OnGameSpeedActualChange: TSingleEvent read fOnGameSpeedChange write fOnGameSpeedChange;
     property OnGameStart: TKMGameModeChangeEvent read fOnGameStart write fOnGameStart;
     property OnGameEnd: TKMGameModeChangeEvent read fOnGameEnd write fOnGameEnd;
-    property OnOptionsChange: TEvent read fOnOptionsChange write SetOnOptionsChange;
+    property OnOptionsChange: TKMEvent read fOnOptionsChange write SetOnOptionsChange;
 
     procedure Render(aForPrintScreen: Boolean = False);
     procedure UpdateState;
@@ -178,8 +178,9 @@ uses
   KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
-{ Creating everything needed for MainMenu, game stuff is created on StartGame }
-constructor TKMGameApp.Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Word; aVSync: Boolean; aOnLoadingStep: TEvent;
+{ TKMGameApp }
+// Creating everything needed for MainMenu, game stuff is created on StartGame
+constructor TKMGameApp.Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Word; aVSync: Boolean; aOnLoadingStep: TKMEvent;
                               aOnLoadingText: TUnicodeStringEvent; aOnCursorUpdate: TIntegerStringEvent; NoMusic: Boolean = False);
 begin
   inherited Create;
@@ -1226,7 +1227,7 @@ begin
 end;
 
 
-procedure TKMGameApp.SetOnOptionsChange(const aEvent: TEvent);
+procedure TKMGameApp.SetOnOptionsChange(const aEvent: TKMEvent);
 begin
   fOnOptionsChange := aEvent;
 

@@ -118,8 +118,8 @@ type
     fCheckpointPos: Integer;
     fCheckpoints: TObjectList<TKMCheckpoint>;
 
-    fOnUndoRedo: TEvent;
-    fOnAddCheckpoint: TEvent;
+    fOnUndoRedo: TKMEvent;
+    fOnAddCheckpoint: TKMEvent;
 
     function GetPrevAreaCheckpointPos(aPos: Integer; aArea: TKMCheckpointArea): Integer;
 
@@ -130,8 +130,8 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    property OnUndoRedo: TEvent read fOnUndoRedo write fOnUndoRedo;
-    property OnAddCheckpoint: TEvent read fOnAddCheckpoint write fOnAddCheckpoint;
+    property OnUndoRedo: TKMEvent read fOnUndoRedo write fOnUndoRedo;
+    property OnAddCheckpoint: TKMEvent read fOnAddCheckpoint write fOnAddCheckpoint;
 
     function CanUndo: Boolean;
     function CanRedo: Boolean;

@@ -14,7 +14,7 @@ type
     fLastConsoleTime: Cardinal;
     fHistory: TList<String>;
     fCurrConsoleHistoryId: Integer;
-    fOnChange: TEvent;
+    fOnChange: TKMEvent;
     fOnPost: TUnicodeStringEvent;
     fOnPostLocal: TUnicodeStringEvent;
     fOnError: TUnicodeStringEvent;
@@ -34,7 +34,7 @@ type
     property OnPost: TUnicodeStringEvent read fOnPost write fOnPost;
     property OnPostLocal: TUnicodeStringEvent read fOnPostLocal write fOnPostLocal;
     property OnError: TUnicodeStringEvent read fOnError write fOnError;
-    property OnChange: TEvent read fOnChange write fOnChange;
+    property OnChange: TKMEvent read fOnChange write fOnChange;
 
     procedure Post(aPropagate: Boolean = True);
     function IsPostAllowed: Boolean;
@@ -77,7 +77,7 @@ const
     -3,  //cmSpectators
     -1); //cmWhisper
 
-  
+
 implementation
 uses
   Math, SysUtils, StrUtils,

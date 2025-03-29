@@ -112,31 +112,31 @@ type
     procedure WriteInfoToJoinRoom(aM: TKMemoryStream);
     function GetMapInfo: TKMMapInfo;
   public
-    OnJoinSucc: TEvent;               // We were allowed to join
+    OnJoinSucc: TKMEvent;               // We were allowed to join
     OnJoinFail: TUnicodeStringEvent;  // We were refused to join
-    OnJoinPassword: TEvent;           // Lobby requires password
+    OnJoinPassword: TKMEvent;           // Lobby requires password
     OnHostFail: TUnicodeStringEvent;  // Server failed to start (already running a server?)
-    OnJoinAssignedHost: TEvent;       // We were assigned hosting rights upon connection
-    OnReassignedHost: TEvent;         // We were reassigned hosting rights when the host quit
-    OnReassignedJoiner: TEvent;       // We were reassigned to a joiner from host
+    OnJoinAssignedHost: TKMEvent;       // We were assigned hosting rights upon connection
+    OnReassignedHost: TKMEvent;         // We were reassigned hosting rights when the host quit
+    OnReassignedJoiner: TKMEvent;       // We were reassigned to a joiner from host
     OnFileTransferProgress: TTransferProgressEvent;             // File transfer progress to this player
     OnPlayerFileTransferProgress: TTransferProgressPlayerEvent; // File transfer progress to other player
 
-    OnPlayersSetup: TEvent;               // Player list updated
-    OnUpdateMinimap: TEvent;              // Update minimap
-    OnGameOptions: TEvent;                // Game options updated
+    OnPlayersSetup: TKMEvent;               // Player list updated
+    OnUpdateMinimap: TKMEvent;              // Update minimap
+    OnGameOptions: TKMEvent;                // Game options updated
     OnMapName: TUnicodeStringEvent;       // Map name updated
     OnMapMissing: TUnicodeStringBoolEvent;// Map missing
     OnStartMap: TKMMapStartEvent;           // Start the game
     OnStartSave: TGameStartEvent;         // Load the game
-    OnDoReturnToLobby: TEvent;
-    OnAnnounceReturnToLobby: TEvent;      // Sends GIC command to create synchronised save file
-    OnPlay: TEvent;                       // Start the gameplay
-    OnReadyToPlay: TEvent;                // Update the list of players ready to play
-    OnPingInfo: TEvent;                   // Ping info updated
-    OnMPGameInfoChanged: TEvent;
+    OnDoReturnToLobby: TKMEvent;
+    OnAnnounceReturnToLobby: TKMEvent;      // Sends GIC command to create synchronised save file
+    OnPlay: TKMEvent;                       // Start the gameplay
+    OnReadyToPlay: TKMEvent;                // Update the list of players ready to play
+    OnPingInfo: TKMEvent;                   // Ping info updated
+    OnMPGameInfoChanged: TKMEvent;
     OnSetPassword: TAnsiStringEvent;
-    OnAbortAllTransfers: TEvent;
+    OnAbortAllTransfers: TKMEvent;
 
     OnDisconnect: TUnicodeStringEvent;    // Lost connection or was kicked
     OnJoinerDropped: TIntegerEvent;       // Other player disconnected

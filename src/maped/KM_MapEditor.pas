@@ -71,7 +71,7 @@ type
 
     OnEyedropper: TIntegerEvent;
 
-    constructor Create(aNewMap: Boolean; aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
+    constructor Create(aNewMap: Boolean; aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TKMEvent);
     destructor Destroy; override;
 
     procedure AfterCreated;
@@ -136,7 +136,7 @@ const
 
 
 { TKMMapEditor }
-constructor TKMMapEditor.Create(aNewMap: Boolean; aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
+constructor TKMMapEditor.Create(aNewMap: Boolean; aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TKMEvent);
 var
   I: Integer;
 begin

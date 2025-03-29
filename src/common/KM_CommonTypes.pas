@@ -37,7 +37,7 @@ type
   PKMStaticByteArray = ^TKMStaticByteArray;
   TKMVarRecArray = array of TVarRec;
 
-  TEvent = procedure of object;
+  TKMEvent = procedure of object;
   TPointEvent = procedure (Sender: TObject; const X,Y: Integer) of object;
   TPointEventSimple = procedure (const X,Y: Integer) of object;
   TPointEventFunc = function (Sender: TObject; const X,Y: Integer): Boolean of object;

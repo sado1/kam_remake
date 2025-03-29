@@ -11,8 +11,8 @@ type
   private
     fTempKeys: TKMResKeys;
 
-    fOnKeysUpdated: TEvent;
-    fOnClose: TEvent;
+    fOnKeysUpdated: TKMEvent;
+    fOnClose: TKMEvent;
 
     procedure Hide;
     procedure KeysClick(Sender: TObject);
@@ -29,14 +29,14 @@ type
           Button_OptionsKeysOK: TKMButton;
           Button_OptionsKeysCancel: TKMButton;
   public
-    constructor Create(aParent: TKMPanel; aOnKeysUpdated: TEvent; aDrawBGBevel: Boolean = True);
+    constructor Create(aParent: TKMPanel; aOnKeysUpdated: TKMEvent; aDrawBGBevel: Boolean = True);
     destructor Destroy; override;
 
     property Visible: Boolean read GetVisible;
 
     procedure Show;
 
-    property OnClose: TEvent read fOnClose write fOnClose;
+    property OnClose: TKMEvent read fOnClose write fOnClose;
   end;
 
 implementation
@@ -49,7 +49,7 @@ uses
 
 { TKMGUICommonKeys }
 
-constructor TKMGUICommonKeys.Create(aParent: TKMPanel; aOnKeysUpdated: TEvent; aDrawBGBevel: Boolean = True);
+constructor TKMGUICommonKeys.Create(aParent: TKMPanel; aOnKeysUpdated: TKMEvent; aDrawBGBevel: Boolean = True);
 begin
   inherited Create;
 

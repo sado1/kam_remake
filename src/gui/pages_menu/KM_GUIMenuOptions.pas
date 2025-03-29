@@ -20,11 +20,10 @@ type
     procedure BackClick;
     procedure EscKeyDown(Sender: TObject);
   public
-    constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText; aOnOptionsChange, aOnKeysUpdated: TEvent);
+    constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText; aOnOptionsChange, aOnKeysUpdated: TKMEvent);
     destructor Destroy; override;
 
     property GUICommonOptions: TKMGUICommonOptions read fGUICommonOptions;
-
 
     procedure Refresh;
     function Visible: Boolean;
@@ -40,8 +39,8 @@ uses
   KM_GameAppSettings;
 
 
-{ TKMGUIMainOptions }
-constructor TKMMenuOptions.Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText; aOnOptionsChange, aOnKeysUpdated: TEvent);
+{ TKMMenuOptions }
+constructor TKMMenuOptions.Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText; aOnOptionsChange, aOnKeysUpdated: TKMEvent);
 begin
   inherited Create(gpOptions);
 

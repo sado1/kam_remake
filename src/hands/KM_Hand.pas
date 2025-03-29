@@ -85,7 +85,7 @@ type
     fFirstHSketch: TKMHouseSketchEdit;
     fFoundHSketch: TKMHouseSketchEdit;
 
-    fOnAllianceChange: TEvent;
+    fOnAllianceChange: TKMEvent;
 
     function IsDisabled: Boolean;
     function GetColorIndex: Byte;
@@ -124,7 +124,7 @@ type
     //Used for syncing hotkeys in multiplayer saves only. UI keeps local value to avoid GIP delays
     SelectionHotkeys: array[0..DYNAMIC_HOTKEYS_NUM-1] of Integer;
 
-    constructor Create(aHandIndex: TKMHandID; aOnAllianceChange: TEvent);
+    constructor Create(aHandIndex: TKMHandID; aOnAllianceChange: TKMEvent);
     destructor Destroy; override;
 
     property AI: TKMHandAI read GetAI;
@@ -393,7 +393,7 @@ end;
 
 
 { TKMHand }
-constructor TKMHand.Create(aHandIndex: TKMHandID; aOnAllianceChange: TEvent);
+constructor TKMHand.Create(aHandIndex: TKMHandID; aOnAllianceChange: TKMEvent);
 var
   I: Integer;
 begin
