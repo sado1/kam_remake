@@ -34,7 +34,7 @@ type
     procedure MP_FindServerCancelClick(Sender: TObject);
     procedure MP_ClearServerDetailsPanel;
     procedure MP_ServersRefresh(Sender: TObject);
-    procedure MP_ServersSort(aIndex: Integer);
+    procedure MP_ServersSort(Sender: TObject; const aColumn: Integer);
     procedure MP_ServersClick(Sender: TObject);
     procedure MP_ServersDoubleClick(Sender: TObject);
     procedure MP_JoinClick(Sender: TObject);
@@ -593,7 +593,7 @@ end;
 
 
 //Sort the servers list by said column ID
-procedure TKMMenuMultiplayer.MP_ServersSort(aIndex: Integer);
+procedure TKMMenuMultiplayer.MP_ServersSort(Sender: TObject; const aColumn: Integer);
 begin
   case ColumnBox_Servers.SortIndex of
     0:  if ColumnBox_Servers.SortDirection = sdDown then

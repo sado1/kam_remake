@@ -34,7 +34,7 @@ type
     procedure Load_ScanComplete(Sender: TObject);
     procedure Load_SortUpdate(Sender: TObject);
     procedure Load_RefreshList(aJumpToSelected:Boolean);
-    procedure Load_Sort(aIndex: Integer);
+    procedure Load_Sort(Sender: TObject; const aColumn: Integer);
     procedure Load_DeleteConfirmation(aVisible:boolean);
     procedure BackClick(Sender: TObject);
     procedure EscKeyDown(Sender: TObject);
@@ -398,46 +398,46 @@ begin
 end;
 
 
-procedure TKMMenuLoad.Load_Sort(aIndex: Integer);
+procedure TKMMenuLoad.Load_Sort(Sender: TObject; const aColumn: Integer);
 var
-  SSM: TKMSavesSortMethod;
+  sortMethod: TKMSavesSortMethod;
 begin
   with ColumnBox_Load do
     case SortIndex of
       //Sorting by filename goes A..Z by default
       0:  if SortDirection = sdDown then
-            SSM := smByModeDesc
+            sortMethod := smByModeDesc
           else
-            SSM := smByModeAsc;
+            sortMethod := smByModeAsc;
       1:  if SortDirection = sdDown then
-            SSM := smByFileNameDesc
+            sortMethod := smByFileNameDesc
           else
-            SSM := smByFileNameAsc;
+            sortMethod := smByFileNameAsc;
       //Sorting by description goes Old..New by default
       2:  if SortDirection = sdDown then
-            SSM := smByDateDesc
+            sortMethod := smByDateDesc
           else
-            SSM := smByDateAsc;
+            sortMethod := smByDateAsc;
       //Sorting by description goes A..Z by default
       3:  if SortDirection = sdDown then
-            SSM := smByMapNameDesc
+            sortMethod := smByMapNameDesc
           else
-            SSM := smByMapNameAsc;
+            sortMethod := smByMapNameAsc;
       4:  if SortDirection = sdDown then
-            SSM := smByTimeDesc
+            sortMethod := smByTimeDesc
           else
-            SSM := smByTimeAsc;
+            sortMethod := smByTimeAsc;
       5:  if SortDirection = sdDown then
-            SSM := smByGameVersionDesc
+            sortMethod := smByGameVersionDesc
           else
-            SSM := smByGameVersionAsc;
+            sortMethod := smByGameVersionAsc;
+    else
+      if SortDirection = sdDown then
+        sortMethod := smByFileNameDesc
       else
-          if SortDirection = sdDown then
-            SSM := smByFileNameDesc
-          else
-            SSM := smByFileNameAsc;
+        sortMethod := smByFileNameAsc;
     end;
-  fSaves.Sort(SSM, Load_SortUpdate);
+  fSaves.Sort(sortMethod, Load_SortUpdate);
 end;
 
 
@@ -499,9 +499,7 @@ begin
   fSaves.Refresh(Load_ScanUpdate, False, Load_ScanComplete);
 
   //Apply sorting from last time we were on this page
-  Load_Sort(ColumnBox_Load.SortIndex);
-
-
+  Load_Sort(nil, ColumnBox_Load.SortIndex);
 end;
 
 

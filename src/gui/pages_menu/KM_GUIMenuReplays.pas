@@ -41,7 +41,7 @@ type
     procedure Replays_ScanTerminate(Sender: TObject);
     procedure Replays_SortUpdate(Sender: TObject);
     procedure Replays_RefreshList(aJumpToSelected:Boolean);
-    procedure Replays_Sort(aIndex: Integer);
+    procedure Replays_Sort(Sender: TObject; const aColumn: Integer);
     procedure Replays_Play(Sender: TObject);
     procedure BackClick(Sender: TObject);
     procedure DeleteClick(Sender: TObject);
@@ -454,46 +454,47 @@ begin
 end;
 
 
-procedure TKMMenuReplays.Replays_Sort(aIndex: Integer);
+procedure TKMMenuReplays.Replays_Sort(Sender: TObject; const aColumn: Integer);
 var
-  SSM: TKMSavesSortMethod;
+  sortMethod: TKMSavesSortMethod;
 begin
   with ColumnBox_Replays do
     case SortIndex of
       //Sorting by filename goes A..Z by default
       0:  if SortDirection = sdDown then
-            SSM := smByModeDesc
+            sortMethod := smByModeDesc
           else
-            SSM := smByModeAsc;
+            sortMethod := smByModeAsc;
       1:  if SortDirection = sdDown then
-            SSM := smByFileNameDesc
+            sortMethod := smByFileNameDesc
           else
-            SSM := smByFileNameAsc;
+            sortMethod := smByFileNameAsc;
       //Sorting by description goes Old..New by default
       2:  if SortDirection = sdDown then
-            SSM := smByDateDesc
+            sortMethod := smByDateDesc
           else
-            SSM := smByDateAsc;
+            sortMethod := smByDateAsc;
       //Sorting by description goes A..Z by default
       3:  if SortDirection = sdDown then
-            SSM := smByMapNameDesc
+            sortMethod := smByMapNameDesc
           else
-            SSM := smByMapNameAsc;
+            sortMethod := smByMapNameAsc;
       4:  if SortDirection = sdDown then
-            SSM := smByTimeDesc
+            sortMethod := smByTimeDesc
           else
-            SSM := smByTimeAsc;
+            sortMethod := smByTimeAsc;
       5:  if SortDirection = sdDown then
-            SSM := smByGameVersionDesc
+            sortMethod := smByGameVersionDesc
           else
-            SSM := smByGameVersionAsc;
+            sortMethod := smByGameVersionAsc;
+    else
+      if SortDirection = sdDown then
+        sortMethod := smByFileNameDesc
       else
-          if SortDirection = sdDown then
-            SSM := smByFileNameDesc
-          else
-            SSM := smByFileNameAsc;
+        sortMethod := smByFileNameAsc;
     end;
-  fSaves.Sort(SSM, Replays_SortUpdate);
+
+  fSaves.Sort(sortMethod, Replays_SortUpdate);
 end;
 
 
@@ -664,7 +665,7 @@ begin
   //Probably needs some cleanup when we have GUIMenuReplays
   Radio_Replays_Type.ItemIndex := gGameSettings.MenuReplaysType;
   Replay_TypeChange(nil); //Select SP as this will refresh everything
-  Replays_Sort(ColumnBox_Replays.SortIndex); //Apply sorting from last time we were on this page
+  Replays_Sort(nil, ColumnBox_Replays.SortIndex); //Apply sorting from last time we were on this page
 end;
 
 

@@ -49,7 +49,7 @@ type
     procedure Radio_MapSizes_HeightChange(Sender: TObject; aValue: Integer);
 
     procedure RefreshList(aJumpToSelected: Boolean);
-    procedure ColumnClick(aValue: Integer);
+    procedure ColumnClick(Sender: TObject; const aColumn: Integer);
     procedure UpdateMapInfo(aID: Integer = -1);
     procedure ReadmeClick(Sender: TObject);
     procedure SelectMap(Sender: TObject);
@@ -791,42 +791,43 @@ begin
 end;
 
 
-procedure TKMMenuMapEditor.ColumnClick(aValue: Integer);
+procedure TKMMenuMapEditor.ColumnClick(Sender: TObject; const aColumn: Integer);
 var
-  SM: TKMapsSortMethod;
+  sortMethod: TKMapsSortMethod;
 begin
   //Determine Sort method depending on which column user clicked
   with ColumnBox_MapEd do
     case SortIndex of
       0:  if SortDirection = sdDown then
-            SM := smByFavouriteDesc
+            sortMethod := smByFavouriteDesc
           else
-            SM := smByFavouriteAsc;
+            sortMethod := smByFavouriteAsc;
       1:  if SortDirection = sdDown then
-            SM := smByMissionModeDesc
+            sortMethod := smByMissionModeDesc
           else
-            SM := smByMissionModeAsc;
+            sortMethod := smByMissionModeAsc;
       2:  if SortDirection = sdDown then
-            SM := smByNameDesc
+            sortMethod := smByNameDesc
           else
-            SM := smByNameAsc;
+            sortMethod := smByNameAsc;
       3:  if SortDirection = sdDown then
-            SM := smByHumanPlayersDesc
+            sortMethod := smByHumanPlayersDesc
           else
-            SM := smByHumanPlayersAsc;
+            sortMethod := smByHumanPlayersAsc;
       4:  if SortDirection = sdDown then
-            SM := smByPlayersDesc
+            sortMethod := smByPlayersDesc
           else
-            SM := smByPlayersAsc;
+            sortMethod := smByPlayersAsc;
       5:  if SortDirection = sdDown then
-            SM := smBySizeDesc
+            sortMethod := smBySizeDesc
           else
-            SM := smBySizeAsc;
-      else SM := smByNameAsc;
+            sortMethod := smBySizeAsc;
+    else
+      sortMethod := smByNameAsc;
     end;
 
   //Keep all lists in sync incase user switches between them
-  fMaps.Sort(SM, SortUpdate);
+  fMaps.Sort(sortMethod, SortUpdate);
 end;
 
 

@@ -54,7 +54,7 @@ type
     procedure UpdateDropBoxes;
 
     procedure StartClick(Sender: TObject);
-    procedure ListSort(aColumn: Integer);
+    procedure ListSort(Sender: TObject; const aColumn: Integer);
     procedure MinimapLocClick(Sender: TObject; const aLoc: Integer);
     procedure ReadmeClick(Sender: TObject);
 
@@ -803,7 +803,7 @@ begin
 end;
 
 
-procedure TKMMenuSingleMap.ListSort(aColumn: Integer);
+procedure TKMMenuSingleMap.ListSort(Sender: TObject; const aColumn: Integer);
 var
   method: TKMapsSortMethod;
 begin

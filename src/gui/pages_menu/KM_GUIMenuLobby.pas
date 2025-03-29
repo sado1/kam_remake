@@ -67,7 +67,7 @@ type
 
     procedure SetupChange(Sender: TObject);
     procedure PlayersChange(Sender: TObject);
-    procedure MapColumnClick(aValue: Integer);
+    procedure MapColumnClick(Sender: TObject; const aColumn: Integer);
     procedure SelectRMGMap(); //RMG
     procedure MapTypeChanged(Sender: TObject);
     procedure InitDropColMapsList;
@@ -2378,7 +2378,7 @@ begin
 end;
 
 
-procedure TKMMenuLobby.MapColumnClick(aValue: Integer);
+procedure TKMMenuLobby.MapColumnClick(Sender: TObject; const aColumn: Integer);
 var
   SM: TKMapsSortMethod;
   SSM: TKMSavesSortMethod;
@@ -2404,7 +2404,8 @@ begin
             SM := smBySizeDesc
           else
             SM := smBySizeAsc;
-      else SM := smByNameAsc;
+    else
+      SM := smByNameAsc;
     end;
     fMapsMP.Sort(SM, MapList_SortUpdate);
   end
@@ -2437,7 +2438,8 @@ begin
               SSM := smByGameVersionDesc
             else
               SSM := smByGameVersionAsc;
-        else SSM := smByFileNameAsc;
+      else
+        SSM := smByFileNameAsc;
       end;
     fSavesMP.Sort(SSM, MapList_SortUpdate);
   end;
