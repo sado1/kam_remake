@@ -1247,29 +1247,30 @@ end;
 
 procedure TKMNetworking.HandleMessageAskToJoin(aSenderIndex: Integer; aStream: TKMemoryStream);
 var
-  tmpInteger: Integer;
-  tmpStringA: AnsiString;
+  intErrorText: Integer;
+  strPlayerName: AnsiString;
 begin
   if IsHost then
   begin
     if not TKMNetSecurity.ValidateSolution(aStream, aSenderIndex) then
-      tmpInteger := TX_NET_YOUR_DATA_FILES
+      intErrorText := TX_NET_YOUR_DATA_FILES
     else
     begin
-      aStream.ReadA(tmpStringA);
-      tmpInteger := fNetRoom.CheckCanJoin(tmpStringA, aSenderIndex);
-      if (tmpInteger = -1) and (fNetGameState <> lgsLobby) then
-        tmpInteger := TX_NET_GAME_IN_PROGRESS;
+      aStream.ReadA(strPlayerName);
+      intErrorText := fNetRoom.CheckCanJoin(strPlayerName, aSenderIndex);
+      if (intErrorText = -1) and (fNetGameState <> lgsLobby) then
+        intErrorText := TX_NET_GAME_IN_PROGRESS;
     end;
-    if tmpInteger = -1 then
+
+    if intErrorText = -1 then
     begin
-      //Password was checked by server already
-      PlayerJoined(aSenderIndex, tmpStringA);
+      // Password was checked by server already
+      PlayerJoined(aSenderIndex, strPlayerName);
     end
     else
     begin
-      PacketSendI(aSenderIndex, mkRefuseToJoin, tmpInteger);
-      //Force them to reconnect and ask for a new challenge
+      PacketSendI(aSenderIndex, mkRefuseToJoin, intErrorText);
+      // Force them to reconnect and ask for a new challenge
       PacketSendInd(NET_ADDRESS_SERVER, mkKickPlayer, aSenderIndex);
     end;
   end;
