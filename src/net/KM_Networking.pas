@@ -97,8 +97,8 @@ type
     procedure PacketRecieve(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal); //Process all commands
     procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind); overload;
     procedure PacketSendS(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream);
-    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer); overload;
-    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Cardinal); overload;
+    procedure PacketSendI(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer);
+    procedure PacketSendC(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Cardinal);
 //    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aParams: array of Integer);
     procedure PacketSendInd(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aIndexOnServer: TKMNetHandleIndex);
     procedure PacketSendA(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: AnsiString);
@@ -397,7 +397,8 @@ procedure TKMNetworking.AnnounceDisconnect(aLastSentCmdsTick: Cardinal = LAST_SE
 begin
 //  gLog.AddTime(Format('AnnounceDisconnect. LastSentCmdsTick = %d', [aLastSentCmdsTick]));
   // Tell everyone when we quit
-  PacketSend(NET_ADDRESS_OTHERS, mkDisconnect, aLastSentCmdsTick); //Send our last sent commands tick
+  //@Rey: It should not make a big difference, but in here we send Cardinal, yet when we handle it we treat it as Integer
+  PacketSendC(NET_ADDRESS_OTHERS, mkDisconnect, aLastSentCmdsTick); //Send our last sent commands tick
 end;
 
 
@@ -758,7 +759,7 @@ begin
 
                   SendPlayerListAndRefreshPlayersSetup;
                 end;
-    lpkJoiner: PacketSend(NET_ADDRESS_HOST, mkRequestStartingLoc, aHandIndex);
+    lpkJoiner: PacketSendI(NET_ADDRESS_HOST, mkRequestStartingLoc, aHandIndex);
   end;
 end;
 
@@ -777,7 +778,7 @@ begin
 
                   SendPlayerListAndRefreshPlayersSetup;
                 end;
-    lpkJoiner: PacketSend(NET_ADDRESS_HOST, mkRequestTeam, aTeam);
+    lpkJoiner: PacketSendI(NET_ADDRESS_HOST, mkRequestTeam, aTeam);
   end;
 end;
 
@@ -796,7 +797,7 @@ begin
   case fNetPlayerKind of
     lpkHost:   SendPlayerListAndRefreshPlayersSetup;
     lpkJoiner: begin
-                  PacketSend(NET_ADDRESS_HOST, mkRequestFlagColor, aColor);
+                  PacketSendC(NET_ADDRESS_HOST, mkRequestFlagColor, aColor);
                   if Assigned(OnPlayersSetup) then OnPlayersSetup;
                 end;
   end;
@@ -1751,13 +1752,13 @@ begin
                 SendPlayerListAndRefreshPlayersSetup;
                 PacketSend(aSenderIndex, mkReconnectionAccepted); //Tell this client they are back in the game
                 PacketSendInd(NET_ADDRESS_OTHERS, mkClientReconnected, aSenderIndex); //Tell everyone to ask him to resync
-                PacketSend(aSenderIndex, mkResyncFromTick, Integer(fLastProcessedTick)); //Ask him to resync us
+                PacketSendI(aSenderIndex, mkResyncFromTick, Integer(fLastProcessedTick)); //Ask him to resync us
                 PostMessage(TX_NET_HAS_RECONNECTED, csJoin, fNetRoom[slotIndex].NicknameColoredU);
               end
               else
               begin
                 gLog.LogNetConnection(UnicodeString(tmpStringA) + ' asked to reconnect: ' + IntToStr(tmpInteger));
-                PacketSend(aSenderIndex, mkRefuseReconnect, tmpInteger);
+                PacketSendI(aSenderIndex, mkRefuseReconnect, tmpInteger);
               end;
             end;
 
@@ -1790,7 +1791,7 @@ begin
               end
               else
               begin
-                PacketSend(aSenderIndex, mkRefuseToJoin, tmpInteger);
+                PacketSendI(aSenderIndex, mkRefuseToJoin, tmpInteger);
                 //Force them to reconnect and ask for a new challenge
                 PacketSendInd(NET_ADDRESS_SERVER, mkKickPlayer, aSenderIndex);
               end;
@@ -1841,8 +1842,9 @@ begin
     mkFileSendStarted:
             if not IsHost then //Host will mark Room before file send
             begin
-              aStream.Read(tmpCardinal);
-              SetDownloadlInProgress(tmpCardinal, True);
+              //@Rey: Types in here were quite mismatched
+              aStream.Read(tmpInteger);
+              SetDownloadlInProgress(tmpInteger, True);
             end;
 
     mkLangCode:
@@ -1883,7 +1885,7 @@ begin
             begin
               //We should refuse the joiner immediately if we are not in the lobby
               if fNetGameState <> lgsLobby then
-                PacketSend(aSenderIndex, mkRefuseToJoin, TX_NET_GAME_IN_PROGRESS)
+                PacketSendI(aSenderIndex, mkRefuseToJoin, TX_NET_GAME_IN_PROGRESS)
               else
               begin
                 //Solve joiner's challenge
@@ -2210,7 +2212,7 @@ begin
               SetGameState(lgsGame); //Game is now running once again
               fReconnectRequested := 0; //Cancel any retry in progress
               //Request all other clients to resync us
-              PacketSend(NET_ADDRESS_OTHERS, mkResyncFromTick, Integer(fLastProcessedTick));
+              PacketSendI(NET_ADDRESS_OTHERS, mkResyncFromTick, Integer(fLastProcessedTick));
             end;
 
     mkClientReconnected:
@@ -2219,7 +2221,7 @@ begin
               //The host has accepted a disconnected client back into the game. Request this client to resync us
               if tmpHandleIndex = fMyIndexOnServer then exit;
               gLog.LogNetConnection('Requesting resync for reconnected client');
-              PacketSend(tmpHandleIndex, mkResyncFromTick, Integer(fLastProcessedTick));
+              PacketSendI(tmpHandleIndex, mkResyncFromTick, Integer(fLastProcessedTick));
             end;
 
     mkVote:
@@ -2355,7 +2357,7 @@ begin
 end;
 
 
-procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Cardinal);
+procedure TKMNetworking.PacketSendC(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Cardinal);
 var
   M: TKMemoryStream;
 begin
@@ -2373,7 +2375,7 @@ begin
 end;
 
 
-procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer);
+procedure TKMNetworking.PacketSendI(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer);
 var
   M: TKMemoryStream;
 begin
@@ -2668,7 +2670,7 @@ begin
 
   if fNetGameState = lgsGame then
   begin
-    PacketSend(NET_ADDRESS_SERVER, mkFPS, aFPS);
+    PacketSendI(NET_ADDRESS_SERVER, mkFPS, aFPS);
     // We can set own FPS right away
     MyRoomSlot.PerformanceAddFps(aFPS);
   end;
@@ -2754,18 +2756,17 @@ begin
     case fSelectGameKind of
       ngkMap: if ((tmpStringW = MapInfo.Name) or (tmpStringW = MapInfo.Name + '_' + IntToHex(MapInfo.CRC, 8))) then
               begin
-                PacketSend(NET_ADDRESS_OTHERS, mkFileSendStarted, aSenderIndex);
+                PacketSendInd(NET_ADDRESS_OTHERS, mkFileSendStarted, aSenderIndex);
                 SetDownloadlInProgress(aSenderIndex, True);
                 if not fFileSenderManager.StartNewSend(kttMap, MapInfo.Name, MapInfo.Kind, aSenderIndex) then
                   AbortSend;
               end 
               else
                 AbortSend;
-                            
 
       ngkSave:if tmpStringW = SaveInfo.FileName then
               begin
-                PacketSend(NET_ADDRESS_OTHERS, mkFileSendStarted, aSenderIndex);
+                PacketSendInd(NET_ADDRESS_OTHERS, mkFileSendStarted, aSenderIndex);
                 SetDownloadlInProgress(aSenderIndex, True);
                 if not fFileSenderManager.StartNewSend(kttSave, SaveInfo.FileName, mkDL, aSenderIndex) then
                   AbortSend;
