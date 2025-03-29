@@ -112,7 +112,7 @@ type
     function HandIndexToLocal(aHandIndex: TKMHandID): Integer;
 
     function CheckCanJoin(const aNick: AnsiString; aServerIndex: TKMNetHandleIndex): Integer;
-    function CheckCanReconnect(aLocalIndex: Integer): Integer;
+    function CheckCanReconnect(aSlotIndex: Integer): Integer;
     function LocAvailable(aLoc: Integer): Boolean;
     function ColorAvailable(aColor: Cardinal): Boolean;
     function AllReady: Boolean;
@@ -770,19 +770,19 @@ begin
 end;
 
 
-//See if player can join our game
-function TKMNetRoom.CheckCanReconnect(aLocalIndex: Integer): Integer;
+// See if player can join our game
+function TKMNetRoom.CheckCanReconnect(aSlotIndex: Integer): Integer;
 begin
-  if aLocalIndex = -1 then
-    Result := -2 //Silent failure, client should try again
+  if aSlotIndex = -1 then
+    Result := -2 // Silent failure, client should try again
   else
-  if fSlots[aLocalIndex].Connected then
-    Result := -2 //Silent failure, client should try again
+  if fSlots[aSlotIndex].Connected then
+    Result := -2 // Silent failure, client should try again
   else
-  if fSlots[aLocalIndex].Dropped then
+  if fSlots[aSlotIndex].Dropped then
     Result := TX_NET_RECONNECTION_DROPPED
   else
-    Result := -1; //Success
+    Result := -1; // Success
 end;
 
 
