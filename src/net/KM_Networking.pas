@@ -75,8 +75,7 @@ type
     procedure SetGameState(aState: TKMNetGameState; aOnMPInfoChanged: Boolean = True);
     procedure SendMapOrSave(aRecipient: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
     procedure DoReconnection;
-    procedure HandleMessageAskToJoin(aSenderIndex: Integer; aStream: TKMemoryStream);
-    procedure PlayerJoined(aServerIndex: TKMNetHandleIndex; const aPlayerName: AnsiString);
+    procedure HandleMessageAskToJoin(aServerIndex: Integer; aStream: TKMemoryStream);
     function IsPlayerHandStillInGame(aSlotIndex: Integer): Boolean;
     procedure HandleMessageReassignHost(aSenderIndex: TKMNetHandleIndex; aStream: TKMemoryStream);
     procedure HandleMessagePlayerDisconnected(aSenderIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer);
@@ -1245,19 +1244,19 @@ begin
 end;
 
 
-procedure TKMNetworking.HandleMessageAskToJoin(aSenderIndex: Integer; aStream: TKMemoryStream);
+procedure TKMNetworking.HandleMessageAskToJoin(aServerIndex: Integer; aStream: TKMemoryStream);
 var
   intErrorText: Integer;
   strPlayerName: AnsiString;
 begin
   if IsHost then
   begin
-    if not TKMNetSecurity.ValidateSolution(aStream, aSenderIndex) then
+    if not TKMNetSecurity.ValidateSolution(aStream, aServerIndex) then
       intErrorText := TX_NET_YOUR_DATA_FILES
     else
     begin
       aStream.ReadA(strPlayerName);
-      intErrorText := fNetRoom.CheckCanJoin(strPlayerName, aSenderIndex);
+      intErrorText := fNetRoom.CheckCanJoin(strPlayerName, aServerIndex);
       if (intErrorText = -1) and (fNetGameState <> lgsLobby) then
         intErrorText := TX_NET_GAME_IN_PROGRESS;
     end;
@@ -1265,30 +1264,25 @@ begin
     if intErrorText = -1 then
     begin
       // Password was checked by server already
-      PlayerJoined(aSenderIndex, strPlayerName);
+
+      fNetRoom.AddPlayer(strPlayerName, aServerIndex, '');
+      PacketSend(aServerIndex, mkAllowToJoin);
+      PacketSendA(aServerIndex, mkSetPassword, fPassword); //Send joiner password, just to tell him
+      SendMapOrSave(aServerIndex); //Send the map first so it doesn't override starting locs
+
+      if fSelectGameKind = ngkSave then
+        MatchPlayersToSave(fNetRoom.ServerToLocal(aServerIndex)); //Match only this player
+      SendPlayerListAndRefreshPlayersSetup;
+      SendGameOptions;
+      PostMessage(TX_NET_HAS_JOINED, csJoin, UnicodeString(strPlayerName));
     end
     else
     begin
-      PacketSendI(aSenderIndex, mkRefuseToJoin, intErrorText);
+      PacketSendI(aServerIndex, mkRefuseToJoin, intErrorText);
       // Force them to reconnect and ask for a new challenge
-      PacketSendInd(NET_ADDRESS_SERVER, mkKickPlayer, aSenderIndex);
+      PacketSendInd(NET_ADDRESS_SERVER, mkKickPlayer, aServerIndex);
     end;
   end;
-end;
-
-
-procedure TKMNetworking.PlayerJoined(aServerIndex: TKMNetHandleIndex; const aPlayerName: AnsiString);
-begin
-  fNetRoom.AddPlayer(aPlayerName, aServerIndex, '');
-  PacketSend(aServerIndex, mkAllowToJoin);
-  PacketSendA(aServerIndex, mkSetPassword, fPassword); //Send joiner password, just to tell him
-  SendMapOrSave(aServerIndex); //Send the map first so it doesn't override starting locs
-
-  if fSelectGameKind = ngkSave then
-    MatchPlayersToSave(fNetRoom.ServerToLocal(aServerIndex)); //Match only this player
-  SendPlayerListAndRefreshPlayersSetup;
-  SendGameOptions;
-  PostMessage(TX_NET_HAS_JOINED, csJoin, UnicodeString(aPlayerName));
 end;
 
 
