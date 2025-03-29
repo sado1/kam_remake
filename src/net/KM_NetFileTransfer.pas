@@ -6,12 +6,14 @@ uses
   {$IFDEF FPC}, zstream {$ENDIF}
   {$IFDEF WDC}, ZLib {$ENDIF};
 
-const MAX_TRANSFERS = MAX_LOBBY_SLOTS - 1; //One for each player and spectator
+const
+  MAX_TRANSFERS = MAX_LOBBY_SLOTS - 1; //One for each player and spectator
+
 type
-  TTransferEvent = procedure(aClientIndex: TKMNetHandleIndex) of object;
-  TTransferPacketEvent = procedure(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStream; out SendBufferEmpty: Boolean) of object;
-  TTransferProgressEvent = procedure(Total, Progress: Cardinal) of object;
-  TTransferProgressPlayerEvent = procedure(aNetPlayerIndex: Integer; Total, Progress: Cardinal) of object;
+  TKMTransferEvent = procedure(aClientIndex: TKMNetHandleIndex) of object;
+  TKMTransferPacketEvent = procedure(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStream; out aSendBufferEmpty: Boolean) of object;
+  TKMTransferProgressEvent = procedure(Total, Progress: Cardinal) of object;
+  TKMTransferProgressPlayerEvent = procedure(aNetPlayerIndex: Integer; Total, Progress: Cardinal) of object;
   TKMTransferType = (kttMap, kttSave);
 
   TKMFileSender = class
@@ -52,8 +54,8 @@ type
   TKMFileSenderManager = class
   private
     fSenders: array[1..MAX_TRANSFERS] of TKMFileSender;
-    fOnTransferCompleted: TTransferEvent;
-    fOnTransferPacket: TTransferPacketEvent;
+    fOnTransferCompleted: TKMTransferEvent;
+    fOnTransferPacket: TKMTransferPacketEvent;
     function ActiveTransferCount: Byte;
   public
     destructor Destroy; override;
@@ -62,9 +64,9 @@ type
     procedure AbortAllTransfers;
     procedure AckReceived(aReceiverIndex: TKMNetHandleIndex);
     procedure ClientDisconnected(aReceiverIndex: TKMNetHandleIndex);
-    procedure UpdateStateIdle(SendBufferEmpty: Boolean);
-    property OnTransferCompleted: TTransferEvent write fOnTransferCompleted;
-    property OnTransferPacket: TTransferPacketEvent write fOnTransferPacket;
+    procedure UpdateStateIdle(aSendBufferEmpty: Boolean);
+    property OnTransferCompleted: TKMTransferEvent write fOnTransferCompleted;
+    property OnTransferPacket: TKMTransferPacketEvent write fOnTransferPacket;
   end;
 
 implementation
@@ -510,7 +512,7 @@ begin
 end;
 
 
-procedure TKMFileSenderManager.UpdateStateIdle(SendBufferEmpty: Boolean);
+procedure TKMFileSenderManager.UpdateStateIdle(aSendBufferEmpty: Boolean);
 var
   I: Integer;
   stream: TKMemoryStream;
@@ -520,11 +522,11 @@ begin
   //Reserve some bandwidth for each sender
   maxChunksInFlightPerSender := Max(1, MAX_CHUNKS_BEFORE_ACK div Max(1, ActiveTransferCount));
   for I := Low(fSenders) to High(fSenders) do
-    while (fSenders[I] <> nil) and (fSenders[I].fChunksInFlight < maxChunksInFlightPerSender) and SendBufferEmpty do
+    while (fSenders[I] <> nil) and (fSenders[I].fChunksInFlight < maxChunksInFlightPerSender) and aSendBufferEmpty do
     begin
       stream := TKMemoryStreamBinary.Create;
       fSenders[I].WriteChunk(stream, FILE_CHUNK_SIZE);
-      fOnTransferPacket(fSenders[I].ReceiverIndex, stream, SendBufferEmpty); //Updates SendBufferEmpty
+      fOnTransferPacket(fSenders[I].ReceiverIndex, stream, aSendBufferEmpty); //Updates SendBufferEmpty
       stream.Free;
       if fSenders[I].StreamEnd then
       begin

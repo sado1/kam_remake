@@ -83,7 +83,7 @@ type
     procedure ReturnToLobbyVoteSucceeded;
     procedure ResetReturnToLobbyVote;
     procedure TransferOnCompleted(aClientIndex: TKMNetHandleIndex);
-    procedure TransferOnPacket(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStream; out SendBufferEmpty: Boolean);
+    procedure TransferOnPacket(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStream; out aSendBufferEmpty: Boolean);
     function GetMyRoomSlot: TKMNetRoomSlot;
     procedure SetDownloadlInProgress(aSenderIndex: TKMNetHandleIndex; aValue: Boolean);
     procedure HandleMessageFileRequest(aSenderIndex: TKMNetHandleIndex; aStream: TKMemoryStream);
@@ -117,8 +117,8 @@ type
     OnJoinAssignedHost: TKMEvent;       // We were assigned hosting rights upon connection
     OnReassignedHost: TKMEvent;         // We were reassigned hosting rights when the host quit
     OnReassignedJoiner: TKMEvent;       // We were reassigned to a joiner from host
-    OnFileTransferProgress: TTransferProgressEvent;             // File transfer progress to this player
-    OnPlayerFileTransferProgress: TTransferProgressPlayerEvent; // File transfer progress to other player
+    OnFileTransferProgress: TKMTransferProgressEvent;             // File transfer progress to this player
+    OnPlayerFileTransferProgress: TKMTransferProgressPlayerEvent; // File transfer progress to other player
 
     OnPlayersSetup: TKMEvent;               // Player list updated
     OnUpdateMinimap: TKMEvent;              // Update minimap
@@ -2622,10 +2622,10 @@ begin
 end;
 
 
-procedure TKMNetworking.TransferOnPacket(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStream; out SendBufferEmpty: Boolean);
+procedure TKMNetworking.TransferOnPacket(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStream; out aSendBufferEmpty: Boolean);
 begin
   PacketSendS(aClientIndex, mkFileChunk, aStream);
-  SendBufferEmpty := fNetClient.SendBufferEmpty;
+  aSendBufferEmpty := fNetClient.SendBufferEmpty;
 end;
 
 
