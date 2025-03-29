@@ -109,7 +109,7 @@ begin
   {$ENDIF}
 
   // Try to save several times, in case file is blocked (by antivirus f.e.)
-  if not TryExecuteMethod(path, 'SaveToFile', errorStr, SaveToFile) then
+  if not TryExecuteMethod(SaveToFile, path, 'SaveToFile', errorStr) then
     raise Exception.Create('Can''t save settings to file ''' + path + ''': ' + errorStr);
 
   gLog.AddTime(Format('''%s'' was successfully saved to ''%s''', [GetSettingsName, path]));

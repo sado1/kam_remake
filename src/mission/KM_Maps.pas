@@ -698,6 +698,7 @@ begin
 end;
 
 
+//todo -cPractical: Rename to LoadStreamFromFile
 procedure TKMMapInfo.LoadFromStreamObj(aStreamObj: TObject; const aPath: UnicodeString);
 var
   S: TKMemoryStream;
@@ -738,7 +739,7 @@ begin
   try
     //Try to load map cache up to 3 times (in case its updating by other thread
     //its much easier and working well, then synchronize threads
-    if not TryExecuteMethod(TObject(S), aPath, 'LoadFromStreamObj', errorStr, LoadFromStreamObj) then
+    if not TryExecuteMethod(LoadFromStreamObj, TObject(S), aPath, 'LoadFromStreamObj', errorStr) then
     begin
       gLog.AddTime(errorStr);
       gLog.AddTime('Error loading map cache: ''' + aPath + '''. The file will be deleted.');
@@ -751,6 +752,7 @@ begin
 end;
 
 
+//todo -cPractical: Rename to SaveStreamToFile
 procedure TKMMapInfo.SaveToStreamObj(aStreamObj: TObject; const aPath: UnicodeString);
 var
   S: TKMemoryStream;
@@ -787,7 +789,7 @@ begin
 
     //Try to save map cache up to 3 times (in case its updating by other thread
     //its much easier and working well, then synchronize threads
-    if not TryExecuteMethod(TObject(S), aPath, 'SaveToStreamObj', errorStr, SaveToStreamObj) then
+    if not TryExecuteMethod(SaveToStreamObj, TObject(S), aPath, 'SaveToStreamObj', errorStr) then
       gLog.AddTime(errorStr);
   finally
     //Other properties from text file are not saved, they are fast to reload
