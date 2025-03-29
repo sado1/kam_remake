@@ -23,7 +23,7 @@ type
     fSendStream: TKMemoryStream;
     procedure AddFileToStream(const aFileName, aPostFix, aExt: UnicodeString);
   public
-    constructor Create(aType: TKMTransferType; const aName: UnicodeString; aMapKind: TKMMapKind; aReceiverIndex: TKMNetHandleIndex);
+    constructor Create(aType: TKMTransferType; const aBundleName: UnicodeString; aMapKind: TKMMapKind; aReceiverIndex: TKMNetHandleIndex);
     destructor Destroy; override;
     procedure WriteChunk(aStream: TKMemoryStream; aLength: Cardinal);
     procedure AckReceived;
@@ -35,17 +35,16 @@ type
   private
     fReceiveStream: TKMemoryStream;
     fType: TKMTransferType;
-    fName: UnicodeString;
+    fBundleName: UnicodeString;
     fMapCRC: Cardinal;
     fTotalSize: Cardinal;
     fReceivedSize: Cardinal;
     procedure ClearExistingFiles;
     function ValidExtension(const aExt: UnicodeString): Boolean;
   public
-    constructor Create(aType: TKMTransferType; const aName: UnicodeString; aMapCRC: Cardinal = 0);
+    constructor Create(aType: TKMTransferType; const aBundleName: UnicodeString; aMapCRC: Cardinal = 0);
     destructor Destroy; override;
     procedure DataReceived(aStream: TKMemoryStream);
-    property Name: UnicodeString read fName;
     property TotalSize: Cardinal read fTotalSize;
     property ReceivedSize: Cardinal read fReceivedSize;
     function ProcessTransfer: Boolean;
@@ -59,7 +58,7 @@ type
     function ActiveTransferCount: Byte;
   public
     destructor Destroy; override;
-    function StartNewSend(aType: TKMTransferType; const aName: String; aMapKind: TKMMapKind;
+    function StartNewSend(aType: TKMTransferType; const aBundleName: String; aMapKind: TKMMapKind;
                           aReceiverIndex: TKMNetHandleIndex): Boolean;
     procedure AbortAllTransfers;
     procedure AckReceived(aReceiverIndex: TKMNetHandleIndex);
@@ -89,8 +88,8 @@ function GetFullSourceFileName(aType: TKMTransferType; const aName: String; aMap
                                const aPostfix, aExt: UnicodeString): String;
 begin
   case aType of
-    kttMap:  Result := TKMapsCollection.FullPath(aName, aPostfix + '.' + aExt, aMapKind);
-    kttSave: Result := TKMSavesCollection.FullPath(aName, aExt, True);
+    kttMap:   Result := TKMapsCollection.FullPath(aName, aPostfix + '.' + aExt, aMapKind);
+    kttSave:  Result := TKMSavesCollection.FullPath(aName, aExt, True);
   end;
 end;
 
@@ -103,13 +102,13 @@ begin
                 Result := TKMapsCollection.FullPath(aName, Postfix + '.' + aExt, mkDL)
               else
                 Result := TKMapsCollection.FullPath(aName, aCustomFileName, Postfix + '.' + aExt, mkDL);
-    kttSave: Result := TKMSavesCollection.Path(DOWNLOADED_LOBBY_SAVE, True) + DOWNLOADED_LOBBY_SAVE + '.' + aExt;
+    kttSave:  Result := TKMSavesCollection.Path(DOWNLOADED_LOBBY_SAVE, True) + DOWNLOADED_LOBBY_SAVE + '.' + aExt;
   end;
 end;
 
 
 { TKMFileSender }
-constructor TKMFileSender.Create(aType: TKMTransferType; const aName: UnicodeString; aMapKind: TKMMapKind;
+constructor TKMFileSender.Create(aType: TKMTransferType; const aBundleName: UnicodeString; aMapKind: TKMMapKind;
                                  aReceiverIndex: TKMNetHandleIndex);
 var
   I, J: Integer;
@@ -125,7 +124,7 @@ begin
   fSendStream := TKMemoryStreamBinary.Create;
   fSendStream.PlaceMarker('TransferCompressed');
   fSendStream.Write(aType, SizeOf(aType));
-  fSendStream.WriteW(aName);
+  fSendStream.WriteW(aBundleName);
   //Fill stream with data to be sent
   case aType of
     kttMap:   begin
@@ -137,7 +136,7 @@ begin
                 // MapName.script + any included script
                 for I := Low(VALID_MAP_EXTENSIONS) to High(VALID_MAP_EXTENSIONS) do
                 begin
-                  fileName := GetFullSourceFileName(aType, aName, aMapKind, '', VALID_MAP_EXTENSIONS[I]);
+                  fileName := GetFullSourceFileName(aType, aBundleName, aMapKind, '', VALID_MAP_EXTENSIONS[I]);
                   if FileExists(fileName) then
                     AddFileToStream(fileName, '', VALID_MAP_EXTENSIONS[I]);
                   //Add all included script files
@@ -166,7 +165,7 @@ begin
                 // MapName.eng.pdf
                 for I := Low(fileName) to High(VALID_MAP_EXTENSIONS_POSTFIX) do
                 begin
-                  fileName := GetFullSourceFileName(aType, aName, aMapKind, '.*', VALID_MAP_EXTENSIONS_POSTFIX[I]);
+                  fileName := GetFullSourceFileName(aType, aBundleName, aMapKind, '.*', VALID_MAP_EXTENSIONS_POSTFIX[I]);
                   try
                     if FindFirst(fileName, faAnyFile, F) = 0 then
                     begin
@@ -177,9 +176,9 @@ begin
                           // Cut ext with dot
                           postfix := ChangeFileExt(F.Name, '');
                           // Find 'MapName.'
-                          if Pos(aName + '.', postfix) = 1 then
+                          if Pos(aBundleName + '.', postfix) = 1 then
                             // Copy '.snd_name.eng'
-                            postfix := Copy(postfix, Length(aName) + 1, Length(postfix))
+                            postfix := Copy(postfix, Length(aBundleName) + 1, Length(postfix))
                           else
                             // No postfix was found
                             postfix := '';
@@ -195,7 +194,7 @@ begin
               end;
     kttSave:  for I := Low(VALID_SAVE_EXTENSIONS) to High(VALID_SAVE_EXTENSIONS) do
               begin
-                fileName := TKMSavesCollection.FullPath(aName, VALID_SAVE_EXTENSIONS[I], True);
+                fileName := TKMSavesCollection.FullPath(aBundleName, VALID_SAVE_EXTENSIONS[I], True);
                 if FileExists(fileName) then
                   AddFileToStream(fileName, '', VALID_SAVE_EXTENSIONS[I]);
               end;
@@ -266,12 +265,12 @@ end;
 
 
 { TKMFileReceiver }
-constructor TKMFileReceiver.Create(aType: TKMTransferType; const aName: UnicodeString; aMapCRC: Cardinal = 0);
+constructor TKMFileReceiver.Create(aType: TKMTransferType; const aBundleName: UnicodeString; aMapCRC: Cardinal = 0);
 begin
   inherited Create;
   fReceiveStream := TKMemoryStreamBinary.Create;
   fType := aType;
-  fName := aName;
+  fBundleName := aBundleName;
   fMapCRC := aMapCRC;
 end;
 
@@ -309,13 +308,13 @@ begin
                 if not DirectoryExists(fileName) then
                   CreateDir(fileName);
                 //Create map folder if it is missing
-                fileName := fileName + PathDelim + fName;
+                fileName := fileName + PathDelim + fBundleName;
                 if not DirectoryExists(fileName) then
                   CreateDir(fileName)
                 else
                   try
                     //If any files already exist in the folder, delete them
-                    if FindFirst(fileName + PathDelim + fName + '*.*', faAnyFile, searchRec) = 0 then
+                    if FindFirst(fileName + PathDelim + fBundleName + '*.*', faAnyFile, searchRec) = 0 then
                     begin
                       repeat
                         if (searchRec.Attr and faDirectory = 0) then
@@ -342,17 +341,17 @@ begin
   Result := False;
 
   case fType of
-    kttMap: begin
-               for I := Low(VALID_MAP_EXTENSIONS) to High(VALID_MAP_EXTENSIONS) do
-                 if aExt = VALID_MAP_EXTENSIONS[I] then
-                   Exit(True);
-               for I := Low(VALID_MAP_EXTENSIONS_POSTFIX) to High(VALID_MAP_EXTENSIONS_POSTFIX) do
-                 if aExt = VALID_MAP_EXTENSIONS_POSTFIX[I] then
-                   Exit(True);
-            end;
-    kttSave: for I := Low(VALID_SAVE_EXTENSIONS) to High(VALID_SAVE_EXTENSIONS) do
-               if aExt = VALID_SAVE_EXTENSIONS[I] then
-                 Exit(True);
+    kttMap:   begin
+                for I := Low(VALID_MAP_EXTENSIONS) to High(VALID_MAP_EXTENSIONS) do
+                  if aExt = VALID_MAP_EXTENSIONS[I] then
+                    Exit(True);
+                for I := Low(VALID_MAP_EXTENSIONS_POSTFIX) to High(VALID_MAP_EXTENSIONS_POSTFIX) do
+                  if aExt = VALID_MAP_EXTENSIONS_POSTFIX[I] then
+                    Exit(True);
+              end;
+    kttSave:  for I := Low(VALID_SAVE_EXTENSIONS) to High(VALID_SAVE_EXTENSIONS) do
+                if aExt = VALID_SAVE_EXTENSIONS[I] then
+                  Exit(True);
   end;
 end;
 
@@ -384,7 +383,7 @@ begin
   readStream.Read(readType, SizeOf(readType));
   Assert(readType = fType, 'Unexpected transfer type received');
   readStream.ReadW(readName);
-  if (readName <> fName) and (readName + '_' + IntToHex(fMapCRC, 8) <> fName) then
+  if (readName <> fBundleName) and (readName + '_' + IntToHex(fMapCRC, 8) <> fBundleName) then
     raise Exception.Create('Unexpected transfer name received');
 
   ClearExistingFiles;
@@ -409,9 +408,9 @@ begin
 
     // Scripts can have arbitrary names
     if (ext = EXT_FILE_SCRIPT) and (transferedFileName <> readName) then
-      fileName := GetFullDestFileName(fType, fName, postfix, ext, transferedFileName)
+      fileName := GetFullDestFileName(fType, fBundleName, postfix, ext, transferedFileName)
     else
-      fileName := GetFullDestFileName(fType, fName, postfix, ext);
+      fileName := GetFullDestFileName(fType, fBundleName, postfix, ext);
 
     // Sometimes the file is not deleted yet. Probably OS glitches
     if FileExists(fileName) then
@@ -465,14 +464,14 @@ begin
 end;
 
 
-function TKMFileSenderManager.StartNewSend(aType: TKMTransferType; const aName: String; aMapKind: TKMMapKind;
+function TKMFileSenderManager.StartNewSend(aType: TKMTransferType; const aBundleName: String; aMapKind: TKMMapKind;
                                            aReceiverIndex: TKMNetHandleIndex): Boolean;
 var
   I: Integer;
-  name: String;
+  bundleName: String;
 begin
   Result := False;
-  name := aName; //To save const String param locally //@Rey: There are no threads here, it is not needed?
+  bundleName := aBundleName; //To save const String param locally //@Rey: There are no threads here, it is not needed?
 
   for I := Low(fSenders) to High(fSenders) do
     if (fSenders[I] = nil) or (fSenders[I].ReceiverIndex = aReceiverIndex) then
@@ -481,7 +480,7 @@ begin
         //There is an existing transfer to this client, so free it
         fSenders[I].Free;
       try
-        fSenders[I] := TKMFileSender.Create(aType, name, aMapKind, aReceiverIndex);
+        fSenders[I] := TKMFileSender.Create(aType, bundleName, aMapKind, aReceiverIndex);
       except
         on E: Exception do
         begin

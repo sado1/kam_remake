@@ -1106,11 +1106,11 @@ procedure TKMNetworking.RequestFileTransfer;
 begin
   if fFileReceiver = nil then
     case fMissingFileType of
-      ngkMap:  begin
+      ngkMap:   begin
                   fFileReceiver := TKMFileReceiver.Create(kttMap, fMissingFileName, fMissingFileCRC);
                   PacketSendW(NET_ADDRESS_HOST, mkFileRequest, fMissingFileName);
                 end;
-      ngkSave: begin
+      ngkSave:  begin
                   fFileReceiver := TKMFileReceiver.Create(kttSave, fMissingFileName);
                   PacketSendW(NET_ADDRESS_HOST, mkFileRequest, fMissingFileName);
                 end;
