@@ -1646,7 +1646,6 @@ begin
                 Assert(not IsHost);
                 OnJoinFail(Format(gResTexts[TX_MP_MENU_WRONG_VERSION], [NET_PROTOCOL_REVISON, tmpStringA]));
                 fNetClient.Disconnect;
-                Exit;
               end;
             end;
 
