@@ -20,9 +20,8 @@ type
   TKMNotifyEventKeyShift = procedure(Sender: TObject; Key: Word; Shift: TShiftState) of object;
   TKMNotifyEventXY = procedure(Sender: TObject; const aX, aY: Integer) of object;
   TKMNotifyEventButton = procedure(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean) of object;
-
-  TKMNotifyFuncKey = function(Sender: TObject; Key: Word): Boolean of object;
-  TKMNotifyFuncKeyShift = function(Sender: TObject; Key: Word; Shift: TShiftState): Boolean of object;
+  TKMNotifyFuncKey = function(Sender: TObject; Key: Word): Boolean of object; //todo -cPractical: This should be reworked to use standard "var aHandled" pattern
+  TKMNotifyFuncKeyShift = function(Sender: TObject; Key: Word; Shift: TShiftState): Boolean of object; //todo -cPractical: This should be reworked to use standard "var aHandled" pattern
 
   TKMControlState = (csDown, csFocus, csOver);
   TKMControlStateSet = set of TKMControlState;
