@@ -97,7 +97,7 @@ type
     procedure Beacon_Cancel;
     procedure Beacon_Place(const aLoc: TKMPointF);
     procedure Chat_Click(Sender: TObject);
-    procedure House_Demolish(Sender: TObject; Shift: TShiftState);
+    procedure House_Demolish(aRepeat: Boolean);
     procedure Reset_Menu;
     function ArmyCanTakeOrder(aObject: TObject): Boolean;
     function IsSelectingTroopDirection(aObject: TObject): Boolean;
@@ -1633,11 +1633,11 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.House_Demolish(Sender: TObject; Shift: TShiftState);
+procedure TKMGamePlayInterface.House_Demolish(aRepeat: Boolean);
 begin
   SwitchPage(Button_Main[tbBuild]);
-  if ssShift in Shift then
-    fGuiGameBuild.ErasePlan; //Enable Delete mode again
+  if aRepeat then
+    fGuiGameBuild.ErasePlan; // Enable Delete mode again
 end;
 
 

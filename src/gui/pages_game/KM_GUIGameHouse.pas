@@ -132,7 +132,7 @@ type
       Image_ArmorWS_Accept: array [1..2] of TKMImage;
   public
     AskDemolish: Boolean;
-    OnHouseDemolish: TNotifyEventShift;
+    OnHouseDemolish: TBooleanEvent;
 
     constructor Create(aParent: TKMPanel; aSetViewportEvent: TPointFEvent);
 
@@ -1009,7 +1009,7 @@ begin
   end;
 
   AskDemolish := False;
-  OnHouseDemolish(Sender, Shift); //Return to build menu
+  OnHouseDemolish(ssShift in Shift); //Return to build menu
 end;
 
 
