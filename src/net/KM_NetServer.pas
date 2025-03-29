@@ -56,13 +56,14 @@ type
     fBufferSize: Cardinal;
     fBuffer: array of Byte;
     //DoSendData(aRecipient: Integer; aData: Pointer; aLength: Cardinal);
-    fScheduledPacketsCnt: Byte;
-    fScheduledPacketsSize: Cardinal;
-    fScheduledPackets: array of Byte;
+
+    fQueuedPacketsCnt: Byte;
+    fQueuedPacketsSize: Cardinal;
+    fQueuedPackets: array of Byte;
   public
     constructor Create(aHandle: TKMNetHandleIndex; aRoom: Integer);
-    procedure AddScheduledPacket(aData: Pointer; aLength: Cardinal);
-    procedure ClearScheduledPackets;
+    procedure AddQueuedPacket(aData: Pointer; aLength: Cardinal);
+    procedure ClearQueuedPackets;
     property Handle: TKMNetHandleIndex read fHandle; //ReadOnly
     property Room: Integer read fRoom write fRoom;
     property Ping: Word read fPing write fPing;
@@ -191,28 +192,28 @@ begin
   fHandle := aHandle;
   fRoom := aRoom;
   SetLength(fBuffer, 0);
-  SetLength(fScheduledPackets, 0);
+  SetLength(fQueuedPackets, 0);
   fBufferSize := 0;
 end;
 
 
-procedure TKMServerClient.ClearScheduledPackets;
+procedure TKMServerClient.ClearQueuedPackets;
 begin
-  fScheduledPacketsCnt := 0;
-  fScheduledPacketsSize := 0;
-  SetLength(fScheduledPackets, 0);
+  fQueuedPacketsCnt := 0;
+  fQueuedPacketsSize := 0;
+  SetLength(fQueuedPackets, 0);
 end;
 
 
-procedure TKMServerClient.AddScheduledPacket(aData: Pointer; aLength: Cardinal);
+procedure TKMServerClient.AddQueuedPacket(aData: Pointer; aLength: Cardinal);
 begin
-  Inc(fScheduledPacketsCnt);
-  SetLength(fScheduledPackets, fScheduledPacketsSize + aLength);
+  Inc(fQueuedPacketsCnt);
+  SetLength(fQueuedPackets, fQueuedPacketsSize + aLength);
 
-  //Append data packet to the end of cumulative packet
-  Move(aData^, fScheduledPackets[fScheduledPacketsSize], aLength);
-  Inc(fScheduledPacketsSize, aLength);
-  //gLog.AddTime(Format('*** add scheduled packet: length = %d Cnt = %d totalSize = %d', [aLength, fScheduledPacketsCnt, fScheduledPacketsSize]));
+  // Append data packet to the end of cumulative packet
+  Move(aData^, fQueuedPackets[fQueuedPacketsSize], aLength);
+  Inc(fQueuedPacketsSize, aLength);
+  //gLog.AddTime(Format('*** add queued packet: length = %d Cnt = %d totalSize = %d', [aLength, fQueuedPacketsCnt, fQueuedPacketsSize]));
 end;
 
 
@@ -741,22 +742,22 @@ var
   P: Pointer;
   totalSize: Cardinal;
 begin
-  if aServerClient.fScheduledPacketsCnt > 0 then
+  if aServerClient.fQueuedPacketsCnt > 0 then
   begin
-    totalSize := aServerClient.fScheduledPacketsSize + 1; //+1 byte for packets count
+    totalSize := aServerClient.fQueuedPacketsSize + 1; //+1 byte for packets count
     GetMem(P, totalSize);
     try
       // Packets Count goes into 1st byte (guaranteed to be <256)
-      PByte(P)^ := aServerClient.fScheduledPacketsCnt;
+      PByte(P)^ := aServerClient.fQueuedPacketsCnt;
       // Copy collected packets data with 1 byte shift
-      Move(aServerClient.fScheduledPackets[0], Pointer(NativeUInt(P) + 1)^, aServerClient.fScheduledPacketsSize);
+      Move(aServerClient.fQueuedPackets[0], Pointer(NativeUInt(P) + 1)^, aServerClient.fQueuedPacketsSize);
 
       Inc(BytesTX, totalSize);
       //Inc(PacketsSent);
       //gLog.AddTime('++++ send data to ' + GetNetAddressStr(aServerClient.fHandle) + ' length = ' + IntToStr(totalSize));
       fServer.SendData(aServerClient.fHandle, P, totalSize);
 
-      aServerClient.ClearScheduledPackets;
+      aServerClient.ClearQueuedPackets;
     finally
       FreeMem(P);
     end;
@@ -798,14 +799,14 @@ begin
 
   if senderClient = nil then Exit;
 
-  if (senderClient.fScheduledPacketsSize + aLength > MAX_CUMULATIVE_PACKET_SIZE)
-    or (senderClient.fScheduledPacketsCnt = 255) then //Max number of packets = 255 (we use 1 byte for that)
+  if (senderClient.fQueuedPacketsSize + aLength > MAX_CUMULATIVE_PACKET_SIZE)
+    or (senderClient.fQueuedPacketsCnt = 255) then //Max number of packets = 255 (we use 1 byte for that)
   begin
-    //gLog.AddTime(Format('@@@ FLUSH fScheduledPacketsSize + aLength = %d > %d', [SenderClient.fScheduledPacketsSize + aLength, MAX_CUMULATIVE_PACKET_SIZE]));
+    //gLog.AddTime(Format('@@@ FLUSH fQueuedPacketsSize + aLength = %d > %d', [SenderClient.fQueuedPacketsSize + aLength, MAX_CUMULATIVE_PACKET_SIZE]));
     SendDataPerform(senderClient);
   end;
 
-  senderClient.AddScheduledPacket(aData, aLength);
+  senderClient.AddQueuedPacket(aData, aLength);
 
   if aFlushQueue then
     SendDataPerform(senderClient);
