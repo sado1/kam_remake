@@ -67,7 +67,7 @@ type
 
     fVoteReturnToLobbySucceeded: Boolean;
 
-    procedure HandleMessagePingInfo(aStream: TKMemoryStream);
+    procedure HandleMessagePingFpsInfo(aStream: TKMemoryStream);
     procedure ForcedDisconnect(Sender: TObject);
     procedure StartGame;
     procedure TryPlayGame;
@@ -482,7 +482,7 @@ begin
 end;
 
 
-procedure TKMNetworking.HandleMessagePingInfo(aStream: TKMemoryStream);
+procedure TKMNetworking.HandleMessagePingFpsInfo(aStream: TKMemoryStream);
 var
   I: Integer;
   pingCount: Integer;
@@ -515,6 +515,9 @@ begin
         fNetRoom[slotIndex].FPS := fpsValue;
     end;
   end;
+
+  if Assigned(OnPingInfo) then
+    OnPingInfo;
 end;
 
 
@@ -1963,10 +1966,7 @@ begin
     mkPing:  PacketSend(aSenderIndex, mkPong);
 
     mkPingInfo:
-            begin
-              HandleMessagePingInfo(aStream);
-              if Assigned(OnPingInfo) then OnPingInfo;
-            end;
+            HandleMessagePingFpsInfo(aStream);
 
 //    mkFPS: Moved to server in 2017
 
