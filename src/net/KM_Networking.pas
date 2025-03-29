@@ -1569,9 +1569,10 @@ begin
   else
     case aKind of
       mkPing, mkPong,
-      mkPingInfo, mkFPS:  gLog.LogNetPacketPingFps(logMessage);
-      mkCommands       :  gLog.LogNetPacketCommand(logMessage);
-      else                gLog.LogNetPacketOther(logMessage);
+      mkPingFpsInfo, mkFPS:  gLog.LogNetPacketPingFps(logMessage);
+      mkCommands:            gLog.LogNetPacketCommand(logMessage);
+    else
+      gLog.LogNetPacketOther(logMessage);
     end;
 end;
 
@@ -1962,9 +1963,9 @@ begin
     mkReassignHost:
             HandleMessageReassignHost(aSenderIndex, aStream);
 
-    mkPing:  PacketSend(aSenderIndex, mkPong);
+    mkPing: PacketSend(aSenderIndex, mkPong);
 
-    mkPingInfo:
+    mkPingFpsInfo:
             HandleMessagePingFpsInfo(aStream);
 
 //    mkFPS: Moved to server in 2017

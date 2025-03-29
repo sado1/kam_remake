@@ -82,7 +82,7 @@ type
 
     mkPing,            //Server pings Clients
     mkPong,            //Clients reply to Server with pong
-    mkPingInfo,        //Server sends list of ping/fps to Clients
+    mkPingFpsInfo,     //Server sends list of ping/fps to Clients
     mkFPS,             //Client tells server his FPS
 
     mkPlayersList,     //Host keeps the players list and sends it to everyone on change
@@ -165,7 +165,7 @@ const
     pfNumber,   //mkDisconnect
     pfNoData,   //mkPing
     pfNoData,   //mkPong
-    pfBinary,   //mkPingInfo
+    pfBinary,   //mkPingFpsInfo
     pfNumber,   //mkFPS
     pfBinary,   //mkPlayersList
     pfBinary,   //mkGameOptions

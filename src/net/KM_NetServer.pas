@@ -413,7 +413,7 @@ begin
     M.Write(fClientList[I].FPS);
     //gLog.AddTime(Format('Client %d measured ping = %d FPS = %d', [fClientList[I].Handle, fClientList[I].Ping, fClientList[I].FPS]));
   end;
-  SendMessage(NET_ADDRESS_ALL, mkPingInfo, M);
+  SendMessage(NET_ADDRESS_ALL, mkPingFpsInfo, M);
   M.Free;
 
   //Measure pings. Iterate backwards so the indexes are maintained after kicking clients
