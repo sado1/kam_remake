@@ -1518,12 +1518,12 @@ end;
 //Host will reply with OnPlayersSetup event and data will be actualized.
 procedure TKMMenuLobby.PlayersChange(Sender: TObject);
 var
-  I, netI: Integer;
+  I, slotIndex: Integer;
   col: Cardinal;
 begin
   for I := 1 to MAX_LOBBY_SLOTS do
   begin
-    netI := fLocalToSlot[I];
+    slotIndex := fLocalToSlot[I];
     //Starting location
     if (Sender = DropBox_Loc[I]) and DropBox_Loc[I].Enabled then
     begin
@@ -1531,18 +1531,18 @@ begin
       if (DropBox_Loc[I].GetSelectedTag <> LOC_SPECTATE) and (gChat.Mode = cmSpectators) then
         ChatMenuSelect(CHAT_MENU_ALL);
 
-      gNetworking.SelectHand(DropBox_Loc[I].GetSelectedTag, netI);
+      gNetworking.SelectHand(DropBox_Loc[I].GetSelectedTag, slotIndex);
       //Host with HostDoesSetup could have given us some location we don't know about
       //from a map/save we don't have, so make sure SelectGameKind is valid
       if (gNetworking.SelectGameKind <> ngkNone)
         and not gNetworking.IsHost then //Changes are applied instantly for host
         //Set loc back to Room value until host processes our request
-        DropBox_Loc[I].SelectByTag(gNetworking.Room[netI].StartLocation);
+        DropBox_Loc[I].SelectByTag(gNetworking.Room[slotIndex].StartLocation);
     end;
 
     //Team
     if (Sender = DropBox_Team[I]) and DropBox_Team[I].Enabled then
-      gNetworking.SelectTeam(DropBox_Team[I].ItemIndex, netI);
+      gNetworking.SelectTeam(DropBox_Team[I].ItemIndex, slotIndex);
 
     //Color
     if (Sender = DropBox_Colors[I])
@@ -1554,27 +1554,27 @@ begin
       else
         col := DropBox_Colors[I][DropBox_Colors[I].ItemIndex].Cells[0].Color;
 
-      gNetworking.SelectColor(col, netI);
+      gNetworking.SelectColor(col, slotIndex);
     end;
 
     if Sender = DropBox_PlayerSlot[I] then
     begin
       //Modify an existing player
-      if (netI <> -1) and (netI <= gNetworking.Room.Count) then
+      if (slotIndex <> -1) and (slotIndex <= gNetworking.Room.Count) then
       begin
         case DropBox_PlayerSlot[I].ItemIndex of
           0:  //Open
               begin
-                if gNetworking.Room[netI].IsComputer
-                  or gNetworking.Room[netI].IsClosed then
-                  gNetworking.Room.RemPlayer(netI);
+                if gNetworking.Room[slotIndex].IsComputer
+                  or gNetworking.Room[slotIndex].IsClosed then
+                  gNetworking.Room.RemPlayer(slotIndex);
               end;
           1:  //Closed
-              gNetworking.Room.AddClosedPlayer(netI); //Replace it
+              gNetworking.Room.AddClosedPlayer(slotIndex); //Replace it
           2:  //AI
-              gNetworking.Room.AddAIPlayer(False, netI); //Replace it
+              gNetworking.Room.AddAIPlayer(False, slotIndex); //Replace it
           3:  //Advanced AI
-              gNetworking.Room.AddAIPlayer(True, netI); //Replace it
+              gNetworking.Room.AddAIPlayer(True, slotIndex); //Replace it
         end;
       end
       else
@@ -2117,20 +2117,20 @@ end;
 // Change starting location
 procedure TKMMenuLobby.MinimapLocClick(Sender: TObject; const aLoc: Integer);
 var
-  I: Integer;
+  slotIndex: Integer;
   canEdit: Boolean;
 begin
-  I := gNetworking.MySlotIndex;
+  slotIndex := gNetworking.MySlotIndex;
 
   canEdit := ((gNetworking.IsHost or not gNetworking.Room.HostDoesSetup) and
-              (gNetworking.IsHost or not gNetworking.Room[I].ReadyToStart));
+              (gNetworking.IsHost or not gNetworking.Room[slotIndex].ReadyToStart));
 
   if canEdit then
   begin
-    gNetworking.SelectHand(aLoc + 1, I);
+    gNetworking.SelectHand(aLoc + 1, slotIndex);
     //Host with HostDoesSetup could have given us some location we don't know about from a map/save we don't have
     if gNetworking.SelectGameKind <> ngkNone then
-      DropBox_Loc[fSlotToLocal[I]].SelectByTag(gNetworking.Room[I].StartLocation);
+      DropBox_Loc[fSlotToLocal[slotIndex]].SelectByTag(gNetworking.Room[slotIndex].StartLocation);
   end;
 end;
 
