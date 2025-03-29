@@ -169,9 +169,9 @@ const
     pfNumber,   //mkFPS
     pfBinary,   //mkPlayersList
     pfBinary,   //mkGameOptions
-    pfNumber,   //mkStartingLocQuery
-    pfNumber,   //mkSetTeam
-    pfNumber,   //mkFlagColorQuery
+    pfNumber,   //mkRequestStartingLoc
+    pfNumber,   //mkRequestTeam
+    pfNumber,   //mkRequestFlagColor
     pfNoData,   //mkResetMap
     pfBinary,   //mkMapSelect
     pfBinary,   //mkSaveSelect
