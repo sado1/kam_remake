@@ -12,8 +12,8 @@ uses
 
 
 type
-  TNotifyEventShift = procedure(Sender: TObject; Shift: TShiftState) of object;
-  TNotifyEventMB = procedure(Sender: TObject; AButton: TMouseButton) of object;
+  TKMNotifyEventShift = procedure(Sender: TObject; Shift: TShiftState) of object;
+
   TNotifyEventMW = procedure(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean) of object;
   TKMMouseMoveEvent = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState) of object;
   TKMMouseUpDownEvent = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton) of object;
@@ -142,7 +142,7 @@ type
     fLastClickPos: TKMPoint;
 
     fOnClick: TNotifyEvent;
-    fOnClickShift: TNotifyEventShift;
+    fOnClickShift: TKMNotifyEventShift;
     fOnClickRight: TNotifyEventXY;
     fOnClickHold: TNotifyEvenClickHold;
     fOnDoubleClick: TNotifyEvent;
@@ -343,7 +343,7 @@ type
     procedure MouseWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean); virtual;
 
     property OnClick: TNotifyEvent read fOnClick write fOnClick;
-    property OnClickShift: TNotifyEventShift read fOnClickShift write fOnClickShift;
+    property OnClickShift: TKMNotifyEventShift read fOnClickShift write fOnClickShift;
     property OnClickRight: TNotifyEventXY read fOnClickRight write fOnClickRight;
     property OnClickHold: TNotifyEvenClickHold read fOnClickHold write fOnClickHold;
     property OnDoubleClick: TNotifyEvent read fOnDoubleClick write fOnDoubleClick;
