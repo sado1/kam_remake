@@ -73,7 +73,7 @@ type
     procedure TryPlayGame;
     procedure PlayGame;
     procedure SetGameState(aState: TKMNetGameState; aOnMPInfoChanged: Boolean = True);
-    procedure SendMapOrSave(Recipient: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
+    procedure SendMapOrSave(aRecipient: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
     procedure DoReconnection;
     procedure PlayerJoined(aServerIndex: TKMNetHandleIndex; const aPlayerName: AnsiString);
     function IsPlayerHandStillInGame(aSlotIndex: Integer): Boolean;
@@ -96,7 +96,7 @@ type
     procedure PostLogMessageToChat(const aLogMessage: UnicodeString);
     procedure PacketRecieve(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal); //Process all commands
     procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind); overload;
-    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream); overload;
+    procedure PacketSendS(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream);
     procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Integer); overload;
     procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aParam: Cardinal); overload;
 //    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aParams: array of Integer);
@@ -521,7 +521,7 @@ begin
 end;
 
 
-procedure TKMNetworking.SendMapOrSave(Recipient: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
+procedure TKMNetworking.SendMapOrSave(aRecipient: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
 var
   M: TKMemoryStream;
 begin
@@ -530,14 +530,14 @@ begin
     ngkSave: begin
                 M.WriteW(fSaveInfo.FileName);
                 M.Write(fSaveInfo.CRC);
-                PacketSend(Recipient, mkSaveSelect, M);
+                PacketSendS(aRecipient, mkSaveSelect, M);
               end;
     ngkMap:  begin
                 M.WriteW(fMapInfo.FileNameWithoutHash);
                 M.Write(fMapInfo.CRC);
-                PacketSend(Recipient, mkMapSelect, M);
+                PacketSendS(aRecipient, mkMapSelect, M);
               end;
-    else      PacketSend(Recipient, mkResetMap);
+    else      PacketSend(aRecipient, mkResetMap);
   end;
   M.Free;
 end;
@@ -855,7 +855,7 @@ begin
   WriteInfoToJoinRoom(M);
 
   M.WriteA(aPassword);
-  PacketSend(NET_ADDRESS_SERVER, mkPassword, M);
+  PacketSendS(NET_ADDRESS_SERVER, mkPassword, M);
   M.Free;
 
   fEnteringPassword := False;
@@ -1021,7 +1021,7 @@ begin
   M := TKMemoryStreamBinary.Create;
   M.Write(fHostSlotIndex);
   fNetRoom.SaveToStream(M);
-  PacketSend(NET_ADDRESS_OTHERS, mkStart, M);
+  PacketSendS(NET_ADDRESS_OTHERS, mkStart, M);
   M.Free;
 
   StartGame;
@@ -1075,7 +1075,7 @@ begin
   M := TKMemoryStreamBinary.Create;
   M.Write(fHostSlotIndex);
   fNetRoom.SaveToStream(M);
-  PacketSend(aPlayerIndex, mkPlayersList, M);
+  PacketSendS(aPlayerIndex, mkPlayersList, M);
   M.Free;
 
   if Assigned(OnPlayersSetup) then OnPlayersSetup;
@@ -1105,7 +1105,7 @@ begin
 
   M := TKMemoryStreamBinary.Create;
   fNetGameOptions.Save(M);
-  PacketSend(NET_ADDRESS_OTHERS, mkGameOptions, M);
+  PacketSendS(NET_ADDRESS_OTHERS, mkGameOptions, M);
   M.Free;
 end;
 
@@ -1152,25 +1152,25 @@ begin
   case aMode of
     cmTeam:
       if MyRoomSlot.Team = 0 then
-        PacketSend(fMyIndexOnServer, mkTextChat, M) //Send to self only if we have no team
+        PacketSendS(fMyIndexOnServer, mkTextChat, M) //Send to self only if we have no team
       else
         for I := 1 to fNetRoom.Count do
           if (fNetRoom[I].Team = MyRoomSlot.Team) and fNetRoom[I].IsHuman and (fNetRoom[I].IndexOnServer <> -1) then
-            PacketSend(fNetRoom[I].IndexOnServer, mkTextChat, M); //Send to each player on team (includes self)
+            PacketSendS(fNetRoom[I].IndexOnServer, mkTextChat, M); //Send to each player on team (includes self)
 
     cmSpectators:
       for I := 1 to fNetRoom.Count do
         if fNetRoom[I].IsSpectator and fNetRoom[I].IsHuman and (fNetRoom[I].IndexOnServer <> -1) then
-          PacketSend(fNetRoom[I].IndexOnServer, mkTextChat, M); //Send to each spectator (includes self)
+          PacketSendS(fNetRoom[I].IndexOnServer, mkTextChat, M); //Send to each spectator (includes self)
 
     cmWhisper:
       begin
-        PacketSend(aRecipientServerIndex, mkTextChat, M); //Send to specific player
-        PacketSend(fMyIndexOnServer, mkTextChat, M); //Send to self as well so the player sees it
+        PacketSendS(aRecipientServerIndex, mkTextChat, M); //Send to specific player
+        PacketSendS(fMyIndexOnServer, mkTextChat, M); //Send to self as well so the player sees it
       end;
 
     cmAll:
-      PacketSend(NET_ADDRESS_ALL, mkTextChat, M); //Send to all;
+      PacketSendS(NET_ADDRESS_ALL, mkTextChat, M); //Send to all;
   end;
   M.Free;
 end;
@@ -1187,7 +1187,7 @@ begin
   M.WriteW(aArgument1);
   M.WriteW(aArgument2);
   M.Write(aArgumentInt);
-  PacketSend(aRecipient, mkTextTranslated, M);
+  PacketSendS(aRecipient, mkTextTranslated, M);
   M.Free;
 end;
 
@@ -1224,9 +1224,9 @@ end;
 procedure TKMNetworking.SendCommands(aStream: TKMemoryStream; aSlotIndex: ShortInt = -1);
 begin
   if aSlotIndex = -1 then
-    PacketSend(NET_ADDRESS_OTHERS, mkCommands, aStream)
+    PacketSendS(NET_ADDRESS_OTHERS, mkCommands, aStream)
   else
-    PacketSend(fNetRoom[aSlotIndex].IndexOnServer, mkCommands, aStream);
+    PacketSendS(fNetRoom[aSlotIndex].IndexOnServer, mkCommands, aStream);
 end;
 
 
@@ -1672,7 +1672,7 @@ begin
               M2 := TKMemoryStreamBinary.Create;
               WriteInfoToJoinRoom(M2);
 
-              PacketSend(NET_ADDRESS_SERVER, mkJoinRoom, M2);
+              PacketSendS(NET_ADDRESS_SERVER, mkJoinRoom, M2);
               M2.Free;
             end;
 
@@ -1732,7 +1732,7 @@ begin
                       fJoinTimeout := TimeGet; //Wait another X seconds for host to reply before timing out
                       M2 := TKMemoryStreamBinary.Create;
                       TKMNetSecurity.GenerateChallenge(M2, tmpHandleIndex);
-                      PacketSend(NET_ADDRESS_HOST, mkAskForAuth, M2);
+                      PacketSendS(NET_ADDRESS_HOST, mkAskForAuth, M2);
                       M2.Free;
                   end;
                 end;
@@ -1810,7 +1810,7 @@ begin
               M2 := TKMemoryStreamBinary.Create;
               M2.Write(fFileReceiver.TotalSize);
               M2.Write(fFileReceiver.ReceivedSize);
-              PacketSend(NET_ADDRESS_OTHERS, mkFileProgress, M2);
+              PacketSendS(NET_ADDRESS_OTHERS, mkFileProgress, M2);
               M2.Free;
               if Assigned(OnFileTransferProgress) then
                 OnFileTransferProgress(fFileReceiver.TotalSize, fFileReceiver.ReceivedSize);
@@ -1890,7 +1890,7 @@ begin
                 M2 := TKMemoryStreamBinary(TKMNetSecurity.SolveChallenge(aStream, aSenderIndex));
                 //Send our own challenge
                 TKMNetSecurity.GenerateChallenge(M2, aSenderIndex);
-                PacketSend(aSenderIndex, mkAuthChallenge, M2);
+                PacketSendS(aSenderIndex, mkAuthChallenge, M2);
                 M2.Free;
               end;
             end;
@@ -1903,7 +1903,7 @@ begin
                 //Solve host's challenge and ask to join
                 M2 := TKMemoryStreamBinary(TKMNetSecurity.SolveChallenge(aStream, aSenderIndex));
                 M2.WriteA(fMyNickname);
-                PacketSend(NET_ADDRESS_HOST, mkAskToJoin, M2);
+                PacketSendS(NET_ADDRESS_HOST, mkAskToJoin, M2);
                 M2.Free;
               end
               else
@@ -2336,7 +2336,7 @@ begin
 end;
 
 
-procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream);
+procedure TKMNetworking.PacketSendS(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream);
 var
   M: TKMemoryStream;
 begin
@@ -2606,7 +2606,7 @@ begin
 
     M := TKMemoryStreamBinary.Create;
     MPGameInfo.SaveToStream(M);
-    PacketSend(NET_ADDRESS_SERVER, mkSetGameInfo, M);
+    PacketSendS(NET_ADDRESS_SERVER, mkSetGameInfo, M);
     M.Free;
   finally
     MPGameInfo.Free;
@@ -2624,7 +2624,7 @@ end;
 
 procedure TKMNetworking.TransferOnPacket(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStream; out SendBufferEmpty: Boolean);
 begin
-  PacketSend(aClientIndex, mkFileChunk, aStream);
+  PacketSendS(aClientIndex, mkFileChunk, aStream);
   SendBufferEmpty := fNetClient.SendBufferEmpty;
 end;
 
