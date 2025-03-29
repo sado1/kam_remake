@@ -21,7 +21,7 @@ type
     procedure Create_TownHall;
     procedure Create_Woodcutters;
 
-    procedure HouseChange(Sender: TObject; aValue: Integer);
+    procedure HouseChange(Sender: TObject; const aValue: Integer);
     procedure HouseHealthChange(Sender: TObject; Shift: TShiftState);
     procedure HouseHealthClickHold(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean);
 
@@ -42,7 +42,7 @@ type
     procedure SetRallyPointClick(Sender: TObject);
 
     procedure BarracksChange(Sender: TObject; Shift: TShiftState);
-    procedure TownHallChange(Sender: TObject; aValue: Integer);
+    procedure TownHallChange(Sender: TObject; const aValue: Integer);
     procedure StoreChange(Sender: TObject; Shift: TShiftState);
 
     procedure StoreSelectWare(Sender: TObject);
@@ -532,18 +532,18 @@ begin
 end;
 
 
-procedure TKMMapEdHouse.TownHallChange(Sender: TObject; aValue: Integer);
+procedure TKMMapEdHouse.TownHallChange(Sender: TObject; const aValue: Integer);
 var
   TH: TKMHouseTownHall;
-  newCountAdd: Integer;
+  newValue, newCountAdd: Integer;
 begin
   TH := TKMHouseTownHall(fHouse);
   if aValue > 0 then
   begin
     if TH.GoldMaxCnt < aValue + TH.GoldCnt then
       TH.GoldMaxCnt := aValue + TH.GoldCnt;
-    aValue := Min(aValue, TH.GoldMaxCnt - TH.GoldCnt);
-    fHouse.WareAddToIn(wtGold, aValue);
+    newValue := Min(aValue, TH.GoldMaxCnt - TH.GoldCnt);
+    fHouse.WareAddToIn(wtGold, newValue);
   end else
   if aValue < 0 then
   begin
@@ -552,12 +552,13 @@ begin
     newCountAdd := Math.Min(Abs(aValue), fHouse.CheckWareIn(wtGold));
     fHouse.WareTakeFromIn(wtGold, newCountAdd);
   end;
+
   WaresRow_TH_Gold_Input.OrderCount := fHouse.CheckWareIn(wtGold);
   WaresRow_TH_Gold_Input.WareRow.WareCount := Min(MAX_WARES_IN_HOUSE, WaresRow_TH_Gold_Input.OrderCount);
 end;
 
 
-procedure TKMMapEdHouse.HouseChange(Sender: TObject; aValue: Integer);
+procedure TKMMapEdHouse.HouseChange(Sender: TObject; const aValue: Integer);
 var
   I: Integer;
   ware: TKMWareType;

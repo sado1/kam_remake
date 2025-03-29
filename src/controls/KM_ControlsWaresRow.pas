@@ -42,7 +42,7 @@ type
   public
     OrderCntMin: Integer;
     OrderCntMax: Integer;
-    OnChange: TObjectIntegerEvent;
+    OnChange: TKMNotifyEventInteger;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth: Integer; aOrderCntMax: Integer = MAX_WARES_IN_HOUSE;
                        aOrderCntMin: Integer = 0; aImmediateOrder: Boolean = False);
     property WareRow: TKMWaresRow read fWaresRow;

@@ -21,6 +21,7 @@ type
   TKMNotifyEventXY = procedure(Sender: TObject; const aX, aY: Integer) of object;
   TKMNotifyEventButton = procedure(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean) of object;
   TKMNotifyEventBoolean = procedure (Sender: TObject; aValue: Boolean) of object;
+  TKMNotifyEventInteger = procedure (Sender: TObject; const aValue: Integer) of object;
 
   TKMNotifyFuncKey = function(Sender: TObject; Key: Word): Boolean of object; //todo -cPractical: This should be reworked to use standard "var aHandled" pattern
   TKMNotifyFuncKeyShift = function(Sender: TObject; Key: Word; Shift: TShiftState): Boolean of object; //todo -cPractical: This should be reworked to use standard "var aHandled" pattern
@@ -153,8 +154,8 @@ type
     fOnKeyDown: TKMNotifyFuncKeyShift;
     fOnKeyUp: TKMNotifyFuncKeyShift;
 
-    fOnWidthChange: TObjectIntegerEvent;
-    fOnHeightChange: TObjectIntegerEvent;
+    fOnWidthChange: TKMNotifyEventInteger;
+    fOnHeightChange: TKMNotifyEventInteger;
     fOnSizeSet: TNotifyEvent;
     fOnPositionSet: TNotifyEvent;
 
@@ -354,8 +355,8 @@ type
     property OnKeyDown: TKMNotifyFuncKeyShift read fOnKeyDown write fOnKeyDown;
     property OnKeyUp: TKMNotifyFuncKeyShift read fOnKeyUp write fOnKeyUp;
 
-    property OnWidthChange: TObjectIntegerEvent read fOnWidthChange write fOnWidthChange;
-    property OnHeightChange: TObjectIntegerEvent read fOnHeightChange write fOnHeightChange;
+    property OnWidthChange: TKMNotifyEventInteger read fOnWidthChange write fOnWidthChange;
+    property OnHeightChange: TKMNotifyEventInteger read fOnHeightChange write fOnHeightChange;
     property OnSizeSet: TNotifyEvent read fOnSizeSet write fOnSizeSet;
     property OnPositionSet: TNotifyEvent read fOnPositionSet write fOnPositionSet;
 

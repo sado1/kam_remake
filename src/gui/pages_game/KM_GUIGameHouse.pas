@@ -29,7 +29,7 @@ type
 
     procedure House_Demolish(Sender: TObject; Shift: TShiftState);
     procedure House_RepairToggle(Sender: TObject);
-    procedure House_OrderChange(Sender: TObject; aValue: Integer);
+    procedure House_OrderChange(Sender: TObject; const aValue: Integer);
     procedure House_DeliveryModeToggle(Sender: TObject; Shift: TShiftState);
 
     procedure House_ClosedForWorkerToggle(Sender: TObject);
@@ -40,7 +40,7 @@ type
     procedure House_BarracksItemClickShift(Sender: TObject; Shift: TShiftState);
     procedure House_BarracksUnitChange(Sender: TObject; Shift: TShiftState);
 
-    procedure House_TownHall_Change(Sender: TObject; aChangeValue: Integer);
+    procedure House_TownHall_Change(Sender: TObject; const aValue: Integer);
     procedure House_TH_UnitChange(Sender: TObject; Shift: TShiftState);
 
     procedure House_MarketFill(aMarket: TKMHouseMarket);
@@ -1082,7 +1082,7 @@ begin
 end;
 
 
-procedure TKMGUIGameHouse.House_OrderChange(Sender: TObject; aValue: Integer);
+procedure TKMGUIGameHouse.House_OrderChange(Sender: TObject; const aValue: Integer);
 var
   I: Integer;
   H: TKMHouse;
@@ -1299,13 +1299,13 @@ begin
 end;
 
 
-procedure TKMGUIGameHouse.House_TownHall_Change(Sender: TObject; aChangeValue: Integer);
+procedure TKMGUIGameHouse.House_TownHall_Change(Sender: TObject; const aValue: Integer);
 var
   TH: TKMHouseTownHall;
   newValue: Integer;
 begin
   TH := TKMHouseTownHall(gMySpectator.Selected);
-  newValue := EnsureRange(TH.GoldMaxCnt + aChangeValue, 0, High(Word));
+  newValue := EnsureRange(TH.GoldMaxCnt + aValue, 0, High(Word));
   gGame.GameInputProcess.CmdHouse(gicHouseTownHallMaxGold, TH, newValue);
 end;
 

@@ -15,6 +15,7 @@ uses
 type
   TKMNotifyCellClick = procedure(Sender: TObject; const aCellX, aCellY: Integer; var aHandled: Boolean) of object;
   TKMNotifyCellClickShift = procedure(Sender: TObject; const aCellX, aCellY: Integer; Shift: TShiftState; var aHandled: Boolean) of object;
+  TKMNotifyColumnClick = procedure(Sender: TObject; const aColumn: Integer) of object;
 
   TKMSearchableList = class(TKMControl)
   private
@@ -181,7 +182,7 @@ type
     BackAlpha: Single; //Alpha of background
     EdgeAlpha: Single; //Alpha of background outline
 
-    OnColumnClick: TIntegerEvent;
+    OnColumnClick: TKMNotifyColumnClick;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer);
     destructor Destroy; override;
 
@@ -255,8 +256,8 @@ type
     procedure SetSortDirection(aDirection: TKMSortDirection);
     procedure UpdateScrollBar;
     procedure SetShowHeader(aValue: Boolean);
-    function GetOnColumnClick: TIntegerEvent;
-    procedure SetOnColumnClick(const Value: TIntegerEvent);
+    function GetOnColumnClick: TKMNotifyColumnClick;
+    procedure SetOnColumnClick(const aValue: TKMNotifyColumnClick);
     function GetColumn(aIndex: Integer): TKMListColumn;
     procedure ClearColumns;
     procedure SetSearchColumn(aValue: ShortInt);
@@ -332,7 +333,7 @@ type
     property Header: TKMListHeader read fHeader;
 
     //Sort properties are just hints to render Up/Down arrows. Actual sorting is done by client
-    property OnColumnClick: TIntegerEvent read GetOnColumnClick write SetOnColumnClick;
+    property OnColumnClick: TKMNotifyColumnClick read GetOnColumnClick write SetOnColumnClick;
     property OnCellClick: TKMNotifyCellClick read fOnCellClick write fOnCellClick;
     property OnCellClickShift: TKMNotifyCellClickShift read fOnCellClickShift write fOnCellClickShift;
     property SortIndex: Integer read GetSortIndex write SetSortIndex;
@@ -1159,7 +1160,7 @@ begin
     else
       fSortDirection := sdDown;
     fSortIndex := columnID;
-    OnColumnClick(columnID);
+    OnColumnClick(Self, columnID);
   end
   else
     inherited; //Process the usual clicks if e.g. there are no columns
@@ -1392,9 +1393,9 @@ begin
 end;
 
 
-procedure TKMColumnBox.SetOnColumnClick(const Value: TIntegerEvent);
+procedure TKMColumnBox.SetOnColumnClick(const aValue: TKMNotifyColumnClick);
 begin
-  fHeader.OnColumnClick := Value;
+  fHeader.OnColumnClick := aValue;
 end;
 
 
@@ -1551,7 +1552,7 @@ begin
 end;
 
 
-function TKMColumnBox.GetOnColumnClick: TIntegerEvent;
+function TKMColumnBox.GetOnColumnClick: TKMNotifyColumnClick;
 begin
   Result := fHeader.OnColumnClick;
 end;

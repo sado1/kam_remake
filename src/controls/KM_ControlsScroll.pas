@@ -74,10 +74,10 @@ type
     procedure UpdateScrolls(Sender: TObject); overload;
     procedure UpdateScrollV; overload;
     procedure UpdateScrollV(aChildsRect: TKMRect); overload;
-    procedure UpdateScrollV(Sender: TObject; aValue: Integer); overload;
+    procedure UpdateScrollV(Sender: TObject; const aValue: Integer); overload;
     procedure UpdateScrollH; overload;
     procedure UpdateScrollH(aChildsRect: TKMRect); overload;
-    procedure UpdateScrollH(Sender: TObject; aValue: Integer); overload;
+    procedure UpdateScrollH(Sender: TObject; const aValue: Integer); overload;
     procedure ScrollChanged(Sender: TObject);
     function GetChildsRect: TKMRect;
 
@@ -506,7 +506,7 @@ begin
 end;
 
 
-procedure TKMScrollPanel.UpdateScrollH(Sender: TObject; aValue: Integer);
+procedure TKMScrollPanel.UpdateScrollH(Sender: TObject; const aValue: Integer);
 begin
   if (Sender <> fScrollBarH) then
     UpdateScrollH;
@@ -553,7 +553,7 @@ begin
 end;
 
 
-procedure TKMScrollPanel.UpdateScrollV(Sender: TObject; aValue: Integer);
+procedure TKMScrollPanel.UpdateScrollV(Sender: TObject; const aValue: Integer);
 begin
   if (Sender <> fScrollBarV) then
     UpdateScrollV;

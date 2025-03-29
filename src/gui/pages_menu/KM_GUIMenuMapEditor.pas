@@ -46,7 +46,7 @@ type
     procedure SortUpdate(Sender: TObject);
     procedure ScanComplete(Sender: TObject);
 
-    procedure Radio_MapSizes_HeightChange(Sender: TObject; aValue: Integer);
+    procedure Radio_MapSizes_HeightChange(Sender: TObject; const aValue: Integer);
 
     procedure RefreshList(aJumpToSelected: Boolean);
     procedure ColumnClick(Sender: TObject; const aColumn: Integer);
@@ -413,7 +413,7 @@ begin
 end;
 
 
-procedure TKMMenuMapEditor.Radio_MapSizes_HeightChange(Sender: TObject; aValue: Integer);
+procedure TKMMenuMapEditor.Radio_MapSizes_HeightChange(Sender: TObject; const aValue: Integer);
 const
   RADIO_MAPSIZE_LINE_H = 20;
   RADIO_MAPSIZE_LINE_MAX_H = 25;

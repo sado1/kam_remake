@@ -124,7 +124,7 @@ type
     procedure ReinitChartWares;
     procedure ReinitChartArmy;
 
-    procedure Resize(Sender: TObject; aValue: Integer);
+    procedure Resize(Sender: TObject; const aValue: Integer);
   protected
     Panel_ResultsMP: TKMPanel;
       Button_Bars,
@@ -724,7 +724,7 @@ begin
 end;
 
 
-procedure TKMGameResultsMP.Resize(Sender: TObject; aValue: Integer);
+procedure TKMGameResultsMP.Resize(Sender: TObject; const aValue: Integer);
 begin
   BarsUpdatePos;
 end;
