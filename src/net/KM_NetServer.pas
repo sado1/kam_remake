@@ -482,7 +482,7 @@ end;
 procedure TKMNetServer.ClientConnect(aHandle: TKMNetHandleIndex);
 begin
   fClientList.AddPlayer(aHandle, -1); //Clients are not initially put into a room, they choose a room later
-  SendMessageA(aHandle, mkGameVersion, NET_PROTOCOL_REVISON); //First make sure they are using the right version
+  SendMessageA(aHandle, mkNetProtocolVersion, NET_PROTOCOL_REVISON); //First make sure they are using the right version
   if fWelcomeMessage <> '' then SendMessageW(aHandle, mkWelcomeMessage, fWelcomeMessage); //Welcome them to the server
   SendMessageA(aHandle, mkServerName, fServerName);
   SendMessageInd(aHandle, mkIndexOnServer, aHandle); //This is the signal that the client may now start sending

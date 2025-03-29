@@ -11,7 +11,7 @@ const
     //lgsNone
     [],
     //lgsConnecting
-    [mkRefuseToJoin,mkIndexOnServer,mkGameVersion,mkWelcomeMessage,mkPing,
+    [mkRefuseToJoin,mkIndexOnServer,mkNetProtocolVersion,mkWelcomeMessage,mkPing,
      mkConnectedToRoom,mkPingFpsInfo,mkKicked,mkServerName,mkReqPassword],
     //lgsQuery
     [mkAllowToJoin,mkRefuseToJoin,mkAuthChallenge,mkPing,mkPingFpsInfo,mkKicked],
@@ -29,7 +29,7 @@ const
      mkCommands,mkTextChat,mkResyncFromTick,mkAskToReconnect,mkKicked,mkClientReconnected,mkTextTranslated,mkVote,
      mkAskToSendCrashreport],
     //lgsReconnecting
-    [mkIndexOnServer,mkGameVersion,mkWelcomeMessage,mkPing,{mkFPS,}mkConnectedToRoom,
+    [mkIndexOnServer,mkNetProtocolVersion,mkWelcomeMessage,mkPing,{mkFPS,}mkConnectedToRoom,
      mkPingFpsInfo,mkPlayersList,mkReconnectionAccepted,mkRefuseReconnect,mkKicked]
   );
 

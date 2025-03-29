@@ -1633,7 +1633,7 @@ var
   chatSound: TKMChatSound;
 begin
   case aMessageKind of
-    mkGameVersion:
+    mkNetProtocolVersion:
             begin
               aStream.ReadA(tmpStringA);
               if tmpStringA <> NET_PROTOCOL_REVISON then

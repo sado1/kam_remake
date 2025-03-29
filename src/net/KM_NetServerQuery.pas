@@ -369,7 +369,7 @@ var
   tmpString: AnsiString;
 begin
   case aMessageKind of
-    mkGameVersion:
+    mkNetProtocolVersion:
       begin
         aStream.ReadA(tmpString);
         if tmpString <> NET_PROTOCOL_REVISON then
