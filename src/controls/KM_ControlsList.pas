@@ -13,6 +13,7 @@ uses
 
 
 type
+  TKMNotifyCellClick = procedure(Sender: TObject; const aCellX, aCellY: Integer; var aHandled: Boolean) of object;
   TKMNotifyCellClickShift = procedure(Sender: TObject; const aCellX, aCellY: Integer; Shift: TShiftState; var aHandled: Boolean) of object;
 
   TKMSearchableList = class(TKMControl)
@@ -243,7 +244,7 @@ type
     fMouseOverColumn: SmallInt;
     fMouseOverCell: TKMPoint;
     fScrollBar: TKMScrollBar;
-    fOnCellClick: TPointEventFunc;
+    fOnCellClick: TKMNotifyCellClick;
     fOnCellClickShift: TKMNotifyCellClickShift;
     fOnChangeInvoked: Boolean;
     procedure SetBackAlpha(aValue: Single);
@@ -332,7 +333,7 @@ type
 
     //Sort properties are just hints to render Up/Down arrows. Actual sorting is done by client
     property OnColumnClick: TIntegerEvent read GetOnColumnClick write SetOnColumnClick;
-    property OnCellClick: TPointEventFunc read fOnCellClick write fOnCellClick;
+    property OnCellClick: TKMNotifyCellClick read fOnCellClick write fOnCellClick;
     property OnCellClickShift: TKMNotifyCellClickShift read fOnCellClickShift write fOnCellClickShift;
     property SortIndex: Integer read GetSortIndex write SetSortIndex;
     property SortDirection: TKMSortDirection read GetSortDirection write SetSortDirection;
@@ -1767,7 +1768,7 @@ begin
   and Rows[fMouseOverCell.Y].Cells[fMouseOverCell.X].Enabled then
   begin
     if Assigned(fOnCellClick) then
-      isClickHandled := fOnCellClick(Self, fMouseOverCell.X, fMouseOverCell.Y)
+      fOnCellClick(Self, fMouseOverCell.X, fMouseOverCell.Y, isClickHandled)
     else
       if Assigned(fOnCellClickShift) then
         fOnCellClickShift(Self, fMouseOverCell.X, fMouseOverCell.Y, Shift, isClickHandled);

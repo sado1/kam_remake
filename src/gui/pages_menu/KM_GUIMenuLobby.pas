@@ -83,8 +83,8 @@ type
     procedure RefreshMapList(aJumpToSelected: Boolean);
     procedure RefreshSaveList(aJumpToSelected: Boolean);
     procedure MapChange(Sender: TObject);
-    function DropBoxMaps_CellClick(Sender: TObject; const X, Y: Integer): Boolean;
-    function DropBoxPlayers_CellClick(Sender: TObject; const X, Y: Integer): Boolean;
+    procedure DropBoxMaps_CellClick(Sender: TObject; const aCellX, aCellY: Integer; var aHandled: Boolean);
+    procedure DropBoxPlayers_CellClick(Sender: TObject; const aCellX, aCellY: Integer; var aHandled: Boolean);
     procedure DropBoxPlayers_Show(Sender: TObject);
     procedure PercentBar_PlayerDl_ChVisibility(aPlayerIndex: Integer; aShow: Boolean);
 
@@ -1379,11 +1379,11 @@ begin
 end;
 
 
-function TKMMenuLobby.DropBoxPlayers_CellClick(Sender: TObject; const X, Y: Integer): Boolean;
+procedure TKMMenuLobby.DropBoxPlayers_CellClick(Sender: TObject; const aCellX, aCellY: Integer; var aHandled: Boolean);
 
   function IsAILine: Boolean;
   begin
-    Result := Y in [2,3];
+    Result := aCellY in [2,3];
   end;
 
 var
@@ -1391,13 +1391,11 @@ var
   AISlotsToChange, AISlotsChanged: Byte;
   RowChanged: Boolean;
 begin
-  Result := False;
-
-  //Second column was clicked
-  if X = 1 then
+  // Second column was clicked
+  if aCellX = 1 then
   begin
     AISlotsChanged := 0;  //Used to count changed slots while setting ALL to AI
-    AISlotsToChange := AISlotsAvailable([TKMNetPlayerType(Y)]); //Luckily row in column box is the same as TKMNetPlayer type (for AI)
+    AISlotsToChange := AISlotsAvailable([TKMNetPlayerType(aCellY)]); //Luckily row in column box is the same as TKMNetPlayer type (for AI)
 
     for I := 1 to MAX_LOBBY_SLOTS do
     begin
@@ -1407,7 +1405,7 @@ begin
 
         //We have to revert ItemIndex to its previous value, because its value was already switched to AI on MouseDown
         //but we are not sure yet about what value should be there, we will set it properly later on
-        if IsAILine and (DropBox_PlayerSlot[I].ItemIndex = Y)
+        if IsAILine and (DropBox_PlayerSlot[I].ItemIndex = aCellY)
           and (fDropBoxPlayers_LastItemIndex <> -1) then
           DropBox_PlayerSlot[I].ItemIndex := fDropBoxPlayers_LastItemIndex;
 
@@ -1420,7 +1418,7 @@ begin
       if IsAILine and (AISlotsChanged >= AISlotsToChange) then //Do not add more AI, then we have slots available
         Break;
 
-      case Y of
+      case aCellY of
         0:       J := MAX_LOBBY_SLOTS + 1 - I; // we must Open slots in reverse order
         1, 2, 3: J := I;                       // Closed and AI slots - in straight order
         else     J := I;
@@ -1430,12 +1428,12 @@ begin
       NetI := fLocalToSlot[J];
       if (NetI = -1) or not gNetworking.Room[NetI].IsHuman then
       begin
-        if DropBox_PlayerSlot[J].ItemIndex <> Y then //Do not count this slot as changed, if it already has same AI value
+        if DropBox_PlayerSlot[J].ItemIndex <> aCellY then //Do not count this slot as changed, if it already has same AI value
         begin
           RowChanged := True;
           Inc(AISlotsChanged);
         end;
-        DropBox_PlayerSlot[J].ItemIndex := Y;
+        DropBox_PlayerSlot[J].ItemIndex := aCellY;
         // Do not call for PlayerChange if this row is AIPlayer and did not change (it was AIPlayer before that) - to avoid existing AIPlayer reset
         if RowChanged or not IsAILine then
           PlayersChange(DropBox_PlayerSlot[J]);
@@ -1444,7 +1442,7 @@ begin
 
     // Do not propagate click event further, because
     // we do not want provoke OnChange event handler invokation, we have handled everything here
-    Result := True;
+    aHandled := True;
   end;
 end;
 
@@ -2446,14 +2444,13 @@ begin
 end;
 
 
-function TKMMenuLobby.DropBoxMaps_CellClick(Sender: TObject; const X, Y: Integer): Boolean;
+procedure TKMMenuLobby.DropBoxMaps_CellClick(Sender: TObject; const aCellX, aCellY: Integer; var aHandled: Boolean);
 var
   I: Integer;
 begin
-  Result := False;
-  if (Radio_MapType.ItemIndex < MAP_TYPE_INDEX_SAVE) and (X = 0) then
+  if (Radio_MapType.ItemIndex < MAP_TYPE_INDEX_SAVE) and (aCellX = 0) then
   begin
-    I := DropCol_Maps.Item[Y].Tag;
+    I := DropCol_Maps.Item[aCellY].Tag;
     fMapsMP.Lock;
     try
       // We could have updated favourite maps made by other game instances
@@ -2471,7 +2468,7 @@ begin
       end;
 
       // Update pic
-      DropCol_Maps.Item[Y].Cells[0].Pic := fMapsMP[I].FavouriteMapPic;
+      DropCol_Maps.Item[aCellY].Cells[0].Pic := fMapsMP[I].FavouriteMapPic;
       fMapsSortUpdateNeeded := True; //Ask for resort on next list show
 
       // Save favourite maps immediately, thus updated favourite maps could be seen in the other game instances
@@ -2479,7 +2476,7 @@ begin
     finally
       fMapsMP.Unlock;
     end;
-    Result := True; //we handle mouse click here, and do not want to propagate it further
+    aHandled := True; //we handle mouse click here, and do not want to propagate it further
   end;
 end;
 

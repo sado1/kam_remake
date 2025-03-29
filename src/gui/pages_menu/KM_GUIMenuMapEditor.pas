@@ -53,7 +53,7 @@ type
     procedure UpdateMapInfo(aID: Integer = -1);
     procedure ReadmeClick(Sender: TObject);
     procedure SelectMap(Sender: TObject);
-    function ColumnBoxMaps_CellClick(Sender: TObject; const X, Y: Integer): Boolean;
+    procedure ColumnBoxMaps_CellClick(Sender: TObject; const aCellX, aCellY: Integer; var aHandled: Boolean);
     procedure BackClick(Sender: TObject);
     procedure DeleteClick(Sender: TObject);
     procedure DeleteConfirm(aVisible: Boolean);
@@ -444,14 +444,13 @@ begin
 end;
 
 
-function TKMMenuMapEditor.ColumnBoxMaps_CellClick(Sender: TObject; const X, Y: Integer): Boolean;
+procedure TKMMenuMapEditor.ColumnBoxMaps_CellClick(Sender: TObject; const aCellX, aCellY: Integer; var aHandled: Boolean);
 var
   I: Integer;
 begin
-  Result := False;
-  if X = 0 then //1st column
+  if aCellX = 0 then //1st column
   begin
-    I := ColumnBox_MapEd.Item[Y].Tag;
+    I := ColumnBox_MapEd.Item[aCellY].Tag;
     fMaps.Lock;
     try
       // We could have updated favourite maps made by other game instances
@@ -470,14 +469,14 @@ begin
       end;
 
       // Update pic
-      ColumnBox_MapEd.Item[Y].Cells[0].Pic := fMaps[I].FavouriteMapPic;
+      ColumnBox_MapEd.Item[aCellY].Cells[0].Pic := fMaps[I].FavouriteMapPic;
 
       // Save favourite maps immediately, thus updated favourite maps could be seen in the other game instances
       gGameAppSettings.SaveFavouriteMaps;
     finally
       fMaps.Unlock;
     end;
-    Result := True; //we handle mouse click here, and do not want to propagate it further
+    aHandled := True; //we handle mouse click here, and do not want to propagate it further
   end;
 end;
 
