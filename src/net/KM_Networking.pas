@@ -76,9 +76,9 @@ type
     procedure SetGameState(aState: TKMNetGameState; aOnMPInfoChanged: Boolean = True);
     procedure SendMapOrSave(Recipient: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
     procedure DoReconnection;
+    procedure PlayerJoined(aServerIndex: TKMNetHandleIndex; const aPlayerName: AnsiString);
     function IsPlayerHandStillInGame(aSlotIndex: Integer): Boolean;
     procedure ReassignHost(aSenderIndex: TKMNetHandleIndex; M: TKMemoryStream);
-    procedure PlayerJoined(aServerIndex: TKMNetHandleIndex; const aPlayerName: AnsiString);
     procedure PlayerDisconnected(aSenderIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer);
     procedure PlayersListReceived(aM: TKMemoryStream);
     procedure ReturnToLobbyVoteSucceeded;
