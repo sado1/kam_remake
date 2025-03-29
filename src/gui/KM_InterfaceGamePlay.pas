@@ -116,7 +116,7 @@ type
     procedure Message_UpdateStack;
     procedure MessageLog_Click(Sender: TObject);
     procedure MessageLog_ShowMessage(aMessageId: Integer; aJumpToLoc: Boolean = True);
-    function MessageLog_ItemClick(Sender: TObject; Shift: TShiftState; const X,Y: Integer): Boolean;
+    procedure MessageLog_ItemClick(Sender: TObject; const aCellX, aCellY: Integer; Shift: TShiftState; var aHandled: Boolean);
     procedure MessageLog_Close(Sender: TObject);
     procedure MessageLog_Update(aFullRefresh: Boolean);
     procedure Minimap_Update(Sender: TObject; const X,Y: Integer);
@@ -2286,18 +2286,16 @@ begin
 end;
 
 
-function TKMGamePlayInterface.MessageLog_ItemClick(Sender: TObject; Shift: TShiftState; const X,Y: Integer): Boolean;
+procedure TKMGamePlayInterface.MessageLog_ItemClick(Sender: TObject; const aCellX, aCellY: Integer; Shift: TShiftState; var aHandled: Boolean);
 var
-  itemId, messageId: Integer;
+  messageId: Integer;
 begin
-  Result := False;
-  itemId := Y;
-  if itemId >= Length(ColumnBox_MessageLog.Rows) then Exit;
+  if aCellY >= Length(ColumnBox_MessageLog.Rows) then Exit;
 
-  messageId := ColumnBox_MessageLog.Rows[itemId].Tag;
+  messageId := ColumnBox_MessageLog.Rows[aCellY].Tag;
   if messageId = -1 then Exit;
 
-  Result := True;
+  aHandled := True;
 
   MessageLog_ShowMessage(messageId, ssLeft in Shift);
 end;

@@ -13,7 +13,7 @@ uses
 
 
 type
-  TKMNotifyFuncShiftXY = function (Sender: TObject; Shift: TShiftState; const X,Y: Integer): Boolean of object;
+  TKMNotifyCellClickShift = procedure(Sender: TObject; const aCellX, aCellY: Integer; Shift: TShiftState; var aHandled: Boolean) of object;
 
   TKMSearchableList = class(TKMControl)
   private
@@ -244,7 +244,7 @@ type
     fMouseOverCell: TKMPoint;
     fScrollBar: TKMScrollBar;
     fOnCellClick: TPointEventFunc;
-    fOnCellClickShift: TKMNotifyFuncShiftXY;
+    fOnCellClickShift: TKMNotifyCellClickShift;
     fOnChangeInvoked: Boolean;
     procedure SetBackAlpha(aValue: Single);
     procedure SetEdgeAlpha(aValue: Single);
@@ -333,7 +333,7 @@ type
     //Sort properties are just hints to render Up/Down arrows. Actual sorting is done by client
     property OnColumnClick: TIntegerEvent read GetOnColumnClick write SetOnColumnClick;
     property OnCellClick: TPointEventFunc read fOnCellClick write fOnCellClick;
-    property OnCellClickShift: TKMNotifyFuncShiftXY read fOnCellClickShift write fOnCellClickShift;
+    property OnCellClickShift: TKMNotifyCellClickShift read fOnCellClickShift write fOnCellClickShift;
     property SortIndex: Integer read GetSortIndex write SetSortIndex;
     property SortDirection: TKMSortDirection read GetSortDirection write SetSortDirection;
 
@@ -1764,25 +1764,24 @@ begin
   isClickHandled := False;
 
   if not KMSamePoint(fMouseOverCell, KMPOINT_INVALID_TILE)
-    and Rows[fMouseOverCell.Y].Cells[fMouseOverCell.X].Enabled then
+  and Rows[fMouseOverCell.Y].Cells[fMouseOverCell.X].Enabled then
   begin
     if Assigned(fOnCellClick) then
-      isClickHandled := isClickHandled or fOnCellClick(Self, fMouseOverCell.X, fMouseOverCell.Y)
+      isClickHandled := fOnCellClick(Self, fMouseOverCell.X, fMouseOverCell.Y)
     else
       if Assigned(fOnCellClickShift) then
-        isClickHandled := isClickHandled or fOnCellClickShift(Self, Shift, fMouseOverCell.X, fMouseOverCell.Y)
+        fOnCellClickShift(Self, fMouseOverCell.X, fMouseOverCell.Y, Shift, isClickHandled);
   end;
 
-  //Let propagate click event only when OnCellClick did not handle it
-  if not isClickHandled then
-  begin
-    inherited DoClick(X, Y, Shift, Button);
-    if Assigned(fOnChange)
-      and not fOnChangeInvoked
-      and (fMouseOverCell <> KMPOINT_INVALID_TILE) //Only trigger ovew cells
-      and Rows[fMouseOverCell.Y].Cells[fMouseOverCell.X].Enabled then // Only trigger for enabled cells
-      fOnChange(Self);
-  end;
+  // Let propagate click event only when OnCellClick did not handle it
+  if isClickHandled then Exit;
+
+  inherited DoClick(X, Y, Shift, Button);
+  if Assigned(fOnChange)
+  and not fOnChangeInvoked
+  and (fMouseOverCell <> KMPOINT_INVALID_TILE) //Only trigger ovew cells
+  and Rows[fMouseOverCell.Y].Cells[fMouseOverCell.X].Enabled then // Only trigger for enabled cells
+    fOnChange(Self);
 end;
 
 
