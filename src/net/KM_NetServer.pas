@@ -135,10 +135,9 @@ type
     procedure PacketSendW(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; const aText: UnicodeString);
     procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream); overload;
     procedure PacketSendToRoom(aKind: TKMNetMessageKind; aRoom: Integer; aStream: TKMemoryStream); overload;
-    procedure SendData(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream; aImmediate: Boolean = False);
-    procedure ScheduleSendData(aRecipient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal; aFlushQueue: Boolean = False);
-    procedure SendScheduledData(aServerClient: TKMServerClient);
-    procedure DoSendData(aRecipient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
+    procedure SendDataPrepare(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream; aImmediate: Boolean = False);
+    procedure SendDataQueue(aRecipient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal; aFlushQueue: Boolean = False);
+    procedure SendDataPerform(aServerClient: TKMServerClient);
     procedure RecieveMessage(aSenderHandle: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
     procedure DataAvailable(aHandle: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
     procedure SaveToStream(aStream: TKMemoryStream);
@@ -630,7 +629,7 @@ var
   M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create; //Send empty stream
-  SendData(aRecipient, aKind, M);
+  SendDataPrepare(aRecipient, aKind, M);
   M.Free;
 end;
 
@@ -641,7 +640,7 @@ var
 begin
   M := TKMemoryStreamBinary.Create;
   M.Write(aParam);
-  SendData(aRecipient, aKind, M, aImmediate);
+  SendDataPrepare(aRecipient, aKind, M, aImmediate);
   M.Free;
 end;
 
@@ -652,7 +651,7 @@ var
 begin
   M := TKMemoryStreamBinary.Create;
   M.Write(aIndexOnServer);
-  SendData(aRecipient, aKind, M, aImmediate);
+  SendDataPrepare(aRecipient, aKind, M, aImmediate);
   M.Free;
 end;
 
@@ -665,7 +664,7 @@ begin
 
   M := TKMemoryStreamBinary.Create;
   M.WriteA(aText);
-  SendData(aRecipient, aKind, M);
+  SendDataPrepare(aRecipient, aKind, M);
   M.Free;
 end;
 
@@ -678,7 +677,7 @@ begin
 
   M := TKMemoryStreamBinary.Create;
   M.WriteW(aText);
-  SendData(aRecipient, aKind, M);
+  SendDataPrepare(aRecipient, aKind, M);
   M.Free;
 end;
 
@@ -686,7 +685,7 @@ end;
 procedure TKMNetServer.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream);
 begin
   //Send stream without changes
-  SendData(aRecipient, aKind, aStream);
+  SendDataPrepare(aRecipient, aKind, aStream);
 end;
 
 
@@ -702,7 +701,7 @@ end;
 
 
 //Assemble the packet as [Sender.Recepient.Length.Data]
-procedure TKMNetServer.SendData(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream; aImmediate: Boolean = False);
+procedure TKMNetServer.SendDataPrepare(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind; aStream: TKMemoryStream; aImmediate: Boolean = False);
 var
   I: Integer;
   M: TKMemoryStream;
@@ -729,27 +728,34 @@ begin
   if aRecipient = NET_ADDRESS_ALL then
     //Iterate backwards because sometimes calling Send results in ClientDisconnect (LNet only?)
     for I := fClientList.Count - 1 downto 0 do
-      ScheduleSendData(fClientList[i].Handle, M.Memory, M.Size, aImmediate)
+      SendDataQueue(fClientList[i].Handle, M.Memory, M.Size, aImmediate)
   else
-    ScheduleSendData(aRecipient, M.Memory, M.Size, aImmediate);
+    SendDataQueue(aRecipient, M.Memory, M.Size, aImmediate);
 
   M.Free;
 end;
 
 
-procedure TKMNetServer.SendScheduledData(aServerClient: TKMServerClient);
+procedure TKMNetServer.SendDataPerform(aServerClient: TKMServerClient);
 var
   P: Pointer;
+  totalSize: Cardinal;
 begin
   if aServerClient.fScheduledPacketsCnt > 0 then
   begin
-    GetMem(P, aServerClient.fScheduledPacketsSize + 1); //+1 byte for packets number
+    totalSize := aServerClient.fScheduledPacketsSize + 1; //+1 byte for packets count
+    GetMem(P, totalSize);
     try
-      //packets size into 1st byte
+      // Packets Count goes into 1st byte (guaranteed to be <256)
       PByte(P)^ := aServerClient.fScheduledPacketsCnt;
-      //Copy collected packets data with 1 byte shift
+      // Copy collected packets data with 1 byte shift
       Move(aServerClient.fScheduledPackets[0], Pointer(NativeUInt(P) + 1)^, aServerClient.fScheduledPacketsSize);
-      DoSendData(aServerClient.fHandle, P, aServerClient.fScheduledPacketsSize + 1); //+1 byte for packets number
+
+      Inc(BytesTX, totalSize);
+      //Inc(PacketsSent);
+      //gLog.AddTime('++++ send data to ' + GetNetAddressStr(aServerClient.fHandle) + ' length = ' + IntToStr(totalSize));
+      fServer.SendData(aServerClient.fHandle, P, totalSize);
+
       aServerClient.ClearScheduledPackets;
     finally
       FreeMem(P);
@@ -779,22 +785,12 @@ begin
   for I := 0 to fClientList.Count - 1 do
   begin
     //if (fGlobalTickCount mod SCHEDULE_PACKET_SEND_SPLIT) = (I mod SCHEDULE_PACKET_SEND_SPLIT) then
-    SendScheduledData(fClientList[I]);
+    SendDataPerform(fClientList[I]);
   end;
 end;
 
 
-//Wrapper around fServer.SendData so we can count TX bytes (don't use fServer.SendData anywhere else)
-procedure TKMNetServer.DoSendData(aRecipient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
-begin
-  Inc(BytesTX, aLength);
-//  Inc(PacketsSent);
-  //gLog.AddTime('++++ send data to ' + GetNetAddressStr(aRecipient) + ' length = ' + IntToStr(aLength));
-  fServer.SendData(aRecipient, aData, aLength);
-end;
-
-
-procedure TKMNetServer.ScheduleSendData(aRecipient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal; aFlushQueue: Boolean = False);
+procedure TKMNetServer.SendDataQueue(aRecipient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal; aFlushQueue: Boolean = False);
 var
   senderClient: TKMServerClient;
 begin
@@ -806,13 +802,13 @@ begin
     or (senderClient.fScheduledPacketsCnt = 255) then //Max number of packets = 255 (we use 1 byte for that)
   begin
     //gLog.AddTime(Format('@@@ FLUSH fScheduledPacketsSize + aLength = %d > %d', [SenderClient.fScheduledPacketsSize + aLength, MAX_CUMULATIVE_PACKET_SIZE]));
-    SendScheduledData(senderClient);
+    SendDataPerform(senderClient);
   end;
 
   senderClient.AddScheduledPacket(aData, aLength);
 
   if aFlushQueue then
-    SendScheduledData(senderClient);
+    SendDataPerform(senderClient);
 end;
 
 
@@ -1034,18 +1030,18 @@ begin
                 //Iterate backwards because sometimes calling Send results in ClientDisconnect (LNet only?)
                 for I := fClientList.Count - 1 downto 0 do
                   if (aHandle <> fClientList[i].Handle) and (senderRoom = fClientList[i].Room) then
-                    ScheduleSendData(fClientList[i].Handle, @senderClient.fBuffer[0], packetLength+6);
+                    SendDataQueue(fClientList[i].Handle, @senderClient.fBuffer[0], packetLength+6);
         NET_ADDRESS_ALL: //Transmit to all including sender (used mainly by TextMessages)
                 //Iterate backwards because sometimes calling Send results in ClientDisconnect (LNet only?)
                 for I := fClientList.Count - 1 downto 0 do
                   if senderRoom = fClientList[i].Room then
-                    ScheduleSendData(fClientList[i].Handle, @senderClient.fBuffer[0], packetLength+6);
+                    SendDataQueue(fClientList[i].Handle, @senderClient.fBuffer[0], packetLength+6);
         NET_ADDRESS_HOST:
                 if senderRoom <> -1 then
-                  ScheduleSendData(fRoomInfo[senderRoom].HostHandle, @senderClient.fBuffer[0], packetLength+6);
+                  SendDataQueue(fRoomInfo[senderRoom].HostHandle, @senderClient.fBuffer[0], packetLength+6);
         NET_ADDRESS_SERVER:
                 RecieveMessage(packetSender, @senderClient.fBuffer[6], packetLength);
-        else    ScheduleSendData(packetRecipient, @senderClient.fBuffer[0], packetLength+6);
+        else    SendDataQueue(packetRecipient, @senderClient.fBuffer[0], packetLength+6);
       end;
     end;
 
