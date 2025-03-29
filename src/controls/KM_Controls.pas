@@ -21,7 +21,7 @@ type
   TNotifyEventKeyFunc = function(Sender: TObject; Key: Word): Boolean of object;
   TNotifyEventKeyShift = procedure(Key: Word; Shift: TShiftState) of object;
   TNotifyEventKeyShiftFunc = function(Sender: TObject; Key: Word; Shift: TShiftState): Boolean of object;
-  TNotifyEventXY = procedure(Sender: TObject; X, Y: Integer) of object;
+  TNotifyEventXY = procedure(Sender: TObject; const aX, aY: Integer) of object;
   TNotifyEvenClickHold = procedure(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean) of object;
   TPointEventShiftFunc = function (Sender: TObject; Shift: TShiftState; const X,Y: Integer): Boolean of object;
 
@@ -143,7 +143,7 @@ type
 
     fOnClick: TNotifyEvent;
     fOnClickShift: TNotifyEventShift;
-    fOnClickRight: TPointEvent;
+    fOnClickRight: TNotifyEventXY;
     fOnClickHold: TNotifyEvenClickHold;
     fOnDoubleClick: TNotifyEvent;
     fOnMouseWheel: TNotifyEventMW;
@@ -344,7 +344,7 @@ type
 
     property OnClick: TNotifyEvent read fOnClick write fOnClick;
     property OnClickShift: TNotifyEventShift read fOnClickShift write fOnClickShift;
-    property OnClickRight: TPointEvent read fOnClickRight write fOnClickRight;
+    property OnClickRight: TNotifyEventXY read fOnClickRight write fOnClickRight;
     property OnClickHold: TNotifyEvenClickHold read fOnClickHold write fOnClickHold;
     property OnDoubleClick: TNotifyEvent read fOnDoubleClick write fOnDoubleClick;
     property OnMouseWheel: TNotifyEventMW read fOnMouseWheel write fOnMouseWheel;

@@ -751,7 +751,7 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.Minimap_RightClick(Sender: TObject; const X,Y:integer);
+procedure TKMGamePlayInterface.Minimap_RightClick(Sender: TObject; const X, Y: Integer);
 var
   loc: TKMPoint;
   group: TKMUnitGroup;

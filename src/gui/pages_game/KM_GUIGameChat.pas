@@ -20,7 +20,7 @@ type
     procedure Chat_Close(Sender: TObject);
     function DoPost: Boolean;
     function Chat_Post(Sender: TObject; Key: Word; Shift: TShiftState): Boolean;
-    procedure Chat_Resize(Sender: TObject; X,Y: Integer);
+    procedure Chat_Resize(Sender: TObject; const aX, aY: Integer);
     procedure Chat_MenuClick(Sender: TObject);
     procedure Chat_MenuSelect(aItemTag: TKMNetHandleIndex);
     procedure Chat_MenuShow(Sender: TObject);
@@ -261,11 +261,11 @@ begin
 end;
 
 
-procedure TKMGUIGameChat.Chat_Resize(Sender: TObject; X,Y: Integer);
+procedure TKMGUIGameChat.Chat_Resize(Sender: TObject; const aX, aY: Integer);
 var
   H: Integer;
 begin
-  H := EnsureRange(-Y, 0, MESSAGE_AREA_RESIZE_Y);
+  H := EnsureRange(-aY, 0, MESSAGE_AREA_RESIZE_Y);
   Panel_Chat.Top := Panel_Chat.Parent.Height - (MESSAGE_AREA_HEIGHT + H);
   Panel_Chat.Height := MESSAGE_AREA_HEIGHT + H;
 end;
