@@ -15,8 +15,8 @@ type
   TKMNotifyEventShift = procedure(Sender: TObject; Shift: TShiftState) of object;
   TKMNotifyEventMouseWheel = procedure(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean) of object;
   TKMNotifyEventMouseMove = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState) of object;
+  TKMNotifyEventMouseButton = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton) of object;
 
-  TKMMouseUpDownEvent = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton) of object;
   TNotifyEventKey = procedure(Sender: TObject; Key: Word) of object;
   TNotifyEventKeyFunc = function(Sender: TObject; Key: Word): Boolean of object;
   TNotifyEventKeyShift = procedure(Key: Word; Shift: TShiftState) of object;
@@ -47,8 +47,8 @@ type
     fControlIDCounter: Integer;
 
     fMouseMoveSubsList: TList<TKMNotifyEventMouseMove>;
-    fMouseDownSubsList: TList<TKMMouseUpDownEvent>;
-    fMouseUpSubsList: TList<TKMMouseUpDownEvent>;
+    fMouseDownSubsList: TList<TKMNotifyEventMouseButton>;
+    fMouseUpSubsList: TList<TKMNotifyEventMouseButton>;
 
     function IsCtrlCovered(aCtrl: TKMControl): Boolean;
     procedure SetCtrlDown(aCtrl: TKMControl);
@@ -72,8 +72,8 @@ type
     property CtrlUp: TKMControl read fCtrlUp write SetCtrlUp;
 
     procedure AddMouseMoveCtrlSub(const aMouseMoveEvent: TKMNotifyEventMouseMove);
-    procedure AddMouseDownCtrlSub(const aMouseDownEvent: TKMMouseUpDownEvent);
-    procedure AddMouseUpCtrlSub(const aMouseUpEvent: TKMMouseUpDownEvent);
+    procedure AddMouseDownCtrlSub(const aMouseDownEvent: TKMNotifyEventMouseButton);
+    procedure AddMouseUpCtrlSub(const aMouseUpEvent: TKMNotifyEventMouseButton);
 
     function HitControl(X,Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): TKMControl;
 
@@ -1685,8 +1685,8 @@ begin
   inherited;
 
   fMouseMoveSubsList := TList<TKMNotifyEventMouseMove>.Create;
-  fMouseDownSubsList := TList<TKMMouseUpDownEvent>.Create;
-  fMouseUpSubsList := TList<TKMMouseUpDownEvent>.Create;
+  fMouseDownSubsList := TList<TKMNotifyEventMouseButton>.Create;
+  fMouseUpSubsList := TList<TKMNotifyEventMouseButton>.Create;
 end;
 
 
@@ -1713,7 +1713,7 @@ begin
 end;
 
 
-procedure TKMMasterControl.AddMouseDownCtrlSub(const aMouseDownEvent: TKMMouseUpDownEvent);
+procedure TKMMasterControl.AddMouseDownCtrlSub(const aMouseDownEvent: TKMNotifyEventMouseButton);
 begin
   if Self = nil then Exit;
 
@@ -1721,7 +1721,7 @@ begin
 end;
 
 
-procedure TKMMasterControl.AddMouseUpCtrlSub(const aMouseUpEvent: TKMMouseUpDownEvent);
+procedure TKMMasterControl.AddMouseUpCtrlSub(const aMouseUpEvent: TKMNotifyEventMouseButton);
 begin
   if Self = nil then Exit;
 
