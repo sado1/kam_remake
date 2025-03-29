@@ -10,7 +10,7 @@ uses
 
 
 type
-  TKMMinimapEvent = procedure (Sender: TObject; const X,Y: Integer) of object;
+  TKMMinimapEvent = procedure (Sender: TObject; const aLocX, aLocY: Integer) of object;
 
   // MinimapView relies on fMinimap and fViewport that provide all the data
   // MinimapView itself is just a painter
