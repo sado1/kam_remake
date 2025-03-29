@@ -707,32 +707,32 @@ var
   M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create;
+  try
+    //Header
+    M.Write(TKMNetHandleIndex(NET_ADDRESS_SERVER)); //Make sure constant gets treated as 4byte integer
+    M.Write(aRecipient);
+    M.Write(Word(1 + aStream.Size)); //Message kind + data size
 
-  //Header
-  M.Write(TKMNetHandleIndex(NET_ADDRESS_SERVER)); //Make sure constant gets treated as 4byte integer
-  M.Write(aRecipient);
-  M.Write(Word(1 + aStream.Size)); //Message kind + data size
+    //Contents
+    M.Write(Byte(aKind));
+    aStream.Position := 0;
+    M.CopyFrom(aStream, aStream.Size);
 
-  //Contents
-  M.Write(Byte(aKind));
-  aStream.Position := 0;
-  M.CopyFrom(aStream, aStream.Size);
+    if M.Size > MAX_PACKET_SIZE then
+    begin
+      Status('Error: Packet over size limit');
+      Exit;
+    end;
 
-  if M.Size > MAX_PACKET_SIZE then
-  begin
-    Status('Error: Packet over size limit');
+    if aRecipient = NET_ADDRESS_ALL then
+      //Iterate backwards because sometimes calling Send results in ClientDisconnect (LNet only?)
+      for I := fClientList.Count - 1 downto 0 do
+        SendDataQueue(fClientList[i].Handle, M.Memory, M.Size, aImmediate)
+    else
+      SendDataQueue(aRecipient, M.Memory, M.Size, aImmediate);
+  finally
     M.Free;
-    Exit;
   end;
-
-  if aRecipient = NET_ADDRESS_ALL then
-    //Iterate backwards because sometimes calling Send results in ClientDisconnect (LNet only?)
-    for I := fClientList.Count - 1 downto 0 do
-      SendDataQueue(fClientList[i].Handle, M.Memory, M.Size, aImmediate)
-  else
-    SendDataQueue(aRecipient, M.Memory, M.Size, aImmediate);
-
-  M.Free;
 end;
 
 
