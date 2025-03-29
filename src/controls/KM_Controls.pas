@@ -17,7 +17,7 @@ type
   TKMNotifyEventMouseMove = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState) of object;
   TKMNotifyEventMouseButton = procedure(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton) of object;
   TKMNotifyEventKey = procedure(Sender: TObject; Key: Word) of object;
-  TKMNotifyEventKeyShift = procedure(Key: Word; Shift: TShiftState) of object;
+  TKMNotifyEventKeyShift = procedure(Sender: TObject; Key: Word; Shift: TShiftState) of object;
   TKMNotifyEventXY = procedure(Sender: TObject; const aX, aY: Integer) of object;
 
   TNotifyEventKeyFunc = function(Sender: TObject; Key: Word): Boolean of object;

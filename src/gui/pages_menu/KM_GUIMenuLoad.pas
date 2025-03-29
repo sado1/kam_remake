@@ -38,7 +38,7 @@ type
     procedure Load_DeleteConfirmation(aVisible:boolean);
     procedure BackClick(Sender: TObject);
     procedure EscKeyDown(Sender: TObject);
-    procedure KeyDown(Key: Word; Shift: TShiftState);
+    procedure KeyDown(Sender: TObject; Key: Word; Shift: TShiftState);
   protected
     Panel_Load: TKMPanel;
     ColumnBox_Load: TKMColumnBox;
@@ -457,7 +457,7 @@ begin
 end;
 
 
-procedure TKMMenuLoad.KeyDown(Key: Word; Shift: TShiftState);
+procedure TKMMenuLoad.KeyDown(Sender: TObject; Key: Word; Shift: TShiftState);
 begin
   case Key of
     VK_RETURN:  if Button_DeleteYes.IsClickable then

@@ -49,7 +49,7 @@ type
     procedure BackClick(Sender: TObject);
     function ValidatePlayerName(const aName: UnicodeString): Boolean;
     procedure EscKeyDown(Sender: TObject);
-    procedure KeyDown(Key: Word; Shift: TShiftState);
+    procedure KeyDown(Sender: TObject; Key: Word; Shift: TShiftState);
     procedure UpdateGameTimeLabel;
     procedure ServerDetailsScrollChangedVisibility(Sender: TObject; aVisible: Boolean);
 
@@ -311,7 +311,7 @@ begin
 end;
 
 
-procedure TKMMenuMultiplayer.KeyDown(Key: Word; Shift: TShiftState);
+procedure TKMMenuMultiplayer.KeyDown(Sender: TObject; Key: Word; Shift: TShiftState);
 begin
   case Key of
     VK_RETURN:  if Panel_MPPassword.Visible then

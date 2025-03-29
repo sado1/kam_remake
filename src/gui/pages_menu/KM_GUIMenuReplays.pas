@@ -50,8 +50,7 @@ type
     procedure Edit_Rename_Change(Sender: TObject);
     procedure RenameConfirm(aVisible: Boolean);
     procedure EscKeyDown(Sender: TObject);
-    procedure KeyDown(Key: Word; Shift: TShiftState);
-
+    procedure KeyDown(Sender: TObject; Key: Word; Shift: TShiftState);
   protected
     Panel_Replays: TKMPanel;
       Radio_Replays_Type: TKMRadioGroup;
@@ -625,7 +624,7 @@ begin
 end;
 
 
-procedure TKMMenuReplays.KeyDown(Key: Word; Shift: TShiftState);
+procedure TKMMenuReplays.KeyDown(Sender: TObject; Key: Word; Shift: TShiftState);
 begin
   case Key of
     VK_RETURN:  if PopUp_Rename.Visible and Button_RenameConfirm.IsClickable then

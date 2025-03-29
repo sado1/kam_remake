@@ -691,7 +691,7 @@ begin
     VK_ESCAPE:  if Assigned(OnEscKeyDown) then
                   OnEscKeyDown(Self);
     else        if Assigned(OnKeyDown) then
-                  OnKeyDown(Key, Shift);
+                  OnKeyDown(Self, Key, Shift);
   end;
 end;
 

@@ -128,7 +128,7 @@ type
     procedure StartClick(Sender: TObject);
     procedure BackClick(Sender: TObject);
     procedure EscKeyDown(Sender: TObject);
-    procedure KeyDown(Key: Word; Shift: TShiftState);
+    procedure KeyDown(Sender: TObject; Key: Word; Shift: TShiftState);
 
     procedure ChatTextChanged(Sender: TObject);
     procedure SetChatHandlers;
@@ -1037,7 +1037,7 @@ begin
 end;
 
 
-procedure TKMMenuLobby.KeyDown(Key: Word; Shift: TShiftState);
+procedure TKMMenuLobby.KeyDown(Sender: TObject; Key: Word; Shift: TShiftState);
 begin
   case Key of
     VK_RETURN:  if Panel_Settings.Visible then
