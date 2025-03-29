@@ -67,7 +67,7 @@ type
 
     fVoteReturnToLobbySucceeded: Boolean;
 
-    procedure DecodePingInfo(aStream: TKMemoryStream);
+    procedure HandleMessagePingInfo(aStream: TKMemoryStream);
     procedure ForcedDisconnect(Sender: TObject);
     procedure StartGame;
     procedure TryPlayGame;
@@ -77,16 +77,16 @@ type
     procedure DoReconnection;
     procedure PlayerJoined(aServerIndex: TKMNetHandleIndex; const aPlayerName: AnsiString);
     function IsPlayerHandStillInGame(aSlotIndex: Integer): Boolean;
-    procedure ReassignHost(aSenderIndex: TKMNetHandleIndex; aStream: TKMemoryStream);
-    procedure PlayerDisconnected(aSenderIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer);
-    procedure PlayersListReceived(aM: TKMemoryStream);
+    procedure HandleMessageReassignHost(aSenderIndex: TKMNetHandleIndex; aStream: TKMemoryStream);
+    procedure HandleMessagePlayerDisconnected(aSenderIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer);
+    procedure HandleMessagePlayersList(aM: TKMemoryStream);
     procedure ReturnToLobbyVoteSucceeded;
     procedure ResetReturnToLobbyVote;
     procedure TransferOnCompleted(aClientIndex: TKMNetHandleIndex);
     procedure TransferOnPacket(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStream; out SendBufferEmpty: Boolean);
     function GetMyRoomSlot: TKMNetRoomSlot;
     procedure SetDownloadlInProgress(aSenderIndex: TKMNetHandleIndex; aValue: Boolean);
-    procedure FileRequestReceived(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStream);
+    procedure HandleMessageFileRequest(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStream);
     procedure HandleMessage(aMessageKind: TKMNetMessageKind; aStream: TKMemoryStream; aSenderIndex: TKMNetHandleIndex);
 
     procedure ConnectSucceed(Sender:TObject);
@@ -482,7 +482,7 @@ begin
 end;
 
 
-procedure TKMNetworking.DecodePingInfo(aStream: TKMemoryStream);
+procedure TKMNetworking.HandleMessagePingInfo(aStream: TKMemoryStream);
 var
   I: Integer;
   pingCount: Integer;
@@ -1274,7 +1274,7 @@ end;
 
 
 // Handle mkReassignHost message
-procedure TKMNetworking.ReassignHost(aSenderIndex: TKMNetHandleIndex; aStream: TKMemoryStream);
+procedure TKMNetworking.HandleMessageReassignHost(aSenderIndex: TKMNetHandleIndex; aStream: TKMemoryStream);
 var
   newHostIndex, oldHostIndex: TKMNetHandleIndex;
   passwordA: AnsiString;
@@ -1354,7 +1354,7 @@ end;
 
 
 // Handle mkPLayerList message
-procedure TKMNetworking.PlayersListReceived(aM: TKMemoryStream);
+procedure TKMNetworking.HandleMessagePlayersList(aM: TKMemoryStream);
 var
   oldLoc: Integer;
   isPlayerInitBefore: Boolean;
@@ -1382,7 +1382,7 @@ end;
 
 
 // Handle mkDisconnect message
-procedure TKMNetworking.PlayerDisconnected(aSenderIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer);
+procedure TKMNetworking.HandleMessagePlayerDisconnected(aSenderIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer);
 
   //Post local message about player disconnection
   procedure PostPlayerDisconnectedMsg(aSlotIndex: Integer);
@@ -1794,7 +1794,7 @@ begin
             end;
 
     mkFileRequest:
-            FileRequestReceived(aSenderIndex, aStream);
+            HandleMessageFileRequest(aSenderIndex, aStream);
 
     mkFileChunk:
             if not IsHost and (fFileReceiver <> nil) then
@@ -1954,24 +1954,24 @@ begin
     mkDisconnect:
             begin
               aStream.Read(tmpInteger);
-              PlayerDisconnected(aSenderIndex, tmpInteger);
+              HandleMessagePlayerDisconnected(aSenderIndex, tmpInteger);
             end;
 
     mkReassignHost:
-            ReassignHost(aSenderIndex, aStream);
+            HandleMessageReassignHost(aSenderIndex, aStream);
 
     mkPing:  PacketSend(aSenderIndex, mkPong);
 
     mkPingInfo:
             begin
-              DecodePingInfo(aStream);
+              HandleMessagePingInfo(aStream);
               if Assigned(OnPingInfo) then OnPingInfo;
             end;
 
 //    mkFPS: Moved to server in 2017
 
     mkPlayersList:
-            PlayersListReceived(aStream);
+            HandleMessagePlayersList(aStream);
 
     mkGameOptions:
             if fNetPlayerKind = lpkJoiner then
@@ -2735,7 +2735,7 @@ begin
 end;
 
 
-procedure TKMNetworking.FileRequestReceived(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStream);
+procedure TKMNetworking.HandleMessageFileRequest(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStream);
 
   procedure AbortSend;
   begin
