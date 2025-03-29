@@ -78,14 +78,12 @@ uses
 
 const
   //todo: Add LIBX and WAV support for maps
-  VALID_MAP_EXTENSIONS:  array[1..5] of UnicodeString =         ('map','dat',EXT_FILE_SCRIPT,'txt','pdf');
-  VALID_MAP_EXTENSIONS_POSTFIX:  array[1..4] of UnicodeString = ('libx','wav','ogg','pdf');
-//  VALID__MAP_EXT_DOUBLE_POSTFIX
-  VALID_SAVE_EXTENSIONS: array[1..3] of UnicodeString =         (EXT_SAVE_MAIN, EXT_SAVE_BASE, EXT_SAVE_REPLAY);
+  VALID_MAP_EXTENSIONS: array [1..5] of UnicodeString = ('map', 'dat', EXT_FILE_SCRIPT, 'txt', 'pdf');
+  VALID_MAP_EXTENSIONS_POSTFIX: array[1..4] of UnicodeString = ('libx', 'wav', 'ogg', 'pdf');
+  VALID_SAVE_EXTENSIONS: array[1..3] of UnicodeString = (EXT_SAVE_MAIN, EXT_SAVE_BASE, EXT_SAVE_REPLAY);
 
 
-function GetFullSourceFileName(aType: TKMTransferType; const aName: String; aMapKind: TKMMapKind;
-                               const aPostfix, aExt: UnicodeString): String;
+function GetFullSourceFileName(aType: TKMTransferType; const aName: String; aMapKind: TKMMapKind; const aPostfix, aExt: UnicodeString): String;
 begin
   case aType of
     kttMap:   Result := TKMapsCollection.FullPath(aName, aPostfix + '.' + aExt, aMapKind);
@@ -94,8 +92,7 @@ begin
 end;
 
 
-function GetFullDestFileName(aType: TKMTransferType; const aName, Postfix, aExt: String;
-                             const aCustomFileName: UnicodeString = ''): String;
+function GetFullDestFileName(aType: TKMTransferType; const aName, Postfix, aExt: String; const aCustomFileName: UnicodeString = ''): String;
 begin
   case aType of
     kttMap:   if aCustomFileName = '' then
