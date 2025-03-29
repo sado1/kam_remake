@@ -61,9 +61,9 @@ type
 
     fFileReceiver: TKMFileReceiver;
     fFileSenderManager: TKMFileSenderManager;
-    fMissingFileType: TKMNetGameKind;
-    fMissingFileName: UnicodeString;
-    fMissingFileCRC: Cardinal;
+    fMissingBundleType: TKMNetGameKind;
+    fMissingBundleName: UnicodeString;
+    fMissingBundleCRC: Cardinal;
 
     fVoteReturnToLobbySucceeded: Boolean;
 
@@ -217,8 +217,8 @@ type
     property Room: TKMNetRoom read fNetRoom;
     property MyRoomSlot: TKMNetRoomSlot read GetMyRoomSlot;
     property LastProcessedTick: Cardinal write fLastProcessedTick;
-    property MissingFileType: TKMNetGameKind read fMissingFileType;
-    property MissingFileName: UnicodeString read fMissingFileName;
+    property MissingBundleType: TKMNetGameKind read fMissingBundleType;
+    property MissingBundleName: UnicodeString read fMissingBundleName;
     procedure GameCreated;
     procedure SendCommands(aStream: TKMemoryStream; aSlotIndex: ShortInt = -1);
     procedure AttemptReconnection;
@@ -1105,14 +1105,14 @@ end;
 procedure TKMNetworking.RequestFileTransfer;
 begin
   if fFileReceiver = nil then
-    case fMissingFileType of
+    case fMissingBundleType of
       ngkMap:   begin
-                  fFileReceiver := TKMFileReceiver.Create(kttMap, fMissingFileName, fMissingFileCRC);
-                  PacketSendW(NET_ADDRESS_HOST, mkFileRequest, fMissingFileName);
+                  fFileReceiver := TKMFileReceiver.Create(kttMap, fMissingBundleName, fMissingBundleCRC);
+                  PacketSendW(NET_ADDRESS_HOST, mkFileRequest, fMissingBundleName);
                 end;
       ngkSave:  begin
-                  fFileReceiver := TKMFileReceiver.Create(kttSave, fMissingFileName);
-                  PacketSendW(NET_ADDRESS_HOST, mkFileRequest, fMissingFileName);
+                  fFileReceiver := TKMFileReceiver.Create(kttSave, fMissingBundleName);
+                  PacketSendW(NET_ADDRESS_HOST, mkFileRequest, fMissingBundleName);
                 end;
     end;
 end;
@@ -2016,9 +2016,9 @@ begin
               end
               else
               begin
-                fMissingFileType := ngkMap;
-                fMissingFileName := tmpStringW;
-                fMissingFileCRC := tmpCardinal;
+                fMissingBundleType := ngkMap;
+                fMissingBundleName := tmpStringW;
+                fMissingBundleCRC := tmpCardinal;
                 fSelectGameKind := ngkNone;
                 if Assigned(OnMapName) then OnMapName(tmpStringW);
                 if Assigned(OnMapMissing) then OnMapMissing(tmpStringW, False);
@@ -2072,8 +2072,8 @@ begin
                 FreeAndNil(fSaveInfo);
                 fSelectGameKind := ngkNone;
                 //Save file does not exist, so downloaded it
-                fMissingFileType := ngkSave;
-                fMissingFileName := tmpStringW;
+                fMissingBundleType := ngkSave;
+                fMissingBundleName := tmpStringW;
                 if Assigned(OnMapMissing) then OnMapMissing(tmpStringW, False);
               end;
             end;

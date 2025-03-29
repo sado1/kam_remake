@@ -2700,9 +2700,9 @@ begin
 
   DropBox_Difficulty.Enabled := gNetworking.IsHost and (gNetworking.SelectGameKind = ngkMap) and gNetworking.MapInfo.IsValid;
 
-  Label_MapName.Caption := gNetworking.MissingFileName;
+  Label_MapName.Caption := gNetworking.MissingBundleName;
   Memo_MapDesc.Text := aData; //aData is some error message
-  if gNetworking.MissingFileType = ngkSave then
+  if gNetworking.MissingBundleType = ngkSave then
     Radio_MapType.ItemIndex := MAP_TYPE_INDEX_SAVE
   else
     Radio_MapType.ItemIndex := 0;

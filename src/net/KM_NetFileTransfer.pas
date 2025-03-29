@@ -36,13 +36,13 @@ type
     fReceiveStream: TKMemoryStream;
     fType: TKMTransferType;
     fBundleName: UnicodeString;
-    fMapCRC: Cardinal;
+    fBundleCRC: Cardinal;
     fTotalSize: Cardinal;
     fReceivedSize: Cardinal;
     procedure ClearExistingFiles;
     function ValidExtension(const aExt: UnicodeString): Boolean;
   public
-    constructor Create(aType: TKMTransferType; const aBundleName: UnicodeString; aMapCRC: Cardinal = 0);
+    constructor Create(aType: TKMTransferType; const aBundleName: UnicodeString; aBundleCRC: Cardinal = 0);
     destructor Destroy; override;
     procedure DataReceived(aStream: TKMemoryStream);
     property TotalSize: Cardinal read fTotalSize;
@@ -265,13 +265,13 @@ end;
 
 
 { TKMFileReceiver }
-constructor TKMFileReceiver.Create(aType: TKMTransferType; const aBundleName: UnicodeString; aMapCRC: Cardinal = 0);
+constructor TKMFileReceiver.Create(aType: TKMTransferType; const aBundleName: UnicodeString; aBundleCRC: Cardinal = 0);
 begin
   inherited Create;
   fReceiveStream := TKMemoryStreamBinary.Create;
   fType := aType;
   fBundleName := aBundleName;
-  fMapCRC := aMapCRC;
+  fBundleCRC := aBundleCRC;
 end;
 
 
@@ -383,7 +383,7 @@ begin
   readStream.Read(readType, SizeOf(readType));
   Assert(readType = fType, 'Unexpected transfer type received');
   readStream.ReadW(readName);
-  if (readName <> fBundleName) and (readName + '_' + IntToHex(fMapCRC, 8) <> fBundleName) then
+  if (readName <> fBundleName) and (readName + '_' + IntToHex(fBundleCRC, 8) <> fBundleName) then
     raise Exception.Create('Unexpected transfer name received');
 
   ClearExistingFiles;
