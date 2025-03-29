@@ -311,7 +311,7 @@ begin
 end;
 
 
-function TKMNetworking.IsReconnecting:boolean;
+function TKMNetworking.IsReconnecting: Boolean;
 begin
   Result := (fNetGameState = lgsReconnecting) or (fReconnectRequested <> 0);
 end;
@@ -758,7 +758,7 @@ begin
 
                   SendPlayerListAndRefreshPlayersSetup;
                 end;
-    lpkJoiner: PacketSendI(NET_ADDRESS_HOST, mkRequestStartingLoc, aHandIndex);
+    lpkJoiner: PacketSendI(NET_ADDRESS_HOST, mkRequestHand, aHandIndex);
   end;
 end;
 
@@ -1748,14 +1748,14 @@ begin
                         if fWelcomeMessage <> '' then PostLocalMessage(fWelcomeMessage, csNone);
                       end;
                   lpkJoiner:
-                  begin
+                    begin
                       SetGameState(lgsQuery);
                       fJoinTimeout := TimeGet; //Wait another X seconds for host to reply before timing out
                       M2 := TKMemoryStreamBinary.Create;
                       TKMNetSecurity.GenerateChallenge(M2, tmpHandleIndex);
                       PacketSendS(NET_ADDRESS_HOST, mkAskForAuth, M2);
                       M2.Free;
-                  end;
+                    end;
                 end;
             end;
 
@@ -2078,7 +2078,7 @@ begin
               end;
             end;
 
-    mkRequestStartingLoc:
+    mkRequestHand:
             if IsHost and not fNetRoom.HostDoesSetup then
             begin
               aStream.Read(tmpInteger);
@@ -2635,7 +2635,7 @@ begin
   if (fReconnectRequested <> 0) and (TimeSince(fReconnectRequested) > RECONNECT_PAUSE) then DoReconnection;
 
   // Joining timeout
-  if fNetGameState in [lgsConnecting,lgsReconnecting,lgsQuery] then
+  if fNetGameState in [lgsConnecting, lgsReconnecting, lgsQuery] then
     if (TimeSince(fJoinTimeout) > JOIN_TIMEOUT) and not fEnteringPassword
     and (fReconnectRequested = 0) then
       if Assigned(OnJoinFail) then

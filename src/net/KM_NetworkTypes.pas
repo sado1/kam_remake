@@ -7,7 +7,17 @@ uses
 
 type
   TKMNetPlayerKind = (lpkHost, lpkJoiner);
-  TKMNetGameState = (lgsNone, lgsConnecting, lgsQuery, lgsLobby, lgsLoading, lgsGame, lgsReconnecting);
+
+  TKMNetGameState = (
+    lgsNone,
+    lgsConnecting,  // Connecting to server
+    lgsQuery,
+    lgsLobby,       // Setting up the game in the room
+    lgsLoading,     // Loading the game
+    lgsGame,        // Playing the game
+    lgsReconnecting // Reconnecting to server
+  );
+
   TKMNetGameKind = (ngkNone, ngkMap, ngkSave);
   TKMChatSound = (csNone, csJoin, csLeave, csSystem, csGameStart, csSaveGame, csChat, csChatWhisper, csChatTeam);
 
@@ -88,9 +98,9 @@ type
     mkPlayersList,     //Host keeps the players list and sends it to everyone on change
     mkGameOptions,     //Host keeps the game options and sends it to everyone on change
 
-    mkRequestStartingLoc,  // Joiner tells Host he wants to select some starting location
-    mkRequestTeam,         // Joiner tells Host he wants to select some team
-    mkRequestFlagColor,    // Joiner tells Host he wants to select some color
+    mkRequestHand,      // Joiner tells Host he wants to select some hand
+    mkRequestTeam,      // Joiner tells Host he wants to select some team
+    mkRequestFlagColor, // Joiner tells Host he wants to select some color
 
     mkResetMap,        //Reset the map selection to blank
     mkMapSelect,       //Host selects the map to play

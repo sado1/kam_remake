@@ -11,26 +11,26 @@ const
     //lgsNone
     [],
     //lgsConnecting
-    [mkRefuseToJoin,mkIndexOnServer,mkNetProtocolVersion,mkWelcomeMessage,mkPing,
-     mkConnectedToRoom,mkPingFpsInfo,mkKicked,mkServerName,mkReqPassword],
+    [mkRefuseToJoin, mkIndexOnServer, mkNetProtocolVersion, mkWelcomeMessage, mkPing,
+     mkConnectedToRoom, mkPingFpsInfo, mkKicked, mkServerName, mkReqPassword],
     //lgsQuery
-    [mkAllowToJoin,mkRefuseToJoin,mkAuthChallenge,mkPing,mkPingFpsInfo,mkKicked],
+    [mkAllowToJoin, mkRefuseToJoin, mkAuthChallenge, mkPing, mkPingFpsInfo, mkKicked],
     //lgsLobby
-    [mkAskForAuth,mkAskToJoin,mkClientLost,mkReassignHost,mkDisconnect,mkPing,mkPingFpsInfo,mkPlayersList,
-     mkRequestStartingLoc,mkRequestTeam,mkRequestFlagColor,mkResetMap,mkMapSelect,mkSaveSelect,
-     mkReadyToStart,mkStart,mkTextChat,mkKicked,mkLangCode,mkGameOptions,mkServerName,
-     mkFileRequest,mkFileSendStarted,mkFileChunk,mkFileEnd,mkFileAck,mkFileProgress,
-     mkTextTranslated,mkHasMapOrSave,mkSetPassword],
+    [mkAskForAuth, mkAskToJoin, mkClientLost, mkReassignHost, mkDisconnect, mkPing, mkPingFpsInfo, mkPlayersList,
+     mkRequestHand, mkRequestTeam, mkRequestFlagColor, mkResetMap, mkMapSelect, mkSaveSelect,
+     mkReadyToStart, mkStart, mkTextChat, mkKicked, mkLangCode, mkGameOptions, mkServerName,
+     mkFileRequest, mkFileSendStarted, mkFileChunk, mkFileEnd, mkFileAck, mkFileProgress,
+     mkTextTranslated, mkHasMapOrSave, mkSetPassword],
     //lgsLoading
-    [mkAskForAuth,mkClientLost,mkReassignHost,mkDisconnect,mkPing,mkPingFpsInfo,mkPlayersList,
-     mkReadyToPlay,mkPlay,mkTextChat,mkKicked,mkTextTranslated,mkVote],
+    [mkAskForAuth, mkClientLost, mkReassignHost, mkDisconnect, mkPing, mkPingFpsInfo, mkPlayersList,
+     mkReadyToPlay, mkPlay, mkTextChat, mkKicked, mkTextTranslated, mkVote],
     //lgsGame
-    [mkAskForAuth,mkClientLost,mkReassignHost,mkDisconnect,mkPing,mkPingFpsInfo,{mkFPS,}mkPlayersList,mkReadyToReturnToLobby,
-     mkCommands,mkTextChat,mkResyncFromTick,mkAskToReconnect,mkKicked,mkClientReconnected,mkTextTranslated,mkVote,
+    [mkAskForAuth, mkClientLost, mkReassignHost, mkDisconnect, mkPing, mkPingFpsInfo, {mkFPS,} mkPlayersList, mkReadyToReturnToLobby,
+     mkCommands, mkTextChat, mkResyncFromTick, mkAskToReconnect, mkKicked, mkClientReconnected, mkTextTranslated, mkVote,
      mkAskToSendCrashreport],
     //lgsReconnecting
-    [mkIndexOnServer,mkNetProtocolVersion,mkWelcomeMessage,mkPing,{mkFPS,}mkConnectedToRoom,
-     mkPingFpsInfo,mkPlayersList,mkReconnectionAccepted,mkRefuseReconnect,mkKicked]
+    [mkIndexOnServer, mkNetProtocolVersion, mkWelcomeMessage, mkPing, {mkFPS, }mkConnectedToRoom,
+     mkPingFpsInfo, mkPlayersList, mkReconnectionAccepted, mkRefuseReconnect, mkKicked]
   );
 
   JOIN_TIMEOUT = 8000; //8 sec. Timeout for join queries
