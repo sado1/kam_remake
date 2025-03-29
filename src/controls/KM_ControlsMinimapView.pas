@@ -10,6 +10,8 @@ uses
 
 
 type
+  TKMMinimapEvent = procedure (Sender: TObject; const X,Y: Integer) of object;
+
   // MinimapView relies on fMinimap and fViewport that provide all the data
   // MinimapView itself is just a painter
   TKMMinimapView = class(TKMControl)
@@ -26,7 +28,8 @@ type
     fWidthPOT: Word;
     fHeightPOT: Word;
 
-    fOnChange, fOnMinimapClick: TPointEvent;
+    fOnMinimapChange: TKMMinimapEvent;
+    fOnMinimapClick: TKMMinimapEvent;
     fShowLocs: Boolean;
     fLocRad: Byte;
     fClickableOnce: Boolean;
@@ -45,8 +48,8 @@ type
     procedure SetViewport(aViewport: TKMViewport);
     property ShowLocs: Boolean read fShowLocs write fShowLocs;
     property ClickableOnce: Boolean read fClickableOnce write fClickableOnce;
-    property OnChange: TPointEvent write fOnChange;
-    property OnMinimapClick: TPointEvent read fOnMinimapClick write fOnMinimapClick;
+    property OnMinimapChange: TKMMinimapEvent write fOnMinimapChange;
+    property OnMinimapClick: TKMMinimapEvent read fOnMinimapClick write fOnMinimapClick;
 
     procedure MouseDown(X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
     procedure MouseUp(X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
@@ -188,8 +191,8 @@ begin
   if (ssLeft in Shift) and not fClickableOnce then
   begin
     viewPos := LocalToMapCoords(X,Y);
-    if Assigned(fOnChange) then
-      fOnChange(Self, viewPos.X, viewPos.Y);
+    if Assigned(fOnMinimapChange) then
+      fOnMinimapChange(Self, viewPos.X, viewPos.Y);
   end;
 end;
 

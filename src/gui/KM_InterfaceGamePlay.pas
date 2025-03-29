@@ -119,9 +119,9 @@ type
     procedure MessageLog_ItemClick(Sender: TObject; const aCellX, aCellY: Integer; Shift: TShiftState; var aHandled: Boolean);
     procedure MessageLog_Close(Sender: TObject);
     procedure MessageLog_Update(aFullRefresh: Boolean);
-    procedure Minimap_Update(Sender: TObject; const X,Y: Integer);
+    procedure Minimap_Update(Sender: TObject; const aLocX, aLocY: Integer);
     procedure Minimap_RightClick(Sender: TObject; const X,Y: Integer);
-    procedure Minimap_Click(Sender: TObject; const X,Y: Integer);
+    procedure Minimap_Click(Sender: TObject; const aLocX, aLocY: Integer);
     procedure GameOptionsChanged;
 
     procedure Menu_Save_RefreshList(Sender: TObject);
@@ -742,12 +742,12 @@ end;
 
 
 // Update viewport position when user interacts with minimap
-procedure TKMGamePlayInterface.Minimap_Update(Sender: TObject; const X,Y: Integer);
+procedure TKMGamePlayInterface.Minimap_Update(Sender: TObject; const aLocX, aLocY: Integer);
 begin
   if gMySpectator.Hand.InCinematic then
     Exit;
 
-  fViewport.Position := KMPointF(X,Y);
+  fViewport.Position := KMPointF(aLocX, aLocY);
 end;
 
 
@@ -792,10 +792,10 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.Minimap_Click(Sender: TObject; const X,Y:integer);
+procedure TKMGamePlayInterface.Minimap_Click(Sender: TObject; const aLocX, aLocY: Integer);
 begin
   if fPlacingBeacon then
-    Beacon_Place(KMPointF(X,Y));
+    Beacon_Place(KMPointF(aLocX, aLocY));
 end;
 
 
@@ -856,7 +856,7 @@ begin
   Sidebar_Middle    := TKMImage.Create(Panel_Main, 0,  200, 224, 168, 554);
 
   MinimapView := TKMMinimapView.Create(fMinimap, Panel_Main, 10, 10, 176, 176);
-  MinimapView.OnChange := Minimap_Update; // Allow dragging with LMB pressed
+  MinimapView.OnMinimapChange := Minimap_Update; // Allow dragging with LMB pressed
   MinimapView.OnClickRight := Minimap_RightClick;
   MinimapView.OnMinimapClick := Minimap_Click; // For placing beacons
 

@@ -64,7 +64,7 @@ type
 
     procedure Layers_UpdateVisibility;
     procedure Marker_Done(Sender: TObject);
-    procedure Minimap_OnUpdate(Sender: TObject; const X,Y: Integer);
+    procedure Minimap_OnUpdate(Sender: TObject; const aLocX, aLocY: Integer);
     procedure PageChanged(Sender: TObject);
     procedure Player_ActiveClick(Sender: TObject);
     procedure Message_Click(Sender: TObject);
@@ -231,7 +231,7 @@ begin
   TKMImage.Create(Panel_Main, 0,    0,                 220, 200, 679, rxGui, [anLeft, anTop, anRight]);
 
   MinimapView := TKMMinimapView.Create(fMinimap, Panel_Main, 10, 10, TB_MAP_ED_WIDTH - 40, 176);
-  MinimapView.OnChange := Minimap_OnUpdate;
+  MinimapView.OnMinimapChange := Minimap_OnUpdate;
 
   Label_MissionName := TKMLabel.Create(Panel_Main, MAPED_TOOLBAR_WIDTH + 4, 10, 500, 10, NO_TEXT, fntGrey, taLeft);
   Label_Coordinates := TKMLabel.Create(Panel_Main, MAPED_TOOLBAR_WIDTH + 4, 30, 'X: Y:', fntGrey, taLeft);
@@ -844,10 +844,10 @@ begin
 end;
 
 
-//Update viewport position when user interacts with minimap
-procedure TKMMapEdInterface.Minimap_OnUpdate(Sender: TObject; const X,Y: Integer);
+// Update viewport position when user interacts with minimap
+procedure TKMMapEdInterface.Minimap_OnUpdate(Sender: TObject; const aLocX, aLocY: Integer);
 begin
-  fViewport.Position := KMPointF(X,Y);
+  fViewport.Position := KMPointF(aLocX, aLocY);
 end;
 
 
