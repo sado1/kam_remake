@@ -75,6 +75,7 @@ type
     procedure SetGameState(aState: TKMNetGameState; aOnMPInfoChanged: Boolean = True);
     procedure SendMapOrSave(aRecipient: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
     procedure DoReconnection;
+    procedure HandleMessageAskToJoin(aSenderIndex: Integer; aStream: TKMemoryStream);
     procedure PlayerJoined(aServerIndex: TKMNetHandleIndex; const aPlayerName: AnsiString);
     function IsPlayerHandStillInGame(aSlotIndex: Integer): Boolean;
     procedure HandleMessageReassignHost(aSenderIndex: TKMNetHandleIndex; aStream: TKMemoryStream);
@@ -1244,6 +1245,37 @@ begin
 end;
 
 
+procedure TKMNetworking.HandleMessageAskToJoin(aSenderIndex: Integer; aStream: TKMemoryStream);
+var
+  tmpInteger: Integer;
+  tmpStringA: AnsiString;
+begin
+  if IsHost then
+  begin
+    if not TKMNetSecurity.ValidateSolution(aStream, aSenderIndex) then
+      tmpInteger := TX_NET_YOUR_DATA_FILES
+    else
+    begin
+      aStream.ReadA(tmpStringA);
+      tmpInteger := fNetRoom.CheckCanJoin(tmpStringA, aSenderIndex);
+      if (tmpInteger = -1) and (fNetGameState <> lgsLobby) then
+        tmpInteger := TX_NET_GAME_IN_PROGRESS;
+    end;
+    if tmpInteger = -1 then
+    begin
+      //Password was checked by server already
+      PlayerJoined(aSenderIndex, tmpStringA);
+    end
+    else
+    begin
+      PacketSendI(aSenderIndex, mkRefuseToJoin, tmpInteger);
+      //Force them to reconnect and ask for a new challenge
+      PacketSendInd(NET_ADDRESS_SERVER, mkKickPlayer, aSenderIndex);
+    end;
+  end;
+end;
+
+
 procedure TKMNetworking.PlayerJoined(aServerIndex: TKMNetHandleIndex; const aPlayerName: AnsiString);
 begin
   fNetRoom.AddPlayer(aPlayerName, aServerIndex, '');
@@ -1766,29 +1798,7 @@ begin
             end;
 
     mkAskToJoin:
-            if IsHost then
-            begin
-              if not TKMNetSecurity.ValidateSolution(aStream, aSenderIndex) then
-                tmpInteger := TX_NET_YOUR_DATA_FILES
-              else
-              begin
-                aStream.ReadA(tmpStringA);
-                tmpInteger := fNetRoom.CheckCanJoin(tmpStringA, aSenderIndex);
-                if (tmpInteger = -1) and (fNetGameState <> lgsLobby) then
-                  tmpInteger := TX_NET_GAME_IN_PROGRESS;
-              end;
-              if tmpInteger = -1 then
-              begin
-                //Password was checked by server already
-                PlayerJoined(aSenderIndex, tmpStringA);
-              end
-              else
-              begin
-                PacketSendI(aSenderIndex, mkRefuseToJoin, tmpInteger);
-                //Force them to reconnect and ask for a new challenge
-                PacketSendInd(NET_ADDRESS_SERVER, mkKickPlayer, aSenderIndex);
-              end;
-            end;
+            HandleMessageAskToJoin(aSenderIndex, aStream);
 
     mkFileRequest:
             HandleMessageFileRequest(aSenderIndex, aStream);
