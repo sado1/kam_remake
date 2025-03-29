@@ -107,7 +107,7 @@ type
     procedure WareUpdate(Sender: TObject);
     procedure ArmyUpdate(Sender: TObject);
 
-    procedure Chart_LegendClick(Sender: TObject; aLegendLineId: Integer; aLineVisible: Boolean);
+    procedure Chart_LegendClick(Sender: TObject; aLineIndex: Integer; aLineVisible: Boolean);
 
     procedure RadioEconomyTypeChange(Sender: TObject);
     procedure RadioWareTypeChange(Sender: TObject);
@@ -1120,14 +1120,14 @@ begin
 end;
 
 
-procedure TKMGameResultsMP.Chart_LegendClick(Sender: TObject; aLegendLineId: Integer; aLineVisible: Boolean);
+procedure TKMGameResultsMP.Chart_LegendClick(Sender: TObject; aLineIndex: Integer; aLineVisible: Boolean);
 var
   chart: TKMChart;
 begin
   Assert(Sender is TKMChart);
 
   chart := TKMChart(Sender);
-  fLegendLinesVisible[fStatType, chart.Lines[aLegendLineId].Tag] := aLineVisible;
+  fLegendLinesVisible[fStatType, chart.Lines[aLineIndex].Tag] := aLineVisible;
 end;
 
 

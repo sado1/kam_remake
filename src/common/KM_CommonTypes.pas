@@ -63,7 +63,6 @@ type
   TBoolIntFuncSimple = function (aValue: Integer): Boolean of object;
   TBoolCardFuncSimple = function (aValue: Cardinal): Boolean of object;
   TCardinalEvent = procedure (aValue: Cardinal) of object;
-  TObjectIntBoolEvent = procedure (Sender: TObject; aIntValue: Integer; aBoolValue: Boolean) of object;
   TCoordDistanceFn = function (X, Y: Integer): Single;
 
   {$IFDEF FPC}

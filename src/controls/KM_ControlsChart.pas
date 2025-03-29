@@ -10,6 +10,8 @@ uses
 
 
 type
+  TKMNotifyLegendClick = procedure(Sender: TObject; aLineIndex: Integer; aLineVisible: Boolean) of object;
+
   TKMGraphLine = record
     Title: UnicodeString;
     TitleDetailed: TKMStringArray;
@@ -42,7 +44,7 @@ type
     fSeparatorHeight: Byte;
     fSeparatorColor: TColor4;
 
-    fOnLegendClick: TObjectIntBoolEvent;
+    fOnLegendClick: TKMNotifyLegendClick;
     procedure UpdateMaxValue;
     function GetLine(aIndex:Integer): TKMGraphLine;
     function GetLineNumber(aY: Integer): Integer;
@@ -77,7 +79,7 @@ type
     procedure SetSeparatorPositions(aSeparatorPositions: TStringList);
     procedure ClearSeparators;
 
-    property OnLegendClick: TObjectIntBoolEvent read fOnLegendClick write fOnLegendClick;
+    property OnLegendClick: TKMNotifyLegendClick read fOnLegendClick write fOnLegendClick;
 
     procedure MouseMove(X,Y: Integer; Shift: TShiftState); override;
     procedure MouseUp(X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
