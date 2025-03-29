@@ -1531,7 +1531,7 @@ begin
       if (DropBox_Loc[I].GetSelectedTag <> LOC_SPECTATE) and (gChat.Mode = cmSpectators) then
         ChatMenuSelect(CHAT_MENU_ALL);
 
-      gNetworking.SelectHand(DropBox_Loc[I].GetSelectedTag, slotIndex);
+      gNetworking.SelectHand(slotIndex, DropBox_Loc[I].GetSelectedTag);
       //Host with HostDoesSetup could have given us some location we don't know about
       //from a map/save we don't have, so make sure SelectGameKind is valid
       if (gNetworking.SelectGameKind <> ngkNone)
@@ -1542,7 +1542,7 @@ begin
 
     //Team
     if (Sender = DropBox_Team[I]) and DropBox_Team[I].Enabled then
-      gNetworking.SelectTeam(DropBox_Team[I].ItemIndex, slotIndex);
+      gNetworking.SelectTeam(slotIndex, DropBox_Team[I].ItemIndex);
 
     //Color
     if (Sender = DropBox_Colors[I])
@@ -1554,7 +1554,7 @@ begin
       else
         col := DropBox_Colors[I][DropBox_Colors[I].ItemIndex].Cells[0].Color;
 
-      gNetworking.SelectColor(col, slotIndex);
+      gNetworking.SelectColor(slotIndex, col);
     end;
 
     if Sender = DropBox_PlayerSlot[I] then
@@ -2127,7 +2127,7 @@ begin
 
   if canEdit then
   begin
-    gNetworking.SelectHand(aLoc + 1, slotIndex);
+    gNetworking.SelectHand(slotIndex, aLoc + 1);
     //Host with HostDoesSetup could have given us some location we don't know about from a map/save we don't have
     if gNetworking.SelectGameKind <> ngkNone then
       DropBox_Loc[fSlotToLocal[slotIndex]].SelectByTag(gNetworking.Room[slotIndex].StartLocation);

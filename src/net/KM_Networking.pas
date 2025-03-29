@@ -180,9 +180,9 @@ type
     procedure SelectNoMap(const aErrorMessage: UnicodeString);
     procedure SelectMap(const aName: UnicodeString; aMapKind: TKMMapKind; aSendPlayerSetup: Boolean = False);
     procedure SelectSave(const aName: UnicodeString);
-    procedure SelectHand(aHandIndex: Integer; aSlotIndex: Integer);
-    procedure SelectTeam(aTeam: Integer; aSlotIndex: Integer);
-    procedure SelectColor(aColor: Cardinal; aSlotIndex: Integer);
+    procedure SelectHand(aSlotIndex: Integer; aHandIndex: Integer);
+    procedure SelectTeam(aSlotIndex: Integer; aTeam: Integer);
+    procedure SelectColor(aSlotIndex: Integer; aColor: Cardinal);
     procedure KickPlayer(aSlotIndex: Integer);
     procedure BanPlayer(aSlotIndex: Integer);
     procedure SetToHost(aSlotIndex: Integer);
@@ -707,7 +707,7 @@ end;
 
 // Tell other players which Hand (start position) we would like to use
 // Each players choice should be unique
-procedure TKMNetworking.SelectHand(aHandIndex: Integer; aSlotIndex: Integer);
+procedure TKMNetworking.SelectHand(aSlotIndex: Integer; aHandIndex: Integer);
 var
   slotIndex: Integer;
 begin
@@ -763,7 +763,7 @@ end;
 
 // Tell other players which team we want to be on
 // Use aSlotIndex not fMySlotIndex because it could be an AI
-procedure TKMNetworking.SelectTeam(aTeam: Integer; aSlotIndex: Integer);
+procedure TKMNetworking.SelectTeam(aSlotIndex: Integer; aTeam: Integer);
 begin
   fNetRoom[aSlotIndex].Team := aTeam;
 
@@ -781,7 +781,7 @@ end;
 
 
 //Tell other players which color we will be using
-procedure TKMNetworking.SelectColor(aColor: Cardinal; aSlotIndex: Integer);
+procedure TKMNetworking.SelectColor(aSlotIndex: Integer; aColor: Cardinal);
 begin
   if not fNetRoom.ColorAvailable(aColor) then Exit;
   if (fSelectGameKind = ngkSave)
