@@ -17,8 +17,8 @@ type
     {$IFDEF FPC} fUDP: TKMNetUDPLNet;     {$ENDIF}
 
     fOnError: TGetStrProc;
-    procedure Receive(const aAddress: string; aData: Pointer; aLength: Cardinal); virtual; abstract;
-    procedure Error(const msg: string);
+    procedure HandleReceive(const aAddress: string; aData: Pointer; aLength: Cardinal); virtual; abstract;
+    procedure HandleError(const aMsg: string);
   protected
     fScanPort: Word;
   public
@@ -30,9 +30,9 @@ type
 
   TKMNetUDPAnnounce = class(TKMNetUDP)
   private
-    fGamePort: Word;
     fServerName: AnsiString;
-    procedure Receive(const aAddress: string; aData: Pointer; aLength: Cardinal); override;
+    fGamePort: Word;
+    procedure HandleReceive(const aAddress: string; aData: Pointer; aLength: Cardinal); override;
   public
     procedure StartAnnouncing(const aGamePort: Word; const aName: AnsiString; aAnnounce: Boolean);
     procedure StopAnnouncing;
@@ -42,7 +42,7 @@ type
   TKMNetUDPScan = class(TKMNetUDP)
   private
     fOnServerDetected: TNotifyServerDetectedEvent;
-    procedure Receive(const aAddress: String; aData: Pointer; aLength: Cardinal); override;
+    procedure HandleReceive(const aAddress: String; aData: Pointer; aLength: Cardinal); override;
   public
     procedure ScanForServers;
     procedure TerminateScan;
@@ -53,27 +53,29 @@ type
 implementation
 
 
+{ TKMNetUDP }
 constructor TKMNetUDP.Create(aScanPort: Word);
 begin
-  Inherited Create;
+  inherited Create;
   {$IFDEF WDC} fUDP := TKMNetUDPOverbyte.Create; {$ENDIF}
   {$IFDEF FPC} fUDP := TKMNetUDPLNet.Create;     {$ENDIF}
   fScanPort := aScanPort;
-  fUDP.OnError := Error;
-  fUDP.OnRecieveData := Receive;
+  fUDP.OnError := HandleError;
+  fUDP.OnRecieveData := HandleReceive;
 end;
 
 
 destructor TKMNetUDP.Destroy;
 begin
-  if fUDP<>nil then fUDP.Free;
-  Inherited;
+  fUDP.Free;
+
+  inherited;
 end;
 
 
-procedure TKMNetUDP.Error(const Msg: String);
+procedure TKMNetUDP.HandleError(const aMsg: String);
 begin
-  if Assigned(fOnError) then fOnError(msg);
+  if Assigned(fOnError) then fOnError(aMsg);
 end;
 
 
@@ -86,8 +88,8 @@ end;
 { TKMNetUDPAnnounce }
 procedure TKMNetUDPAnnounce.StartAnnouncing(const aGamePort: Word; const aName: AnsiString; aAnnounce: Boolean);
 begin
-  fGamePort := aGamePort;
   fServerName := aName;
+  fGamePort := aGamePort;
   fUDP.StopListening;
   if aAnnounce then
     try
@@ -113,7 +115,7 @@ begin
 end;
 
 
-procedure TKMNetUDPAnnounce.Receive(const aAddress: string; aData: Pointer; aLength: Cardinal);
+procedure TKMNetUDPAnnounce.HandleReceive(const aAddress: string; aData: Pointer; aLength: Cardinal);
 var
   M: TKMemoryStream;
   S: AnsiString;
@@ -182,7 +184,6 @@ begin
         Exit;
       end;
     end;
-
   finally
     M.Free;
   end;
@@ -195,7 +196,7 @@ begin
 end;
 
 
-procedure TKMNetUDPScan.Receive(const aAddress: String; aData: Pointer; aLength: Cardinal);
+procedure TKMNetUDPScan.HandleReceive(const aAddress: String; aData: Pointer; aLength: Cardinal);
 var
   M: TKMemoryStream;
   S, ServerName: AnsiString;
