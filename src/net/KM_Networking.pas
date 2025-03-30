@@ -2557,12 +2557,12 @@ procedure TKMNetworking.AnnounceGameInfo(aGameTime: TDateTime; aMap: UnicodeStri
 var
   I: Integer;
   M: TKMemoryStream;
-  MPGameInfo: TKMPGameInfo;
+  netGameInfo: TKNetGameInfo;
 begin
   //Only one player per game should send the info - Host
   if not IsHost then Exit;
 
-  MPGameInfo := TKMPGameInfo.Create;
+  netGameInfo := TKNetGameInfo.Create;
   try
     if (fNetGameState in [lgsLobby, lgsLoading]) then
     begin
@@ -2573,43 +2573,43 @@ begin
       end;
       aGameTime := -1;
     end;
-    MPGameInfo.Description := fDescription;
-    MPGameInfo.Map := aMap;
-    MPGameInfo.GameTime := aGameTime;
-    MPGameInfo.GameState := NET_MP_GAME_STATE[fNetGameState];
-    MPGameInfo.PasswordLocked := (fPassword <> '');
-    MPGameInfo.PlayerCount := fNetRoom.Count;
+    netGameInfo.Description := fDescription;
+    netGameInfo.Map := aMap;
+    netGameInfo.GameTime := aGameTime;
+    netGameInfo.GameState := NET_MP_GAME_STATE[fNetGameState];
+    netGameInfo.PasswordLocked := (fPassword <> '');
+    netGameInfo.PlayerCount := fNetRoom.Count;
 
-    MPGameInfo.GameOptions.Peacetime := fNetGameOptions.Peacetime;
-    MPGameInfo.GameOptions.SpeedPT := fNetGameOptions.SpeedPT;
-    MPGameInfo.GameOptions.SpeedAfterPT := fNetGameOptions.SpeedAfterPT;
-    MPGameInfo.GameOptions.RandomSeed := fNetGameOptions.RandomSeed; //not needed, but we send it anyway
-    MPGameInfo.GameOptions.MissionDifficulty := fNetGameOptions.MissionDifficulty;
+    netGameInfo.GameOptions.Peacetime := fNetGameOptions.Peacetime;
+    netGameInfo.GameOptions.SpeedPT := fNetGameOptions.SpeedPT;
+    netGameInfo.GameOptions.SpeedAfterPT := fNetGameOptions.SpeedAfterPT;
+    netGameInfo.GameOptions.RandomSeed := fNetGameOptions.RandomSeed; //not needed, but we send it anyway
+    netGameInfo.GameOptions.MissionDifficulty := fNetGameOptions.MissionDifficulty;
 
     for I := 1 to fNetRoom.Count do
     begin
-      MPGameInfo.Players[I].Name        := fNetRoom[I].Nickname;
-      MPGameInfo.Players[I].Color       := fNetRoom[I].FlagColorDef;
-      MPGameInfo.Players[I].Connected   := fNetRoom[I].Connected;
-      MPGameInfo.Players[I].LangCode    := fNetRoom[I].LangCode;
-      MPGameInfo.Players[I].Team        := fNetRoom[I].Team;
-      MPGameInfo.Players[I].IsSpectator := fNetRoom[I].IsSpectator;
-      MPGameInfo.Players[I].IsHost      := fHostSlotIndex = I;
-      MPGameInfo.Players[I].PlayerType  := fNetRoom[I].PlayerNetType;
+      netGameInfo.Players[I].Name        := fNetRoom[I].Nickname;
+      netGameInfo.Players[I].Color       := fNetRoom[I].FlagColorDef;
+      netGameInfo.Players[I].Connected   := fNetRoom[I].Connected;
+      netGameInfo.Players[I].LangCode    := fNetRoom[I].LangCode;
+      netGameInfo.Players[I].Team        := fNetRoom[I].Team;
+      netGameInfo.Players[I].IsSpectator := fNetRoom[I].IsSpectator;
+      netGameInfo.Players[I].IsHost      := fHostSlotIndex = I;
+      netGameInfo.Players[I].PlayerType  := fNetRoom[I].PlayerNetType;
       if (gHands = nil) //Game is not loaded yet...
-        or MPGameInfo.Players[I].IsSpectator
+        or netGameInfo.Players[I].IsSpectator
         or (fNetRoom[I].HandIndex = -1) then
-        MPGameInfo.Players[I].WonOrLost := wolNone
+        netGameInfo.Players[I].WonOrLost := wolNone
       else
-        MPGameInfo.Players[I].WonOrLost := gHands[fNetRoom[I].HandIndex].AI.WonOrLost;
+        netGameInfo.Players[I].WonOrLost := gHands[fNetRoom[I].HandIndex].AI.WonOrLost;
     end;
 
     M := TKMemoryStreamBinary.Create;
-    MPGameInfo.SaveToStream(M);
+    netGameInfo.SaveToStream(M);
     PacketSendS(NET_ADDRESS_SERVER, mkSetGameInfo, M);
     M.Free;
   finally
-    MPGameInfo.Free;
+    netGameInfo.Free;
   end;
 end;
 

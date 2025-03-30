@@ -26,7 +26,7 @@ type
     GameRevision: TKMGameRevision;
     RoomID: Integer;
     OnlyRoom: Boolean; //Is this the only room in the server?
-    GameInfo: TKMPGameInfo;
+    GameInfo: TKNetGameInfo;
   end;
 
   TServerDataEvent = procedure(aServerID: Integer; aStream: TKMemoryStream; aPingStarted: Cardinal) of object;
@@ -76,7 +76,7 @@ type
     property Rooms[aIndex: Integer]: TKMRoomInfo read GetRoom write SetRoom; default;
     property Count: Integer read fCount;
     procedure LoadData(aServerID: Integer; aStream: TKMemoryStream);
-    procedure SwapRooms(A,B: Integer);
+    procedure SwapRooms(A, B: Integer);
   end;
 
   TKMServerList = class
@@ -162,7 +162,7 @@ begin
   fRooms[fCount].GameRevision := aGameRev;
   fRooms[fCount].RoomID := aRoomID;
   fRooms[fCount].OnlyRoom := aOnlyRoom;
-  fRooms[fCount].GameInfo := TKMPGameInfo.Create;
+  fRooms[fCount].GameInfo := TKNetGameInfo.Create;
   fRooms[fCount].GameInfo.LoadFromStream(aGameInfoStream);
   Inc(fCount);
 end;
@@ -206,7 +206,7 @@ begin
 end;
 
 
-procedure TKMRoomList.SwapRooms(A,B: Integer);
+procedure TKMRoomList.SwapRooms(A, B: Integer);
 var
   temp: TKMRoomInfo;
 begin

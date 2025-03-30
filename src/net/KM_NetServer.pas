@@ -114,14 +114,14 @@ type
     fServerName: AnsiString;
     fKickTimeout: Word;
     fRoomCount: Integer;
-    fEmptyGameInfo: TKMPGameInfo;
+    fEmptyGameInfo: TKNetGameInfo;
     fGameFilter: TKMPGameFilter;
     fRoomInfo: array of record
                          HostHandle: TKMNetHandleIndex;
                          GameRevision: TKMGameRevision;
                          Password: AnsiString;
                          BannedIPs: array of String;
-                         GameInfo: TKMPGameInfo;
+                         GameInfo: TKNetGameInfo;
                        end;
 
     fOnStatusMessage: TGetStrProc;
@@ -288,7 +288,7 @@ constructor TKMNetServer.Create(aMaxRooms, aKickTimeout: Word; const aHTMLStatus
 begin
   inherited Create;
 
-  fEmptyGameInfo := TKMPGameInfo.Create;
+  fEmptyGameInfo := TKNetGameInfo.Create;
   fEmptyGameInfo.GameTime := -1;
 
   fGameFilter := TKMPGameFilter.Create;
@@ -603,7 +603,7 @@ begin
       fRoomInfo[room].HostHandle := NET_ADDRESS_EMPTY; //Room is now empty so we don't need a new host
       fRoomInfo[room].Password := '';
       fRoomInfo[room].GameInfo.Free;
-      fRoomInfo[room].GameInfo := TKMPGameInfo.Create;
+      fRoomInfo[room].GameInfo := TKNetGameInfo.Create;
       SetLength(fRoomInfo[room].BannedIPs, 0);
     end
     else
@@ -1122,7 +1122,7 @@ begin
   fRoomInfo[fRoomCount-1].HostHandle := NET_ADDRESS_EMPTY;
   fRoomInfo[fRoomCount-1].GameRevision := 0;
   fRoomInfo[fRoomCount-1].Password := '';
-  fRoomInfo[fRoomCount-1].GameInfo := TKMPGameInfo.Create;
+  fRoomInfo[fRoomCount-1].GameInfo := TKNetGameInfo.Create;
   SetLength(fRoomInfo[fRoomCount-1].BannedIPs, 0);
 end;
 

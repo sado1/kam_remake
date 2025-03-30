@@ -37,7 +37,7 @@ type
                              const aWelcomeMessage: UnicodeString; const aServerPacketsAccDelay: Integer);
     property OnMessage: TUnicodeStringEvent write fOnMessage;
     
-    procedure GetServerInfo(var aList: TList);
+    procedure GetServerInfo(aList: TList);
     function IsListening: Boolean;
 
     property Server: TKMNetServer read fNetServer;
@@ -158,11 +158,11 @@ end;
 
 procedure TKMDedicatedServer.MasterServerError(const aData: string);
 begin
-  StatusMessage('HTTP Master Server: '+aData);
+  StatusMessage('HTTP Master Server: ' + aData);
 end;
 
 
-procedure TKMDedicatedServer.GetServerInfo(var aList: TList);
+procedure TKMDedicatedServer.GetServerInfo(aList: TList);
 begin
   fNetServer.GetServerInfo(aList);
 end;

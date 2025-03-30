@@ -7,8 +7,8 @@ uses
 type
   TKMPlayerGameResult = (pgrNone, pgrWin, pgrDefeat);
 
-  //Stores information about a multiplayer game to be sent: host -> server -> queriers
-  TKMPGameInfo = class
+  //Stores information about a multiplayer game to be sent: Host -> Server -> Queriers
+  TKNetGameInfo = class
   public
     GameState: TMPGameState;
     PasswordLocked: Boolean;
@@ -43,8 +43,22 @@ uses
   VerySimpleXML, KM_CommonUtils;
 
 
-{ TKMPGameInfo }
-procedure TKMPGameInfo.LoadFromStream(aStream: TKMemoryStream);
+{ TKNetGameInfo }
+constructor TKNetGameInfo.Create;
+begin
+  inherited;
+  GameOptions := TKMGameOptions.Create;
+end;
+
+
+destructor TKNetGameInfo.Destroy;
+begin
+  FreeAndNil(GameOptions);
+  inherited;
+end;
+
+
+procedure TKNetGameInfo.LoadFromStream(aStream: TKMemoryStream);
 var
   I: Integer;
 begin
@@ -72,23 +86,7 @@ begin
 end;
 
 
-//Return string representation of games length
-constructor TKMPGameInfo.Create;
-begin
-  inherited;
-  GameOptions := TKMGameOptions.Create;
-end;
-
-
-destructor TKMPGameInfo.Destroy;
-begin
-  if GameOptions <> nil then
-    FreeAndNil(GameOptions);
-  inherited;
-end;
-
-
-function TKMPGameInfo.GetFormattedTime: UnicodeString;
+function TKNetGameInfo.GetFormattedTime: UnicodeString;
 begin
   if GameTime >= 0 then
     Result := TimeToString(GameTime)
@@ -97,7 +95,7 @@ begin
 end;
 
 
-procedure TKMPGameInfo.SaveToStream(aStream: TKMemoryStream);
+procedure TKNetGameInfo.SaveToStream(aStream: TKMemoryStream);
 var
   I: Integer;
 begin
@@ -123,8 +121,8 @@ begin
 end;
 
 
-//This function should do its own XML escaping
-function TKMPGameInfo.HTMLPlayersList: string;
+//todo -cPractical: This function should do its own XML escaping
+function TKNetGameInfo.HTMLPlayersList: string;
 var
   I: Integer;
 begin
@@ -140,7 +138,7 @@ begin
 end;
 
 
-function TKMPGameInfo.ConnectedPlayerCount: Byte;
+function TKNetGameInfo.ConnectedPlayerCount: Byte;
 var
   I: Integer;
 begin

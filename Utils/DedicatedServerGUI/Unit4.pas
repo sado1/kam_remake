@@ -82,7 +82,6 @@ type
 //    fSettingsLastModified: Integer;
     fServerStatus: TKMServerStatus;
     fDedicatedServer: TKMDedicatedServer;
-    fPlayers: TList;
   end;
 
 
@@ -239,23 +238,24 @@ end;
 
 procedure TForm4.FillPlayersList;
 var
+  roomList: TList;
   i: Integer;
   RowInfo: String;
 begin
-  fPlayers := TList.Create;
-  fDedicatedServer.GetServerInfo(fPlayers);
+  roomList := TList.Create;
+  fDedicatedServer.GetServerInfo(roomList);
 
   //first we clear list
   PlayersList.Items.Clear;
 
   //then we read each row and add to list
-  for i := 0 to fPlayers.Count - 1 do
+  for i := 0 to roomList.Count - 1 do
   begin
-    RowInfo := TKMPGameInfo(fPlayers[i]).GetFormattedTime;// + IntToStr(TKMGameInfo(fPlayers[i]).PlayerCount);
+    RowInfo := TKNetGameInfo(roomList[i]).GetFormattedTime;// + IntToStr(TKMGameInfo(roomList[i]).PlayerCount);
     PlayersList.Items.Add(RowInfo);
   end;
 
-  fPlayers.Free;
+  roomList.Free;
 end;
 
 procedure TForm4.ApplicationIdle(Sender: TObject; var Done: Boolean);
