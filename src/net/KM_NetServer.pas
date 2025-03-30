@@ -104,8 +104,8 @@ type
 
     fClientList: TKMClientsList;
     fListening: Boolean;
-    BytesTX: Int64; //May exceed 4GB allowed by cardinal
-    BytesRX: Int64;
+    fBytesTX: Int64; // Servers work 24/7 for weeks. We may exceed 4GB allowed by cardinal
+    fBytesRX: Int64;
 
     fPacketsAccumulatingDelay: Integer;
     fMaxRooms: Word;
@@ -125,8 +125,8 @@ type
                        end;
 
     fOnStatusMessage: TGetStrProc;
-    procedure Error(const S: string);
-    procedure Status(const S: string);
+    procedure Error(const aText: string);
+    procedure Status(const aText: string);
     procedure ClientConnect(aHandle: TKMNetHandleIndex);
     procedure ClientDisconnect(aHandle: TKMNetHandleIndex);
     procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind); overload;
@@ -343,16 +343,16 @@ end;
 
 
 //There's an error in fServer, perhaps fatal for multiplayer.
-procedure TKMNetServer.Error(const S: string);
+procedure TKMNetServer.Error(const aText: string);
 begin
-  Status(S);
+  Status(aText);
 end;
 
 
 //There's an error in fServer, perhaps fatal for multiplayer.
-procedure TKMNetServer.Status(const S: string);
+procedure TKMNetServer.Status(const aText: string);
 begin
-  if Assigned(fOnStatusMessage) then fOnStatusMessage('Server: ' + S);
+  if Assigned(fOnStatusMessage) then fOnStatusMessage('Server: ' + aText);
 end;
 
 
@@ -752,7 +752,7 @@ begin
       // Copy collected packets data with 1 byte shift
       Move(aServerClient.fQueuedPackets[0], Pointer(NativeUInt(P) + 1)^, aServerClient.fQueuedPacketsSize);
 
-      Inc(BytesTX, totalSize);
+      Inc(fBytesTX, totalSize);
       //Inc(PacketsSent);
       //gLog.AddTime('++++ send data to ' + GetNetAddressStr(aServerClient.fHandle) + ' length = ' + IntToStr(totalSize));
       fServer.SendData(aServerClient.fHandle, P, totalSize);
@@ -981,7 +981,7 @@ var
   senderClient: TKMServerClient;
 //  Kind: TKMNetMessageKind;
 begin
-  Inc(BytesRX, aLength);
+  Inc(fBytesRX, aLength);
   senderClient := fClientList.GetByHandle(aHandle);
   if senderClient = nil then
   begin
@@ -1215,8 +1215,8 @@ begin
     roomCountNode := xml.Root.AddChild('roomcount'); //Set it later
     playerCountNode := xml.Root.AddChild('playercount');
     clientCountNode := xml.Root.AddChild('clientcount');
-    xml.Root.AddChild('bytessent').Text := IntToStr(BytesTX);
-    xml.Root.AddChild('bytesreceived').Text := IntToStr(BytesRX);
+    xml.Root.AddChild('bytessent').Text := IntToStr(fBytesTX);
+    xml.Root.AddChild('bytesreceived').Text := IntToStr(fBytesRX);
 
     for I:=0 to fRoomCount-1 do
       if GetRoomClientsCount(I) > 0 then
@@ -1264,8 +1264,8 @@ begin
 
     //HTML footer
     html := html + '</TABLE>'+sLineBreak+
-                   '<p>Total sent: '+AddThousandSeparator(IntToStr(BytesTX))+' bytes</p>'+sLineBreak+
-                   '<p>Total received: '+AddThousandSeparator(IntToStr(BytesRX))+' bytes</p>'+sLineBreak+
+                   '<p>Total sent: '+AddThousandSeparator(IntToStr(fBytesTX))+' bytes</p>'+sLineBreak+
+                   '<p>Total received: '+AddThousandSeparator(IntToStr(fBytesRX))+' bytes</p>'+sLineBreak+
                    '</BODY>'+sLineBreak+'</HTML>';
 
     //Write HTML
