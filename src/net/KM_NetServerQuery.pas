@@ -112,8 +112,8 @@ type
     fOnAnnouncements: TUnicodeStringEvent;
 
     procedure DetectUDPServer(const aAddress: String; const aPort: Word; const aName: string);
-    procedure ReceiveServerList(const S: String);
-    procedure ReceiveAnnouncements(const S: String);
+    procedure ReceiveServerList(const aText: String);
+    procedure ReceiveAnnouncements(const aText: String);
 
     procedure ServerDataReceive(aServerID: Integer; aStream: TKMemoryStream; aPingStarted: Cardinal);
     procedure QueryDone(Sender: TObject);
@@ -486,22 +486,22 @@ begin
 end;
 
 
-procedure TKMServerQuery.ReceiveServerList(const S: string);
+procedure TKMServerQuery.ReceiveServerList(const aText: string);
 var
   I: Integer;
 begin
   fReceivedMasterServerList := True;
-  fServerList.AddFromText(S);
+  fServerList.AddFromText(aText);
   for I := 0 to MAX_QUERIES - 1 do
     if not fQuery[I].fQueryActive then
       fServerList.TakeNewQuery(fQuery[I]);
 end;
 
 
-procedure TKMServerQuery.ReceiveAnnouncements(const S: string);
+procedure TKMServerQuery.ReceiveAnnouncements(const aText: string);
 begin
   if Assigned(fOnAnnouncements) then
-    fOnAnnouncements(S);
+    fOnAnnouncements(aText);
 end;
 
 
