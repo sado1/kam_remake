@@ -3,7 +3,7 @@ unit KM_NetServerQuery;
 interface
 uses
   Classes,
-  KM_NetClient, KM_MasterServer, KM_NetUDP, KM_NetTypes, KM_NetGameInfo,
+  KM_NetClient, KM_NetMasterServer, KM_NetUDP, KM_NetTypes, KM_NetGameInfo,
   KM_CommonClasses, KM_CommonTypes;
 
 
@@ -98,7 +98,7 @@ type
   //Handles the master-server querrying and carries ServerList
   TKMServerQuery = class
   private
-    fMasterServer: TKMMasterServer;
+    fMasterServer: TKMNetMasterServer;
     fServerList: TKMServerList; //List of servers fetch from master
     fRoomList: TKMRoomList; //Info about each room populated after query completed
     fQuery: array[0..MAX_QUERIES-1] of TKMQuery;
@@ -413,7 +413,7 @@ var
   I: Integer;
 begin
   inherited Create;
-  fMasterServer := TKMMasterServer.Create(aMasterServerAddress, False);
+  fMasterServer := TKMNetMasterServer.Create(aMasterServerAddress, False);
   fMasterServer.OnServerList := ReceiveServerList;
   fMasterServer.OnAnnouncements := ReceiveAnnouncements;
 

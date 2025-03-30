@@ -1,17 +1,17 @@
-unit KM_DedicatedServer;
+unit KM_NetDedicatedServer;
 {$I KaM_Remake.inc}
 interface
 uses
   SysUtils, Classes, Math,
   {$IFDEF MSWindows}Windows,{$ENDIF}
-  KM_NetServer, KM_MasterServer, KM_NetUDP, KM_CommonTypes;
+  KM_NetServer, KM_NetMasterServer, KM_NetUDP, KM_CommonTypes;
 
 type
-  TKMDedicatedServer = class
+  TKMNetDedicatedServer = class
   private
     fLastPing, fLastAnnounce: cardinal;
     fNetServer: TKMNetServer;
-    fMasterServer: TKMMasterServer;
+    fMasterServer: TKMNetMasterServer;
     fUDPAnnounce: TKMNetUDPAnnounce;
     fOnMessage: TUnicodeStringEvent;
     fPublishServer: Boolean;
@@ -54,14 +54,14 @@ const
 
 
 //Announce interval of -1 means the server will not be published (LAN)
-constructor TKMDedicatedServer.Create(aMaxRooms, aKickTimeout, aPingInterval, aAnnounceInterval, aServerUDPScanPort: Word;
+constructor TKMNetDedicatedServer.Create(aMaxRooms, aKickTimeout, aPingInterval, aAnnounceInterval, aServerUDPScanPort: Word;
                                       const aMasterServerAddress: String; const aHTMLStatusFile: String;
                                       const aWelcomeMessage: UnicodeString; const aPacketsAccDelay: Integer; aDedicated: Boolean);
 begin
   inherited Create;
 
   fNetServer := TKMNetServer.Create(aMaxRooms, aKickTimeout, aHTMLStatusFile, aWelcomeMessage, aPacketsAccDelay);
-  fMasterServer := TKMMasterServer.Create(aMasterServerAddress, aDedicated);
+  fMasterServer := TKMNetMasterServer.Create(aMasterServerAddress, aDedicated);
   fMasterServer.OnError := MasterServerError;
   fUDPAnnounce := TKMNetUDPAnnounce.Create(aServerUDPScanPort);
   fUDPAnnounce.OnError := StatusMessage;
@@ -73,7 +73,7 @@ begin
 end;
 
 
-destructor TKMDedicatedServer.Destroy;
+destructor TKMNetDedicatedServer.Destroy;
 begin
   FreeAndNil(fNetServer);
   FreeAndNil(fMasterServer);
@@ -84,7 +84,7 @@ begin
 end;
 
 
-procedure TKMDedicatedServer.Start(const aServerName: AnsiString; const aPort: Word; aPublishServer, aAnnounceUDP: Boolean);
+procedure TKMNetDedicatedServer.Start(const aServerName: AnsiString; const aPort: Word; aPublishServer, aAnnounceUDP: Boolean);
 begin
   fPort := aPort;
   fServerName := aServerName;
@@ -96,7 +96,7 @@ begin
 end;
 
 
-procedure TKMDedicatedServer.Stop;
+procedure TKMNetDedicatedServer.Stop;
 begin
   fNetServer.StopListening;
   fNetServer.ClearClients;
@@ -105,7 +105,7 @@ begin
 end;
 
 
-procedure TKMDedicatedServer.UpdateState;
+procedure TKMNetDedicatedServer.UpdateState;
 var
   tickCount:Cardinal;
 begin
@@ -130,7 +130,7 @@ begin
 end;
 
 
-procedure TKMDedicatedServer.UpdateSettings(const aServerName: AnsiString; aPublishServer, aAnnounceUDP: Boolean;
+procedure TKMNetDedicatedServer.UpdateSettings(const aServerName: AnsiString; aPublishServer, aAnnounceUDP: Boolean;
                                             aKickTimeout, aPingInterval, aAnnounceInterval, aServerUDPScanPort: Word;
                                             const aMasterServerAddress: String; const aHTMLStatusFile: String;
                                             const aWelcomeMessage: UnicodeString;
@@ -150,25 +150,25 @@ begin
 end;
 
 
-procedure TKMDedicatedServer.StatusMessage(const aData: string);
+procedure TKMNetDedicatedServer.StatusMessage(const aData: string);
 begin
   if Assigned(fOnMessage) then fOnMessage(aData);
 end;
 
 
-procedure TKMDedicatedServer.MasterServerError(const aData: string);
+procedure TKMNetDedicatedServer.MasterServerError(const aData: string);
 begin
   StatusMessage('HTTP Master Server: ' + aData);
 end;
 
 
-procedure TKMDedicatedServer.GetServerInfo(aList: TList);
+procedure TKMNetDedicatedServer.GetServerInfo(aList: TList);
 begin
   fNetServer.GetServerInfo(aList);
 end;
 
 
-function TKMDedicatedServer.IsListening: Boolean;
+function TKMNetDedicatedServer.IsListening: Boolean;
 begin
   Result := fNetServer.Listening;
 end;

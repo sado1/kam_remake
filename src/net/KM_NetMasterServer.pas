@@ -1,4 +1,4 @@
-unit KM_MasterServer;
+unit KM_NetMasterServer;
 {$I KaM_Remake.inc}
 {$WARN IMPLICIT_STRING_CAST OFF}
 interface
@@ -7,7 +7,7 @@ uses
 
 type
   // Class responsible for interaction with MasterServer
-  TKMMasterServer = class
+  TKMNetMasterServer = class
   private
     fMasterServerAddress: string;
     fIsDedicated: Boolean;
@@ -57,7 +57,7 @@ const
   {$IFDEF FPC} COMPILER = 'FPC'; {$ENDIF}
 
 
-constructor TKMMasterServer.Create(const aMasterServerAddress: string; aDedicated:Boolean);
+constructor TKMNetMasterServer.Create(const aMasterServerAddress: string; aDedicated:Boolean);
 begin
   inherited Create;
 
@@ -71,7 +71,7 @@ begin
 end;
 
 
-destructor TKMMasterServer.Destroy;
+destructor TKMNetMasterServer.Destroy;
 begin
   fHTTPClient.Free;
   fHTTPAnnouncementsClient.Free;
@@ -81,25 +81,25 @@ begin
 end;
 
 
-procedure TKMMasterServer.Error(const aText: string);
+procedure TKMNetMasterServer.Error(const aText: string);
 begin
   if Assigned(fOnError) then fOnError(aText);
 end;
 
 
-procedure TKMMasterServer.ReceiveServerList(const aText: string);
+procedure TKMNetMasterServer.ReceiveServerList(const aText: string);
 begin
   if Assigned(fOnServerList) then fOnServerList(aText);
 end;
 
 
-procedure TKMMasterServer.ReceiveAnnouncements(const aText: string);
+procedure TKMNetMasterServer.ReceiveAnnouncements(const aText: string);
 begin
   if Assigned(fOnAnnouncements) then fOnAnnouncements(aText);
 end;
 
 
-procedure TKMMasterServer.AnnounceServer(const aName: string; aPort: Word; aPlayerCount, aTTL: Integer);
+procedure TKMNetMasterServer.AnnounceServer(const aName: string; aPort: Word; aPlayerCount, aTTL: Integer);
 begin
   fHTTPClient.OnReceive := nil; //We don't care about the response
   fHTTPClient.GetURL(fMasterServerAddress+'serveradd.php?name='+UrlEncode(aName)+'&port='+UrlEncode(IntToStr(aPort))
@@ -110,7 +110,7 @@ begin
 end;
 
 
-procedure TKMMasterServer.FetchServerList;
+procedure TKMNetMasterServer.FetchServerList;
 begin
   fHTTPClient.OnReceive := ReceiveServerList;
   fHTTPClient.GetURL(fMasterServerAddress+'serverquery.php?rev='+UrlEncode(NET_PROTOCOL_REVISON)+'&coderev='+UrlEncode(GAME_REVISION)
@@ -118,7 +118,7 @@ begin
 end;
 
 
-procedure TKMMasterServer.FetchAnnouncements(const aLang: AnsiString);
+procedure TKMNetMasterServer.FetchAnnouncements(const aLang: AnsiString);
 begin
   fHTTPAnnouncementsClient.OnReceive := ReceiveAnnouncements;
   fHTTPAnnouncementsClient.GetURL(fMasterServerAddress+'announcements.php?lang='
@@ -128,7 +128,7 @@ begin
 end;
 
 
-procedure TKMMasterServer.AnnounceGame(const aMapName: string; aCRC: Cardinal; aPlayerCount: Integer);
+procedure TKMNetMasterServer.AnnounceGame(const aMapName: string; aCRC: Cardinal; aPlayerCount: Integer);
 begin
   fHTTPMapsClient.OnReceive := nil; //We don't care about the response
   fHTTPMapsClient.GetURL(fMasterServerAddress+'maps.php?map='+UrlEncode(aMapName)
@@ -140,7 +140,7 @@ begin
 end;
 
 
-procedure TKMMasterServer.UpdateStateIdle;
+procedure TKMNetMasterServer.UpdateStateIdle;
 begin
   fHTTPClient.UpdateStateIdle;
   fHTTPAnnouncementsClient.UpdateStateIdle;

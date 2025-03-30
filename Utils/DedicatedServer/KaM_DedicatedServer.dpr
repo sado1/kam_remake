@@ -29,7 +29,7 @@ uses
   KM_Settings in '..\..\src\settings\KM_Settings.pas',
   KM_ServerSettings in '..\..\src\settings\KM_ServerSettings.pas',
   KM_NetTypes in '..\..\src\net\KM_NetTypes.pas',
-  KM_DedicatedServer in '..\..\src\net\other\KM_DedicatedServer.pas',
+  KM_NetDedicatedServer in '..\..\src\net\KM_NetDedicatedServer.pas',
   {$IFDEF WDC}
   KM_ConsoleTimer in '..\..\src\utils\KM_ConsoleTimer.pas',
   {$ENDIF}
@@ -37,7 +37,7 @@ uses
 
 var
   fEventHandler: TKMServerEventHandler;
-  fDedicatedServer: TKMDedicatedServer;
+  fDedicatedServer: TKMNetDedicatedServer;
   fSettings: TKMServerSettings;
   fSettingsLastModified: Integer;
   fLastSettingsFileCheck: Cardinal;
@@ -59,7 +59,7 @@ procedure RunTheServer;
 var
   GameFilter: TKMPGameFilter;
 begin
-  fDedicatedServer := TKMDedicatedServer.Create(fSettings.MaxRooms,
+  fDedicatedServer := TKMNetDedicatedServer.Create(fSettings.MaxRooms,
                                                 fSettings.AutoKickTimeout,
                                                 fSettings.PingInterval,
                                                 fSettings.MasterAnnounceInterval,

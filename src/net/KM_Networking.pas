@@ -8,7 +8,7 @@ uses
   KM_Console,
   KM_CommonClasses, KM_CommonTypes, KM_NetGameInfo, KM_NetTypes, KM_Defaults, KM_Points,
   KM_Saves, KM_GameOptions, KM_ResLocales, KM_NetFileTransfer, KM_Maps, KM_MapTypes, KM_NetRoom,
-  KM_DedicatedServer, KM_NetClient, KM_NetServerQuery,
+  KM_NetDedicatedServer, KM_NetClient, KM_NetServerQuery,
   {$IFDEF USESECUREAUTH}
     // If you don't have this file - disable USESECUREAUTH in KaM_Remake.inc
     KM_NetAuthSecure
@@ -28,7 +28,7 @@ type
     fPacketsSent: array [TKMNetMessageKind] of Cardinal;
     fPacketsStatsStartTime: Cardinal;
 
-    fNetServer: TKMDedicatedServer;
+    fNetServer: TKMNetDedicatedServer;
     fNetClient: TKMNetClient;
     fNetServerQuery: TKMServerQuery;
     fNetPlayerKind: TKMNetPlayerKind; // Our role (Host or Joiner)
@@ -259,7 +259,7 @@ begin
 
   SetGameState(lgsNone);
 
-  fNetServer := TKMDedicatedServer.Create(1, aKickTimeout, aPingInterval, aAnnounceInterval, aServerUDPScanPort,
+  fNetServer := TKMNetDedicatedServer.Create(1, aKickTimeout, aPingInterval, aAnnounceInterval, aServerUDPScanPort,
                                           aMasterServerAddress, '', '', aPacketsAccDelay, False);
   gameFilter := TKMPGameFilter.Create(aDynamicFOW, aMapsFilterEnabled, aMapsCRCListStr, aPeacetimeRng, aSpeedRng, aSpeedRngAfterPT);
   fNetServer.Server.GameFilter := gameFilter;

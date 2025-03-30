@@ -6,7 +6,7 @@ uses
   ExtCtrls, Spin, ComCtrls,
   KM_Defaults,
   KM_ServerSettings,
-  KM_DedicatedServer,
+  KM_NetDedicatedServer,
   KM_Log,
   KM_NetGameInfo;
 
@@ -81,7 +81,7 @@ type
     fSettings: TKMServerSettings;
 //    fSettingsLastModified: Integer;
     fServerStatus: TKMServerStatus;
-    fDedicatedServer: TKMDedicatedServer;
+    fDedicatedServer: TKMNetDedicatedServer;
   end;
 
 
@@ -188,7 +188,7 @@ begin
       begin
         ChangeEnableStateOfControls(False);
 
-        fDedicatedServer := TKMDedicatedServer.Create(fSettings.MaxRooms,
+        fDedicatedServer := TKMNetDedicatedServer.Create(fSettings.MaxRooms,
                                                       fSettings.AutoKickTimeout,
                                                       fSettings.PingInterval,
                                                       fSettings.MasterAnnounceInterval,

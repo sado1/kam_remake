@@ -290,8 +290,10 @@ uses
   {$IFDEF WDC} KM_NetClientOverbyte in 'src\net\KM_NetClientOverbyte.pas', {$ENDIF}
   {$IFDEF FPC} KM_NetClientLNet in 'src\net\KM_NetClientLNet.pas', {$ENDIF}
   KM_NetConsts in 'src\net\KM_NetConsts.pas',
+  KM_NetDedicatedServer in 'src\net\KM_NetDedicatedServer.pas',
   KM_NetFileTransfer in 'src\net\KM_NetFileTransfer.pas',
   KM_NetGameInfo in 'src\net\KM_NetGameInfo.pas',
+  KM_NetMasterServer in 'src\net\KM_NetMasterServer.pas',
   KM_NetRoom in 'src\net\KM_NetRoom.pas',
   KM_NetServer in 'src\net\KM_NetServer.pas',
   {$IFDEF WDC} KM_NetServerOverbyte in 'src\net\KM_NetServerOverbyte.pas', {$ENDIF}
@@ -308,8 +310,6 @@ uses
   {$IFDEF WDC} KM_HTTPClientOverbyte in 'src\net\http\KM_HTTPClientOverbyte.pas', {$ENDIF}
   {$IFDEF FPC} KM_HTTPClientLNet in 'src\net\http\KM_HTTPClientLNet.pas', {$ENDIF}
 
-  KM_DedicatedServer in 'src\net\other\KM_DedicatedServer.pas',
-  KM_MasterServer in 'src\net\other\KM_MasterServer.pas',
 
   KM_PathFinding in 'src\pathfinding\KM_PathFinding.pas',
   KM_PathFindingAStarOld in 'src\pathfinding\KM_PathFindingAStarOld.pas',
