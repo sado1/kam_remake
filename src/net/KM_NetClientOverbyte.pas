@@ -9,52 +9,53 @@ uses
 doing all the low level work on TCP. So we can replace this unit with other TCP client
 without KaM even noticing. }
 type
-  TNotifyDataEvent = procedure(aData:pointer; aLength:cardinal)of object;
+  TNotifyDataEvent = procedure(aData: Pointer; aLength: Cardinal) of object;
 
   TKMNetClientOverbyte = class
   private
-    fSocket:TWSocket;
-    fOnError:TGetStrProc;
-    fOnConnectSucceed:TNotifyEvent;
-    fOnConnectFailed:TGetStrProc;
-    fOnSessionDisconnected:TNotifyEvent;
-    fOnRecieveData:TNotifyDataEvent;
-    procedure Connected(Sender: TObject; Error: Word);
-    procedure Disconnected(Sender: TObject; Error: Word);
-    procedure DataAvailable(Sender: TObject; Error: Word);
+    fSocket: TWSocket;
+    fOnError: TGetStrProc;
+    fOnConnectSucceed: TNotifyEvent;
+    fOnConnectFailed: TGetStrProc;
+    fOnSessionDisconnected: TNotifyEvent;
+    fOnRecieveData: TNotifyDataEvent;
+    procedure Connected(Sender: TObject; aError: Word);
+    procedure Disconnected(Sender: TObject; aError: Word);
+    procedure DataAvailable(Sender: TObject; aError: Word);
   public
     constructor Create;
     destructor Destroy; override;
-    function MyIPString:string;
+    function MyIPString: string;
     function SendBufferEmpty: Boolean;
     procedure ConnectTo(const aAddress: string; const aPort: Word);
     procedure Disconnect;
-    procedure SendData(aData:pointer; aLength:cardinal);
+    procedure SendData(aData: Pointer; aLength: Cardinal);
     procedure SetHandleBackgrounException;
-    property OnError:TGetStrProc write fOnError;
-    property OnConnectSucceed:TNotifyEvent write fOnConnectSucceed;
-    property OnConnectFailed:TGetStrProc write fOnConnectFailed;
-    property OnSessionDisconnected:TNotifyEvent write fOnSessionDisconnected;
-    property OnRecieveData:TNotifyDataEvent write fOnRecieveData;
+    property OnError: TGetStrProc write fOnError;
+    property OnConnectSucceed: TNotifyEvent write fOnConnectSucceed;
+    property OnConnectFailed: TGetStrProc write fOnConnectFailed;
+    property OnSessionDisconnected: TNotifyEvent write fOnSessionDisconnected;
+    property OnRecieveData: TNotifyDataEvent write fOnRecieveData;
   end;
 
 
 implementation
 
 
+{ TKMNetClientOverbyte }
 constructor TKMNetClientOverbyte.Create;
 var
   wsaData: TWSAData;
 begin
-  Inherited Create;
+  inherited Create;
   Assert(WSAStartup($101, wsaData) = 0, 'Error in Network');
 end;
 
 
 destructor TKMNetClientOverbyte.Destroy;
 begin
-  if fSocket <> nil then fSocket.Free;
-  Inherited;
+  fSocket.Free;
+  inherited;
 end;
 
 
@@ -67,7 +68,7 @@ begin
 end;
 
 
-procedure TKMNetClientOverbyte.ConnectTo(const aAddress: string; const aPort:Word);
+procedure TKMNetClientOverbyte.ConnectTo(const aAddress: string; const aPort: Word);
 begin
   FreeAndNil(fSocket);
   fSocket := TWSocket.Create(nil);
@@ -79,11 +80,13 @@ begin
   fSocket.OnSessionConnected := Connected;
   fSocket.OnDataAvailable := DataAvailable;
   try
+    // Failure to connect could be caused by Firewall on DedicatedServer side
     fSocket.Connect;
   except
-    on E : Exception do
+    on E: Exception do
     begin
-      //Trap the exception and tell the user. Note: While debugging, Delphi will still stop execution for the exception, but normally the dialouge won't show.
+      // Trap the exception and tell the user.
+      // Note: While debugging, Delphi will still stop execution for the exception, but normally the dialouge won't show.
       fOnConnectFailed(E.Message);
     end;
   end;
@@ -94,10 +97,10 @@ procedure TKMNetClientOverbyte.Disconnect;
 begin
   if fSocket <> nil then
   begin
-    //ShutDown(1) Works better, then Close or CloseDelayed
-    //With Close or CloseDelayed some data, that were sent just before disconnection could not be delivered to server.
-    //F.e. mkDisconnect packet
-    //But we can't send data into ShutDown'ed socket (we could try into Closed one, since it will have State wsClosed)
+    // ShutDown(1) Works better than Close or CloseDelayed
+    // With Close or CloseDelayed some data that was sent just before disconnection could not be delivered to server.
+    // E.g. mkDisconnect packet
+    // But we can't send data into ShutDown'ed socket (we could try into Closed one, since it will have State wsClosed)
     fSocket.ShutDown(1);
   end;
 end;
@@ -140,10 +143,10 @@ begin
 end;
 
 
-procedure TKMNetClientOverbyte.Connected(Sender: TObject; Error: Word);
+procedure TKMNetClientOverbyte.Connected(Sender: TObject; aError: Word);
 begin
-  if Error <> 0 then
-    fOnConnectFailed('Error: '+WSocketErrorDesc(Error)+' (#' + IntToStr(Error)+')')
+  if aError <> 0 then
+    fOnConnectFailed('Error: '+WSocketErrorDesc(aError)+' (#' + IntToStr(aError)+')')
   else
   begin
     fOnConnectSucceed(Self);
@@ -154,26 +157,26 @@ begin
 end;
 
 
-procedure TKMNetClientOverbyte.Disconnected(Sender: TObject; Error: Word);
+procedure TKMNetClientOverbyte.Disconnected(Sender: TObject; aError: Word);
 begin
   //Do not exit on error, because when a disconnect error occurs, the client has still disconnected
-  if Error <> 0 then
-    fOnError('Client: Disconnection error: '+WSocketErrorDesc(Error)+' (#' + IntToStr(Error)+')');
+  if aError <> 0 then
+    fOnError('Client: Disconnection error: '+WSocketErrorDesc(aError)+' (#' + IntToStr(aError)+')');
 
   fOnSessionDisconnected(Self);
 end;
 
 
-procedure TKMNetClientOverbyte.DataAvailable(Sender: TObject; Error: Word);
+procedure TKMNetClientOverbyte.DataAvailable(Sender: TObject; aError: Word);
 const
   BUFFER_SIZE = 10240; //10kb
 var
   P: Pointer;
   L: Integer; //L could be -1 when no data is available
 begin
-  if Error <> 0 then
+  if aError <> 0 then
   begin
-    fOnError('DataAvailable. Error '+WSocketErrorDesc(Error)+' (#' + IntToStr(Error)+')');
+    fOnError('DataAvailable. Error '+WSocketErrorDesc(aError)+' (#' + IntToStr(aError)+')');
     Exit;
   end;
 
