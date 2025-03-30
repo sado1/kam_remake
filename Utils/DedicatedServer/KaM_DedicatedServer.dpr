@@ -28,7 +28,7 @@ uses
   KM_Log in '..\..\src\KM_Log.pas',
   KM_Settings in '..\..\src\settings\KM_Settings.pas',
   KM_ServerSettings in '..\..\src\settings\KM_ServerSettings.pas',
-  KM_NetworkTypes in '..\..\src\net\KM_NetworkTypes.pas',
+  KM_NetTypes in '..\..\src\net\KM_NetTypes.pas',
   KM_DedicatedServer in '..\..\src\net\other\KM_DedicatedServer.pas',
   {$IFDEF WDC}
   KM_ConsoleTimer in '..\..\src\utils\KM_ConsoleTimer.pas',

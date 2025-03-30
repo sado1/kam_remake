@@ -1,4 +1,4 @@
-unit KM_NetworkTypes;
+unit KM_NetTypes;
 {$I KaM_Remake.inc}
 interface
 uses

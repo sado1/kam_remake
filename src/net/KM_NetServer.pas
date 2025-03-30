@@ -6,7 +6,7 @@ uses
    {$IFDEF WDC}KM_NetServerOverbyte, {$ENDIF}
    {$IFDEF FPC}KM_NetServerLNet, {$ENDIF}
   Classes, SysUtils, Math, VerySimpleXML,
-  KM_CommonClasses, KM_NetworkClasses, KM_NetworkTypes,
+  KM_CommonClasses, KM_NetGameInfo, KM_NetTypes,
   KM_Defaults, KM_CommonUtils, KM_CommonTypes,
   {$IFDEF WDC}
     {$IFDEF CONSOLE}

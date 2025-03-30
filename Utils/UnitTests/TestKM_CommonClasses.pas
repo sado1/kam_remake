@@ -1,7 +1,7 @@
 unit TestKM_CommonClasses;
 interface
 uses
-  TestFramework, KM_CommonClasses, Classes, SysUtils, Math, KM_NetworkTypes,
+  TestFramework, KM_CommonClasses, Classes, SysUtils, Math, KM_NetTypes,
   KM_Points;
 
 type

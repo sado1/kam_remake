@@ -94,7 +94,7 @@ uses
   KM_GameApp,
   KM_ResTexts, KM_ResTypes,
   KM_RenderUI,
-  KM_NetworkTypes,
+  KM_NetTypes,
   KM_Log;
 
 

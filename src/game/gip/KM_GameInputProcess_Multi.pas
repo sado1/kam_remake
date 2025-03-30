@@ -87,7 +87,7 @@ implementation
 uses
   TypInfo,
   SysUtils, Math, KromUtils,
-  KM_Game, KM_GameParams, KM_HandsCollection, KM_NetworkTypes,
+  KM_Game, KM_GameParams, KM_HandsCollection, KM_NetTypes,
   KM_ResTexts, KM_ResSound, KM_Sound, KM_CommonUtils,
   KM_GameTypes,
   KM_Networking;

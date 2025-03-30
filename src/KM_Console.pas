@@ -3,7 +3,7 @@ unit KM_Console;
 interface
 uses
   Generics.Collections,
-  KM_CommonTypes, KM_NetworkTypes;
+  KM_CommonTypes, KM_NetTypes;
 
 
 type

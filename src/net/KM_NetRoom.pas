@@ -3,7 +3,7 @@ unit KM_NetRoom;
 interface
 uses
   Classes, KromUtils, StrUtils, Math, SysUtils,
-  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Hand, KM_ResLocales, KM_NetworkTypes,
+  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Hand, KM_ResLocales, KM_NetTypes,
   KM_HandTypes;
 
 const

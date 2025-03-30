@@ -397,7 +397,7 @@ uses
   KM_ScriptingEvents, KM_AIFields, KM_GameAppSettings, KM_GameSettings,
   KM_ControlsDragger,
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResKeys,
-  KM_NetRoom, KM_MessageLog, KM_NetworkTypes,
+  KM_NetRoom, KM_MessageLog, KM_NetTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
   KM_GameParams,
   KM_Video, KM_Music, KM_Sound, KM_ScriptSound,

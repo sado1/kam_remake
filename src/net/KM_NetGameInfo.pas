@@ -1,8 +1,8 @@
-﻿unit KM_NetworkClasses;
+﻿unit KM_NetGameInfo;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, SysUtils, StrUtils, KM_CommonTypes, KM_CommonClasses, KM_NetworkTypes, KM_Defaults, KM_GameOptions;
+  Classes, SysUtils, StrUtils, KM_CommonTypes, KM_CommonClasses, KM_NetTypes, KM_Defaults, KM_GameOptions;
 
 type
   TKMPlayerGameResult = (pgrNone, pgrWin, pgrDefeat);

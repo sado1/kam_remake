@@ -8,7 +8,7 @@ uses
   KM_ServerSettings,
   KM_DedicatedServer,
   KM_Log,
-  KM_NetworkClasses;
+  KM_NetGameInfo;
 
 
 type
@@ -92,7 +92,7 @@ var
 
 implementation
 uses
-  KM_NetworkTypes, KM_Points, KM_Settings;
+  KM_NetTypes, KM_Points, KM_Settings;
 
 {$IFDEF WDC}
   {$R *.dfm}
@@ -242,9 +242,9 @@ end;
 
 
 procedure TForm4.FillPlayersList;
-var i:           Integer;
-    RowInfo:     String;
-
+var
+  i: Integer;
+  RowInfo: String;
 begin
   Players := TList.Create;
   fDedicatedServer.GetServerInfo(Players);

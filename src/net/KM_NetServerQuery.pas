@@ -3,7 +3,7 @@ unit KM_NetServerQuery;
 interface
 uses
   Classes,
-  KM_NetClient, KM_MasterServer, KM_NetUDP, KM_NetworkTypes, KM_NetworkClasses,
+  KM_NetClient, KM_MasterServer, KM_NetUDP, KM_NetTypes, KM_NetGameInfo,
   KM_CommonClasses, KM_CommonTypes;
 
 

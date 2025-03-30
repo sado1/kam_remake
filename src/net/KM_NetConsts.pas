@@ -1,8 +1,8 @@
-unit KM_NetworkConsts;
+unit KM_NetConsts;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_NetworkTypes;
+  KM_NetTypes;
 
 
 const

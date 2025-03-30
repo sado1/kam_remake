@@ -331,7 +331,7 @@ uses
   KromUtils,
   KM_Sound, KM_ScriptSound,
   KM_PathFindingAStarOld, KM_PathFindingAStarNew, KM_PathFindingJPS,
-  KM_Projectiles, KM_AIFields, KM_NetworkTypes,
+  KM_Projectiles, KM_AIFields, KM_NetTypes,
   KM_Main, KM_System, KM_GameApp, KM_RenderPool, KM_GameInfo, KM_GameClasses,
   KM_Terrain, KM_TerrainTypes, KM_HandsCollection, KM_HandSpectator, KM_MapEdTypes,
   KM_MissionScript, KM_MissionScript_Info, KM_MissionScript_Standard,

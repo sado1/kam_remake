@@ -6,7 +6,7 @@ uses
   Classes, SysUtils, TypInfo, Generics.Collections,
   KromUtils,
   KM_Console,
-  KM_CommonClasses, KM_CommonTypes, KM_NetworkClasses, KM_NetworkTypes, KM_Defaults, KM_Points,
+  KM_CommonClasses, KM_CommonTypes, KM_NetGameInfo, KM_NetTypes, KM_Defaults, KM_Points,
   KM_Saves, KM_GameOptions, KM_ResLocales, KM_NetFileTransfer, KM_Maps, KM_MapTypes, KM_NetRoom,
   KM_DedicatedServer, KM_NetClient, KM_NetServerQuery,
   {$IFDEF USESECUREAUTH}
@@ -242,7 +242,7 @@ var
 implementation
 uses
   Math, StrUtils,
-  KM_NetworkConsts, KM_Sound, KM_Log, KM_CommonUtils, KM_HandsCollection, KM_Hand,
+  KM_NetConsts, KM_Sound, KM_Log, KM_CommonUtils, KM_HandsCollection, KM_Hand,
   KM_System, KM_GameApp, KM_GameSettings,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_NetworkUtils;
 

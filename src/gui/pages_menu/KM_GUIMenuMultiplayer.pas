@@ -119,7 +119,7 @@ uses
   KM_GameSettings,
   KM_ControlsTypes,
   KM_ServerSettings,
-  KM_Networking, KM_NetworkTypes,
+  KM_Networking, KM_NetTypes,
   KM_ResTexts, KM_ResLocales, KM_ResFonts, KM_ResSound, KM_ResTypes,
   KM_Sound,
   KM_RenderUI,
