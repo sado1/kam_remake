@@ -75,14 +75,14 @@ type
   private
     fCount: Integer;
     fItems: array of TKMServerClient;
-    function GetItem(Index: TKMNetHandleIndex):TKMServerClient;
+    function GetItem(aIndex: Integer):TKMServerClient;
   public
     destructor Destroy; override;
     property Count: Integer read fCount;
     procedure AddPlayer(aHandle: TKMNetHandleIndex; aRoom: Integer);
     procedure RemPlayer(aHandle: TKMNetHandleIndex);
     procedure Clear;
-    property Item[Index: TKMNetHandleIndex]: TKMServerClient read GetItem; default;
+    property Item[aIndex: Integer]: TKMServerClient read GetItem; default;
     function GetByHandle(aHandle: TKMNetHandleIndex): TKMServerClient;
   end;
 
@@ -226,10 +226,10 @@ begin
 end;
 
 
-function TKMClientsList.GetItem(Index: TKMNetHandleIndex): TKMServerClient;
+function TKMClientsList.GetItem(aIndex: Integer): TKMServerClient;
 begin
-  Assert(InRange(Index, 0, fCount - 1),'Tried to access invalid client index');
-  Result := fItems[Index];
+  Assert(InRange(aIndex, 0, fCount - 1), 'Tried to access invalid client index');
+  Result := fItems[aIndex];
 end;
 
 

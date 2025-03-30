@@ -6,12 +6,12 @@ uses
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Hand, KM_ResLocales, KM_NetTypes,
   KM_HandTypes;
 
-const
-  PING_COUNT = 20; //Number of pings to store and take the maximum over for latency calculation (pings are measured once per second)
 
 type
   // Slot in the Room. Can be taken by Human/Computer or be closed
   TKMNetRoomSlot = class
+  private const
+    PING_COUNT = 20; // Number of pings to store and take the maximum over for latency calculation (pings are measured once per second)
   private
     fNickname: AnsiString;
     fLangCode: AnsiString;
