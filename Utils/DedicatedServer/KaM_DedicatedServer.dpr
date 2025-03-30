@@ -21,6 +21,7 @@ uses
   Classes, SysUtils,
   {$IFDEF MSWindows} Windows, MMSystem, {$ENDIF}
   {$IFDEF FPC} Interfaces, {$ENDIF}
+
   KM_CommonUtils in '..\..\src\utils\KM_CommonUtils.pas',
   KM_Defaults in '..\..\src\common\KM_Defaults.pas',
   KM_Points in '..\..\src\common\KM_Points.pas',
