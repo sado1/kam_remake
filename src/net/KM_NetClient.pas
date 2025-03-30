@@ -46,9 +46,9 @@ type
     fOnForcedDisconnect: TNotifyEvent;
     fOnRecieveData: TNotifySenderDataEvent;
     fOnStatusMessage: TGetStrProc;
-    procedure Error(const S: string);
+    procedure Error(const aText: string);
     procedure ConnectSucceed(Sender: TObject);
-    procedure ConnectFailed(const S: string);
+    procedure ConnectFailed(const aText: string);
     procedure ForcedDisconnect(Sender: TObject);
     procedure RecieveData(aData: Pointer; aLength: Cardinal);
   public
@@ -109,9 +109,9 @@ begin
 end;
 
 
-procedure TKMNetClient.Error(const S: string);
+procedure TKMNetClient.Error(const aText: string);
 begin
-  if Assigned(fOnStatusMessage) then fOnStatusMessage('Client: Error ' + S);
+  if Assigned(fOnStatusMessage) then fOnStatusMessage('Client: Error ' + aText);
 end;
 
 
@@ -143,11 +143,11 @@ begin
 end;
 
 
-procedure TKMNetClient.ConnectFailed(const S: string);
+procedure TKMNetClient.ConnectFailed(const aText: string);
 begin
   fConnected := False;
-  if Assigned(fOnStatusMessage) then fOnStatusMessage('Client: Connection failed. '+S);
-  if Assigned(fOnConnectFailed) then fOnConnectFailed(S);
+  if Assigned(fOnStatusMessage) then fOnStatusMessage('Client: Connection failed. ' + aText);
+  if Assigned(fOnConnectFailed) then fOnConnectFailed(aText);
 end;
 
 
@@ -184,28 +184,32 @@ begin
 end;
 
 
-//Assemble the packet as [Sender.Recepient.Length.Data]
-//We can pack/clean the header later on (if we hit bandwidth limits)
-procedure TKMNetClient.SendData(aSender,aRecepient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
+// Assemble the packet as [Sender.Recepient.Length.Data]
+// We can pack/clean the header later on (if we hit bandwidth limits)
+procedure TKMNetClient.SendData(aSender, aRecepient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
 var
   P: Pointer;
 begin
-  //We use fSocket.Shutdown(1) for disconnection in Overbyte implementation,
-  //then we have to check if we actually connected to server before sending any data
-  //Otherwise we could get "ESocketException: Can't send after socket shutdown"
-  if fConnected then
-  begin
-    Assert(aLength <= MAX_PACKET_SIZE, 'Packet over size limit');
-    GetMem(P, aLength + 6);
-    try
-      PKMNetHandleIndex(P)^ := aSender;
-      PKMNetHandleIndex(NativeUInt(P) + 2)^ := aRecepient;
-      PWord(NativeUInt(P) + 4)^ := aLength;
-      Move(aData^, Pointer(NativeUInt(P) + 6)^, aLength);
-      fClient.SendData(P, aLength + 6);
-    finally
-      FreeMem(P);
-    end;
+  // We use fSocket.Shutdown(1) for disconnection in Overbyte implementation,
+  // then we have to check if we actually connected to server before sending any data
+  // Otherwise we could get "ESocketException: Can't send after socket shutdown"
+  if not fConnected then Exit;
+
+  Assert(aLength <= MAX_PACKET_SIZE, 'Packet over size limit');
+
+  // Sender    2bytes
+  // Recepient 2bytes
+  // Length    2bytes
+  //.Data      MAX_PACKET_SIZE
+  GetMem(P, aLength + 6);
+  try
+    PKMNetHandleIndex(P)^ := aSender;
+    PKMNetHandleIndex(NativeUInt(P) + 2)^ := aRecepient;
+    PWord(NativeUInt(P) + 4)^ := aLength;
+    Move(aData^, Pointer(NativeUInt(P) + 6)^, aLength);
+    fClient.SendData(P, aLength + 6);
+  finally
+    FreeMem(P);
   end;
 end;
 
