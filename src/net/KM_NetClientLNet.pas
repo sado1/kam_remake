@@ -12,7 +12,7 @@ const
   MAX_SEND_BUFFER = 1048576; //1 MB
 
 type
-  TNotifyDataEvent = procedure(aData:pointer; aLength:cardinal)of object;
+  TNotifyDataEvent = procedure(aData: Pointer; aLength: Cardinal) of object;
 
   TKMNetClientLNet = class
   private
@@ -20,55 +20,49 @@ type
     fBuffer: array of byte;
     fBufferLen: Cardinal;
 
-    fOnError:TGetStrProc;
-    fOnConnectSucceed:TNotifyEvent;
-    fOnConnectFailed:TGetStrProc;
-    fOnSessionDisconnected:TNotifyEvent;
-    fOnRecieveData:TNotifyDataEvent;
+    fOnError: TGetStrProc;
+    fOnConnectSucceed: TNotifyEvent;
+    fOnConnectFailed: TGetStrProc;
+    fOnSessionDisconnected: TNotifyEvent;
+    fOnRecieveData: TNotifyDataEvent;
     procedure Connected(aSocket: TLSocket);
     procedure Disconnected(aSocket: TLSocket);
     procedure Receive(aSocket: TLSocket);
-    procedure Error(const msg: string; aSocket: TLSocket);
+    procedure Error(const aMsg: string; aSocket: TLSocket);
     procedure CanSend(aSocket: TLSocket);
 
-    procedure PutInBuffer(aData:pointer; aLength:cardinal);
+    procedure PutInBuffer(aData: Pointer; aLength: Cardinal);
     procedure AttemptSend;
     function BufferFull: Boolean;
   public
-    constructor Create;
     destructor Destroy; override;
-    function MyIPString:string;
+    function MyIPString: string;
     function SendBufferEmpty: Boolean;
     procedure ConnectTo(const aAddress: string; const aPort: Word);
     procedure Disconnect;
-    procedure SendData(aData:pointer; aLength:cardinal);
+    procedure SendData(aData: Pointer; aLength: Cardinal);
     procedure SetHandleBackgrounException;
     procedure UpdateStateIdle;
-    property OnError:TGetStrProc write fOnError;
-    property OnConnectSucceed:TNotifyEvent write fOnConnectSucceed;
-    property OnConnectFailed:TGetStrProc write fOnConnectFailed;
-    property OnSessionDisconnected:TNotifyEvent write fOnSessionDisconnected;
-    property OnRecieveData:TNotifyDataEvent write fOnRecieveData;
+    property OnError: TGetStrProc write fOnError;
+    property OnConnectSucceed: TNotifyEvent write fOnConnectSucceed;
+    property OnConnectFailed: TGetStrProc write fOnConnectFailed;
+    property OnSessionDisconnected: TNotifyEvent write fOnSessionDisconnected;
+    property OnRecieveData: TNotifyDataEvent write fOnRecieveData;
   end;
 
 
 implementation
 
 
-constructor TKMNetClientLNet.Create;
-begin
-  Inherited Create;
-end;
-
-
+{ TKMNetClientLNet }
 destructor TKMNetClientLNet.Destroy;
 begin
-  if fSocket<>nil then fSocket.Free;
-  Inherited;
+  fSocket.Free;
+  inherited;
 end;
 
 
-function TKMNetClientLNet.MyIPString:string;
+function TKMNetClientLNet.MyIPString: string;
 begin
   Result := 'Not implemented yet';
 end;
@@ -93,7 +87,7 @@ begin
     fSocket.Connect(aAddress, aPort);
     fSocket.CallAction;
   except
-    on E : Exception do
+    on E: Exception do
     begin
       //Trap the exception and tell the user. Note: While debugging, Delphi will still stop execution for the exception, but normally the dialouge won't show.
       fOnConnectFailed(E.Message);
@@ -108,7 +102,7 @@ begin
 end;
 
 
-procedure TKMNetClientLNet.PutInBuffer(aData:pointer; aLength:cardinal);
+procedure TKMNetClientLNet.PutInBuffer(aData: Pointer; aLength: Cardinal);
 begin
   SetLength(fBuffer, fBufferLen + aLength);
   Move(aData^, fBuffer[fBufferLen], aLength);
@@ -117,7 +111,8 @@ end;
 
 
 procedure TKMNetClientLNet.AttemptSend;
-var LenSent: Integer;
+var
+  LenSent: Integer;
 begin
   if fBufferLen <= 0 then Exit;
 
@@ -136,7 +131,8 @@ begin
   Result := fBufferLen >= MAX_SEND_BUFFER;
 end;
 
-procedure TKMNetClientLNet.SendData(aData:pointer; aLength:cardinal);
+
+procedure TKMNetClientLNet.SendData(aData: Pointer; aLength: Cardinal);
 begin
   if fSocket.Connected then
   begin
@@ -193,9 +189,9 @@ begin
 end;
 
 
-procedure TKMNetClientLNet.Error(const msg: string; aSocket: TLSocket);
+procedure TKMNetClientLNet.Error(const aMsg: string; aSocket: TLSocket);
 begin
-  fOnError('LNet Client Error: '+msg);
+  fOnError('LNet Client Error: ' + aMsg);
 end;
 
 
