@@ -18,6 +18,9 @@ uses
 {$ENDIF}
 
 
+var
+  FormMain4: TForm4;
+
 begin
   Application.Initialize;
   Application.CreateForm(TForm4, FormMain4);

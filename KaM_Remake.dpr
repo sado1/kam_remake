@@ -289,19 +289,19 @@ uses
   KM_NetClient in 'src\net\KM_NetClient.pas',
   {$IFDEF WDC} KM_NetClientOverbyte in 'src\net\KM_NetClientOverbyte.pas', {$ENDIF}
   {$IFDEF FPC} KM_NetClientLNet in 'src\net\KM_NetClientLNet.pas', {$ENDIF}
+  KM_NetConsts in 'src\net\KM_NetConsts.pas',
   KM_NetFileTransfer in 'src\net\KM_NetFileTransfer.pas',
+  KM_NetGameInfo in 'src\net\KM_NetGameInfo.pas',
   KM_NetRoom in 'src\net\KM_NetRoom.pas',
   KM_NetServer in 'src\net\KM_NetServer.pas',
   {$IFDEF WDC} KM_NetServerOverbyte in 'src\net\KM_NetServerOverbyte.pas', {$ENDIF}
   {$IFDEF FPC} KM_NetServerLNet in 'src\net\KM_NetServerLNet.pas', {$ENDIF}
   KM_NetServerQuery in 'src\net\KM_NetServerQuery.pas',
+  KM_NetTypes in 'src\net\KM_NetTypes.pas',
   KM_NetUDP in 'src\net\KM_NetUDP.pas',
   {$IFDEF WDC} KM_NetUDPOverbyte in 'src\net\KM_NetUDPOverbyte.pas', {$ENDIF}
   {$IFDEF FPC} KM_NetUDPLNet in 'src\net\KM_NetUDPLNet.pas', {$ENDIF}
-  KM_NetworkClasses in 'src\net\KM_NetworkClasses.pas',
-  KM_NetworkConsts in 'src\net\KM_NetworkConsts.pas',
   KM_Networking in 'src\net\KM_Networking.pas',
-  KM_NetworkTypes in 'src\net\KM_NetworkTypes.pas',
   KM_NetworkUtils in 'src\net\KM_NetworkUtils.pas',
 
   KM_HTTPClient in 'src\net\http\KM_HTTPClient.pas',

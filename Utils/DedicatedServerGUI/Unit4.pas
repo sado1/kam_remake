@@ -71,10 +71,10 @@ type
     procedure ServerStatusMessageNoTime(const aData: UnicodeString);
 
     //this proc can change state (enable/disable) of controls that CAN'T be modyfied when server is online
-    procedure ChangeEnableStateOfControls(state: Boolean);
+    procedure ChangeEnableStateOfControls(aEnabled: Boolean);
 
     //whenever there is a change in the settings controls while server is online, we call this proc to enable "ButtonApply" button
-    procedure ChangeEnableStateOfApplyButton(state: Boolean);
+    procedure ChangeEnableStateOfApplyButton(aEnable: Boolean);
     procedure ApplicationIdle(Sender: TObject; var Done: Boolean);
     procedure FillPlayersList;
   private
@@ -82,12 +82,8 @@ type
 //    fSettingsLastModified: Integer;
     fServerStatus: TKMServerStatus;
     fDedicatedServer: TKMDedicatedServer;
-    Players: TList;
+    fPlayers: TList;
   end;
-
-
-var
-  FormMain4: TForm4;
 
 
 implementation
@@ -169,18 +165,18 @@ begin
 
   //turn off server when it was on and vice-versa
   case fServerStatus of
-    ssOffline: FormMain4.ChangeServerStatus(ssOnline);
-    ssOnline:  FormMain4.ChangeServerStatus(ssOffline);
+    ssOffline: ChangeServerStatus(ssOnline);
+    ssOnline:  ChangeServerStatus(ssOffline);
   end;
 end;
 
 
-procedure TForm4.ChangeEnableStateOfControls(state: Boolean);
+procedure TForm4.ChangeEnableStateOfControls(aEnabled: Boolean);
 begin
-  cMaxRooms.Enabled   := state;
-  cServerPort.Enabled := state;
-  cUDPScanPort.Enabled := state;
-  cAnnounceUDP.Enabled := state;
+  cMaxRooms.Enabled   := aEnabled;
+  cServerPort.Enabled := aEnabled;
+  cUDPScanPort.Enabled := aEnabled;
+  cAnnounceUDP.Enabled := aEnabled;
 end;
 
 
@@ -235,9 +231,9 @@ begin
 end;
 
 
-procedure TForm4.ChangeEnableStateOfApplyButton(state: Boolean);
+procedure TForm4.ChangeEnableStateOfApplyButton(aEnable: Boolean);
 begin
-  ButtonApply.Enabled := state;
+  ButtonApply.Enabled := aEnable;
 end;
 
 
@@ -246,20 +242,20 @@ var
   i: Integer;
   RowInfo: String;
 begin
-  Players := TList.Create;
-  fDedicatedServer.GetServerInfo(Players);
+  fPlayers := TList.Create;
+  fDedicatedServer.GetServerInfo(fPlayers);
 
   //first we clear list
   PlayersList.Items.Clear;
 
   //then we read each row and add to list
-  for i := 0 to Players.Count - 1 do
+  for i := 0 to fPlayers.Count - 1 do
   begin
-    RowInfo := TKMPGameInfo(Players[i]).GetFormattedTime;// + IntToStr(TKMGameInfo(Players[i]).PlayerCount);
+    RowInfo := TKMPGameInfo(fPlayers[i]).GetFormattedTime;// + IntToStr(TKMGameInfo(fPlayers[i]).PlayerCount);
     PlayersList.Items.Add(RowInfo);
   end;
 
-  Players.Free;
+  fPlayers.Free;
 end;
 
 procedure TForm4.ApplicationIdle(Sender: TObject; var Done: Boolean);
