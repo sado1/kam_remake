@@ -6,28 +6,25 @@ uses
 
 
 { This unit knows nothing about KaM, it's just a puppet in hands of KM_ServerControl,
-doing all the low level work on TCP. So we can replace this unit with other TCP client
+doing all the low level work on TCP. So we can replace this unit with other TCP Client
 without KaM even noticing. }
-
-//Tagging starts with some number away from -2 -1 0 used as sender/recipient constants
-//and off from usual players indexes 1..8, so we could not confuse them by mistake
-const FIRST_TAG = 15;
 
 type
   THandleEvent = procedure (aHandle: SmallInt) of object;
-  TNotifyDataEvent = procedure(aHandle: SmallInt; aData:pointer; aLength:cardinal)of object;
+  TNotifyDataEvent = procedure(aHandle: SmallInt; aData: Pointer; aLength: Cardinal) of object;
 
   TKMNetServerOverbyte = class
   private
     fSocketServer:TWSocketServer;
     fLastTag: SmallInt;
-    fOnError:TGetStrProc;
-    fOnClientConnect:THandleEvent;
-    fOnClientDisconnect:THandleEvent;
-    fOnDataAvailable:TNotifyDataEvent;
-    procedure ClientConnect(Sender: TObject; Client: TWSocketClient; Error: Word);
-    procedure ClientDisconnect(Sender: TObject; Client: TWSocketClient; Error: Word);
-    procedure DataAvailable(Sender: TObject; Error: Word);
+    fOnError: TGetStrProc;
+    fOnClientConnect: THandleEvent;
+    fOnClientDisconnect: THandleEvent;
+    fOnDataAvailable: TNotifyDataEvent;
+    procedure ClientConnect(Sender: TObject; aClient: TWSocketClient; aError: Word);
+    procedure ClientDisconnect(Sender: TObject; aClient: TWSocketClient; aError: Word);
+    procedure DataAvailable(Sender: TObject; aError: Word);
+    function GetMaxHandle: SmallInt;
   public
     constructor Create;
     destructor Destroy; override;
@@ -36,23 +33,31 @@ type
     procedure SendData(aHandle: SmallInt; aData: Pointer; aLength: Cardinal);
     procedure Kick(aHandle: SmallInt);
     function GetIP(aHandle: SmallInt): string;
-    function GetMaxHandle: SmallInt;
-    property OnError:TGetStrProc write fOnError;
-    property OnClientConnect:THandleEvent write fOnClientConnect;
-    property OnClientDisconnect:THandleEvent write fOnClientDisconnect;
+    function IsValidHandle(aHandle: Integer): Boolean;
+    property OnError: TGetStrProc write fOnError;
+    property OnClientConnect: THandleEvent write fOnClientConnect;
+    property OnClientDisconnect: THandleEvent write fOnClientDisconnect;
     property OnDataAvailable: TNotifyDataEvent write fOnDataAvailable;
   end;
 
 
 implementation
+uses
+  Math;
+
+
+// Tagging starts with some number away from -2 -1 0 used as sender/recipient constants
+// and off from usual players indexes 1..8, so we could not confuse them by mistake
+const
+  FIRST_TAG = 15;
 
 
 constructor TKMNetServerOverbyte.Create;
 var
   wsaData: TWSAData;
 begin
-  Inherited Create;
-  fLastTag := FIRST_TAG-1; //First client will be fLastTag+1
+  inherited;
+  fLastTag := FIRST_TAG-1; //First Client will be fLastTag+1
   if WSAStartup($101, wsaData) <> 0 then
     fOnError('Error in Network');
 end;
@@ -60,8 +65,8 @@ end;
 
 destructor TKMNetServerOverbyte.Destroy;
 begin
-  if fSocketServer<> nil then fSocketServer.Free;
-  Inherited;
+  fSocketServer.Free;
+  inherited;
 end;
 
 
@@ -91,49 +96,49 @@ end;
 
 
 //Someone has connected to us
-procedure TKMNetServerOverbyte.ClientConnect(Sender: TObject; Client: TWSocketClient; Error: Word);
+procedure TKMNetServerOverbyte.ClientConnect(Sender: TObject; aClient: TWSocketClient; aError: Word);
 begin
-  if Error <> 0 then
+  if aError <> 0 then
   begin
-    fOnError('ClientConnect. Error: '+WSocketErrorDesc(Error)+' (#' + IntToStr(Error)+')');
+    fOnError('ClientConnect. Error: '+WSocketErrorDesc(aError)+' (#' + IntToStr(aError)+')');
     exit;
   end;
 
   //Identify index of the Client, so we can address it
   if fLastTag = GetMaxHandle then fLastTag := FIRST_TAG-1; //I'll be surprised if this is ever necessary
   inc(fLastTag);
-  Client.Tag := fLastTag;
+  aClient.Tag := fLastTag;
 
-  Client.OnDataAvailable := DataAvailable;
-  Client.ComponentOptions := [wsoTcpNoDelay]; //Send packets ASAP (disables Nagle's algorithm)
-  Client.SetTcpNoDelayOption;
-  fOnClientConnect(Client.Tag);
+  aClient.OnDataAvailable := DataAvailable;
+  aClient.ComponentOptions := [wsoTcpNoDelay]; //Send packets ASAP (disables Nagle's algorithm)
+  aClient.SetTcpNoDelayOption;
+  fOnClientConnect(aClient.Tag);
 end;
 
 
-procedure TKMNetServerOverbyte.ClientDisconnect(Sender: TObject; Client: TWSocketClient; Error: Word);
+procedure TKMNetServerOverbyte.ClientDisconnect(Sender: TObject; aClient: TWSocketClient; aError: Word);
 begin
-  if Error <> 0 then
+  if aError <> 0 then
   begin
-    fOnError('ClientDisconnect. Error: '+WSocketErrorDesc(Error)+' (#' + IntToStr(Error)+')');
-    //Do not exit because the client has still disconnected
+    fOnError('ClientDisconnect. Error: '+WSocketErrorDesc(aError)+' (#' + IntToStr(aError)+')');
+    //Do not exit because the Client has still disconnected
   end;
 
-  fOnClientDisconnect(Client.Tag);
+  fOnClientDisconnect(aClient.Tag);
 end;
 
 
 //We recieved data from someone
-procedure TKMNetServerOverbyte.DataAvailable(Sender: TObject; Error: Word);
+procedure TKMNetServerOverbyte.DataAvailable(Sender: TObject; aError: Word);
 const
   BUFFER_SIZE = 10240; //10kb
 var
   P: Pointer;
   L: Integer; //L could be -1 when no data is available
 begin
-  if Error <> 0 then
+  if aError <> 0 then
   begin
-    fOnError('DataAvailable. Error: '+WSocketErrorDesc(Error)+' (#' + IntToStr(Error)+')');
+    fOnError('DataAvailable. Error: '+WSocketErrorDesc(aError)+' (#' + IntToStr(aError)+')');
     exit;
   end;
 
@@ -147,7 +152,7 @@ begin
 end;
 
 
-//Make sure we send data to specified client
+//Make sure we send data to specified Client
 procedure TKMNetServerOverbyte.SendData(aHandle: SmallInt; aData: Pointer; aLength: Cardinal);
 var
   I: Integer;
@@ -161,12 +166,22 @@ begin
     end;
 end;
 
+
 function TKMNetServerOverbyte.GetMaxHandle: SmallInt;
 begin
   Result := 32767;
 end;
 
 
+// Take in Integer to check it against actual small range
+function TKMNetServerOverbyte.IsValidHandle(aHandle: Integer): Boolean;
+begin
+  // This is rather poor check that can be refactored to check against real fMaxHandle
+  Result := InRange(aHandle, FIRST_TAG, GetMaxHandle);
+end;
+
+
+// Kick the Client specified by the Handle
 procedure TKMNetServerOverbyte.Kick(aHandle: SmallInt);
 var
   I: Integer;
@@ -176,7 +191,7 @@ begin
     begin
       if fSocketServer.Client[I].State <> wsClosed then //Sometimes this occurs just before ClientDisconnect
         fSocketServer.Client[I].Close;
-      Exit; //Only one client should have this handle
+      Exit; //Only one Client should have this handle
     end;
 end;
 
@@ -191,7 +206,7 @@ begin
     begin
       if fSocketServer.Client[I].State <> wsClosed then //Sometimes this occurs just before ClientDisconnect
         Result := fSocketServer.Client[I].GetPeerAddr;
-      Exit; //Only one client should have this handle
+      Exit; //Only one aClient should have this handle
     end;
 end;
 

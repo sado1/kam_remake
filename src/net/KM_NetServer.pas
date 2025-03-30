@@ -89,8 +89,8 @@ type
 
   TKMNetServer = class
   private
-    {$IFDEF WDC} fServer:TKMNetServerOverbyte; {$ENDIF}
-    {$IFDEF FPC} fServer:TKMNetServerLNet;     {$ENDIF}
+    {$IFDEF WDC} fServer: TKMNetServerOverbyte; {$ENDIF}
+    {$IFDEF FPC} fServer: TKMNetServerLNet;     {$ENDIF}
 
     {$IFDEF WDC}
       {$IFDEF CONSOLE}
@@ -842,6 +842,7 @@ end;
 
 procedure TKMNetServer.HandleMessage(aMessageKind: TKMNetMessageKind; aData: TKMemoryStream; aSenderHandle: TKMNetHandleIndex);
 var
+  // We can not use inline vars here. FPC does not support them
   M2: TKMemoryStream;
   tmpInt: Integer;
   gameRev: TKMGameRevision;
@@ -1107,7 +1108,7 @@ begin
   //Can not use "in [...]" with negative numbers
   Result := (aHandle = NET_ADDRESS_OTHERS) or (aHandle = NET_ADDRESS_ALL)
          or (aHandle = NET_ADDRESS_HOST) or (aHandle = NET_ADDRESS_SERVER)
-         or InRange(aHandle, FIRST_TAG, fServer.GetMaxHandle);
+         or fServer.IsValidHandle(aHandle);
 end;
 
 
@@ -1118,7 +1119,7 @@ begin
 
   Result := True;
   Inc(fRoomCount);
-  SetLength(fRoomInfo,fRoomCount);
+  SetLength(fRoomInfo, fRoomCount);
   fRoomInfo[fRoomCount-1].HostHandle := NET_ADDRESS_EMPTY;
   fRoomInfo[fRoomCount-1].GameRevision := 0;
   fRoomInfo[fRoomCount-1].Password := '';
@@ -1135,7 +1136,8 @@ begin
     if GetRoomClientsCount(I) = 0 then
       Exit(I);
 
-  if AddNewRoom then //Otherwise we must create a room
+  // Otherwise we must create a room
+  if AddNewRoom then
     Result := fRoomCount-1
   else
     Result := -1;
@@ -1167,15 +1169,15 @@ end;
 
 procedure TKMNetServer.SaveHTMLStatus;
 
-  function AddThousandSeparator(const S: string; Chr: Char=','): string;
+  function AddThousandSeparator(const aStr: string; aChr: Char=','): string;
   var
     I: Integer;
   begin
-    Result := S;
-    I := Length(S) - 2;
+    Result := aStr;
+    I := Length(aStr) - 2;
     while I > 1 do
     begin
-      Insert(Chr, Result, I);
+      Insert(aChr, Result, I);
       I := I - 3;
     end;
   end;

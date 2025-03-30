@@ -9,77 +9,77 @@ uses
 doing all the low level work on TCP. So we can replace this unit with other TCP client
 without KaM even noticing. }
 
-//Tagging starts with some number away from -2 -1 0 used as sender/recipient constants
-//and off from usual players indexes 1..8, so we could not confuse them by mistake
 const
-  FIRST_TAG = 15;
   MAX_SEND_BUFFER = 1048576; //1 MB
 
 
 type
-  TClientInfo = class
+  TKMClientInfo = class
+  public
     Tag: Integer;
     Buffer: array of byte;
     BufferLen: Cardinal;
     constructor Create(aTag: Integer);
-    destructor Destroy; override;
     procedure AttemptSend(aSocket: TLSocket);
     procedure PutInBuffer(aData:pointer; aLength:cardinal);
     function BufferFull: Boolean;
   end;
 
-  THandleEvent = procedure (aHandle:SmallInt) of object;
-  TNotifyDataEvent = procedure(aHandle:SmallInt; aData:pointer; aLength:cardinal)of object;
+  THandleEvent = procedure (aHandle: SmallInt) of object;
+  TNotifyDataEvent = procedure(aHandle: SmallInt; aData:pointer; aLength:cardinal)of object;
 
   TKMNetServerLNet = class
   private
-    fSocketServer:TLTCP;
+    fSocketServer: TLTCP;
     fLastTag:integer;
     fListening: Boolean;
-    fOnError:TGetStrProc;
-    fOnClientConnect:THandleEvent;
-    fOnClientDisconnect:THandleEvent;
-    fOnDataAvailable:TNotifyDataEvent;
+    fOnError: TGetStrProc;
+    fOnClientConnect: THandleEvent;
+    fOnClientDisconnect: THandleEvent;
+    fOnDataAvailable: TNotifyDataEvent;
     procedure ClientConnect(aSocket: TLSocket);
     procedure ClientDisconnect(aSocket: TLSocket);
     procedure ReceiveData(aSocket: TLSocket);
     procedure CanSend(aSocket: TLSocket);
-    procedure Error(const msg: string; aSocket: TLSocket);
+    procedure HandleError(const aMsg: string; aSocket: TLSocket);
+    function GetMaxHandle: SmallInt;
   public
     constructor Create;
     destructor Destroy; override;
     procedure StartListening(aPort: Word);
     procedure StopListening;
-    procedure SendData(aHandle:SmallInt; aData:pointer; aLength:cardinal);
-    procedure Kick(aHandle:SmallInt);
+    procedure SendData(aHandle: SmallInt; aData:pointer; aLength:cardinal);
+    procedure Kick(aHandle: SmallInt);
     procedure UpdateStateIdle;
-    function GetMaxHandle:SmallInt;
-    function GetIP(aHandle:integer): string;
-    property OnError:TGetStrProc write fOnError;
-    property OnClientConnect:THandleEvent write fOnClientConnect;
-    property OnClientDisconnect:THandleEvent write fOnClientDisconnect;
-    property OnDataAvailable:TNotifyDataEvent write fOnDataAvailable;
+    function IsValidHandle(aHandle: Integer): Boolean;
+    function GetIP(aHandle: Integer): string;
+    property OnError: TGetStrProc write fOnError;
+    property OnClientConnect: THandleEvent write fOnClientConnect;
+    property OnClientDisconnect: THandleEvent write fOnClientDisconnect;
+    property OnDataAvailable: TNotifyDataEvent write fOnDataAvailable;
   end;
 
 
 implementation
+uses
+  Math;
 
 
-constructor TClientInfo.Create(aTag: Integer);
+//Tagging starts with some number away from -2 -1 0 used as sender/recipient constants
+//and off from usual players indexes 1..8, so we could not confuse them by mistake
+const
+  FIRST_TAG = 15;
+
+
+{ TKMClientInfo }
+constructor TKMClientInfo.Create(aTag: Integer);
 begin
   inherited Create;
-
   Tag := aTag;
 end;
 
 
-destructor TClientInfo.Destroy;
-begin
-  inherited;
-end;
-
-
-procedure TClientInfo.AttemptSend(aSocket: TLSocket);
+procedure TKMClientInfo.AttemptSend(aSocket: TLSocket);
 var
   lenSent: Integer;
 begin
@@ -96,7 +96,7 @@ begin
 end;
 
 
-procedure TClientInfo.PutInBuffer(aData:pointer; aLength:cardinal);
+procedure TKMClientInfo.PutInBuffer(aData:pointer; aLength:cardinal);
 begin
   SetLength(Buffer, BufferLen + aLength);
   Move(aData^, Buffer[BufferLen], aLength);
@@ -104,13 +104,13 @@ begin
 end;
 
 
-function TClientInfo.BufferFull: Boolean;
+function TKMClientInfo.BufferFull: Boolean;
 begin
   Result := BufferLen >= MAX_SEND_BUFFER;
 end;
 
-//Tagging starts with some number away from -2 -1 0 used as sender/recipient constants
-//and off from usual players indexes 1..8, so we could not confuse them by mistake
+
+{ TKMNetServerLNet }
 constructor TKMNetServerLNet.Create;
 begin
   Inherited Create;
@@ -130,7 +130,7 @@ procedure TKMNetServerLNet.StartListening(aPort: Word);
 begin
   FreeAndNil(fSocketServer);
   fSocketServer := TLTCP.Create(nil);
-  fSocketServer.OnError := Error;
+  fSocketServer.OnError := HandleError;
   fSocketServer.OnAccept := ClientConnect;
   fSocketServer.OnDisconnect := ClientDisconnect;
   fSocketServer.OnReceive := ReceiveData;
@@ -155,7 +155,7 @@ begin
     begin
       if fSocketServer.Iterator.UserData <> nil then
       begin
-        TClientInfo(fSocketServer.Iterator.UserData).Free;
+        TKMClientInfo(fSocketServer.Iterator.UserData).Free;
         fSocketServer.Iterator.UserData := nil;
       end;
       fSocketServer.Iterator.Disconnect(True);
@@ -174,7 +174,7 @@ begin
   //Identify index of the Client, so we can address it
   if fLastTag = GetMaxHandle then fLastTag := FIRST_TAG-1; //I'll be surprised if this is ever necessary
   inc(fLastTag);
-  aSocket.UserData := TClientInfo.Create(fLastTag);
+  aSocket.UserData := TKMClientInfo.Create(fLastTag);
   fOnClientConnect(fLastTag);
   aSocket.SetState(ssNoDelay, True); //Send packets ASAP (disables Nagle's algorithm)
 end;
@@ -183,8 +183,8 @@ end;
 procedure TKMNetServerLNet.ClientDisconnect(aSocket: TLSocket);
 begin
   if aSocket.UserData = nil then Exit;
-  fOnClientDisconnect(TClientInfo(aSocket.UserData).Tag);
-  TClientInfo(aSocket.UserData).Free;
+  fOnClientDisconnect(TKMClientInfo(aSocket.UserData).Tag);
+  TKMClientInfo(aSocket.UserData).Free;
   aSocket.UserData := nil;
 end;
 
@@ -208,16 +208,16 @@ begin
   L := aSocket.Get(P^, BUFFER_SIZE);
 
   if L > 0 then //if L=0 then exit;
-    fOnDataAvailable(TClientInfo(aSocket.UserData).Tag, P, L);
+    fOnDataAvailable(TKMClientInfo(aSocket.UserData).Tag, P, L);
 
   FreeMem(P);
 end;
 
 
-procedure TKMNetServerLNet.Error(const msg: string; aSocket: TLSocket);
+procedure TKMNetServerLNet.HandleError(const aMsg: string; aSocket: TLSocket);
 begin
-  fOnError('LNet: '+msg);
-  if (aSocket <> nil) and (not aSocket.Connected) then
+  fOnError('LNet: ' + aMsg);
+  if (aSocket <> nil) and not aSocket.Connected then
     ClientDisconnect(aSocket); //Sometimes this is the only event we get when a client disconnects (LNet bug?)
 end;
 
@@ -225,37 +225,37 @@ end;
 procedure TKMNetServerLNet.CanSend(aSocket: TLSocket);
 begin
   if aSocket.UserData = nil then Exit;
-  TClientInfo(aSocket.UserData).AttemptSend(aSocket);
+  TKMClientInfo(aSocket.UserData).AttemptSend(aSocket);
 end;
 
 
 //Make sure we send data to specified client
-procedure TKMNetServerLNet.SendData(aHandle:SmallInt; aData:pointer; aLength:cardinal);
+procedure TKMNetServerLNet.SendData(aHandle: SmallInt; aData: Pointer; aLength: Cardinal);
 begin
   fSocketServer.IterReset;
   while fSocketServer.IterNext do
     if fSocketServer.Iterator.Connected then //Sometimes this occurs just before ClientDisconnect
-      if (fSocketServer.Iterator.UserData <> nil) and (TClientInfo(fSocketServer.Iterator.UserData).Tag = aHandle) then
+      if (fSocketServer.Iterator.UserData <> nil) and (TKMClientInfo(fSocketServer.Iterator.UserData).Tag = aHandle) then
       begin
-        if TClientInfo(fSocketServer.Iterator.UserData).BufferFull then
+        if TKMClientInfo(fSocketServer.Iterator.UserData).BufferFull then
         begin
-          fOnError('Send buffer full for client '+IntToStr(TClientInfo(fSocketServer.Iterator.UserData).Tag));
+          fOnError('Send buffer full for client '+IntToStr(TKMClientInfo(fSocketServer.Iterator.UserData).Tag));
           Exit;
         end;
-        TClientInfo(fSocketServer.Iterator.UserData).PutInBuffer(aData, aLength);
-        TClientInfo(fSocketServer.Iterator.UserData).AttemptSend(fSocketServer.Iterator);
+        TKMClientInfo(fSocketServer.Iterator.UserData).PutInBuffer(aData, aLength);
+        TKMClientInfo(fSocketServer.Iterator.UserData).AttemptSend(fSocketServer.Iterator);
         Exit;
       end;
 end;
 
 
-procedure TKMNetServerLNet.Kick(aHandle:SmallInt);
+procedure TKMNetServerLNet.Kick(aHandle: SmallInt);
 var
   iter: TLSocket;
 begin
   fSocketServer.IterReset;
   while fSocketServer.IterNext do
-    if (fSocketServer.Iterator.UserData <> nil) and (TClientInfo(fSocketServer.Iterator.UserData).Tag = aHandle) then
+    if (fSocketServer.Iterator.UserData <> nil) and (TKMClientInfo(fSocketServer.Iterator.UserData).Tag = aHandle) then
     begin
       //Found the client that must be kicked
       iter := fSocketServer.Iterator; //Calling ClientDisconnect can reset Iterator due to sending a message, so we must remember it (don't use it after this line)
@@ -275,9 +275,17 @@ begin
 end;
 
 
-function TKMNetServerLNet.GetMaxHandle:SmallInt;
+function TKMNetServerLNet.GetMaxHandle: SmallInt;
 begin
   Result := 32767;
+end;
+
+
+// Take in Integer to check it against actual small range
+function TKMNetServerLNet.IsValidHandle(aHandle: Integer): Boolean;
+begin
+  // This is rather poor check that can be refactored to check against real fMaxHandle
+  Result := InRange(aHandle, FIRST_TAG, GetMaxHandle);
 end;
 
 
@@ -291,16 +299,13 @@ begin
 end;
 
 
-function TKMNetServerLNet.GetIP(aHandle:integer): string;
+function TKMNetServerLNet.GetIP(aHandle: Integer): string;
 begin
   Result := '';
   fSocketServer.IterReset;
   while fSocketServer.IterNext do
-    if (fSocketServer.Iterator.UserData <> nil) and (TClientInfo(fSocketServer.Iterator.UserData).Tag = aHandle) then
-    begin
-      Result := fSocketServer.Iterator.PeerAddress;
-      Exit; //Only one client should have this handle
-    end;
+    if (fSocketServer.Iterator.UserData <> nil) and (TKMClientInfo(fSocketServer.Iterator.UserData).Tag = aHandle) then
+      Exit(fSocketServer.Iterator.PeerAddress); // Only one client should have this handle
 end;
 
 
