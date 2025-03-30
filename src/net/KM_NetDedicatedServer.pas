@@ -17,8 +17,8 @@ type
     fPublishServer: Boolean;
     fAnnounceInterval: Word;
     fPingInterval: Word;
-    fPort: Word;
     fServerName: AnsiString;
+    fPort: Word;
     fAnnounceUDP: Boolean;
     procedure StatusMessage(const aData: string);
     procedure MasterServerError(const aData: string);
