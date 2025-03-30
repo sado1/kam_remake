@@ -564,30 +564,31 @@ var
   const
     STATE_SORT_ORDER: array[TMPGameState] of Byte = (4,1,2,3);
   var
-    aServerInfo, bServerInfo: TKMServerInfo;
+    serverA, serverB: TKMServerInfo;
   begin
     Result := False; //By default everything remains in place
-    aServerInfo := Servers[A.ServerIndex];
-    bServerInfo := Servers[B.ServerIndex];
+    serverA := Servers[A.ServerIndex];
+    serverB := Servers[B.ServerIndex];
     case fSortMethod of
       ssmByPasswordAsc: Result := A.GameInfo.PasswordLocked and not B.GameInfo.PasswordLocked;
       ssmByPasswordDesc:Result := not A.GameInfo.PasswordLocked and B.GameInfo.PasswordLocked;
-      ssmByTypeAsc:     Result := aServerInfo.ServerType > bServerInfo.ServerType;
-      ssmByTypeDesc:    Result := aServerInfo.ServerType < bServerInfo.ServerType;
-      ssmByNameAsc:     Result := CompareText(aServerInfo.Name, bServerInfo.Name) > 0;
-      ssmByNameDesc:    Result := CompareText(aServerInfo.Name, bServerInfo.Name) < 0;
-      ssmByPingAsc:     Result := aServerInfo.Ping > bServerInfo.Ping;
-      ssmByPingDesc:    Result := aServerInfo.Ping < bServerInfo.Ping;
+      ssmByTypeAsc:     Result := serverA.ServerType > serverB.ServerType;
+      ssmByTypeDesc:    Result := serverA.ServerType < serverB.ServerType;
+      ssmByNameAsc:     Result := CompareText(serverA.Name, serverB.Name) > 0;
+      ssmByNameDesc:    Result := CompareText(serverA.Name, serverB.Name) < 0;
+      ssmByPingAsc:     Result := serverA.Ping > serverB.Ping;
+      ssmByPingDesc:    Result := serverA.Ping < serverB.Ping;
       ssmByStateAsc:    Result := STATE_SORT_ORDER[A.GameInfo.GameState] > STATE_SORT_ORDER[B.GameInfo.GameState];
       ssmByStateDesc:   Result := STATE_SORT_ORDER[A.GameInfo.GameState] < STATE_SORT_ORDER[B.GameInfo.GameState];
       ssmByPlayersAsc:  Result := A.GameInfo.ConnectedPlayerCount > B.GameInfo.ConnectedPlayerCount;
       ssmByPlayersDesc: Result := A.GameInfo.ConnectedPlayerCount < B.GameInfo.ConnectedPlayerCount;
     end;
+
     //Always put local servers at the top
-    if (aServerInfo.ServerType = mstLocal) and (bServerInfo.ServerType <> mstLocal) then
+    if (serverA.ServerType = mstLocal) and (serverB.ServerType <> mstLocal) then
       Result := False
     else
-      if (aServerInfo.ServerType <> mstLocal) and (bServerInfo.ServerType = mstLocal) then
+      if (serverA.ServerType <> mstLocal) and (serverB.ServerType = mstLocal) then
         Result := True;
   end;
 
