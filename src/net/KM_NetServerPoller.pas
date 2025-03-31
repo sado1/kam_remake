@@ -29,9 +29,9 @@ type
     GameInfo: TKMNetGameInfo;
   end;
 
-  TServerDataEvent = procedure(aServerID: Integer; aStream: TKMemoryStream; aPingStarted: Cardinal) of object;
+  TKMServerDataEvent = procedure(aServerID: Integer; aStream: TKMemoryStream; aPingStarted: Cardinal) of object;
 
-  TServerSortMethod = (
+  TKMServerSortMethod = (
     ssmByTypeAsc, ssmByTypeDesc, //Client or dedicated
     ssmByPasswordAsc, ssmByPasswordDesc, //Passworded or not
     ssmByNameAsc, ssmByNameDesc, //Server names
@@ -48,7 +48,7 @@ type
     fQueryStarted: Cardinal;
     fIndexOnServer: Integer;
     fServerID: Integer;
-    fOnServerData: TServerDataEvent;
+    fOnServerData: TKMServerDataEvent;
     fOnQueryDone: TNotifyEvent;
     procedure NetClientReceive(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
     procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMNetMessageKind); overload;
@@ -58,7 +58,7 @@ type
     destructor Destroy; override;
     procedure PerformQuery(const aAddress: string; aPort: Word; aServerID: Integer);
     procedure Disconnect;
-    property OnServerData: TServerDataEvent read fOnServerData write fOnServerData;
+    property OnServerData: TKMServerDataEvent read fOnServerData write fOnServerData;
     property OnQueryDone: TNotifyEvent read fOnQueryDone write fOnQueryDone;
     procedure UpdateStateIdle;
   end;
@@ -102,7 +102,7 @@ type
     fServerList: TKMServerList; //List of servers fetch from master
     fRoomList: TKMRoomList; //Info about each room populated after query completed
     fQuery: array[0..MAX_QUERIES-1] of TKMQuery;
-    fSortMethod: TServerSortMethod;
+    fSortMethod: TKMServerSortMethod;
     fRefreshStartedTime: Cardinal;
     fReceivedMasterServerList: Boolean;
 
@@ -119,7 +119,7 @@ type
     procedure QueryDone(Sender: TObject);
 
     procedure Sort;
-    procedure SetSortMethod(aMethod: TServerSortMethod);
+    procedure SetSortMethod(aMethod: TKMServerSortMethod);
 
     function ActiveQueryCount: Integer;
   public
@@ -131,7 +131,7 @@ type
     property Servers: TKMServerList read fServerList;
     property Rooms: TKMRoomList read fRoomList;
 
-    property SortMethod: TServerSortMethod read fSortMethod write SetSortMethod;
+    property SortMethod: TKMServerSortMethod read fSortMethod write SetSortMethod;
 
     procedure FetchServerList;
     procedure FetchAnnouncements(const aLocale: AnsiString);
@@ -629,7 +629,7 @@ begin
 end;
 
 
-procedure TKMNetServerPoller.SetSortMethod(aMethod: TServerSortMethod);
+procedure TKMNetServerPoller.SetSortMethod(aMethod: TKMServerSortMethod);
 begin
   fSortMethod := aMethod;
   Sort; //New sorting method has been set, we need to apply it
