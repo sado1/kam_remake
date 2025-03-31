@@ -3,7 +3,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, StrUtils, Math,
   Controls, Forms, Dialogs, Grids, StdCtrls, ExtCtrls,
-  KM_Defaults, KM_ServerSettings, KM_NetServerQuery, KM_CommonUtils;
+  KM_Defaults, KM_ServerSettings, KM_NetServerPoller, KM_CommonUtils;
 
 type
   TForm1 = class(TForm)
@@ -19,7 +19,7 @@ type
     procedure CheckBox1Click(Sender: TObject);
   private
     fServerSettings: TKMServerSettings;
-    fServerQuery: TKMServerQuery;
+    fServerPoller: TKMServerPoller;
     fBaseTime: TDateTime;
     fBase: array [0..63] of record
       Room: string;
@@ -53,10 +53,10 @@ begin
 
   Label1.Caption := 'Master-server: ' + fServerSettings.MasterServerAddress;
 
-  fServerQuery := TKMServerQuery.Create(fServerSettings.MasterServerAddress, fServerSettings.ServerUDPScanPort);
+  fServerPoller := TKMServerPoller.Create(fServerSettings.MasterServerAddress, fServerSettings.ServerUDPScanPort);
 
-  fServerQuery.OnAnnouncements := AnnouncementsUpdate;
-  fServerQuery.FetchAnnouncements(AnsiString('eng'));
+  fServerPoller.OnAnnouncements := AnnouncementsUpdate;
+  fServerPoller.FetchAnnouncements(AnsiString('eng'));
 
   StringGrid1.ColCount := 5;
   StringGrid1.ColWidths[0] := 250;
@@ -75,8 +75,8 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-  fServerQuery.OnListUpdated := UpdateList;
-  fServerQuery.RefreshList;
+  fServerPoller.OnListUpdated := UpdateList;
+  fServerPoller.RefreshList;
 end;
 
 procedure TForm1.AnnouncementsUpdate(const S: UnicodeString);
@@ -98,10 +98,10 @@ begin
   begin
     fBaseTime := Now;
     K := 0;
-    for I := 0 to fServerQuery.Rooms.Count - 1 do
+    for I := 0 to fServerPoller.Rooms.Count - 1 do
     begin
-      R := fServerQuery.Rooms[I];
-      S := fServerQuery.Servers[R.ServerIndex];
+      R := fServerPoller.Rooms[I];
+      S := fServerPoller.Servers[R.ServerIndex];
       DisplayName := IfThen(R.OnlyRoom, S.Name, S.Name + ' #' + IntToStr(R.RoomID + 1));
 
       if R.GameInfo.GameTime <> -1 then
@@ -114,10 +114,10 @@ begin
   end;
 
   K := 0;
-  for I := 0 to fServerQuery.Rooms.Count - 1 do
+  for I := 0 to fServerPoller.Rooms.Count - 1 do
   begin
-    R := fServerQuery.Rooms[I];
-    S := fServerQuery.Servers[R.ServerIndex];
+    R := fServerPoller.Rooms[I];
+    S := fServerPoller.Servers[R.ServerIndex];
     DisplayName := IfThen(R.OnlyRoom, S.Name, S.Name + ' #' + IntToStr(R.RoomID + 1));
 
     if R.GameInfo.GameTime <> -1 then
@@ -167,12 +167,12 @@ var
   S: TKMServerInfo;
   DisplayName, ShortName: string;
 begin
-  StringGrid1.RowCount := fServerQuery.Rooms.Count + 2;
+  StringGrid1.RowCount := fServerPoller.Rooms.Count + 2;
 
-  for I := 0 to fServerQuery.Rooms.Count - 1 do
+  for I := 0 to fServerPoller.Rooms.Count - 1 do
   begin
-    R := fServerQuery.Rooms[I];
-    S := fServerQuery.Servers[R.ServerIndex];
+    R := fServerPoller.Rooms[I];
+    S := fServerPoller.Servers[R.ServerIndex];
     DisplayName := IfThen(R.OnlyRoom, S.Name, S.Name + ' #' + IntToStr(R.RoomID + 1));
 
     ShortName := StripColor(DisplayName);
@@ -188,8 +188,8 @@ end;
 
 procedure TForm1.DoIdle(Sender: TObject; var Done: Boolean);
 begin
-  if fServerQuery <> nil then
-    fServerQuery.UpdateStateIdle;
+  if fServerPoller <> nil then
+    fServerPoller.UpdateStateIdle;
 
   Done := False; //Repeats OnIdle asap without performing Form-specific idle code
 end;

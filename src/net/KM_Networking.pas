@@ -8,7 +8,7 @@ uses
   KM_Console,
   KM_CommonClasses, KM_CommonTypes, KM_NetGameInfo, KM_NetTypes, KM_Defaults, KM_Points,
   KM_Saves, KM_GameOptions, KM_ResLocales, KM_NetFileTransfer, KM_Maps, KM_MapTypes, KM_NetRoom,
-  KM_NetDedicatedServer, KM_NetClient, KM_NetServerQuery,
+  KM_NetDedicatedServer, KM_NetClient, KM_NetServerPoller,
   {$IFDEF USESECUREAUTH}
     // If you don't have this file - disable USESECUREAUTH in KaM_Remake.inc
     KM_NetAuthSecure
@@ -30,7 +30,7 @@ type
 
     fNetServer: TKMNetDedicatedServer;
     fNetClient: TKMNetClient;
-    fNetServerQuery: TKMNetServerQuery;
+    fNetServerPoller: TKMNetServerPoller;
     fNetPlayerKind: TKMNetPlayerKind; // Our role (Host or Joiner)
     fNetGameState: TKMNetGameState;
     fServerAddress: string; // Used for reconnecting
@@ -166,7 +166,7 @@ type
     function IsMap: Boolean;
 
     //Lobby
-    property ServerQuery: TKMNetServerQuery read fNetServerQuery;
+    property ServerPoller: TKMNetServerPoller read fNetServerPoller;
     procedure Host(const aServerName: AnsiString; aPort: Word; const aNickname: AnsiString; aAnnounceServer, aAnnounceUDP: Boolean);
     procedure Join(const aServerAddress: string; aPort: Word; const aNickname: AnsiString; aRoom: Integer; aIsReconnection: Boolean = False);
     procedure AnnounceDisconnect(aLastSentCmdsTick: Cardinal = LAST_SENT_COMMANDS_TICK_NONE);
@@ -270,7 +270,7 @@ begin
   // Handle all 'background (unhandled)' exceptions, so we will be able to intercept them with madExcept
   fNetClient.SetHandleBackgrounException;
   fNetRoom := TKMNetRoom.Create;
-  fNetServerQuery := TKMNetServerQuery.Create(aMasterServerAddress, aServerUDPScanPort);
+  fNetServerPoller := TKMNetServerPoller.Create(aMasterServerAddress, aServerUDPScanPort);
   fNetGameOptions := TKMGameOptions.Create;
   fFileSenderManager := TKMFileSenderManager.Create;
   fMutedPlayersList := TList<TKMNetHandleIndex>.Create;
@@ -289,7 +289,7 @@ begin
   fNetRoom.Free;
   fNetServer.Free;
   fNetClient.Free;
-  fNetServerQuery.Free;
+  fNetServerPoller.Free;
   fFileSenderManager.Free;
   fMutedPlayersList.Free;
   FreeAndNil(fMapInfo);
@@ -2663,7 +2663,7 @@ begin
   fNetServer.UpdateState; //Server measures pings etc.
   //LNet requires network update calls unless it is being used as visual components
   fNetClient.UpdateStateIdle;
-  fNetServerQuery.UpdateStateIdle;
+  fNetServerPoller.UpdateStateIdle;
   fFileSenderManager.UpdateStateIdle(fNetClient.SendBufferEmpty);
 end;
 

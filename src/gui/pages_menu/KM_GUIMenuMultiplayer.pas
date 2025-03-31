@@ -8,7 +8,7 @@ uses
   KromOGLUtils,
   KM_Controls, KM_ControlsBase, KM_ControlsEdit, KM_ControlsList, KM_ControlsMemo, KM_ControlsScroll,
   KM_Defaults, KM_CommonTypes, KM_Pics,
-  KM_InterfaceDefaults, KM_InterfaceTypes, KM_NetServerQuery;
+  KM_InterfaceDefaults, KM_InterfaceTypes, KM_NetServerPoller;
 
 
 type
@@ -373,8 +373,8 @@ begin
   Button_MP_Join.Disable;
 
   // Fetch the announcements display
-  gNetworking.ServerQuery.OnAnnouncements := MP_ReceiveAnnouncements;
-  gNetworking.ServerQuery.FetchAnnouncements(gResLocales.UserLocale);
+  gNetworking.ServerPoller.OnAnnouncements := MP_ReceiveAnnouncements;
+  gNetworking.ServerPoller.FetchAnnouncements(gResLocales.UserLocale);
   Memo_MP_Announcement.Clear;
   Memo_MP_Announcement.Add(gResTexts[TX_MP_MENU_LOADING_ANNOUNCEMENTS]);
 end;
@@ -505,8 +505,8 @@ end;
 
 procedure TKMMenuMultiplayer.MP_ServersRefresh(Sender: TObject);
 begin
-  gNetworking.ServerQuery.OnListUpdated := MP_ReceiveServerList;
-  gNetworking.ServerQuery.FetchServerList;
+  gNetworking.ServerPoller.OnListUpdated := MP_ReceiveServerList;
+  gNetworking.ServerPoller.FetchServerList;
   ColumnBox_Servers.Clear;
   MP_ClearServerDetailsPanel;
 
@@ -531,7 +531,7 @@ begin
   prevTop := ColumnBox_Servers.TopIndex;
   ColumnBox_Servers.Clear;
 
-  if gNetworking.ServerQuery.Rooms.Count = 0 then
+  if gNetworking.ServerPoller.Rooms.Count = 0 then
   begin
     //Do not use 'Show' here as it will also make the parent panel visible
     //which could be already hidden if player switched pages
@@ -541,16 +541,16 @@ begin
   else
   begin
     Label_Servers_Status.Hide;
-    for I := 0 to gNetworking.ServerQuery.Rooms.Count - 1 do
+    for I := 0 to gNetworking.ServerPoller.Rooms.Count - 1 do
     begin
-      R := gNetworking.ServerQuery.Rooms[I];
+      R := gNetworking.ServerPoller.Rooms[I];
 
       //Check room game revision
       if (R.GameRevision <> EMPTY_ROOM_DEFAULT_GAME_REVISION)
         and (R.GameRevision <> GAME_REVISION_NUM) then //Room game revision differs from ours, skip it
         Continue;
 
-      S := gNetworking.ServerQuery.Servers[R.ServerIndex];
+      S := gNetworking.ServerPoller.Servers[R.ServerIndex];
 
       //Only show # if Server has more than 1 Room
       displayName := IfThen(R.OnlyRoom, S.Name, S.Name + ' #' + IntToStr(R.RoomID + 1));
@@ -597,37 +597,37 @@ procedure TKMMenuMultiplayer.MP_ServersSort(Sender: TObject; const aColumn: Inte
 begin
   case ColumnBox_Servers.SortIndex of
     0:  if ColumnBox_Servers.SortDirection = sdDown then
-          gNetworking.ServerQuery.SortMethod := ssmByTypeAsc
+          gNetworking.ServerPoller.SortMethod := ssmByTypeAsc
         else
-          gNetworking.ServerQuery.SortMethod := ssmByTypeDesc;
+          gNetworking.ServerPoller.SortMethod := ssmByTypeDesc;
     1:  if ColumnBox_Servers.SortDirection = sdDown then
-          gNetworking.ServerQuery.SortMethod := ssmByPasswordAsc
+          gNetworking.ServerPoller.SortMethod := ssmByPasswordAsc
         else
-          gNetworking.ServerQuery.SortMethod := ssmByPasswordDesc;
+          gNetworking.ServerPoller.SortMethod := ssmByPasswordDesc;
     //Sorting by name goes A..Z by default
     2:  if ColumnBox_Servers.SortDirection = sdDown then
-          gNetworking.ServerQuery.SortMethod := ssmByNameAsc
+          gNetworking.ServerPoller.SortMethod := ssmByNameAsc
         else
-          gNetworking.ServerQuery.SortMethod := ssmByNameDesc;
+          gNetworking.ServerPoller.SortMethod := ssmByNameDesc;
     //Sorting by state goes Lobby,Loading,Game,None by default
     3:  if ColumnBox_Servers.SortDirection = sdDown then
-          gNetworking.ServerQuery.SortMethod := ssmByStateAsc
+          gNetworking.ServerPoller.SortMethod := ssmByStateAsc
         else
-          gNetworking.ServerQuery.SortMethod := ssmByStateDesc;
+          gNetworking.ServerPoller.SortMethod := ssmByStateDesc;
     //Sorting by player count goes 8..0 by default
     4:  if ColumnBox_Servers.SortDirection = sdDown then
-          gNetworking.ServerQuery.SortMethod := ssmByPlayersDesc
+          gNetworking.ServerPoller.SortMethod := ssmByPlayersDesc
         else
-          gNetworking.ServerQuery.SortMethod := ssmByPlayersAsc;
+          gNetworking.ServerPoller.SortMethod := ssmByPlayersAsc;
     //Sorting by ping goes 0 ... 1000 by default
     5:  if ColumnBox_Servers.SortDirection = sdDown then
-          gNetworking.ServerQuery.SortMethod := ssmByPingAsc
+          gNetworking.ServerPoller.SortMethod := ssmByPingAsc
         else
-          gNetworking.ServerQuery.SortMethod := ssmByPingDesc;
+          gNetworking.ServerPoller.SortMethod := ssmByPingDesc;
   end;
 
   //Refresh the display only if there are rooms to be sorted (otherwise it shows "no servers found" immediately)
-  if gNetworking.ServerQuery.Rooms.Count > 0 then
+  if gNetworking.ServerPoller.Rooms.Count > 0 then
     MP_ReceiveServerList(nil);
 end;
 
@@ -688,8 +688,8 @@ begin
   fServerSelected := True;
   Button_MP_Join.Enabled := MP_JoinEnabled;
 
-  fSelectedRoomInfo := gNetworking.ServerQuery.Rooms[ColumnBox_Servers.Rows[ID].Tag];
-  fSelectedServerInfo := gNetworking.ServerQuery.Servers[fSelectedRoomInfo.ServerIndex];
+  fSelectedRoomInfo := gNetworking.ServerPoller.Rooms[ColumnBox_Servers.Rows[ID].Tag];
+  fSelectedServerInfo := gNetworking.ServerPoller.Servers[fSelectedRoomInfo.ServerIndex];
 
   if fSelectedRoomInfo.GameInfo.PlayerCount = 0 then
   begin
@@ -798,7 +798,7 @@ procedure TKMMenuMultiplayer.MP_ServersDoubleClick(Sender: TObject);
 begin
   //MP_SelectServer gets called by first Click
   if Button_MP_Join.Enabled and (ColumnBox_Servers.ItemIndex <> -1)
-  and InRange(ColumnBox_Servers.Rows[ColumnBox_Servers.ItemIndex].Tag, 0, gNetworking.ServerQuery.Rooms.Count-1) then
+  and InRange(ColumnBox_Servers.Rows[ColumnBox_Servers.ItemIndex].Tag, 0, gNetworking.ServerPoller.Rooms.Count-1) then
     MP_JoinClick(Sender);
 end;
 

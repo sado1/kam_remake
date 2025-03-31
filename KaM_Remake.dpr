@@ -298,7 +298,7 @@ uses
   KM_NetServer in 'src\net\KM_NetServer.pas',
   {$IFDEF WDC} KM_NetServerOverbyte in 'src\net\KM_NetServerOverbyte.pas', {$ENDIF}
   {$IFDEF FPC} KM_NetServerLNet in 'src\net\KM_NetServerLNet.pas', {$ENDIF}
-  KM_NetServerQuery in 'src\net\KM_NetServerQuery.pas',
+  KM_NetServerPoller in 'src\net\KM_NetServerPoller.pas',
   KM_NetTypes in 'src\net\KM_NetTypes.pas',
   KM_NetUDP in 'src\net\KM_NetUDP.pas',
   {$IFDEF WDC} KM_NetUDPOverbyte in 'src\net\KM_NetUDPOverbyte.pas', {$ENDIF}

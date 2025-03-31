@@ -3120,7 +3120,7 @@ begin
       if fParams.IsMultiPlayerOrSpec and gNetworking.IsHost
         and ((fParams.IsNormalMission and (fParams.Tick = ANNOUNCE_BUILD_MAP))
         or (fParams.IsTactic and (fParams.Tick = ANNOUNCE_BATTLE_MAP))) then
-      gNetworking.ServerQuery.AnnounceGame(fParams.Name, fParams.MapFullCRC, gNetworking.Room.GetConnectedCount);
+      gNetworking.ServerPoller.AnnounceGame(fParams.Name, fParams.MapFullCRC, gNetworking.Room.GetConnectedCount);
 
       fScripting.UpdateState;
       gTerrain.UpdateState;
