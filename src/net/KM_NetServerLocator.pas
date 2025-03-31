@@ -9,7 +9,11 @@ uses
 type
   // Class responsible for interaction with MasterServer:
   // - getting Master Server Announcement
-  // - getting list of public servers
+  // - getting list of public servers from Master Server
+  // - notify Master Server about this server
+  // - notify Master Server about current game
+
+  // Basically this a client to Master Server,
   TKMNetServerLocator = class
   private
     fMasterServerAddress: string;
