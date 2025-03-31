@@ -54,7 +54,7 @@ const
   MINIMUM_ANNOUNCE_INTERVAL = 180;
 
 
-//Announce interval of -1 means the server will not be published (LAN)
+{ TKMDedicatedServer }
 constructor TKMNetDedicatedServer.Create(aMaxRooms, aKickTimeout, aPingInterval, aAnnounceInterval, aServerUDPScanPort: Word;
                                       const aMasterServerAddress: String; const aHTMLStatusFile: String;
                                       const aWelcomeMessage: UnicodeString; const aPacketsAccDelay: Integer; aDedicated: Boolean);
