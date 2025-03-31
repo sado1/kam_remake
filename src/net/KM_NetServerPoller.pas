@@ -32,12 +32,13 @@ type
   TKMServerDataEvent = procedure(aServerID: Integer; aStream: TKMemoryStream; aPingStarted: Cardinal) of object;
 
   TKMServerSortMethod = (
-    ssmByTypeAsc, ssmByTypeDesc, //Client or dedicated
-    ssmByPasswordAsc, ssmByPasswordDesc, //Passworded or not
-    ssmByNameAsc, ssmByNameDesc, //Server names
-    ssmByPingAsc, ssmByPingDesc, //Server pings
-    ssmByStateAsc, ssmByStateDesc, //Room state
-    ssmByPlayersAsc, ssmByPlayersDesc); //Player count in room
+    ssmByTypeAsc, ssmByTypeDesc,          // Client or Dedicated
+    ssmByPasswordAsc, ssmByPasswordDesc,  // Passworded or not
+    ssmByNameAsc, ssmByNameDesc,          // Server names
+    ssmByPingAsc, ssmByPingDesc,          // Server pings
+    ssmByStateAsc, ssmByStateDesc,        // Room state
+    ssmByPlayersAsc, ssmByPlayersDesc     // Player count in room
+  );
 
   TKMQuery = class
   private
