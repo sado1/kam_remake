@@ -2557,12 +2557,12 @@ procedure TKMNetworking.AnnounceGameInfo(aGameTime: TDateTime; aMap: UnicodeStri
 var
   I: Integer;
   M: TKMemoryStream;
-  netGameInfo: TKNetGameInfo;
+  netGameInfo: TKMNetGameInfo;
 begin
   //Only one player per game should send the info - Host
   if not IsHost then Exit;
 
-  netGameInfo := TKNetGameInfo.Create;
+  netGameInfo := TKMNetGameInfo.Create;
   try
     if (fNetGameState in [lgsLobby, lgsLoading]) then
     begin

@@ -26,7 +26,7 @@ type
     GameRevision: TKMGameRevision;
     RoomID: Integer;
     OnlyRoom: Boolean; //Is this the only room in the server?
-    GameInfo: TKNetGameInfo;
+    GameInfo: TKMNetGameInfo;
   end;
 
   TServerDataEvent = procedure(aServerID: Integer; aStream: TKMemoryStream; aPingStarted: Cardinal) of object;
@@ -162,7 +162,7 @@ begin
   fRooms[fCount].GameRevision := aGameRev;
   fRooms[fCount].RoomID := aRoomID;
   fRooms[fCount].OnlyRoom := aOnlyRoom;
-  fRooms[fCount].GameInfo := TKNetGameInfo.Create;
+  fRooms[fCount].GameInfo := TKMNetGameInfo.Create;
   fRooms[fCount].GameInfo.LoadFromStream(aGameInfoStream);
   Inc(fCount);
 end;

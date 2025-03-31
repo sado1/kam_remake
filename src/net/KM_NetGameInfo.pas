@@ -8,7 +8,7 @@ type
   TKMPlayerGameResult = (pgrNone, pgrWin, pgrDefeat);
 
   //Stores information about a multiplayer game to be sent: Host -> Server -> Queriers
-  TKNetGameInfo = class
+  TKMNetGameInfo = class
   public
     GameState: TMPGameState;
     PasswordLocked: Boolean;
@@ -43,22 +43,22 @@ uses
   VerySimpleXML, KM_CommonUtils;
 
 
-{ TKNetGameInfo }
-constructor TKNetGameInfo.Create;
+{ TKMNetGameInfo }
+constructor TKMNetGameInfo.Create;
 begin
   inherited;
   GameOptions := TKMGameOptions.Create;
 end;
 
 
-destructor TKNetGameInfo.Destroy;
+destructor TKMNetGameInfo.Destroy;
 begin
   FreeAndNil(GameOptions);
   inherited;
 end;
 
 
-procedure TKNetGameInfo.LoadFromStream(aStream: TKMemoryStream);
+procedure TKMNetGameInfo.LoadFromStream(aStream: TKMemoryStream);
 var
   I: Integer;
 begin
@@ -86,7 +86,7 @@ begin
 end;
 
 
-function TKNetGameInfo.GetFormattedTime: UnicodeString;
+function TKMNetGameInfo.GetFormattedTime: UnicodeString;
 begin
   if GameTime >= 0 then
     Result := TimeToString(GameTime)
@@ -95,7 +95,7 @@ begin
 end;
 
 
-procedure TKNetGameInfo.SaveToStream(aStream: TKMemoryStream);
+procedure TKMNetGameInfo.SaveToStream(aStream: TKMemoryStream);
 var
   I: Integer;
 begin
@@ -122,7 +122,7 @@ end;
 
 
 //todo -cPractical: This function should do its own XML escaping
-function TKNetGameInfo.HTMLPlayersList: string;
+function TKMNetGameInfo.HTMLPlayersList: string;
 var
   I: Integer;
 begin
@@ -138,7 +138,7 @@ begin
 end;
 
 
-function TKNetGameInfo.ConnectedPlayerCount: Byte;
+function TKMNetGameInfo.ConnectedPlayerCount: Byte;
 var
   I: Integer;
 begin
