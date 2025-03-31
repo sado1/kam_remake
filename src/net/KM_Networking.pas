@@ -207,7 +207,7 @@ type
                           aRecipient: TKMNetHandleIndex = NET_ADDRESS_ALL; aArgumentInt: Integer = -1);
     procedure PostChat(const aText: UnicodeString; aMode: TKMChatMode; aRecipientServerIndex: TKMNetHandleIndex = NET_ADDRESS_OTHERS); overload;
     procedure PostLocalMessage(const aText: UnicodeString; aSound: TKMChatSound = csNone);
-    procedure AnnounceGameInfo(aGameTime: TDateTime; aMap: UnicodeString);
+    procedure AnnounceGameInfo(aGameTime: TDateTime; const aMap: UnicodeString);
 
     //Gameplay
     property MapInfo: TKMMapInfo read GetMapInfo;
@@ -2553,29 +2553,35 @@ end;
 
 
 //Tell the server what we know about the game
-procedure TKMNetworking.AnnounceGameInfo(aGameTime: TDateTime; aMap: UnicodeString);
+procedure TKMNetworking.AnnounceGameInfo(aGameTime: TDateTime; const aMap: UnicodeString);
 var
   I: Integer;
   M: TKMemoryStream;
   netGameInfo: TKMNetGameInfo;
+  reportGameTime: TDateTime;
+  reportMap: UnicodeString;
 begin
   //Only one player per game should send the info - Host
   if not IsHost then Exit;
 
   netGameInfo := TKMNetGameInfo.Create;
   try
+    reportGameTime := aGameTime;
+    reportMap := aMap;
     if (fNetGameState in [lgsLobby, lgsLoading]) then
     begin
       case fSelectGameKind of
-        ngkSave: aMap := fSaveInfo.GameInfo.Title;
-        ngkMap:  aMap := fMapInfo.Name;
-        else     aMap := '';
+        ngkSave: reportMap := fSaveInfo.GameInfo.Title;
+        ngkMap:  reportMap := fMapInfo.Name;
+      else
+        reportMap := '';
       end;
-      aGameTime := -1;
+      reportGameTime := -1;
     end;
+
     netGameInfo.Description := fDescription;
-    netGameInfo.Map := aMap;
-    netGameInfo.GameTime := aGameTime;
+    netGameInfo.Map := reportMap;
+    netGameInfo.GameTime := reportGameTime;
     netGameInfo.GameState := NET_MP_GAME_STATE[fNetGameState];
     netGameInfo.PasswordLocked := (fPassword <> '');
     netGameInfo.PlayerCount := fNetRoom.Count;
