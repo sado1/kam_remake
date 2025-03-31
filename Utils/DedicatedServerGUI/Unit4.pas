@@ -251,7 +251,7 @@ begin
   //then we read each row and add to list
   for i := 0 to roomList.Count - 1 do
   begin
-    RowInfo := TKNetGameInfo(roomList[i]).GetFormattedTime;// + IntToStr(TKMGameInfo(roomList[i]).PlayerCount);
+    RowInfo := TKMNetGameInfo(roomList[i]).GetFormattedTime;// + IntToStr(TKMGameInfo(roomList[i]).PlayerCount);
     PlayersList.Items.Add(RowInfo);
   end;
 
