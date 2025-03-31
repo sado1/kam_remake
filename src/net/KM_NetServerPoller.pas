@@ -7,11 +7,6 @@ uses
   KM_NetClient, KM_NetServerLocator, KM_NetUDP, KM_NetTypes, KM_NetGameInfo;
 
 
-const
-  MAX_QUERIES = 16; //The maximum number of individual server queries that can be happening at once
-  QUERY_TIMEOUT = 5000; //The maximum amount of time for an individual query to take (will take at least 2*ping)
-  MIN_UDP_SCAN_TIME = 1000; //Assume we won't get any more UDP responses after this time (remove 'Refreshing...' text if no servers found)
-
 type
   TKMServerInfo = record
     Name: string;
@@ -41,6 +36,8 @@ type
   );
 
   TKMQuery = class
+  private const
+    QUERY_TIMEOUT = 5000; //The maximum amount of time for an individual query to take (will take at least 2*ping)
   private
     fNetClient: TKMNetClient;
     fQueryActive: Boolean;
@@ -96,8 +93,11 @@ type
     procedure SetPing(aServerID: Integer; aPing: Cardinal);
   end;
 
-  // Handles the Master Server querrying and keeps the Server List
+  // Polls the Master Server and Server List
   TKMNetServerPoller = class
+  private const
+    MAX_QUERIES = 16; //The maximum number of individual server queries that can be happening at once
+    MIN_UDP_SCAN_TIME = 1000; //Assume we won't get any more UDP responses after this time (remove 'Refreshing...' text if no servers found)
   private
     fServerLocator: TKMNetServerLocator;
     fServerList: TKMServerList; //List of servers fetch from master
