@@ -293,7 +293,7 @@ uses
   KM_NetDedicatedServer in 'src\net\KM_NetDedicatedServer.pas',
   KM_NetFileTransfer in 'src\net\KM_NetFileTransfer.pas',
   KM_NetGameInfo in 'src\net\KM_NetGameInfo.pas',
-  KM_NetMasterServer in 'src\net\KM_NetMasterServer.pas',
+  KM_NetServerLocator in 'src\net\KM_NetServerLocator.pas',
   KM_NetRoom in 'src\net\KM_NetRoom.pas',
   KM_NetServer in 'src\net\KM_NetServer.pas',
   {$IFDEF WDC} KM_NetServerOverbyte in 'src\net\KM_NetServerOverbyte.pas', {$ENDIF}

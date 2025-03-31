@@ -4,7 +4,7 @@ interface
 uses
   SysUtils, Classes, Math,
   {$IFDEF MSWindows}Windows,{$ENDIF}
-  KM_NetServer, KM_NetMasterServer, KM_NetUDP, KM_CommonTypes;
+  KM_NetServer, KM_NetServerLocator, KM_NetUDP, KM_CommonTypes;
 
 type
   TKMNetDedicatedServer = class

@@ -1,4 +1,4 @@
-unit KM_NetMasterServer;
+unit KM_NetServerLocator;
 {$I KaM_Remake.inc}
 {$WARN IMPLICIT_STRING_CAST OFF}
 interface
