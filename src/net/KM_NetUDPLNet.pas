@@ -6,7 +6,7 @@ uses
 
 
 type
-  TNotifyAddressDataEvent = procedure(const aAddress: string; aData:pointer; aLength:cardinal)of object;
+  TNotifyAddressDataEvent = procedure(const aAddress: string; aData: Pointer; aLength: Cardinal) of object;
 
   TKMNetUDPLNet = class
   private
@@ -14,17 +14,17 @@ type
 
     fOnError: TGetStrProc;
     fOnRecieveData: TNotifyAddressDataEvent;
-    procedure Receive(aSocket: TLSocket);
-    procedure Error(const msg: string; aSocket: TLSocket);
+    procedure HandleReceive(aSocket: TLSocket);
+    procedure HandleError(const aMsg: string; aSocket: TLSocket);
   public
     constructor Create;
     destructor Destroy; override;
-    procedure SendPacket(const aAddress: string; const aPort: Word; aData: pointer; aLength: cardinal);
+    procedure SendPacket(const aAddress: string; const aPort: Word; aData: Pointer; aLength: Cardinal);
     procedure Listen(const aPort: Word);
     procedure StopListening;
     procedure UpdateStateIdle;
-    property OnError:TGetStrProc write fOnError;
-    property OnRecieveData:TNotifyAddressDataEvent write fOnRecieveData;
+    property OnError: TGetStrProc write fOnError;
+    property OnRecieveData: TNotifyAddressDataEvent write fOnRecieveData;
   end;
 
 
@@ -36,7 +36,7 @@ begin
   Inherited Create;
 
   fUDP := TLUdp.Create(nil);
-  fUDP.OnError := Error;
+  fUDP.OnError := HandleError;
   fUDP.Timeout := 1;
 end;
 
@@ -51,7 +51,7 @@ end;
 
 procedure TKMNetUDPLNet.Listen(const aPort:Word);
 begin
-  fUDP.OnReceive := Receive;
+  fUDP.OnReceive := HandleReceive;
   fUDP.Listen(aPort);
   fUDP.CallAction;
 end;
@@ -64,20 +64,20 @@ begin
 end;
 
 
-procedure TKMNetUDPLNet.SendPacket(const aAddress: string; const aPort: Word; aData: pointer; aLength: cardinal);
+procedure TKMNetUDPLNet.SendPacket(const aAddress: string; const aPort: Word; aData: Pointer; aLength: Cardinal);
 begin
   fUDP.Send(aData^, aLength, aAddress + ':' + IntToStr(aPort));
 end;
 
 
-procedure TKMNetUDPLNet.Receive(aSocket: TLSocket);
+procedure TKMNetUDPLNet.HandleReceive(aSocket: TLSocket);
 const
   BUFFER_SIZE = 10240; //10kb
 var
   P: Pointer;
   L: Integer; //L could be -1 when no data is available
 begin
-  GetMem(P, BUFFER_SIZE+1); //+1 to avoid RangeCheckError when L = BufferSize
+  GetMem(P, BUFFER_SIZE+1); //+1 to avoid RangeCheckError when L = BUFFER_SIZE
   L := fUDP.Get(P^, BUFFER_SIZE, aSocket);
 
   if L > 0 then
@@ -87,9 +87,9 @@ begin
 end;
 
 
-procedure TKMNetUDPLNet.Error(const msg: string; aSocket: TLSocket);
+procedure TKMNetUDPLNet.HandleError(const aMsg: string; aSocket: TLSocket);
 begin
-  fOnError('LNet UDP Error: '+msg);
+  fOnError('LNet UDP Error: ' + aMsg);
 end;
 
 
@@ -98,5 +98,5 @@ begin
   if fUDP <> nil then fUDP.CallAction; //Process network events
 end;
 
-end.
 
+end.
