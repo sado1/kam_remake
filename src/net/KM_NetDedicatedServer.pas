@@ -6,12 +6,13 @@ uses
   {$IFDEF MSWindows}Windows,{$ENDIF}
   KM_NetServer, KM_NetServerLocator, KM_NetUDP, KM_CommonTypes;
 
+
 type
   TKMNetDedicatedServer = class
   private
     fLastPing, fLastAnnounce: cardinal;
     fNetServer: TKMNetServer;
-    fMasterServer: TKMNetMasterServer;
+    fServerLocator: TKMNetServerLocator;
     fUDPAnnounce: TKMNetUDPAnnounce;
     fOnMessage: TUnicodeStringEvent;
     fPublishServer: Boolean;
@@ -61,8 +62,8 @@ begin
   inherited Create;
 
   fNetServer := TKMNetServer.Create(aMaxRooms, aKickTimeout, aHTMLStatusFile, aWelcomeMessage, aPacketsAccDelay);
-  fMasterServer := TKMNetMasterServer.Create(aMasterServerAddress, aDedicated);
-  fMasterServer.OnError := MasterServerError;
+  fServerLocator := TKMNetServerLocator.Create(aMasterServerAddress, aDedicated);
+  fServerLocator.OnError := MasterServerError;
   fUDPAnnounce := TKMNetUDPAnnounce.Create(aServerUDPScanPort);
   fUDPAnnounce.OnError := StatusMessage;
 
@@ -76,7 +77,7 @@ end;
 destructor TKMNetDedicatedServer.Destroy;
 begin
   FreeAndNil(fNetServer);
-  FreeAndNil(fMasterServer);
+  FreeAndNil(fServerLocator);
   FreeAndNil(fUDPAnnounce);
   StatusMessage('Server destroyed');
 
@@ -110,7 +111,7 @@ var
   tickCount:Cardinal;
 begin
   fNetServer.UpdateStateIdle;
-  fMasterServer.UpdateStateIdle;
+  fServerLocator.UpdateStateIdle;
   fUDPAnnounce.UpdateStateIdle;
 
   if not fNetServer.Listening then Exit; //Do not measure pings or announce the server if we are not listening
@@ -124,7 +125,7 @@ begin
 
   if fPublishServer and (TimeSince(fLastAnnounce) >= fAnnounceInterval*1000) then
   begin
-    fMasterServer.AnnounceServer(UnicodeString(fServerName), fPort, fNetServer.GetPlayerCount, fAnnounceInterval + 20);
+    fServerLocator.AnnounceServer(UnicodeString(fServerName), fPort, fNetServer.GetPlayerCount, fAnnounceInterval + 20);
     fLastAnnounce := tickCount;
   end;
 end;
@@ -138,7 +139,7 @@ procedure TKMNetDedicatedServer.UpdateSettings(const aServerName: AnsiString; aP
 begin
   fAnnounceInterval := Max(MINIMUM_ANNOUNCE_INTERVAL, aAnnounceInterval);
   fPingInterval := aPingInterval;
-  fMasterServer.MasterServerAddress := aMasterServerAddress;
+  fServerLocator.MasterServerAddress := aMasterServerAddress;
   fServerName := aServerName;
   fPublishServer := aPublishServer;
   fAnnounceUDP := aAnnounceUDP;

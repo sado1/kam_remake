@@ -3,8 +3,8 @@ unit KM_NetServerQuery;
 interface
 uses
   Classes,
-  KM_NetClient, KM_NetServerLocator, KM_NetUDP, KM_NetTypes, KM_NetGameInfo,
-  KM_CommonClasses, KM_CommonTypes;
+  KM_CommonClasses, KM_CommonTypes,
+  KM_NetClient, KM_NetServerLocator, KM_NetUDP, KM_NetTypes, KM_NetGameInfo;
 
 
 const
@@ -95,10 +95,10 @@ type
     procedure SetPing(aServerID: Integer; aPing: Cardinal);
   end;
 
-  //Handles the master-server querrying and carries ServerList
-  TKMServerQuery = class
+  // Handles the Master Server querrying and keeps the Server List
+  TKMNetServerQuery = class
   private
-    fMasterServer: TKMNetMasterServer;
+    fServerLocator: TKMNetServerLocator;
     fServerList: TKMServerList; //List of servers fetch from master
     fRoomList: TKMRoomList; //Info about each room populated after query completed
     fQuery: array[0..MAX_QUERIES-1] of TKMQuery;
@@ -407,15 +407,15 @@ begin
 end;
 
 
-{ TKMServerQuery }
-constructor TKMServerQuery.Create(const aMasterServerAddress: String; aServerUDPScanPort: Word);
+{ TKMNetServerQuery }
+constructor TKMNetServerQuery.Create(const aMasterServerAddress: String; aServerUDPScanPort: Word);
 var
   I: Integer;
 begin
   inherited Create;
-  fMasterServer := TKMNetMasterServer.Create(aMasterServerAddress, False);
-  fMasterServer.OnServerList := ReceiveServerList;
-  fMasterServer.OnAnnouncements := ReceiveAnnouncements;
+  fServerLocator := TKMNetServerLocator.Create(aMasterServerAddress, False);
+  fServerLocator.OnServerList := ReceiveServerList;
+  fServerLocator.OnAnnouncements := ReceiveAnnouncements;
 
   fUDPScanner := TKMNetUDPScan.Create(aServerUDPScanPort);
   fUDPScanner.OnServerDetected := DetectUDPServer;
@@ -433,11 +433,11 @@ begin
 end;
 
 
-destructor TKMServerQuery.Destroy;
+destructor TKMNetServerQuery.Destroy;
 var
   I: Integer;
 begin
-  fMasterServer.Free;
+  fServerLocator.Free;
   fUDPScanner.Free;
   fServerList.Free;
   fRoomList.Free;
@@ -448,7 +448,7 @@ begin
 end;
 
 
-procedure TKMServerQuery.FetchServerList;
+procedure TKMNetServerQuery.FetchServerList;
 var
   I: Integer;
 begin
@@ -466,11 +466,11 @@ begin
     ReceiveServerList('Localhost,127.0.0.1,56789,0,Windows')
     //+#13+'Localhost,127.0.0.1,56788,1,Windows'+#13+'Localhost,127.0.0.1,56787,1,Unix'
   else
-    fMasterServer.FetchServerList; //Start the query
+    fServerLocator.FetchServerList; //Start the query
 end;
 
 
-procedure TKMServerQuery.DetectUDPServer(const aAddress: string; const aPort: Word; const aName: string);
+procedure TKMNetServerQuery.DetectUDPServer(const aAddress: string; const aPort: Word; const aName: string);
 var
   I: Integer;
 begin
@@ -486,7 +486,7 @@ begin
 end;
 
 
-procedure TKMServerQuery.ReceiveServerList(const aText: string);
+procedure TKMNetServerQuery.ReceiveServerList(const aText: string);
 var
   I: Integer;
 begin
@@ -498,14 +498,14 @@ begin
 end;
 
 
-procedure TKMServerQuery.ReceiveAnnouncements(const aText: string);
+procedure TKMNetServerQuery.ReceiveAnnouncements(const aText: string);
 begin
   if Assigned(fOnAnnouncements) then
     fOnAnnouncements(aText);
 end;
 
 
-procedure TKMServerQuery.ServerDataReceive(aServerID: Integer; aStream: TKMemoryStream; aPingStarted: Cardinal);
+procedure TKMNetServerQuery.ServerDataReceive(aServerID: Integer; aStream: TKMemoryStream; aPingStarted: Cardinal);
 begin
   fRoomList.LoadData(aServerID, aStream); //Tell RoomsList to load data about rooms
   fServerList.SetPing(aServerID, TimeSince(aPingStarted)); //Tell ServersList ping
@@ -516,30 +516,30 @@ begin
 end;
 
 
-procedure TKMServerQuery.QueryDone(Sender: TObject);
+procedure TKMNetServerQuery.QueryDone(Sender: TObject);
 begin
   fServerList.TakeNewQuery(TKMQuery(Sender));
 end;
 
 
 //Get the server announcements in specified language
-procedure TKMServerQuery.FetchAnnouncements(const aLocale: AnsiString);
+procedure TKMNetServerQuery.FetchAnnouncements(const aLocale: AnsiString);
 begin
-  fMasterServer.FetchAnnouncements(aLocale);
+  fServerLocator.FetchAnnouncements(aLocale);
 end;
 
 
-procedure TKMServerQuery.AnnounceGame(const aMapName: UnicodeString; aCRC: Cardinal; aPlayerCount: Integer);
+procedure TKMNetServerQuery.AnnounceGame(const aMapName: UnicodeString; aCRC: Cardinal; aPlayerCount: Integer);
 begin
-  fMasterServer.AnnounceGame(aMapName, aCRC, aPlayerCount);
+  fServerLocator.AnnounceGame(aMapName, aCRC, aPlayerCount);
 end;
 
 
-procedure TKMServerQuery.UpdateStateIdle;
+procedure TKMNetServerQuery.UpdateStateIdle;
 var
   I: Integer;
 begin
-  fMasterServer.UpdateStateIdle;
+  fServerLocator.UpdateStateIdle;
   fUDPScanner.UpdateStateIdle;
   for I := 0 to MAX_QUERIES - 1 do
     fQuery[I].UpdateStateIdle;
@@ -556,7 +556,7 @@ begin
 end;
 
 
-procedure TKMServerQuery.Sort;
+procedure TKMNetServerQuery.Sort;
 var
   tempRooms: array of TKMRoomInfo;
 
@@ -628,14 +628,14 @@ begin
 end;
 
 
-procedure TKMServerQuery.SetSortMethod(aMethod: TServerSortMethod);
+procedure TKMNetServerQuery.SetSortMethod(aMethod: TServerSortMethod);
 begin
   fSortMethod := aMethod;
   Sort; //New sorting method has been set, we need to apply it
 end;
 
 
-function TKMServerQuery.ActiveQueryCount: Integer;
+function TKMNetServerQuery.ActiveQueryCount: Integer;
 var
   I: Integer;
 begin

@@ -30,7 +30,7 @@ type
 
     fNetServer: TKMNetDedicatedServer;
     fNetClient: TKMNetClient;
-    fNetServerQuery: TKMServerQuery;
+    fNetServerQuery: TKMNetServerQuery;
     fNetPlayerKind: TKMNetPlayerKind; // Our role (Host or Joiner)
     fNetGameState: TKMNetGameState;
     fServerAddress: string; // Used for reconnecting
@@ -166,7 +166,7 @@ type
     function IsMap: Boolean;
 
     //Lobby
-    property ServerQuery: TKMServerQuery read fNetServerQuery;
+    property ServerQuery: TKMNetServerQuery read fNetServerQuery;
     procedure Host(const aServerName: AnsiString; aPort: Word; const aNickname: AnsiString; aAnnounceServer, aAnnounceUDP: Boolean);
     procedure Join(const aServerAddress: string; aPort: Word; const aNickname: AnsiString; aRoom: Integer; aIsReconnection: Boolean = False);
     procedure AnnounceDisconnect(aLastSentCmdsTick: Cardinal = LAST_SENT_COMMANDS_TICK_NONE);
@@ -270,7 +270,7 @@ begin
   // Handle all 'background (unhandled)' exceptions, so we will be able to intercept them with madExcept
   fNetClient.SetHandleBackgrounException;
   fNetRoom := TKMNetRoom.Create;
-  fNetServerQuery := TKMServerQuery.Create(aMasterServerAddress, aServerUDPScanPort);
+  fNetServerQuery := TKMNetServerQuery.Create(aMasterServerAddress, aServerUDPScanPort);
   fNetGameOptions := TKMGameOptions.Create;
   fFileSenderManager := TKMFileSenderManager.Create;
   fMutedPlayersList := TList<TKMNetHandleIndex>.Create;

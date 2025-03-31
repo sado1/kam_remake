@@ -3,11 +3,14 @@ unit KM_NetServerLocator;
 {$WARN IMPLICIT_STRING_CAST OFF}
 interface
 uses
-  Classes, KM_HTTPClient;
+  Classes,
+  KM_HTTPClient;
 
 type
-  // Class responsible for interaction with MasterServer
-  TKMNetMasterServer = class
+  // Class responsible for interaction with MasterServer:
+  // - getting Master Server Announcement
+  // - getting list of public servers
+  TKMNetServerLocator = class
   private
     fMasterServerAddress: string;
     fIsDedicated: Boolean;
@@ -50,8 +53,8 @@ uses
   KM_Defaults;
 
 
-{ TKMNetMasterServer }
-constructor TKMNetMasterServer.Create(const aMasterServerAddress: string; aDedicated:Boolean);
+{ TKMNetServerLocator }
+constructor TKMNetServerLocator.Create(const aMasterServerAddress: string; aDedicated:Boolean);
 begin
   inherited Create;
 
@@ -65,7 +68,7 @@ begin
 end;
 
 
-destructor TKMNetMasterServer.Destroy;
+destructor TKMNetServerLocator.Destroy;
 begin
   fHTTPClient.Free;
   fHTTPAnnouncementsClient.Free;
@@ -75,25 +78,25 @@ begin
 end;
 
 
-procedure TKMNetMasterServer.Error(const aText: string);
+procedure TKMNetServerLocator.Error(const aText: string);
 begin
   if Assigned(fOnError) then fOnError(aText);
 end;
 
 
-procedure TKMNetMasterServer.ReceiveServerList(const aText: string);
+procedure TKMNetServerLocator.ReceiveServerList(const aText: string);
 begin
   if Assigned(fOnServerList) then fOnServerList(aText);
 end;
 
 
-procedure TKMNetMasterServer.ReceiveAnnouncements(const aText: string);
+procedure TKMNetServerLocator.ReceiveAnnouncements(const aText: string);
 begin
   if Assigned(fOnAnnouncements) then fOnAnnouncements(aText);
 end;
 
 
-procedure TKMNetMasterServer.AnnounceServer(const aName: string; aPort: Word; aPlayerCount, aTTL: Integer);
+procedure TKMNetServerLocator.AnnounceServer(const aName: string; aPort: Word; aPlayerCount, aTTL: Integer);
 const
   {$IFDEF MSWindows} OS = 'Windows'; {$ENDIF}
   {$IFDEF UNIX}      OS = 'Unix'; {$ENDIF}
@@ -115,7 +118,7 @@ begin
 end;
 
 
-procedure TKMNetMasterServer.FetchServerList;
+procedure TKMNetServerLocator.FetchServerList;
 begin
   fHTTPClient.OnReceive := ReceiveServerList;
   fHTTPClient.GetURL(
@@ -125,7 +128,7 @@ begin
 end;
 
 
-procedure TKMNetMasterServer.FetchAnnouncements(const aLang: AnsiString);
+procedure TKMNetServerLocator.FetchAnnouncements(const aLang: AnsiString);
 begin
   fHTTPAnnouncementsClient.OnReceive := ReceiveAnnouncements;
   fHTTPAnnouncementsClient.GetURL(
@@ -136,7 +139,7 @@ begin
 end;
 
 
-procedure TKMNetMasterServer.AnnounceGame(const aMapName: string; aCRC: Cardinal; aPlayerCount: Integer);
+procedure TKMNetServerLocator.AnnounceGame(const aMapName: string; aCRC: Cardinal; aPlayerCount: Integer);
 begin
   fHTTPMapsClient.OnReceive := nil; //We don't care about the response
   fHTTPMapsClient.GetURL(
@@ -149,7 +152,7 @@ begin
 end;
 
 
-procedure TKMNetMasterServer.UpdateStateIdle;
+procedure TKMNetServerLocator.UpdateStateIdle;
 begin
   fHTTPClient.UpdateStateIdle;
   fHTTPAnnouncementsClient.UpdateStateIdle;
