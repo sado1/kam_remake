@@ -275,31 +275,6 @@ begin
     end else
       Exit;
   end;
-
-//  //Try to read data packet from buffer
-//  while fBufferSize >= 12 do
-//  begin
-//    PacketSender := PInteger(@fBuffer[0])^;
-//    //We skip PacketRecipient because thats us
-//    PacketLength := PNativeUInt(@fBuffer[8])^;
-//
-//    //Buffer is lengthy enough to contain full packet, process it
-//    if PacketLength <= fBufferSize-12 then
-//    begin
-//      //Skip packet header
-//      fOnRecieveData(Self, PacketSender, @fBuffer[12], PacketLength);
-//
-//      //Check if Network was stopped by processing above packet (e.g. version mismatch)
-//      if not Assigned(fOnRecieveData) then
-//        Exit;
-//
-//      //Trim received packet from buffer
-//      if 12+PacketLength < fBufferSize then //Check range
-//        Move(fBuffer[12+PacketLength], fBuffer[0], fBufferSize-PacketLength-12);
-//      fBufferSize := fBufferSize - PacketLength - 12;
-//    end else
-//      Exit;
-//  end;
 end;
 
 
