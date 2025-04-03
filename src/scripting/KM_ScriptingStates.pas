@@ -335,7 +335,7 @@ function TKMScriptStates.AIArmyType(aHand: Byte): TKMArmyType;
 begin
   try
     Result := atIronThenLeather; //Make compiler happy
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.ArmyType
     else
       LogIntParamWarn('States.AIArmyType', [aHand]);
@@ -353,7 +353,7 @@ function TKMScriptStates.AIAutoAttack(aHand: Byte): Boolean;
 begin
   Result := False;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.AutoAttack
     else
       LogIntParamWarn('States.AIAutoAttack', [aHand]);
@@ -371,7 +371,7 @@ function TKMScriptStates.AIAutoAttackRange(aHand: Byte): Integer;
 begin
   Result := -1;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.AutoAttackRange
     else
       LogIntParamWarn('States.AIAutoAttackRange', [aHand]);
@@ -389,7 +389,7 @@ function TKMScriptStates.AIAutoBuild(aHand: Byte): Boolean;
 begin
   Result := False;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.AutoBuild
     else
       LogIntParamWarn('States.AIAutoBuild', [aHand]);
@@ -407,7 +407,7 @@ function TKMScriptStates.AIAutoDefence(aHand: Byte): Boolean;
 begin
   Result := False;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.AutoDefend
     else
       LogIntParamWarn('States.AIAutoDefence', [aHand]);
@@ -425,7 +425,7 @@ function TKMScriptStates.AIAutoRepair(aHand: Byte): Boolean;
 begin
   Result := False;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.IsRepairAlways
     else
       LogIntParamWarn('States.AIAutoRepair', [aHand]);
@@ -443,7 +443,7 @@ function TKMScriptStates.AIDefendAllies(aHand: Byte): Boolean;
 begin
   Result := False;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.DefendAllies
     else
       LogIntParamWarn('States.AIDefendAllies', [aHand]);
@@ -465,7 +465,7 @@ var
 begin
   //todo -cPractical: Should return all zeroes in case of bad arguments
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
     and InRange(aID, 0, gHands[aHand].AI.General.DefencePositions.Count - 1) then
     begin
       DP := gHands[aHand].AI.General.DefencePositions[aID];
@@ -497,7 +497,7 @@ var
 begin
   //todo -cPractical: Should return default(TKMDefencePositionInfo) in case of bad arguments
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
     and InRange(aIndex, 0, gHands[aHand].AI.General.DefencePositions.Count - 1) then
     begin
       DP := gHands[aHand].AI.General.DefencePositions[aIndex];
@@ -533,7 +533,7 @@ function TKMScriptStates.AIEquipRate(aHand: Byte; aType: Byte): Integer;
 begin
   Result := -1;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
     begin
       case aType of
         0:    Result := gHands[aHand].AI.Setup.EquipRateLeather;
@@ -552,7 +552,7 @@ end;
 procedure TKMScriptStates._AIGroupsFormationGet(aHand: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer; out aSucceed: Boolean);
 begin
   aSucceed := False;
-  if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+  if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
     and (aGroupType in GROUP_TYPES_VALID) then
   begin
     if gHands[aHand].AI.Setup.NewAI then
@@ -622,7 +622,7 @@ function TKMScriptStates.AIRecruitDelay(aHand: Byte): Integer;
 begin
   Result := -1;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.RecruitDelay
     else
       LogIntParamWarn('States.AIRecruitDelay', [aHand]);
@@ -640,7 +640,7 @@ function TKMScriptStates.AIRecruitLimit(aHand: Byte): Integer;
 begin
   Result := -1;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.RecruitCount
     else
       LogIntParamWarn('States.AIRecruitLimit', [aHand]);
@@ -661,7 +661,7 @@ function TKMScriptStates.AIRepairMode(aHand: Integer): TKMAIRepairMode;
 begin
   Result := rmNone;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.RepairMode
     else
       LogIntParamWarn('States.AIRepairMode', [aHand]);
@@ -680,7 +680,7 @@ function TKMScriptStates.AISerfsPerHouse(aHand: Byte): Single;
 begin
   Result := -1;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.SerfsPerHouse
     else
       LogIntParamWarn('States.AISerfsPerHouse', [aHand]);
@@ -698,7 +698,7 @@ function TKMScriptStates.AISoldiersLimit(aHand: Byte): Integer;
 begin
   Result := -2; // use -2 here, as -1 is used for unlimited
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.MaxSoldiers
     else
       LogIntParamWarn('States.AISoldiersLimit', [aHand]);
@@ -810,7 +810,7 @@ var
 begin
   Result := -1;
   aSucceed := False;
-  if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+  if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
     and gTerrain.TileInMapCoords(X, Y)
     and ((aGroupType = gtAny) or (aGroupType in GROUP_TYPES_VALID)) then
   begin
@@ -885,7 +885,7 @@ var
 begin
   Result := -1;
   aSucceed := False;
-  if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+  if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
     and gTerrain.TileInMapCoords(X, Y) then
   begin
     aGroupTypes := aGroupTypes * GROUP_TYPES_VALID;
@@ -985,7 +985,7 @@ var
 begin
   Result := -1;
   aSucceed := False;
-  if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+  if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
     and gTerrain.TileInMapCoords(X, Y)
     and (aHouseType <> htNone) then
   begin
@@ -1060,7 +1060,7 @@ var
 begin
   Result := -1;
   aSucceed := False;
-  if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+  if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
     and gTerrain.TileInMapCoords(X, Y) then
   begin
     aHouseTypes := aHouseTypes * HOUSES_VALID;
@@ -1158,7 +1158,7 @@ var
 begin
   Result := -1;
   aSucceed := False;
-  if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+  if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
     and gTerrain.TileInMapCoords(X, Y)
     and ((aUnitType = utAny) or (aUnitType in [UNIT_MIN..UNIT_MAX]))  then
   begin
@@ -1233,7 +1233,7 @@ var
 begin
   Result := -1;
   aSucceed := False;
-  if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+  if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
     and gTerrain.TileInMapCoords(X, Y) then
   begin
     aUnitTypes := aUnitTypes * [UNIT_MIN..UNIT_MAX];
@@ -1383,7 +1383,7 @@ function TKMScriptStates.StatAIDefencePositionsCount(aHand: Byte): Integer;
 begin
   try
     if InRange(aHand, 0, gHands.Count - 1)
-    and (gHands[aHand].Enabled) then
+    and gHands[aHand].Enabled then
     begin
       if gHands[aHand].AI.Setup.NewAI then
         Result := gHands[aHand].AI.General.DefencePositions.Count
@@ -1408,7 +1408,7 @@ end;
 function TKMScriptStates.StatArmyCount(aHand: Byte): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].Stats.GetArmyCount
     else
     begin
@@ -1428,7 +1428,7 @@ end;
 function TKMScriptStates.StatArmyPower(aHand: Byte): Single;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].Stats.GetArmyPower
     else
     begin
@@ -1448,7 +1448,7 @@ end;
 function TKMScriptStates.StatCitizenCount(aHand: Byte): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].Stats.GetCitizensCount
     else
     begin
@@ -1527,8 +1527,8 @@ begin
   try
     if  InRange(aHand1, 0, gHands.Count - 1)
       and InRange(aHand2, 0, gHands.Count - 1)
-      and (gHands[aHand1].Enabled)
-      and (gHands[aHand2].Enabled) then
+      and gHands[aHand1].Enabled
+      and gHands[aHand2].Enabled then
       Result := gHands[aHand1].Alliances[aHand2] = atAlly
     else
     begin
@@ -1547,7 +1547,7 @@ end;
 function TKMScriptStates.StatHouseCount(aHand: Byte): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].Stats.GetHouseQty(htAny)
     else
     begin
@@ -1572,7 +1572,7 @@ begin
   try
     Result := 0;
     if InRange(aHand, 0, gHands.Count - 1)
-    and (gHands[aHand].Enabled) then
+    and gHands[aHand].Enabled then
     begin
       for htID := Low(HOUSE_ID_TO_TYPE) to High(HOUSE_ID_TO_TYPE) do
         if (htID in aTypes) and (HOUSE_ID_TO_TYPE[htID] <> htNone) then
@@ -1598,7 +1598,7 @@ var
 begin
   try
     Result := 0;
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
     begin
       aTypes := aTypes * HOUSES_VALID;
       for HT in aTypes do
@@ -1630,7 +1630,7 @@ end;
 function TKMScriptStates.StatHouseTypeCount(aHand, aHouseType: Byte): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and HouseTypeValid(aHouseType) then
       Result := gHands[aHand].Stats.GetHouseQty(HOUSE_ID_TO_TYPE[aHouseType])
     else
@@ -1651,7 +1651,7 @@ end;
 function TKMScriptStates.StatHouseTypeCountEx(aHand: Integer; aHouseType: TKMHouseType): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
     and (aHouseType in HOUSES_VALID) then
       Result := gHands[aHand].Stats.GetHouseQty(aHouseType)
     else
@@ -1673,7 +1673,7 @@ function TKMScriptStates.StatHouseTypePlansCount(aHand, aHouseType: Byte): Integ
 begin
   try
     if InRange(aHand, 0, gHands.Count - 1)
-      and (gHands[aHand].Enabled)
+      and gHands[aHand].Enabled
       and HouseTypeValid(aHouseType) then
       Result := gHands[aHand].Stats.GetHousePlans(HOUSE_ID_TO_TYPE[aHouseType])
     else
@@ -1695,7 +1695,7 @@ function TKMScriptStates.StatHouseTypePlansCountEx(aHand: Integer; aHouseType: T
 begin
   try
     if InRange(aHand, 0, gHands.Count - 1)
-      and (gHands[aHand].Enabled)
+      and gHands[aHand].Enabled
       and (aHouseType in HOUSES_VALID) then
       Result := gHands[aHand].Stats.GetHousePlans(aHouseType)
     else
@@ -1735,7 +1735,7 @@ end;
 function TKMScriptStates.PlayerDefeated(aHand: Byte): Boolean;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.HasLost
     else
     begin
@@ -1755,7 +1755,7 @@ end;
 function TKMScriptStates.PlayerVictorious(aHand: Byte): Boolean;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := (gHands[aHand].AI.HasWon)
     else
     begin
@@ -1775,7 +1775,7 @@ end;
 function TKMScriptStates.PlayerWareDistribution(aHand, aWareType, aHouseType: Byte): Byte;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and(aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)])
       and HouseTypeValid(aHouseType) then
       Result := gHands[aHand].Stats.WareDistribution[WARE_ID_TO_TYPE[aWareType], HOUSE_ID_TO_TYPE[aHouseType]]
@@ -1797,7 +1797,7 @@ end;
 function TKMScriptStates.PlayerWareDistributionEx(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and (aWareType in WARES_VALID)
       and (aHouseType in HOUSES_VALID) then
       Result := gHands[aHand].Stats.WareDistribution[aWareType, aHouseType]
@@ -1825,7 +1825,7 @@ begin
   try
     SetLength(Result, 0);
 
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
     begin
       unitCount := 0;
 
@@ -1865,7 +1865,7 @@ begin
   try
     SetLength(Result, 0);
 
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
     begin
       houseCount := 0;
 
@@ -1904,7 +1904,7 @@ begin
   try
     SetLength(Result, 0);
 
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
     begin
       groupCount := 0;
 
@@ -1938,7 +1938,7 @@ end;
 function TKMScriptStates.PlayerIsAI(aHand: Byte): Boolean;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].IsComputer
     else
     begin
@@ -1998,7 +1998,7 @@ end;
 function TKMScriptStates.StatUnitCount(aHand: Byte): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].Stats.GetUnitQty(utAny)
     else
     begin
@@ -2023,7 +2023,7 @@ begin
   try
     Result := 0;
     if InRange(aHand, 0, gHands.Count - 1)
-    and (gHands[aHand].Enabled) then
+    and gHands[aHand].Enabled then
     begin
       for utID := Low(UNIT_ID_TO_TYPE) to High(UNIT_ID_TO_TYPE) do
         if utID in aTypes then
@@ -2050,7 +2050,7 @@ begin
   try
     Result := 0;
     if InRange(aHand, 0, gHands.Count - 1)
-      and (gHands[aHand].Enabled) then
+      and gHands[aHand].Enabled then
     begin
       aTypes := aTypes * UNITS_HUMAN; // Only humans could be counted (we have stats only for them)
       for UT in aTypes do
@@ -2083,7 +2083,7 @@ end;
 function TKMScriptStates.StatUnitTypeCount(aHand, aUnitType: Byte): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and (aUnitType in [Low(UNIT_ID_TO_TYPE)..High(UNIT_ID_TO_TYPE)]) then
       Result := gHands[aHand].Stats.GetUnitQty(UNIT_ID_TO_TYPE[aUnitType])
     else
@@ -2106,7 +2106,7 @@ function TKMScriptStates.StatUnitTypeCountEx(aHand: Integer; aUnitType: TKMUnitT
 begin
   Result := 0;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and ((aUnitType = utAny) or (aUnitType in UNITS_HUMAN)) then
       Result := gHands[aHand].Stats.GetUnitQty(aUnitType)
     else
@@ -2124,7 +2124,7 @@ end;
 function TKMScriptStates.StatUnitKilledCount(aHand, aUnitType: Byte): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and (aUnitType in [Low(UNIT_ID_TO_TYPE)..High(UNIT_ID_TO_TYPE)]) then
       Result := gHands[aHand].Stats.GetUnitKilledQty(UNIT_ID_TO_TYPE[aUnitType])
     else
@@ -2146,7 +2146,7 @@ end;
 function TKMScriptStates.StatUnitKilledCountEx(aHand: Integer; aUnitType: TKMUnitType): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and ((aUnitType = utAny) or (aUnitType in [HUMANS_MIN..HUMANS_MAX])) then
     begin
       Result := gHands[aHand].Stats.GetUnitKilledQty(aUnitType);
@@ -2173,7 +2173,7 @@ begin
   try
     Result := 0;
     if InRange(aHand, 0, gHands.Count - 1)
-    and (gHands[aHand].Enabled) then
+    and gHands[aHand].Enabled then
     begin
       for utID := Low(UNIT_ID_TO_TYPE) to High(UNIT_ID_TO_TYPE) do
         if utID in aTypes then
@@ -2199,7 +2199,7 @@ begin
   try
     Result := 0;
     if InRange(aHand, 0, gHands.Count - 1)
-      and (gHands[aHand].Enabled) then
+      and gHands[aHand].Enabled then
     begin
       aTypes := aTypes * UNITS_HUMAN; // Only humans could be killed
       for UT in aTypes do
@@ -2232,7 +2232,7 @@ end;
 function TKMScriptStates.StatUnitLostCount(aHand, aUnitType: Byte): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and (aUnitType in [Low(UNIT_ID_TO_TYPE)..High(UNIT_ID_TO_TYPE)]) then
       Result := gHands[aHand].Stats.GetUnitLostQty(UNIT_ID_TO_TYPE[aUnitType])
     else
@@ -2254,7 +2254,7 @@ end;
 function TKMScriptStates.StatUnitLostCountEx(aHand: Integer; aUnitType: TKMUnitType): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and ((aUnitType = utAny) or (aUnitType in [HUMANS_MIN..HUMANS_MAX])) then
     begin
       Result := gHands[aHand].Stats.GetUnitLostQty(aUnitType);
@@ -2282,7 +2282,7 @@ begin
   try
     Result := 0;
     if InRange(aHand, 0, gHands.Count - 1)
-    and (gHands[aHand].Enabled) then
+    and gHands[aHand].Enabled then
     begin
       for utID := Low(UNIT_ID_TO_TYPE) to High(UNIT_ID_TO_TYPE) do
         if utID in aTypes then
@@ -2309,7 +2309,7 @@ begin
   try
     Result := 0;
     if InRange(aHand, 0, gHands.Count - 1)
-      and (gHands[aHand].Enabled) then
+      and gHands[aHand].Enabled then
     begin
       aTypes := aTypes * UNITS_HUMAN; // Only humans could be lost
       for UT in aTypes do
@@ -2342,7 +2342,7 @@ end;
 function TKMScriptStates.StatResourceProducedCount(aHand, aResType: Byte): Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and (aResType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
       Result := gHands[aHand].Stats.GetWaresProduced(WARE_ID_TO_TYPE[aResType])
     else
@@ -2371,7 +2371,7 @@ begin
   Result := 0;
   try
     if InRange(aHand, 0, gHands.Count - 1)
-      and (gHands[aHand].Enabled)
+      and gHands[aHand].Enabled
       and (aWareType <> wtNone) then
     begin
       case aWareType of
@@ -2405,7 +2405,7 @@ begin
   try
     Result := 0;
     if InRange(aHand, 0, gHands.Count - 1)
-    and (gHands[aHand].Enabled) then
+    and gHands[aHand].Enabled then
     begin
       for wtID := Low(WARE_ID_TO_TYPE) to High(WARE_ID_TO_TYPE) do
         if wtID in aTypes then
@@ -2431,7 +2431,7 @@ var
 begin
   try
     Result := 0;
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
     begin
       aTypes := aTypes * WARES_VALID;
       for WT in aTypes do
@@ -2463,7 +2463,7 @@ end;
 function TKMScriptStates.PlayerColorFlag(aHand: Byte): AnsiString;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := AnsiString(Format('%.6x', [gHands[aHand].FlagColor and $FFFFFF]))
     else
     begin
@@ -2483,7 +2483,7 @@ end;
 function TKMScriptStates.PlayerColorText(aHand: Byte): AnsiString;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
     begin
       //Use FlagColorToTextColor to desaturate and lighten the text so all player colours are
       //readable on a variety of backgrounds
@@ -2549,7 +2549,7 @@ function TKMScriptStates.PlayerHouseTypeLock(aHand: Integer; aHouseType: TKMHous
 begin
   Result := hlNone;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
     and (aHouseType in HOUSES_VALID) then
       Result := gHands[aHand].Locks.HouseLock[aHouseType]
     else
@@ -2567,7 +2567,7 @@ end;
 function TKMScriptStates.PlayerName(aHand: Byte): AnsiString;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       // Don't use localized names, since AI will be return differently for script,
       // and we could get desync or save difference
       Result := AnsiString(gHands[aHand].OwnerName(True, False))
@@ -2590,7 +2590,7 @@ function TKMScriptStates.PlayerUnitTypeCanTrain(aHand: Integer; aUnitType: TKMUn
 begin
   try
     if InRange(aHand, 0, gHands.Count - 1)
-      and (gHands[aHand].Enabled)
+      and gHands[aHand].Enabled
       and (aUnitType in UNITS_HUMAN) then
       Result := not gHands[aHand].Locks.GetUnitBlocked(aUnitType)
     else
@@ -3511,7 +3511,7 @@ end;
 function TKMScriptStates.HouseUnlocked(aHand, aHouseType: Integer): Boolean;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and HouseTypeValid(aHouseType) then
       Result := gHands[aHand].Locks.HouseCanBuild(HOUSE_ID_TO_TYPE[aHouseType])
     else
@@ -3828,7 +3828,7 @@ begin
     //Verify all input parameters
     if gTerrain.TileInMapCoords(X,Y) then
     begin
-      handFilter := InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled);
+      handFilter := InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled;
       fieldTypeFilter := aFieldType in [ftCorn, ftRoad, ftWine];
 
       if handFilter and fieldTypeFilter then
@@ -3884,7 +3884,7 @@ begin
     //Verify all input parameters
     if gTerrain.TileInMapCoords(X,Y) then
     begin
-      if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
         Result := FindPlan(aHand, X, Y)
       else
         for I := 0 to gHands.Count - 1 do
@@ -3939,7 +3939,7 @@ begin
     //Verify all input parameters
     if gTerrain.TileInMapCoords(X,Y) then
     begin
-      handFilter := InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled);
+      handFilter := InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled;
       houseTypeFilter := aHouseType in HOUSES_VALID;
 
       if handFilter and houseTypeFilter then
@@ -3995,7 +3995,7 @@ begin
     //Verify all input parameters
     if gTerrain.TileInMapCoords(X,Y) then
     begin
-      if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
         Result := FindPlan(aHand, X, Y)
       else
         for I := 0 to gHands.Count - 1 do
@@ -4038,7 +4038,7 @@ begin
     //Verify all input parameters
     if gTerrain.TileInMapCoords(X,Y) then
     begin
-      if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
         Result := FindPlan(aHand, X, Y)
       else
         for I := 0 to gHands.Count - 1 do
@@ -4954,7 +4954,7 @@ begin
   try
     Result := False;
     if gTerrain.TileInMapCoords(aX,aY)
-      and InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      and InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].FogOfWar.CheckTileRevelation(aX, aY) > 0
     else
       LogIntParamWarn('States.FogRevealed', [aHand, aX, aY]);
