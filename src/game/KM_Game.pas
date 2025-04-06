@@ -111,7 +111,7 @@ type
     function GetMapEditor: TKMMapEditor;
     function GetGamePlayInterface: TKMGamePlayInterface;
 
-    procedure GameMPDisconnect(const aData: UnicodeString);
+    procedure GameMPDisconnect(const aReason: UnicodeString);
     procedure OtherPlayerDisconnected(aDefeatedPlayerHandId: Integer);
     function GetActiveHandIDs: TKMByteSet;
 
@@ -1127,11 +1127,11 @@ begin
 end;
 
 
-procedure TKMGame.GameMPDisconnect(const aData: UnicodeString);
+procedure TKMGame.GameMPDisconnect(const aReason: UnicodeString);
 begin
   if gNetworking.NetGameState in [lgsGame, lgsReconnecting] then
   begin
-    gLog.LogNetConnection('GameMPDisconnect: ' + aData);
+    gLog.LogNetConnection('GameMPDisconnect: ' + aReason);
     gNetworking.OnJoinFail := GameMPDisconnect; // If the connection fails (e.g. timeout) then try again
     gNetworking.OnJoinAssignedHost := nil;
     gNetworking.OnJoinSucc := nil;
@@ -1140,7 +1140,7 @@ begin
   else
   begin
     gNetworking.Disconnect;
-    gGameApp.StopGame(grDisconnect, gResTexts[TX_GAME_ERROR_NETWORK] + ' ' + aData)
+    gGameApp.StopGame(grDisconnect, gResTexts[TX_GAME_ERROR_NETWORK] + ' ' + aReason)
   end;
 end;
 

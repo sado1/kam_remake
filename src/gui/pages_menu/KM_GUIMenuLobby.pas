@@ -106,7 +106,7 @@ type
     procedure UpdateDifficultyLevels(aSave: TKMSaveInfo); overload;
     procedure UpdateDifficultyLevels(aMap: TKMMapInfo); overload;
 
-    procedure Lobby_OnDisconnect(const aData: UnicodeString);
+    procedure Lobby_OnDisconnect(const aReason: UnicodeString);
     procedure Lobby_OnGameOptions;
     procedure Lobby_OnMapName(const aData: UnicodeString);
     procedure Lobby_OnMapMissing(const aData: UnicodeString; aStartTransfer: Boolean);
@@ -2844,12 +2844,12 @@ end;
 
 
 //We were disconnected from Server. Either we were kicked, or connection broke down
-procedure TKMMenuLobby.Lobby_OnDisconnect(const aData: UnicodeString);
+procedure TKMMenuLobby.Lobby_OnDisconnect(const aReason: UnicodeString);
 begin
   gNetworking.Disconnect;
   gSoundPlayer.Play(sfxnError);
 
-  fOnPageChange(gpMultiplayer, aData);
+  fOnPageChange(gpMultiplayer, aReason);
 end;
 
 
