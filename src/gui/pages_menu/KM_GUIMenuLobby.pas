@@ -1891,7 +1891,7 @@ begin
       end;
     end;
 
-  // Players flag hightlight, if they are clickable
+  // Players flag highlight, if they are clickable
   for I := 1 to MAX_LOBBY_SLOTS do
     Image_Flag[I].HighlightOnMouseOver := CanShowPlayerMenu(Image_Flag[I]);
 

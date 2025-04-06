@@ -216,7 +216,7 @@ begin
       // WIP qty is Training - Dismissing qty
       wipQty := gMySpectator.Hand.Stats.GetUnitTraining(UT) - gMySpectator.Hand.Stats.GetUnitDismissing(UT);
 
-      // Hightlight unit qty, when there are not enough workers
+      // Highlight unit qty, when there are not enough workers
       doHighlight := (I < High(StatPlan) - 1) // do not highlight last 2 rows - Barracks/Watch tower and Storehouse/Inn/School
         and (hTotalConstrOpenedQty > qty + wipQty);
 
