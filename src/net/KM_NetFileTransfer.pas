@@ -197,13 +197,13 @@ begin
               end;
   end;
 
-  //Compress fSendStream
+  // Compress fSendStream
   sourceStream := fSendStream;
   fSendStream := TKMemoryStreamBinary.Create;
   fSendStream.PlaceMarker('Transfer');
-  compressionStream := TCompressionStream.Create(cldefault, fSendStream);
+  compressionStream := TCompressionStream.Create(clDefault, fSendStream);
   compressionStream.CopyFrom(sourceStream, 0);
-  //fSendStream now contains the compressed data from SourceStream
+  // fSendStream now contains the compressed data from SourceStream
   compressionStream.Free;
   sourceStream.Free;
   fSendStream.Position := 0;
