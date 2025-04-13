@@ -22,11 +22,13 @@ type
   TKMChatSound = (csNone, csJoin, csLeave, csSystem, csGameStart, csSaveGame, csChat, csChatWhisper, csChatTeam);
 
 const
-  NET_ADDRESS_EMPTY = 0;    //Yet undefined
-  NET_ADDRESS_OTHERS = -1;  //Recipient
-  NET_ADDRESS_ALL = -2;     //Recipient
-  NET_ADDRESS_HOST = -3;    //Sender/Recipient
-  NET_ADDRESS_SERVER = -4;  //Sender/Recipient
+  // Special senders/recipients
+  NET_ADDRESS_EMPTY = 0;    // Never used. Uninitialized value
+  NET_ADDRESS_OTHERS = -1;  // Everyone in the Room except the sender (Server does the replication upon recieving)
+  NET_ADDRESS_ALL = -2;     // Everyone in the Room including sender if player send it AND Everyone on the Server if server sends it
+  //@Rey: NET_ADDRESS_ALL needs to be split into 2 consts for 2 listed usecases. Otherwise we get issues like with mkClientLost
+  NET_ADDRESS_HOST = -3;    // Host of the Room
+  NET_ADDRESS_SERVER = -4;  // Server
 
   //Size of chunks that a file is sent in (must be smaller than MAX_PACKET_SIZE)
   //Making it less than Ethernet MTU (~1500) helps to avoids inefficient IP fragmentation
