@@ -66,7 +66,7 @@ type
     mkAskForAuth,      //Joiner sends challenge to host, and askes host to send its challenge
     mkIndexOnServer,   //Server tells Client his index
     mkClientLost,      //Server tells clients that someone has disconnected
-    mkReassignHost,    //Server tells clients who is the new host after the host disconnects
+    mkReassignHost,    //Server tells clients who is the new host if he disconnects or was willingly transferred with mkGiveHost
 
     mkNetProtocolVersion,     //Server tells a new client which NET_PROTOCOL_REVISON we are using (was GAME_VERSION before, but it is unnecessarily strict)
     mkWelcomeMessage,  //Server sends a welcome message to the client
