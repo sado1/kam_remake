@@ -2946,7 +2946,7 @@ begin
       //Silently ignore if house doesn't exist
     end
     else
-      LogParamWarn('Actions.HouseAddWaresTo', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aType)), aCount]);
+      LogParamWarn('Actions.HouseAddWaresToEx', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aType)), aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

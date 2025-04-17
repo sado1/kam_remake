@@ -2217,7 +2217,7 @@ begin
       end;
       str := str + ']';
 
-      LogParamWarn('States.StatUnitKilledMultipleTypesCount', [aHand, str]);
+      LogParamWarn('States.StatUnitKilledMultipleTypesCountEx', [aHand, str]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -3654,7 +3654,7 @@ begin
             Exit(H.WareOrder[I]);
     end
     else
-      LogParamWarn('States.HouseWeaponsOrdered', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType))]);
+      LogParamWarn('States.HouseWeaponsOrderedEx', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
