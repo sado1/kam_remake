@@ -1013,7 +1013,7 @@ var
 
 begin
   aStrings.Append('Units stats');
-  aStrings.Append('Name;Initial;TrainingATM;Trained;Lost;Killed');
+  aStrings.Append('Name;Initial;TrainingATM;Dismissing;Trained;Lost;Killed');
 
   for UT := HUMANS_MIN to HUMANS_MAX do
     with Units[UT] do
