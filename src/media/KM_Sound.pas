@@ -624,12 +624,13 @@ begin
   begin
     ID := word(aSoundID);
     // Can not find sound with ID, silently Exit...
-    if ID > gRes.Sounds.fWavesCount then
+    if ID > gRes.Sounds.WavesCount then
       Exit;
 
     W := gRes.Sounds.fWaves[ID];
 
-    Assert(W.IsLoaded and (ID <= gRes.Sounds.fWavesCount), 'Sounds.dat seems to be short');
+    Assert(W.IsLoaded, 'Sounds.dat seems to be short');
+    //todo: Adjust SampleRate here
     AlBufferData(fALSounds[freeBuf].ALBuffer, AL_FORMAT_MONO8, @W.Data[0], W.Head.DataSize, W.Head.SampleRate);
     wavSize := W.Head.FileSize;
     wavFreq := W.Head.BytesPerSecond;

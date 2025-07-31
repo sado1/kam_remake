@@ -126,6 +126,8 @@ type
 
   TKMResSounds = class
   private
+    fWavesCount: Integer;
+
     fLocaleString: AnsiString; //Locale used to access warrior sounds
 
     fWarriorUseBackup: array[WARRIOR_MIN..WARRIOR_MAX] of boolean;
@@ -135,7 +137,6 @@ type
     function LoadWarriorSoundsFromFile(const aFile: string): Boolean;
     procedure SaveWarriorSoundsToFile(const aFile: string);
   public
-    fWavesCount: integer;
     fWaves: array of TKMSoundData;
     fWaveProps: array of TKMSoundProp;
 
@@ -153,6 +154,8 @@ type
     function GetSoundType(aSFX: TSoundFX): TKMSoundType; overload;
     function GetSoundType(aSFX: TWarriorSpeech): TKMSoundType; overload;
     function GetSoundType(aSFX: TAttackNotification): TKMSoundType; overload;
+
+    property WavesCount: Integer read fWavesCount;
 
     procedure ExportSounds;
   end;
