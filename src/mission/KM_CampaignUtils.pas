@@ -1,8 +1,6 @@
 unit KM_CampaignUtils;
 {$I KaM_Remake.inc}
 interface
-uses
-  KM_Defaults;
 
 type
   TKMCampaignUtils = class
@@ -14,8 +12,7 @@ type
 
 implementation
 uses
-  SysUtils,
-  KM_ResTexts;
+  SysUtils;
 
 
 class function TKMCampaignUtils.GetMissionFile(const aPath, aShortName: UnicodeString; aIndex: Byte; const aExt: UnicodeString = '.dat'): String;
