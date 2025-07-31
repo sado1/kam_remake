@@ -234,7 +234,7 @@ var
   Head: record Size, Count: Word; end;
   Tab1: array[1..200] of Integer;
   Tab2: array[1..200] of SmallInt;
-  I, Tmp: Integer;
+  I: Integer;
 begin
   if not FileExists(ExeDir + 'data' + PathDelim + 'sfx' + PathDelim + 'sounds.dat') then Exit;
 
@@ -249,8 +249,11 @@ begin
 
   for I := 1 to Head.Count do
   begin
-    S.Read(Tmp, 4); //Always '1' for existing waves
-    if Tab1[I] <> 0 then begin
+    var soundFlag: Integer;
+    S.Read(soundFlag, 4); // Always '1' for existing waves
+
+    if Tab1[I] <> 0 then
+    begin
       S.Read(fWaves[I].Head, SizeOf(fWaves[I].Head));
       SetLength(fWaves[I].Data, fWaves[I].Head.DataSize);
       S.Read(fWaves[I].Data[0], fWaves[I].Head.DataSize);
