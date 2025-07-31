@@ -298,7 +298,6 @@ var
   WriteResourceInfoToTXT  :Boolean = False; //Whenever to write txt files with defines data properties on loading
   EXPORT_SPRITE_ATLASES   :Boolean = False; //Whenever to write all generated textures to PNG on loading (extremely time consuming)
   EXPORT_SPRITE_ATLASES_RXA:Boolean = False; //Whenever to write all loaded from .RXA files textures to PNG on loading (super extremely time consuming)
-  EXPORT_INFLUENCE        :Boolean = False;
   LOG_FONTS_RAM_USAGE     :Boolean = False;
   DBG_EXPORT_SOUNDS_DAT   :Boolean = False;
 
