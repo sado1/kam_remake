@@ -97,7 +97,9 @@ var
 
 implementation
 uses
-  KM_Render, KM_RenderTypes, KM_RenderUI, dglOpenGL, KM_ResLocales,
+  System.Math,
+  dglOpenGL,
+  KM_Render, KM_RenderTypes, KM_RenderUI, KM_ResLocales,
   KM_GameApp, KM_GameSettings,
   KM_Music, KM_Sound,
   KM_Defaults;
@@ -397,12 +399,11 @@ begin
   if not IsActive then
     Exit;
 
-  //todo: Use consts instead of magic numbers
-  //  Esc           Space         Enter
-  if (Key = 27) or (Key = 32) or (Key = 13) then
+  if Key in [vkEscape, vkSpace, vkReturn] then
     Stop;
 
-  if Key = 80 then // P
+  // Pause or Resume
+  if Key = vkP then
   begin
     if IsPlay then
       Pause
@@ -410,19 +411,17 @@ begin
       Resume;
   end;
 
-  if Key = 37 then
+  // Back by 1 second
+  if Key = vkLeft then
   begin
-    fTime := fTime - 1000;
-    if fTime <= 0 then
-      fTime := 0;
+    fTime := Max(fTime - 1000, 0);
     libvlc_media_player_set_time(fMediaPlayer, fTime);
   end;
 
-  if Key = 39 then
+  // Forward by 1 second
+  if Key = vkRight then
   begin
-    fTime := fTime + 1000;
-    if fTime >= fLength then
-      fTime := fLength;
+    fTime := Min(fTime + 1000, fLength);
     libvlc_media_player_set_time(fMediaPlayer, fTime);
   end;
 {$ENDIF}
