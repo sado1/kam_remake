@@ -630,11 +630,26 @@ begin
     W := gRes.Sounds.fWaves[ID];
 
     Assert(W.IsLoaded, 'Sounds.dat seems to be short');
-    //todo: Adjust SampleRate here
-    AlBufferData(fALSounds[freeBuf].ALBuffer, AL_FORMAT_MONO8, @W.Data[0], W.Head.DataSize, W.Head.SampleRate);
-    wavSize := W.Head.FileSize;
-    wavFreq := W.Head.BytesPerSecond;
-    wavDuration := round(wavSize / wavFreq * 1000);
+
+    if FEAT_SFX_ADJUSTED_SAMPLE_RATE then
+    begin
+      case W.Head.BitsPerSample of
+        8:  wavFormat := AL_FORMAT_MONO8;
+        16: wavFormat := AL_FORMAT_MONO16;
+      else
+        raise Exception.Create('Unexpected wave bit depth');
+      end;
+
+      var wavSampleRate := gRes.Sounds.fWaveProps[ID].SampleRate;
+      AlBufferData(fALSounds[freeBuf].ALBuffer, wavFormat, @W.Data[0], W.Head.DataSize, wavSampleRate);
+      wavDuration := Round(W.Head.DataSize / wavSampleRate / W.Head.BytesPerSample * 1000);
+    end else
+    begin
+      AlBufferData(fALSounds[freeBuf].ALBuffer, AL_FORMAT_MONO8, @W.Data[0], W.Head.DataSize, W.Head.SampleRate);
+      wavSize := W.Head.FileSize;
+      wavFreq := W.Head.BytesPerSecond;
+      wavDuration := round(wavSize / wavFreq * 1000);
+    end;
   end;
 
   //Set source properties

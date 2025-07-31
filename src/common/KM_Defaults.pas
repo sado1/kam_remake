@@ -105,6 +105,8 @@ var
   FEAT_SCROLL_ACCEL       :Boolean = False; // Acceleration for viewport scrolling
   PATHFINDER_TO_USE       :Byte = 1;       // Use TKMPathfindingAStarNew
 
+  FEAT_SFX_ADJUSTED_SAMPLE_RATE :Boolean = True; // Adjust SFX sample rate
+
   ENABLE_VIDEOS_UNDER_WINE: Boolean = DEBUG_CFG; //Do we enable videos under wine
 
   //Cache / delivery / pathfinding
