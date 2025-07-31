@@ -9,6 +9,7 @@ uses
 type
   TAttackNotification = (anCitizens, anTown, anTroops);
 
+  // Original sound effects list from KaM
   TSoundFX = (
     sfxNone=0,
     sfxCornCut,
@@ -67,6 +68,7 @@ type
     sfxCatapultReload,
     sfxSiegeBuildingSmash);
 
+  // New sound effects added by KMR
   TSoundFXNew = (
     sfxnButtonClick,
     sfxnTrade,
@@ -81,7 +83,7 @@ type
     sfxnError,
     sfxnPeacetime);
 
-  //Sounds to play on different warrior orders
+  // Sounds to play on different warrior orders
   TWarriorSpeech = (
     spSelect, spEat, spRotLeft, spRotRight, spSplit,
     spJoin, spHalt, spMove, spAttack, spFormation,
@@ -105,9 +107,9 @@ type
 
   TKMSoundData = record
     Head: TWAVHeaderEx;
-    Data: array of byte;
-    Foot: array of byte;
-    IsLoaded: boolean;
+    Data: array of Byte;
+    Foot: array of Byte;
+    IsLoaded: Boolean;
   end;
 
   TKMSoundType = (stGame, stMenu);
