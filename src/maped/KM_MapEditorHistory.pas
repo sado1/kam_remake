@@ -28,15 +28,9 @@ type
   private
     // Each Undo step stores whole terrain for simplicity (and ease of jumping to random checkpoint in the list)
     fData: array of array of TKMUndoTile;
-    function MakeUndoTile(const aTile: TKMTerrainTile;
-                          const aPaintedTile: TKMPainterTile;
-                          const aMapEdTile: TKMMapEdTerrainTile): TKMUndoTile;
-    procedure RestoreTileFromUndo(var aTile: TKMTerrainTile;
-                                  var aTileExt: TKMTerrainTileExt;
-                                  var aPaintedTile: TKMPainterTile;
-                                  var aMapEdTile: TKMMapEdTerrainTile;
-                                  aUndoTile: TKMUndoTile;
-                                  aUnderHouse: Boolean);
+    function MakeUndoTile(const aTile: TKMTerrainTile; const aPaintedTile: TKMPainterTile; const aMapEdTile: TKMMapEdTerrainTile): TKMUndoTile;
+    procedure RestoreTileFromUndo(var aTile: TKMTerrainTile; var aTileExt: TKMTerrainTileExt; var aPaintedTile: TKMPainterTile;
+      var aMapEdTile: TKMMapEdTerrainTile; aUndoTile: TKMUndoTile; aUnderHouse: Boolean);
   public
     constructor Create(const aCaption: string);
     procedure Apply(aArea: TKMCheckpointArea = caAll; aUpdateImmediately: Boolean = True); override;
