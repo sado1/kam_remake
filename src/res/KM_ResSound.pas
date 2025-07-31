@@ -231,15 +231,17 @@ end;
 procedure TKMResSounds.LoadSoundsDAT;
 var
   Head: record Size, Count: Word; end;
-  Tab1: array[1..200] of Integer;
-  Tab2: array[1..200] of SmallInt;
+  WAVSize: array [1..200] of Integer;
+  Tab2: array [1..200] of SmallInt;
+  soundFlag: array [1..200] of Integer;
+  footerSize: array [1..200] of Integer;
 begin
   if not FileExists(ExeDir + 'data' + PathDelim + 'sfx' + PathDelim + 'sounds.dat') then Exit;
 
   var memoryStream := TMemoryStream.Create;
   memoryStream.LoadFromFile(ExeDir + 'data' + PathDelim + 'sfx' + PathDelim + 'sounds.dat');
   memoryStream.Read(Head, 4);
-  memoryStream.Read(Tab1, Head.Count*4); //Read Count*4bytes into Tab1(WaveSizes)
+  memoryStream.Read(WAVSize, Head.Count*4); //Read Count*4bytes into WAVSize(WaveSizes)
   memoryStream.Read(Tab2, Head.Count*2); //Read Count*2bytes into Tab2(No idea what is it)
 
   fWavesCount := Head.Count;
@@ -247,10 +249,11 @@ begin
 
   for var I := 1 to Head.Count do
   begin
-    var soundFlag: Integer;
-    memoryStream.Read(soundFlag, 4); // Always '1' for existing waves
+    footerSize[I] := 0;
 
-    if Tab1[I] <> 0 then
+    memoryStream.Read(soundFlag[I], 4); // Always '1' for existing waves
+
+    if WAVSize[I] <> 0 then
     begin
       // Wave header
       memoryStream.Read(fWaves[I].Head, SizeOf(fWaves[I].Head));
@@ -259,10 +262,14 @@ begin
       SetLength(fWaves[I].Data, fWaves[I].Head.DataSize);
       memoryStream.Read(fWaves[I].Data[0], fWaves[I].Head.DataSize);
 
-      // Wave footer
-      var footerSize := Tab1[I] - SizeOf(fWaves[I].Head) - fWaves[I].Head.DataSize;
-      SetLength(fWaves[I].Foot, footerSize);
-      memoryStream.Read(fWaves[I].Foot[0], footerSize);
+      // Footer contains optional LIST INFO chunks (start is aligned to 2-byte boundaries):
+      //  - ICOP - Copyright information about the file (e.g., "Copyright © Microsoft Corp. 1995")
+      //  - ICRD - The date the subject of the file was created (e.g., "1995-10-24.A")
+      //  - ISFT - Name of the software package used to create the file (e.g. "GoldWave v2.10 (C) Chris Craig")
+      // Since these chunks do not bear any functional load, we just ignore them
+      footerSize[I] := WAVSize[I] - SizeOf(fWaves[I].Head) - fWaves[I].Head.DataSize;
+      SetLength(fWaves[I].Foot, footerSize[I]);
+      memoryStream.Read(fWaves[I].Foot[0], footerSize[I]);
     end;
     fWaves[I].IsLoaded := True;
   end;
