@@ -230,35 +230,33 @@ end;
 
 procedure TKMResSounds.LoadSoundsDAT;
 var
-  S: TMemoryStream;
   Head: record Size, Count: Word; end;
   Tab1: array[1..200] of Integer;
   Tab2: array[1..200] of SmallInt;
-  I: Integer;
 begin
   if not FileExists(ExeDir + 'data' + PathDelim + 'sfx' + PathDelim + 'sounds.dat') then Exit;
 
-  S := TMemoryStream.Create;
-  S.LoadFromFile(ExeDir + 'data' + PathDelim + 'sfx' + PathDelim + 'sounds.dat');
-  S.Read(Head, 4);
-  S.Read(Tab1, Head.Count*4); //Read Count*4bytes into Tab1(WaveSizes)
-  S.Read(Tab2, Head.Count*2); //Read Count*2bytes into Tab2(No idea what is it)
+  var memoryStream := TMemoryStream.Create;
+  memoryStream.LoadFromFile(ExeDir + 'data' + PathDelim + 'sfx' + PathDelim + 'sounds.dat');
+  memoryStream.Read(Head, 4);
+  memoryStream.Read(Tab1, Head.Count*4); //Read Count*4bytes into Tab1(WaveSizes)
+  memoryStream.Read(Tab2, Head.Count*2); //Read Count*2bytes into Tab2(No idea what is it)
 
   fWavesCount := Head.Count;
   SetLength(fWaves, fWavesCount+1);
 
-  for I := 1 to Head.Count do
+  for var I := 1 to Head.Count do
   begin
     var soundFlag: Integer;
-    S.Read(soundFlag, 4); // Always '1' for existing waves
+    memoryStream.Read(soundFlag, 4); // Always '1' for existing waves
 
     if Tab1[I] <> 0 then
     begin
-      S.Read(fWaves[I].Head, SizeOf(fWaves[I].Head));
+      memoryStream.Read(fWaves[I].Head, SizeOf(fWaves[I].Head));
       SetLength(fWaves[I].Data, fWaves[I].Head.DataSize);
-      S.Read(fWaves[I].Data[0], fWaves[I].Head.DataSize);
+      memoryStream.Read(fWaves[I].Data[0], fWaves[I].Head.DataSize);
       SetLength(fWaves[I].Foot, Tab1[I]-SizeOf(fWaves[I].Head)-fWaves[I].Head.DataSize);
-      S.Read(fWaves[I].Foot[0], Tab1[I]-SizeOf(fWaves[I].Head)-fWaves[I].Head.DataSize);
+      memoryStream.Read(fWaves[I].Foot[0], Tab1[I]-SizeOf(fWaves[I].Head)-fWaves[I].Head.DataSize);
     end;
     fWaves[I].IsLoaded := True;
   end;
@@ -269,7 +267,7 @@ begin
   //i,j,k,l,Index:word;
   BlockRead(f,Props[1],26*Head.Count);}
 
-  S.Free;
+  memoryStream.Free;
 end;
 
 
