@@ -105,11 +105,21 @@ type
     DataSize: Integer; //Extension
   end;
 
+  // Actually this is WAV structure
   TKMSoundData = record
     Head: TWAVHeaderEx;
     Data: array of Byte;
-    Foot: array of Byte;
+    Foot: array of Byte; // Contains optional WAV chunks
+
+    // Our custom field, should be probably moved out
     IsLoaded: Boolean;
+  end;
+
+  TKMSoundProp = packed record
+    SampleRate: Integer;
+    Volume: Integer; // Untested, but I'm quite sure it is volume (see KM_SoundFX.pas from 14.07.2009)
+    E, F, G, H, I, J, K, L: Word; // Unknown, but have some values
+    Id: Word;
   end;
 
   TKMSoundType = (stGame, stMenu);
@@ -127,6 +137,7 @@ type
   public
     fWavesCount: integer;
     fWaves: array of TKMSoundData;
+    fWaveProps: array of TKMSoundProp;
 
     NotificationSoundCount: array[TAttackNotification] of byte;
     WarriorSoundCount: array[WARRIOR_MIN..WARRIOR_MAX, TWarriorSpeech] of byte;
@@ -149,6 +160,7 @@ type
 
 implementation
 uses
+  System.Math, System.StrUtils,
   KM_CommonClasses;
 
 
@@ -205,6 +217,67 @@ const
     'UI'   + PathDelim + 'Beacon.wav',
     'UI'   + PathDelim + 'Error.wav',
     'Misc' + PathDelim + 'PeaceTime.wav');
+
+
+  // Const because RTTI is so clunky and slow
+  SFX_NAME: array [TSoundFX] of string = (
+    'sfxNone',
+    'sfxCornCut',
+    'sfxDig',
+    'sfxPave',
+    'sfxMineStone',
+    'sfxCornSow',
+    'sfxChopTree',
+    'sfxhousebuild',
+    'sfxplacemarker',
+    'sfxClick',
+    'sfxmill',
+    'sfxsaw',
+    'sfxwineStep',
+    'sfxwineDrain',
+    'sfxmetallurgists',
+    'sfxcoalDown',
+    'sfxPig1', 'sfxPig2', 'sfxPig3', 'sfxPig4',
+    'sfxMine',
+    'sfxunknown21', //Pig?
+    'sfxLeather',
+    'sfxBakerSlap',
+    'sfxCoalMineThud',
+    'sfxButcherCut',
+    'sfxSausageString',
+    'sfxQuarryClink',
+    'sfxTreeDown',
+    'sfxWoodcutterDig',
+    'sfxCantPlace',
+    'sfxMessageOpen',
+    'sfxMessageClose',
+    'sfxMessageNotice',
+    //Usage of melee sounds can be found in Docs\Melee sounds in KaM.csv
+    'sfxMelee34', 'sfxMelee35', 'sfxMelee36', 'sfxMelee37', 'sfxMelee38',
+    'sfxMelee39', 'sfxMelee40', 'sfxMelee41', 'sfxMelee42', 'sfxMelee43',
+    'sfxMelee44', 'sfxMelee45', 'sfxMelee46', 'sfxMelee47', 'sfxMelee48',
+    'sfxMelee49', 'sfxMelee50', 'sfxMelee51', 'sfxMelee52', 'sfxMelee53',
+    'sfxMelee54', 'sfxMelee55', 'sfxMelee56', 'sfxMelee57',
+    'sfxBowDraw',
+    'sfxArrowHit',
+    'sfxCrossbowShoot',  //60
+    'sfxCrossbowDraw',
+    'sfxBowShoot',       //62
+    'sfxBlacksmithBang',
+    'sfxBlacksmithFire',
+    'sfxCarpenterHammer', //65
+    'sfxHorse1', 'sfxHorse2', 'sfxHorse3', 'sfxHorse4',
+    'sfxRockThrow',
+    'sfxHouseDestroy',
+    'sfxSchoolDing',
+    //Below are TPR sounds ...
+    'sfxSlingerShoot',
+    'sfxBalistaShoot',
+    'sfxCatapultShoot',
+    'sfxunknown76',
+    'sfxCatapultReload',
+    'sfxSiegeBuildingSmash'
+  );
 
 
 { TKMResSounds }
@@ -274,13 +347,41 @@ begin
     fWaves[I].IsLoaded := True;
   end;
 
-  {BlockRead(f,c,20);
-  //Packed record
-  //SampleRate,Volume,a,b:integer;
-  //i,j,k,l,Index:word;
-  BlockRead(f,Props[1],26*Head.Count);}
+  var numberOfEntries: Integer;
+  memoryStream.Read(numberOfEntries, 4); // 400
+  SetLength(fWaveProps, numberOfEntries+1);
+  var t: Integer;
+  memoryStream.Read(t, 4); // 78
+  memoryStream.Read(t, 4); // 78
+  memoryStream.Read(t, 4); // 77
+  var entrySize: Integer;
+  memoryStream.Read(entrySize, 4); // 26
+
+  for var K := 1 to numberOfEntries do
+    memoryStream.Read(fWaveProps[K], entrySize);
 
   memoryStream.Free;
+
+  if DBG_EXPORT_SOUNDS_DAT then
+  begin
+    var sl := TStringList.Create;
+    begin
+      sl.Append('Id  Name              WAVSize  Tab2   Rate   BPS  Length |   Rate  Volume   E    F    G    H    I    J    K    L   Id');
+      for var K := 1 to fWavesCount do
+      if Length(fWaves[K].Data) > 0 then
+      begin
+        var dur := Round(fWaves[K].Head.DataSize / Max(fWaves[K].Head.BytesPerSecond, 1) * 1000);
+
+        sl.Append(Format('%-3d %-18s %6d %5d %6d %2dbit %5dms | %6d %6d %4d %4d %4d %4d %4d %4d %4d %4d %4d',
+          [K, LeftStr(SFX_NAME[TSoundFX(K)], 18), WAVSize[K], Tab2[K], fWaves[K].Head.SampleRate, fWaves[K].Head.BitsPerSample, dur,
+          fWaveProps[K].SampleRate, fWaveProps[K].Volume, fWaveProps[K].E, fWaveProps[K].F, fWaveProps[K].G, fWaveProps[K].H, fWaveProps[K].I, fWaveProps[K].J, fWaveProps[K].K, fWaveProps[K].L, fWaveProps[K].Id
+          ]));
+      end;
+      sl.SaveToFile(ExeDir + 'export_sounds.txt');
+    end;
+    sl.Free;
+    Halt;
+  end;
 end;
 
 

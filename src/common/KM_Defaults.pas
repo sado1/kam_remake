@@ -298,6 +298,7 @@ var
   EXPORT_SPRITE_ATLASES_RXA:Boolean = False; //Whenever to write all loaded from .RXA files textures to PNG on loading (super extremely time consuming)
   EXPORT_INFLUENCE        :Boolean = False;
   LOG_FONTS_RAM_USAGE     :Boolean = False;
+  DBG_EXPORT_SOUNDS_DAT   :Boolean = False;
 
 
 const
