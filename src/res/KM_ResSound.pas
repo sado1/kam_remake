@@ -252,11 +252,17 @@ begin
 
     if Tab1[I] <> 0 then
     begin
+      // Wave header
       memoryStream.Read(fWaves[I].Head, SizeOf(fWaves[I].Head));
+
+      // Wave data
       SetLength(fWaves[I].Data, fWaves[I].Head.DataSize);
       memoryStream.Read(fWaves[I].Data[0], fWaves[I].Head.DataSize);
-      SetLength(fWaves[I].Foot, Tab1[I]-SizeOf(fWaves[I].Head)-fWaves[I].Head.DataSize);
-      memoryStream.Read(fWaves[I].Foot[0], Tab1[I]-SizeOf(fWaves[I].Head)-fWaves[I].Head.DataSize);
+
+      // Wave footer
+      var footerSize := Tab1[I] - SizeOf(fWaves[I].Head) - fWaves[I].Head.DataSize;
+      SetLength(fWaves[I].Foot, footerSize);
+      memoryStream.Read(fWaves[I].Foot[0], footerSize);
     end;
     fWaves[I].IsLoaded := True;
   end;
