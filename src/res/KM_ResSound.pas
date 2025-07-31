@@ -312,55 +312,57 @@ begin
   if not FileExists(ExeDir + 'data' + PathDelim + 'sfx' + PathDelim + 'sounds.dat') then Exit;
 
   var memoryStream := TMemoryStream.Create;
-  memoryStream.LoadFromFile(ExeDir + 'data' + PathDelim + 'sfx' + PathDelim + 'sounds.dat');
-  memoryStream.Read(Head, 4);
-  memoryStream.Read(WAVSize, Head.Count*4); //Read Count*4bytes into WAVSize(WaveSizes)
-  memoryStream.Read(Tab2, Head.Count*2); //Read Count*2bytes into Tab2(No idea what is it)
+  try
+    memoryStream.LoadFromFile(ExeDir + 'data' + PathDelim + 'sfx' + PathDelim + 'sounds.dat');
+    memoryStream.Read(Head, 4);
+    memoryStream.Read(WAVSize, Head.Count*4); //Read Count*4bytes into WAVSize(WaveSizes)
+    memoryStream.Read(Tab2, Head.Count*2); //Read Count*2bytes into Tab2(No idea what is it)
 
-  fWavesCount := Head.Count;
-  SetLength(fWaves, fWavesCount+1);
+    fWavesCount := Head.Count;
+    SetLength(fWaves, fWavesCount+1);
 
-  for var I := 1 to Head.Count do
-  begin
-    footerSize[I] := 0;
-
-    memoryStream.Read(soundFlag[I], 4); // Always '1' for existing waves
-
-    if WAVSize[I] <> 0 then
+    for var I := 1 to Head.Count do
     begin
-      // Wave header
-      memoryStream.Read(fWaves[I].Head, SizeOf(fWaves[I].Head));
+      footerSize[I] := 0;
 
-      // Wave data
-      SetLength(fWaves[I].Data, fWaves[I].Head.DataSize);
-      memoryStream.Read(fWaves[I].Data[0], fWaves[I].Head.DataSize);
+      memoryStream.Read(soundFlag[I], 4); // Always '1' for existing waves
 
-      // Footer contains optional LIST INFO chunks (start is aligned to 2-byte boundaries):
-      //  - ICOP - Copyright information about the file (e.g., "Copyright © Microsoft Corp. 1995")
-      //  - ICRD - The date the subject of the file was created (e.g., "1995-10-24.A")
-      //  - ISFT - Name of the software package used to create the file (e.g. "GoldWave v2.10 (C) Chris Craig")
-      // Since these chunks do not bear any functional load, we just ignore them
-      footerSize[I] := WAVSize[I] - SizeOf(fWaves[I].Head) - fWaves[I].Head.DataSize;
-      SetLength(fWaves[I].Foot, footerSize[I]);
-      memoryStream.Read(fWaves[I].Foot[0], footerSize[I]);
+      if WAVSize[I] <> 0 then
+      begin
+        // Wave header
+        memoryStream.Read(fWaves[I].Head, SizeOf(fWaves[I].Head));
+
+        // Wave data
+        SetLength(fWaves[I].Data, fWaves[I].Head.DataSize);
+        memoryStream.Read(fWaves[I].Data[0], fWaves[I].Head.DataSize);
+
+        // Footer contains optional LIST INFO chunks (start is aligned to 2-byte boundaries):
+        //  - ICOP - Copyright information about the file (e.g., "Copyright © Microsoft Corp. 1995")
+        //  - ICRD - The date the subject of the file was created (e.g., "1995-10-24.A")
+        //  - ISFT - Name of the software package used to create the file (e.g. "GoldWave v2.10 (C) Chris Craig")
+        // Since these chunks do not bear any functional load, we just ignore them
+        footerSize[I] := WAVSize[I] - SizeOf(fWaves[I].Head) - fWaves[I].Head.DataSize;
+        SetLength(fWaves[I].Foot, footerSize[I]);
+        memoryStream.Read(fWaves[I].Foot[0], footerSize[I]);
+      end;
+      fWaves[I].IsLoaded := True;
     end;
-    fWaves[I].IsLoaded := True;
+
+    var numberOfEntries: Integer;
+    memoryStream.Read(numberOfEntries, 4); // 400
+    SetLength(fWaveProps, numberOfEntries+1);
+    var t: Integer;
+    memoryStream.Read(t, 4); // 78
+    memoryStream.Read(t, 4); // 78
+    memoryStream.Read(t, 4); // 77
+    var entrySize: Integer;
+    memoryStream.Read(entrySize, 4); // 26
+
+    for var K := 1 to numberOfEntries do
+      memoryStream.Read(fWaveProps[K], entrySize);
+  finally
+    memoryStream.Free;
   end;
-
-  var numberOfEntries: Integer;
-  memoryStream.Read(numberOfEntries, 4); // 400
-  SetLength(fWaveProps, numberOfEntries+1);
-  var t: Integer;
-  memoryStream.Read(t, 4); // 78
-  memoryStream.Read(t, 4); // 78
-  memoryStream.Read(t, 4); // 77
-  var entrySize: Integer;
-  memoryStream.Read(entrySize, 4); // 26
-
-  for var K := 1 to numberOfEntries do
-    memoryStream.Read(fWaveProps[K], entrySize);
-
-  memoryStream.Free;
 
   if DBG_EXPORT_SOUNDS_DAT then
   begin
