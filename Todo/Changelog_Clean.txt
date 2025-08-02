@@ -204,7 +204,8 @@ Delivery system:
 - change Army Power rates: Cavalry: from 6 to 6.2 peasant from 1.5 to 1.2
 - add option to save ware distribution between games in the menu, made by @greeny
 - campaign menu: allow to stretch briefing scroll image in case its not long enough
-
+ +  Fixed soft shadows generation bug that lead to wider shadows
+ 
 Fixes: 
 - tower could not attack unit if there was a tree in the diagonal way
 - several fixes in the NavMeshGenerator and AAI
@@ -804,12 +805,6 @@ Removed SP maps:
 - Mission For The Competition 
 - TPR_Mission7
 
-
-
-[2023.01.22]
-------------------------------
-Game:
- +  Fixed soft shadows generation bug that lead to wider shadows
 
 
 
