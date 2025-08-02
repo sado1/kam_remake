@@ -481,7 +481,7 @@
         <DCCReference Include="src\net\KM_NetServer.pas"/>
         <DCCReference Include="src\net\KM_NetServerOverbyte.pas"/>
         <DCCReference Include="src\net\KM_NetServerLNet.pas"/>
-        <DCCReference Include="src\net\KM_NetServerQuery.pas"/>
+        <DCCReference Include="src\net\KM_NetServerPoller.pas"/>
         <DCCReference Include="src\net\KM_NetTypes.pas"/>
         <DCCReference Include="src\net\KM_NetUDP.pas"/>
         <DCCReference Include="src\net\KM_NetUDPOverbyte.pas"/>

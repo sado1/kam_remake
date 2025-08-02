@@ -901,7 +901,7 @@ var
                      - gTerrain.LandExt^[aLoc.Y + 1, aLoc.X].RenderHeight / CELL_HEIGHT_DIV;
     if aDoImmediateRender then
     begin
-      RenderSprite(rxHouses, aId, CornerX, CornerY, $0, aDoHighlight, aHighlightColor)
+      RenderSprite(rxHouses, aId, CornerX, CornerY, $0, aDoHighlight, aHighlightColor);
     end else
       fRenderList.AddSprite(rxHouses, aId, CornerX, CornerY);
   end;
@@ -910,7 +910,7 @@ begin
   rxData := fRXData[rxHouses];
 
   for I := 1 to 4 do
-  if (R1[I - 1]) > 0 then
+  if R1[I - 1] > 0 then
   begin
     count := Min(R1[I - 1], MAX_WARES_IN_HOUSE);
     I2 := I;
@@ -1254,7 +1254,7 @@ begin
 
     TKMRender.BindTexture(Tex.TexID);
     if DoHighlight then
-      glColor3ub(HighlightColor AND $FF, HighlightColor SHR 8 AND $FF, HighlightColor SHR 16 AND $FF);
+      glColor3ub(HighlightColor and $FF, HighlightColor shr 8 and $FF, HighlightColor shr 16 and $FF);
     glBegin(GL_QUADS);
       glTexCoord2f(Tex.u1, Tex.v2); glVertex2f(rX                     , rY                      );
       glTexCoord2f(Tex.u2, Tex.v2); glVertex2f(rX+pxWidth/CELL_SIZE_PX, rY                      );
