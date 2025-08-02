@@ -1,4 +1,5 @@
-[6:37 PM]Rey: KMR Beta 8000+ r8207
+KaM Remake Beta r8207
+------------------------------
 Many small and some big changes there, including:
 - TownHall
 - Woodcutters house Cutting point and new 'Plant Only' mode
@@ -11,29 +12,35 @@ Many small and some big changes there, including:
 - and many many other smaller things
 
 
-[7:38 PM]Rey: KMR Beta 8000+ r8219
+KaM Remake Beta r8219
+------------------------------
 Fresh hot fixes
 
 
-[10:37 PM]Rey: KMR Beta 8k+ r8222
+KaM Remake Beta r8222
+------------------------------
 House UI hotfix
 
 
-[11:32 PM]Rey: KMR Beta 8k+ r 8225
+KaM Remake Beta r8225
+------------------------------
 Save download hotfix
 
 
-[11:52 PM]Rey: KMR Beta 8k+ r8228
+KaM Remake Beta r8228
+------------------------------
 Split order in MP game fix
 
 
-[11:32 AM]Rey: KMR Beta 8k+ r8259
+KaM Remake Beta r8259
+------------------------------
 Fix for occasional serfs deliver stone/timber to constructing houses without roads
 Added russian translation and ability to add new translations. New translations could be done with TranslationManager.exe, saved, and then sent to me as *.libx file from data/text/ folder
 Minor fixes
 
 
-[11:43 PM]Rey: KMR Beta 8k+ r8302
+KaM Remake Beta r8302
+------------------------------
 1. Rebalanced TownHall units gold prices to 3-3-3-5-10-10
 2. Added new Campaign by grayter: On Foreign Lands - Empire Reborn
 3. Change tick calculation to real value, so, f.e., old r6720 x3 is equal to r8300 x2 speed. Game is speed itself remains almost the same, but the speed value is now very accurate.
@@ -42,7 +49,8 @@ BugFixes:
 - many other minor fixes
 
 
-[12:10 AM]Rey: KMR Beta 8k+ r8355
+KaM Remake Beta r8355
+------------------------------
 1. Added Random Map Generator (RMG), made by Toxic! 
 You can try it in Map Editor -> Terrain Editing -> Copy/Paste -> RMG Settings. Check screenshot: https://puu.sh/z4B8z/134b0eb252.png
 There are lots of settings, you can try them on your own. Detailed description will be made later.
@@ -51,7 +59,8 @@ There are lots of settings, you can try them on your own. Detailed description w
 4. Other minor fixes, as usual
 
 
-[8:18 PM]Rey: KMR Beta 8k+ r8614
+KaM Remake Beta r8614
+------------------------------
 1. Added unit dismiss button, to force unit go back to school (without gold reward, though)
 2. Added fixes for original TPR and TSK campaigns by @VatrixGLHF 
 3. MapEd multiple small improvement and changes (added several layers, lots of hotkeys, ability to edit mission txt params and other features)
@@ -60,19 +69,22 @@ There are lots of settings, you can try them on your own. Detailed description w
 6. Other bug fixes
 
 
-[9:31 AM]Rey: KMR Beta 8k+ r8616
+KaM Remake Beta r8616
+------------------------------
 Fresh update after getting new bugreport from older versions (r8355 and earlier)
 1. Fixed old crash while open game stats (F3) - could happen if player deleted house in 'closed for worker state' earlier
 
 
-[4:20 AM]Rey: KMR Beta 8k+ r8638
+KaM Remake Beta r8638
+------------------------------
 1. Fixed MapEd bottom and right border problems after map save
 2. MapEd: Added Z-coordinate (corner height)
 3. Slight improvements and fixes with tables in MapEd (Goals/Attacks) and some small render fixes
 4. Fixed error on game start while in Fullscreen mode
 
 
-[6:14 AM]Rey: KMR Beta 8k+ r8687
+KaM Remake Beta r8687
+------------------------------
 1. Added linux servers distributives. Several active servers are on at the moment
 2. Fixed game crash on the game start after change from/to fullscreen
 3. MapEd: added ability to set player color via BGR or RGB color code
@@ -81,7 +93,8 @@ Fresh update after getting new bugreport from older versions (r8355 and earlier)
 6. Fixed TSK mission 12 script (by Strangelove)
 
 
-[2:21 AM]Rey: KMR Beta 8k+ r8739
+KaM Remake Beta r8739
+------------------------------
 1. Fixed game crash when try to equip soldiers from barracks with Shift + RMB
 2. Added ability to observe detailed game statistics during the game. Added corresponding
 button to statistics menu (F3).
@@ -90,7 +103,8 @@ Spectators (or while in replay) could see stats for all players, while players i
 4. Added fixes to TPR/TSK original Campaigns by Vatrix
 
 
-[7:20 PM]Rey: KMR Beta 8k+ r8746
+KaM Remake Beta r8746
+------------------------------
 1. Fixed occasional game crash on locale change
 2. Scripts: added ability to setup custom event handlers. That will allow to have multiple handlers for the same event, invoked one after another. Order of invokation: 1st is default event handler (OnMissionStart, f.e.), then custom handlers in order of declaration in script.
 
@@ -102,18 +116,21 @@ evtMissionStart - event type identifier ('evt' - prefix, 'MissionStart' - event 
 OnCustomMissionStart - name of script procedure, that will be also invoked on mission start (same as default mission start event handler OnMissionStart)
 
 
-[4:21 PM]Rey: KMR Beta 8k+ r8754
+KaM Remake Beta r8754
+------------------------------
 1. Fixed bug for custom event handlers from r8746, when they did not reloaded from save
 2. Added ability to add mission 'difficulty' in MapEd Mission Parameters popup window. If those difficulty level are set there, then player will be able to choose difficulty in the SP menu (only for SP now). 
 Then mapmaker/scriptmaker can get this difficulty level via calling new script function States.MissionDifficulty, which return result as TKMMissionDifficulty enumeration. For maps without difficulty (all current maps) mdNone will return. 
 
 
-[1:59 PM]Rey: KMR Beta 8k+ r8769
+KaM Remake Beta r8769
+------------------------------
 1. Fixed reported bug, when game occasionally crash on game save
 2. added various scripting functions for AI. Full list check on my wiki page https://github.com/reyandme/kam_remake/wiki
 
 
-[9:56 PM]Rey: KMR Beta 9k+ r9048
+KaM Remake Beta r9048
+------------------------------
 1. Added new advanced AI made by @Toxic. Available for MP game only now.
 There could be some bugs and lots of room for improvement, anyway its should be stronger then 'classic AI'
 2. Minor game gui features:
@@ -125,13 +142,15 @@ There could be some bugs and lots of room for improvement, anyway its should be 
 3. Added scripting functions to check if field / house plan is placed at location
 
 
-[7:31 PM]Rey: KMR Beta 9k+ r9128
+KaM Remake Beta r9128
+------------------------------
 1. Fixed game crash on some maps, caused by modified navmesh. 
 2. Numerous bugfixes and improvements of Advanced AI.
 3. Other minor bugfixes
 
 
-[11:45 AM]Rey: KMR beta 9k+ r9175
+KaM Remake Beta r9175
+------------------------------
 1. More advanced AI improvements and bug fixes
 2. Added players color mode (self/ally/enemy). Possible to set in in-game settings menu (F4). Added hotkey for fast switch ('O', by default).
 Colors are adjustable in KaM_Remake_settings.ini. 
@@ -144,7 +163,8 @@ Colors are adjustable in KaM_Remake_settings.ini.
 5. Small bug fixes
 
 
-[1:09 AM]Rey: KMR Beta 9k+ r9371 unstable
+KaM Remake Beta r9371
+------------------------------
 1. Added support for up to 65k terrain tiles and objects
 2. Added ~50 new tiles, mostly transitions from stone, but also new coal and iron tiles with 5 resource per tile
 3. Added new brushes for automatic transitions between terrains. It uses masks of 3 types (atm, easy to add more types in future). Its possible to make transitions between up to 4 terrain types. 
@@ -159,7 +179,8 @@ Unfortunally its hard to reach quality of transtition of prepainted tile, but so
 11. added Ctrl + F11 hotkey to open F11 menu with shrinked debug panel. Usable to make fast screenshots while in fullscreen mode.
 
 
-[8:55 PM]Rey: KMR Beta 9k+ r9397 with various fixes:
+KaM Remake Beta r9397
+------------------------------
 1. Fixed delivery error, which cause game crash
 2. Fixed ally player FOW render on game start
 3. Fixed wrong terrain kind load from maps, made in the previous versions, which cause wrong tile painting with brushes in the MapEd
@@ -169,7 +190,8 @@ Unfortunally its hard to reach quality of transtition of prepainted tile, but so
 7. AI and RMG small fixes
 
 
-[8:55 PM]Rey: KMR Beta 9k+ r9473
+KaM Remake Beta r9473
+------------------------------
 1. Fixed advanced AI bug, caused AI to produce too many wooden shields instead of leather jackets
 2. Fixed old bug (since r6720) with unit FOW revelation at his current position happened only on his next move
 3. House FOW revelation is applied from all house points, not only from its bottom right corner point
@@ -179,14 +201,16 @@ Unfortunally its hard to reach quality of transtition of prepainted tile, but so
 Basically it means - if there is some ready product at house then any serf who come inside that house will take something out of it.
 
 
-[9:24 PM]Rey: KMR Beta 9k+ r9482
+KaM Remake Beta r9482
+------------------------------
 1. Fixed MapEd crash for new map
 2. Added export game statistics to csv
 3. Limit number of units appeared after house destroy to 50 (was 255)
 4. Limit max number of equpped units at once to 100 (you can't occasionaly equip 1000 with shift + rmb anymore)
 
 
-[8:24 PM]Rey: KMR Beta 9k+ r9582
+KaM Remake Beta r9582
+------------------------------
 1. Added exported game stats CRC validation (stats export is available after game end, on game results screen)
 2. Spectators/Replay - unblock 'Build' button (F1) to try test house build (show house / field marks)
 3. Serfs can now start eat food immidiately after bringing it into the Inn, if they are hungry
@@ -205,7 +229,8 @@ Those limit settings should be done in server's settings.ini file
 14. Bugfixes, AI / RMG improvements 
 
 
-[3:34 PM]Rey: KMR Beta 9k+ r9624
+KaM Remake Beta r9624
+------------------------------
 1. Fixed errors in previous beta release: crash for advanced AI and error in lobby when all map locs are selected
 2. Added new parameter in options menu: Autosave at game end. Will automatically save game at the end of game with name template %MAPNAME% %Date% %#game this day%
 3. Fix bug when drag scrolling with MMB near screen border (viewport start scrolling as normal, but should be blocked because of drag scrolling)
@@ -213,14 +238,16 @@ Those limit settings should be done in server's settings.ini file
 5. Spectate / replay - added panel where you can see some of the game stats - check dropbox at the right top corner. Originally made by @ZblCoder 
 
 
-[10:52 PM]Rey: KMR Beta 9k+ r9640
+KaM Remake Beta r9640
+------------------------------
 1. Fixed crashes and errors from previous version
  (TH units cost / crase on save load, new tiles transitions, coal market price and others) 
 2. Alpha stage feature: add ability to use simple Dynamic FOW. 
 It is set to ON by server settings. Try it on 'Bimbol's Dynamic FOW' server
 
 
-[9:32 PM]Rey: KMR beta 9k+ r9677
+KaM Remake Beta r9677
+------------------------------
 1. Fixed TH units costs
 2. Fixed some of the crashes and bugs
 3. Added redundant logging and saved info to make it easier to find replay / game inconsistency
@@ -232,14 +259,16 @@ It is set to ON by server settings. Try it on 'Bimbol's Dynamic FOW' server
 9. Fix Server details panel on small displays (when haev ~14 players in lobby). Add new ScrollPanel control, could be usefull when panel size is limited
 
 
-[7:31 PM]Rey: KMR Beta 9k+ r9685
+KaM Remake Beta r9685
+------------------------------
 1. Do not allow dismiss hungry units
 2. Fixed bug for double counting TH gold as consumed, when destroy TH
 3. Fixed redelivery bug, when serf was offroad (serf could not find a road way to any house, so carried ware was lost)
 4. Minor fixes
 
 
-[10:36 AM]Rey: KMR Beta 9k+ r9700
+KaM Remake Beta r9700
+------------------------------
 1. Fixed SP game crash
 2. Turned off debug option, caused MP game desync and crash when player quit game
 3. other reported minor bugfixes
