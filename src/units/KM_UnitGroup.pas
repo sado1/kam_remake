@@ -2,8 +2,8 @@ unit KM_UnitGroup;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, Math, SysUtils, Types, Generics.Collections,
-  KM_Defaults, KM_CommonClasses, KM_CommonTypes, KM_Points, KM_Houses, KM_Units,
+  Generics.Collections,
+  KM_Defaults, KM_CommonClasses, KM_Points, KM_Houses, KM_Units,
   KM_UnitWarrior,
   KM_UnitGroupTypes,
   KM_HandEntity;
@@ -234,8 +234,8 @@ type
 
 implementation
 uses
-  TypInfo,
-  KM_Entity,
+  Classes, Math, SysUtils, Types, TypInfo,
+  KM_CommonTypes, KM_Entity,
   KM_Game, KM_GameParams, KM_GameUIDTracker,
   KM_Hand, KM_HandsCollection,
   KM_Terrain, KM_CommonUtils,
@@ -389,7 +389,7 @@ begin
   end;
 
   for I := 0 to fOffenders.Count - 1 do
-    fOffenders[I] := TKMUnitWarrior(gHands.GetUnitByUID(Integer(TKMUnitWarrior(fOffenders[I]))));
+    fOffenders[I] := TKMUnitWarrior(gHands.GetUnitByUID(Integer(fOffenders[I])));
 
   fOrderTargetGroup := gHands.GetGroupByUID(Integer(fOrderTargetGroup));
   fOrderTargetHouse := gHands.GetHouseByUID(Integer(fOrderTargetHouse));
@@ -1725,7 +1725,7 @@ begin
     ClearOffenders;
 
   //Delete from group
-  newLeader := TKMUnitWarrior(aUnit);
+  newLeader := aUnit;
   fMembers.Remove(newLeader);
   newLeader.ReleasePointer;
 
@@ -2072,7 +2072,7 @@ var
 begin
   //Remove previous value
   ClearOrderTarget;
-  if (aUnit <> nil) and not (aUnit.IsDeadOrDying) then
+  if (aUnit <> nil) and not aUnit.IsDeadOrDying then
   begin
     fOrderTargetUnit := aUnit.GetPointer; //Else it will be nil from ClearOrderTarget
     if (aUnit is TKMUnitWarrior) and not IsRanged then
@@ -2303,7 +2303,7 @@ end;
 function TKMUnitGroups.AddGroup(aWarrior: TKMUnitWarrior): TKMUnitGroup;
 begin
   Result := TKMUnitGroup.Create(gUIDTracker.GetNewUID, aWarrior);
-  fGroups.Add(Result)
+  fGroups.Add(Result);
 end;
 
 
