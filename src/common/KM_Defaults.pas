@@ -1,12 +1,9 @@
 unit KM_Defaults;
 {$I KaM_Remake.inc}
 interface
-uses
-  SysUtils;
 
-//Global constants
+// Global constants
 const
-//|===================| <- constant name length
   MAX_MAP_SIZE          = 256;
   MIN_MAP_SIZE          = 32;
   CELL_SIZE_PX          = 40;           //Single cell size in pixels (width)
@@ -1134,6 +1131,8 @@ const
   );
 
 implementation
+uses
+  SysUtils;
 
 initialization
 begin
