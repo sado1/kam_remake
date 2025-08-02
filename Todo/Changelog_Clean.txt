@@ -1468,6 +1468,127 @@ KaM Remake Beta r10400
 - added 2 new script state functions: States.GroupInFIght and States.WarriorInFight to check if group/warrior is in fight
 
 
+KaM Remake Beta r10354
+------------------------------
+- fixed Barracks -> Market delivery
+- fixed crash in MapEd when using QuickPlay option
+
+
+KaM Remake Beta r10351
+------------------------------
+- fixed crash on player quit for the game with 3 or more players
+- fixed several other desynchronisation
+- fixed lost disconnect packet from player caused other player to wait 30 sec before being able to drop him
+- fixed lobby bug - can't randomize locs when there are closed slots inbetween players
+- fixed lobby minimap for saved games
+- fixed lobby 'Press ready to start language issue
+- fixed ban recruits in barracks (when they left barracks there count did not change)
+- render fix for house resources (reported by Harry)
+- fixed exported CSV stats validation
+- CSV stats use only english now
+
+- Its possible to evacuate wares from Storehouse/Barracks and Market now - use TakeOut delivery mode. From Barracks to other Barracks or Storehouse. From Storehouse to other Storehouse
+- added another 'red triangle' to block ware evacuation from Barracks and Storehouse (use right click on ware)
+- right spectator panel - added amount of goldchests in townhalls to Warfare page
+- MapEditor: added cost of buildings when selecting them
+- Scripts: added OnGroupOrderMove event, triggers when group got order to move at a certain location
+
+- updated and added chinese translation for most (or even all) maps and campaigns in release by @Rolly 
+- updated german and czech translations
+- updated TPR difficulty levels by @Strangelove 
+
+- improved advanced AI by @Toxic 
+- TownHall: Barbarian/MetalBarbarian cose reduced from 10 to 8 gold chests
+- ArmorWorkshop - swaped back leather armor and wooden shield positions
+
+
+KaM Remake Beta r10240
+------------------------------
+1. Bug fixes
+- reported game crashes
+- delivery system fixes
+- game chat sometimes did not copy from lobby into the game
+- UI bugs
+- campaign difficulty did save between maps
+- reset Players color mode to default for every game
+- game freeze on Furious Warriors map for ClassicAI
+- mapEd object 71 was considered as "unpassable tile" (object 61)
+- reverted warrior orders "attack house" and "storm" improvements, since they are unstable
+2. Added collecting debug data, saved in *.rng file. Should help to fix game desyncs. File size could be significant (~15Mb for 1 hour 12 players game), will be removed from release version.
+3. Added ability to setup hotkey for spectator statistic panel dropbox.
+4. Slight spectator stats panel improvements (separated citizens into 2 stat types, improved game visibility behind stats panel)
+
+
+KaM Remake Beta r10156
+------------------------------
+1. further improvement of spectator panel: 
+  + fixed FPS issues
+  + align same items types in columns (for better comparison)
+  + use "KaM" order for houses/wares/units/warriors
+  + added house damage progress bar
+  + jump to next damaged house on left click/any next house on right click
+2. added "Teams" players color mode for specs/replay
+3. added replay debug info, to detect replay desyncs
+4. fixed replay desynchronisation after load save point (for new feature introduced in r10135)
+5. fixed other reported bugs
+
+- there could be issues with replay desync. Please PM me when that happens, I will need that replay to find out how to fix it. Thx
+
+
+KaM Remake Beta r10135
+------------------------------
+- Fixed several critical game bugs (some code reverted after experimental changes on r10000) and some minor bugs
+- Fixed reported Advanced AI bugs
+- Added replay rewind (only backwards, to the number of savepoints)
+- Fixed situation, when group attack was interrupted by a certain actions: 
+    link new members, manually or after training from barracks/townhall
+    split group
+    group member died while group was attacking house
+- Soften transitions between some group orders (attack house, storm)
+- Restored Federation of Neryn campaign to its state at r6720
+
+
+KaM Remake Beta r10000
+------------------------------
+- New custom script console commands. We can call some script procedure from game chat. Works for SP too. Wiki: http://bit.ly/kmr-wiki-cmd
+- Added difficulty levels. Those levels are available from script and could be used to tweak mission
+- Post notification message if some player is AFK
+- Spectator panel is available from replays. House/Units icons are clickable
+- Added chat history, console-like
+- Enable pathfinding cache. Should improve performance of army movements
+- Added difficulty levels for TSK campaign by @Strangelove. Tests are in progress
+
+Scripts: 
+ - added shortcuts for Actions/States/Utils as A/S/U
+ - added several new script functions, check wiki 
+ - added support for global variable types: ShortInt, SmallInt, Cardinal, LongInt
+
+ScriptValidator: added support to start validation from Notepad++ by hotkey
+
+Fixed bugs:
+- desync crash on unit dismiss
+- swapped wares images for armory workshop
+- other bugs
+- fixed detailed game stats menu on low resolution displays
+
+Improvements taken from Knights Province by @Krom:
+- Route optimization for warriors attacking house
+- Citizens now choose random position in the Inn
+
+New AI by @Toxic
+Changes
+- improved build AI (monitoring of building material, faster construction, improved GA parameters, improved trading)
+- improved combat AI (faster moving of combat groups, better targeting of enemies, better planning of routes)
+- improved detection of best defence (it is computed at once within 1 team and divided to all AI players)
+New
+- dynamic production with consideration of map size, peacetime, resources, available area, etc.
+- cooperation of new AI players (AI defends each other, AI launch attack at once, AI players divides its resources between each other)
+- support of parameters in map editor (autoBuild, autoAttack, autoDefend, attacks, defence positions etc.)
+
+NavMesh
+- new algorithm for NavMesh generation
+
+
 
 
 Everything before [2022.03.31]
