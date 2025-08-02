@@ -469,6 +469,212 @@ KaM Remake Beta r14281 [2022.04.01]
 - add Russian translation for The Cruel King campaign by @Gevorg 
 
 
+KaM Remake Beta r14261 [2022.03.31]
+------------------------------
+Fixes:
+- fixed bug which caused OutOfMemory errors during game save
+- enlarge allowed memory to up to 3 or 4Gb
+- implement async game resource loader to speed up game start
+- recreate save threads if they were terminated
+- added new network command to ask other player to send crashreport when desync error happens
+- fixed crash when place beacon outside of the map edges
+- fixed missing team in the lobby, when player rejoined it
+- fixed replay savepoint desync, which happened when player made some action on the same tick as the savepoint was made
+- fixed bug with clicked message start flashing again after game load
+- fixed crash, when unit is added by script and get into the house, into which there is another unit already walking in
+- fixed crash on game exit, caused by freed dev settings
+- fixed crash on F11 -> Export Tileset if there are autotransitions on the map
+- fixed crash when change market trade wares when TakeOut delivery mode is on
+- fixed bug with OnHouseDestroyed and killed worker while digging house site
+- do not play script looped sounds on the statistics panel
+
+Menu:
+- move game settings to the popup window
+- minor refactor of SP Results screen
+- add a button to return to campaign after quitting a campaign mission
+- fix SP menu bug: if there is a map where the preview is black, it does show the previously viewed map in the map preview section
+- added 4 new colors for MP lobby
+
+Game:
+- group rows right click gives +/-5 rows to the group. Also fast turn around on right click, same as in MapEd
+- new zoom functionality behaviour made by @Lolslayer. Could be set in the game settings file at <UI ZoomBehaviour="1"/>
+  where values stand for
+  0: Original behaviour
+  1: Semi-restrictive zoom
+  2: Unrestricted zoom
+- default zoom value could be set in the game settings file at <UI DefaultZoom="0.5" />
+- scroll speed was multiplied by 2.5
+- game scripting overlays data are now saved into the game save
+- fixed several UI glitches for HD animation (f.e. school clock)
+
+Advanced AI:
+- anti-traffic mechanism
+- improved parameters so combat AI is more dynamic (better targeting of enemies, consideration of traffic, soldiers are not fed if there is a food shortage, etc.)
+- a new algorithm for placement of fields
+- support of the "dismiss" command
+- improved order of weapons (rock-paper logic based on existing armies)
+- fix crash in debug tools
+- fix Advanced AI bug with stone could not be found
+
+Maps:
+- enable lance carriers in the TSK01
+- enable towers in TPR14
+- fix for TSK 18 and other maps in the campaigns, when blocked skins and pigs in the storehouses prevented leather production
+- fix for Invasion map with AAI
+- co-op map The Flaming North couldn't load on easy difficulty
+- fix An Empire Destroyed, Mission 9 victory conditions
+- fix On Foreign Lands: An Empire Reborn, mission 16 win conditions 
+- fix for Neryn Campaign, Mission 6
+- fixes for Town Merchants map
+- update Strangelove's maps
+- update Paker's maps
+- update Federation of Neryn campaign Polish translation by grayter
+
+SP maps:
+- MP maps with PlayableAsSP flag had no win conditions when player in SP mode
+- choose proper AI type for different allowed AI types combinations and AI type option in the SP menu
+
+MapEd:
+- rework how fields / winefields are placed with stages
+- refactor defence position type colors (blue and green) to be same for both Debug AI on F11 menu and MapEd
+- add hint, that Edit Formations does not work for AdvancedAI
+- fix for: if there is NumericEdit control, and it is focused, then map scroll while holding middle mouse is not working
+- add Set smooth coal feature
+- improvements in settings def positions and unit groups by @KingDyron
+- minor UI fixes
+
+Random Map Generator:
+- fix: clear Revealers of all players when map is generated with lower number of locs
+- stones should be placed closer to the center of the city
+- in the center of locations should be more space (if protected radius is high enought)
+- new parameter for smoothing the edges of mountain peaks
+
+Misc:
+- add MapEd height limit xml setting
+- refactored and fixed for game settings xml file
+- fix for installtion did not work on x86 systems (32bit OS)
+- allow to run MP games for different game versions at the same time
+- minor improvement of KMR icon
+- add debug checkbox to disable step numbers of the unit routes
+- add debug option to make game save (works also in replay)
+
+Translations:
+- update Russian / Polish / Czech / Chinese translations
+- add Finnish translation
+
+Scripts:
+- fixes in events OnHousePlanPlaced, OnHousePlanRemoved, OnHouseAfterDestroyed
+- allow to use custom types in TKMCampaignData type. Check wiki on details at https://github.com/reyandme/kam_remake/wiki/Global-Campaign-Data-Script-(Mission-Script-Dynamic)
+- improve script events verification in the script file
+- refactor script methods related to house locks
+- add OnHouseRepaired scripting event
+- remove States.CampaignUnlockedMissionID since it could lead to replay desync
+- AI AutoRepair replaced with enum type of TKMRepairMode, so mapmakers could manage houses repair via Actions.HouseRepairEnable manually from script
+- add scripting actions to set/unset scripting overlay word wrap and font
+- added Actions
+	AIDefencePositionRemoveByUID
+	GiveHouseSiteEx
+	HouseAddBuildingMaterialsEx
+	HouseAddBuildingProgressEx
+  HouseBarracksGiveRecruits
+- add scripting states and actions duplicates to be used with named Enums and Records instead of Integer values. 
+  Check wiki for detailed information 
+  https://github.com/reyandme/kam_remake/wiki/Actions-(Mission-Script-Dynamic)
+  https://github.com/reyandme/kam_remake/wiki/States-(Mission-Script-Dynamic)
+  New script types could be found at https://github.com/reyandme/kam_remake/wiki/Types-(Mission-Script-Dynamic)
+
+Full list of additions / changes for those duplicate functions:
+Added:
+
+States:
+AIDefencePositionGetEx
+AIGroupsFormationGetEx
+ClosestGroupEx
+ClosestGroupMultipleTypesEx
+ClosestHouseEx
+ClosestHouseMultipleTypesEx
+ClosestUnitEx
+ClosestUnitMultipleTypesEx
+GroupTypeEx   
+HandHouseCanBuild   
+HandUnitCanTrain   
+HandHouseLock   
+HandWareDistribution   
+HouseBarracksRecruitBlock  
+HouseTypeEx   
+HouseTypeMaxHealthEx   
+HouseTypeNameEx   
+HouseWareBlockedEx   
+MapTilePassabilityEx   
+MarketFromWareEx   
+MarketToWareEx   
+MarketValueEx   
+StatHouseMultipleTypesCountEx   
+StatHouseTypeCountEx   
+StatHouseTypePlansCountEx   
+StatResourceProducedCountEx
+StatResourceProducedMultipleTypesCountEx   
+StatUnitKilledCountEx
+StatUnitKilledMultipleTypesCountEx
+StatUnitLostCountEx
+StatUnitLostMultipleTypesCountEx
+StatUnitMultipleTypesCountEx
+StatUnitTypeCountEx  
+UnitCarryingEx  
+UnitDirectionEx  
+UnitTypeEx  
+UnitTypeNameEx  
+WareTypeNameEx  
+
+Events:
+OnHouseAfterDestroyedEx   
+OnHousePlanPlacedEx   
+OnHousePlanRemovedEx   
+OnMarketTradeEx   
+OnUnitAfterDiedEx   
+
+Actions:
+AIAttackAddEx  
+AIDefencePositionAddEx
+AIGroupsFormationSetEx
+HandTradeAllowed   
+HandUnitCanTrain   
+HandWareDistribution   
+GiveAnimalEx  
+GiveGroupEx  
+GiveUnitEx   
+GiveHouseEx   
+GiveHouseSiteEx  
+GiveWaresEx  
+GiveWeaponsEx  
+GroupOrderWalkEx  
+HouseAddBuildingMaterialsEx  
+HouseAddBuildingProgressEx  
+HouseAddWaresToEx  
+HouseBarracksGiveRecruits  
+HouseBarracksEquipEx  
+HouseBarracksRecruitBlock  
+HouseSchoolQueueAddEx  
+HouseTakeWaresFromEx  
+HouseTownHallEquipEx  
+HouseWareBlockEx  
+HouseWeaponsOrderSetEx  
+MarketSetTradeEx  
+PlanAddHouseEx  
+UnitDirectionSetEx  
+
+Changes:
+States.HouseDeliveryMode to use TKMDeliveryMode instead of Integer
+Actions.HouseDeliveryMode to use TKMDeliveryMode instead of Integer
+States.HouseTypeToWorkerType to use with TKMHouseType / TKMUnitType
+Actions.HouseWoodcutterMode to use with TKMWoodcutterMode instead of Integer  
+Actions.HouseWareBlockTakeOut to use with TKMWareType instead of Integer 
+States.HouseWareBlockedTakeOut to use with TKMWareType instead of Integer 
+States.HouseWoodcutterMode to use with TKMWoodcutterMode instead of Integer
+States.UnitUnlocked -> HandCanTrainUnit to use with TKMUnitType instead of Integer
+Events: 
+OnHouseWareCountChanged to use with TKMWareType instead of Integer
+OnWareProduced to use with TKMWareType instead of Integer
 
 
 
