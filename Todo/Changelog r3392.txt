@@ -1,5 +1,17 @@
-Fixed in r3392:
-<===================================================================================>
+KaM Remake 4th Multiplayer Demo
+========================================
+Major features:
+ + Reworked deliveries
+ + Support custom mission texts
+ + Minimap in menu
+ + Tutorial missions texts, simple events
+ + Support for 1024x600
+ + Townbuilding AI till Goldmine
+ + Smooth shadows
+
+
+KaM Remake r3392 [2012.05.14]
+----------------------------------------
  +  Range Check Error occurs when a woodcutter considers chopping a tree on the topmost or leftmost edge of the map
  +  Click server A, then quickly click server B. This is incorrectly interpreted as double clicking and you join server B
  +  Units should eat a maximum of 2 food items at the inn
