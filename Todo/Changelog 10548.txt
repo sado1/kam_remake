@@ -1,8 +1,0 @@
-[4:48 PM]Rey: KMR Beta r10548
-
-- Fix crash, when download map from lobby with debug option 'SaveRandomChecks' ON. Having *.rng file is not obligatory anymore.
-- Enlarge render clip rect by 1 to the top and bottom to fix small render issues with high trees and clip rect at the top
-- Fix cinematic bug: viewport was moved to point 0;0 if Actions.CinematicStart was invoked without CinematicPanTo just after it
-- MapEd: set default defence position radius from 10 to 20
-
-Full version: http://bit.ly/kmr-r10548 

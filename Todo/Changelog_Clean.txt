@@ -1080,6 +1080,393 @@ Maps
 
 
 
+KaM Remake Beta r11740
+------------------------------
+- added replay rewind forward feature
+- add compression on some of the save files. Save process is made in a separate thread asynchronously, made by @Lewin
+- optimisations on load save minimap for MP games
+
+Advanced AI: 
+- updated AI parametrisation after ~500k game runs.
+- fixed several bugs
+
+Bug fixes:
+- fixed AI defence positions bug
+- fixed IO errors, that happened because windows TDirectory.Delete procedure is called asynchronously and dont wait until delete is done, made by @Lewin
+- fixed crash when Campaigns.dat had old format (f.e. r6720)
+- fix game speed toggle in replay
+
+- made test for runner tool to find game desynchronisations. Found number of bugs:
+  * UnitGroup and House had 1 not saved field each
+  * AdvAI had 4 problems in different algo's (TKMEye, TKMBuildFF, TKMCityBuilder, placing woodcutter out of range)
+  * fixed desync when game was saved while there was a fallen tree (r6720 bug)
+  * there was a bug in terrain tpFactor passability
+  * fixed desync in Classic AI related to AI attacks (r6720 bug)
+  * fixed rare bug when terrain could not be flatten and it caused StackOverflow (r6720 bug)
+  * fixed rare bug when unit was killed when walkin into destroyed house and other unit was walking to the house entrance (r6720 bug)
+
+Scripting: 
+- Replaced debug executor by standart executor by default. Debug executor is extremely slow (at least 3 times slower). Debug exec could be turned on in F11 menu to get exact error (execution time) positions in the scripts
+
+Misc:
+- added fixes for snow houses, made by @thunder
+- updated Overbyte network framework to version 8.63
+- disable async game resource load. It's provem to be unstable (could be a cause of errors on map load). Still could be enabled by setting in the settings.ini
+- added F2 hotkey in the menu to rename map or replay
+
+
+MapEd: 
+- added 240 tiles for 3 terrain kinds transitions, made by @andreus
+- added missing controls from tiles submenu page on palette. Added hotkeys on palette
+- cancel unit / house selection on Esc
+- set def position group type and direction according to unit under cursor
+
+Maps:
+- maps updates by @andreus (A Southern Journey, A Way East, Dead Border, Lakeland, The Maze). Detail here: https://docs.google.com/document/d/1kc4NbdAiEu5SrI1XiuXjvVgxwQQ_jXaZBVJU3emLbJg/edit
+
+- updated german and chinese translations
+
+
+KaM Remake Beta r11537
+------------------------------
+- fixed crash in lobby when joiner choose color
+- fixes crash in MapEd when change wares count in some houses
+- reduced minimum player color distance from 0.3 to 0.15, so less colors are filtered by AI-only locs colors
+- fill AI defence positions with closest group to avoid swapping. Priority order is still respected
+- fixed incorrect FOW render in replays
+- fixed: in singleplayer replays start with fog enabled so replays can be watched without spoilers 
+- fixed scrollbars on terrain brush page in MapEd
+- MapEd history is not shown anymore on map load
+- MapEd tiles palette fixes: removed duplicate tiles, close palette when tile is chosen
+- improve Esc key handling in the MapEd
+- attemp to fix freeze on game exit (probably caused by video player)
+
+
+KaM Remake Beta r11507
+------------------------------
+Optimisations
+- game render significant optimisations on OpenGL VBO calculations made by @Lewin
+- pathfinding significant optimisations made by @Lewin
+- perform autosave deletion/renaming in an async worker thread
+- fixed number of memory leaks
+- game do not render anymore under statistics pages with charts
+
+Advanced AI
+- new improved battle AI is also available for build maps now
+- lots of significant optimisations by @Toxic, with help by @Lewin
+- lots of fixes, including desync errors
+
+MapEd:
+- added tiles palette
+- added history window
+- added ability to set neutral roads as map overlays
+
+Scripting:
+- added Scripting Editor tool made by @Thibmo
+- replace GroupAllowOrderSplit for GroupOrderBeforeSplit with ability to setup split command parameters for new group: number of units, leader unit type, is it allows mixed unit types
+
+Various
+- fixed video player by @ZblCoder (has to be tested further though)
+- RMG optimisations and bug fixes
+- smooth diagonal side-steps in walking (a serf dodges around an empty space because there was a unit in it when the route was calculated)
+- fixed various menu render issues related to 4k resolutions
+- added game folder permissions checks. If there are not enought permissions then error message is shown with request to install game to another folder
+- tile 71 is not soil (sand with small corner grass)
+- show map difficulty level in the server details
+- added ability to lock map player colors in the map parameters
+- added Version tag for map parameters. Tags author and Version are shown at the end of map big description (on MapEd menu and in Lobby)
+- players can't choose same or similar colors as only-AI locs has. Useful fo coop and SP maps
+- fixed one more desync in TKMUnitGroups (pushback limit - its not expensive to calc it every time)
+- removed dll dependencies from some of the utility tools
+- set terrain Blending lvl max value to 16, instead of 100
+
+Various fixes:
+- fixed crash related to scripting sounds
+- replay crashed when click on save point sometimes
+- fixed image bouncing bug on some GPUs
+- pathfinding fix: do not build the route in case destination is not walkable 
+- MapEd color edit field was not filled on initial panel show
+- readme button wrong position on MapEd menu
+- MapEd defence position selection was not cancelled after unit/house was selected
+- when resize window it was possible to lost wares in warehouse
+- fixed maped terrain brushes panel could overlap over buttons above to do not allow to click on them
+- snow houses checkbox on options menu was not in sync with F11 debug menu
+- keep MapEd extras menu controls in sync with debug F11 menu controls (passability, tiles grid)
+- all maps were resaved to keep them in the latest map format
+- goals - ignore GoalStatus parameter from static script, since it depends on GoalType (Victory or Defeat)
+
+Maps:
+- fixed locked/unlocked houses for TSK 01/04/05 missions (quarry / stables)
+- updated translations into german of almost all maps
+- updated coop map Siege of Castle Fennford
+- fixed TBK01 mission of The Barbarian King campaign
+- update FurriorWarriors map to version 1.73
+- updated number of maps, made by @andreus. Changelog available here: https://bit.ly/2JmcQWB
+
+
+KaM Remake Beta r11222
+------------------------------
+- added original game videos. They are in alpha stage and could potentionally freeze / crash the game, but we decided to add them anyway to get more reports about the issue
+  added ability to add your custom videos for campaign and its missions
+- added snow houses to the main options menu. 
+  Fixed huge number (~500) png's by @thunder. 
+  Fixed double-shadow bug while house was covered with snow. 
+  Improved house skin determination - now only cells within house where ground is visible are considered
+- added dev perf log (ported from @Krom's Knights province with slight improvements/changes)
+
+Game:
+- limit max number of food to eat in the Inn to 2
+- fixed unit hitbox. Now there are no gaps between units who stay next to each other
+- delivery: redispatch delivery when demand should be cancelled (closed house/ware distribution change/market changed goods)
+
+AI:
+- the new concept of the combat AI (Tactic mode only for now) by @Toxic
+- fix classic AI bug with attack type to closest unit. If unit was hiding inside some house attackers were just going next to the house. They should find other target instead
+- Classic AI: allow hungry group get food even if its following some enemy (not fighting though)
+
+Fixes:
+- AI could build after being defeated
+- warriors push each other if they have same order locs
+- fix for every tile used too much memory (+~100bytes per tile), that significally reduce memory usage on huge maps in the maped 
+- various of minor bugfixes
+
+MapEd:
+- added new terrain page: Tile overlays by @andreus
+- added several new tile transitions
+- added shortcuts to turn groups on 90/180 degrees (with RMB / shift)
+- objects palette: fixes for hints and slight UI refactor
+- added object 246 (looks like a wooden deck)
+- improved Map resize feature
+- fixed unequalizer tool was not working on absolutely flat terrain
+- fixed terrain flattener tool: node marks were flicker with almost flat terrain
+- set initial viewport position to center screen of the first hand with assets
+- default blending value is 50 now
+- allow to set any value for trackbars (for AI and other settings)
+
+Scripts:
+- fix actions MapTileSet / MapTilesArraySet / MapTilesArraySetS were able to set road/dig overlays as tiles
+- allow to set some of the invisible onbects (254, f.e.)
+- improved error positioning (row:col)
+- dozen of new States related to terrain tile type (IsSoil/IsSnow etc)
+- added 6 new actions to work with terrain brushes as we do in the MapEd
+- new actions: PlayerGoalsRemoveAll, Peacetime, GameSpeed, GameSpeedChangeAllowed
+- new States: GameSpeed, GroupManualFormation, 
+- new events: OnGroupOrderBeforeSplit / OnGameSpeedChanged / OnPeacetime
+- Utils.FormatFloat
+Changed were made by me and @andreus
+
+RMG by @Toxic:
+- added support of new transitions
+- minimap is shown on the RMG settings page in the lobby
+- MapEd settings window is now semi-transparent
+
+Replay:
+- game speed, that game was played is now shown. Its also possible to set it via F5-F8 toggle
+
+Misc:
+- minimum resolution was increased to 720px
+- game option menu refactoring
+- its possible to 
+- random checks logger is now limited to 30 minutes
+- Fix for favourite maps and presect maps in the game menu: they were cancelled if map script or txt file were changed
+- fix position of music track name
+- fix rare bug when distant worker resource was replaced via script while worker was gathering it
+- TH was ordering too many demands at once. Limit those to 20
+
+Maps:
+- added new coop map by @andreus: A Southern Journey
+- map updates by @andreus: Northern Islands, A Way East, Lakeland, No Escape, Dead Border, The Siege, Snow Cross, Castle Defenders, Sea Battle
+- updated 'Cold water 8p' map by @thunder
+
+
+KaM Remake Beta r10968
+------------------------------
+- resource gather houses display if resource they gather is depleted 
+- reset resource depleted state for home, if we find new resource (f.e. resource was added by script)
+- add tiles for Abyss-EmptyGold (GoldMount) transition
+
+- added A.HouseAllowAllyToView, A.HouseAllowAllyToViewAll, S.HouseAllowAllyToView to manage possibility to view house by allies
+- added several scripting utility functions by @𝓐𝓵𝓮𝔁𝓪𝓷𝓭𝓻_5 
+- fix for RMG settings window: some controls were not clickable
+- fixed terrain issues with gold tiles, stone-to-snow transitions
+- fixed MapEd terrain painter brushes on several terrain kinds
+
+- added russian translation of 'The Barbarian King' and 'On Foreign Lands - Empire Reborn' campaigns by @andreus 
+- fixed russian translations of several maps by @andreus 
+- update chinese translation by @Rolly 
+
+
+KaM Remake Beta r10936
+------------------------------
+Game:
+- militia was removed from Townhall
+- unit dismiss action - confirmation was removed
+
+MapEd:
+- brushes: added 1 more terrain kind - snow on grass
+- added 1 more mask for autotransition
+- new tiles: added ~40 new tile transition, mostly between mountains, made by @King Dyron 
+- added blending level for autotransitons
+- changed map format, to support new masks and terrain kinds in the future. Old maps are still supported (from r6720 and previous beta versions)
+- brushes tab now has scrolling
+- left toolbar panel was slightly enlarched 
+- fix group max food was not saved in the map .dat file
+- fix defence positions controls
+- fix gold mine 5 ore tile
+
+Scripts:
+- added OnHouseWareCountChanged script event
+- fix script sounds bug
+
+Other:
+- fix one more desync, related to scripting cache
+- fix wares could be redispatched to constructing sites without road connection
+- fix terrain update after stone was mined (on 'normal' tiles, not auto transitions yet)
+- fix campaign progress for the latest won mission could be lost
+- fix mouse wheel events on Win10, also mousewheel rotate speed is considered now. With help by @Stucuk and @𝓐𝓵𝓮𝔁𝓪𝓷𝓭𝓻_5 
+- fix snow houses checkbox does not work in mp
+- various UI fixes
+- allow snow houses setting is saved in the ini file
+- added debug option for F11 menu to unlock all campaings missions
+
+- improved Combat AI by genetic algorithm
+- updated RMG
+
+Maps:
+- added 3 coop maps and fixed Barbarian King campaign by @Strangelove: The Dig, Return to Moorbach and Siege of Castle Fennford
+- added battle map by @Classic: River Crossing
+- added several maps by @andreus: Sea Battle (special), Dead Border (coop), Shallows of Death (battle), Riverlands
+- map fixes by @andreus: TSK06, TSK09, Northern Islands, A Way East, Lakeland, Leather Wars, The Last Hope, No Escape, The Adventurer's Journey
+
+
+KaM Remake Beta r10745
+------------------------------
+- total number of players on map increased to 18 (12 human players in lobby + 6 AIs)
+- added new game mode into lobby: 'Random map'. You can place your storehouse at the game start
+- idle units now will try to free popular routes after being pushed
+- added option to enable snow houses in F11 menu (graphic tweaks section)
+- added option to load game/replay even for old version of the game (available in F11 menu). Use it on your own risk, since its not supported behaviour.
+- added search when type into Load Map (in MapEd) Save/Load game (while in game) lists
+- added tile for gold containing 5 gold ore
+- added UDPAnnounce setting to ini file (Server section). Allows to block UDP announce for dedicated server
+- optimisation for collected randoms checks info. Use less RAM now (up to 5 times)
+- improved RMG settings controls layout for MapEd
+- fixed units/groups desync
+- fixed serfs could not redispatch food after target soldier died
+- fixed bug, when units were swapping almost forever with each other
+- fixed bug, when soldiers could stuck in attacking pose wher attacking house almost surrounded with other soldiers
+- fix inconsistency in campaign script data and campaign progress - they should be saved simulateneously
+- fix freeze on SP map list, if try start game very quick (with Enter, f.e.)
+- fix bugs with house scripting actions, which have no check if house is completed and not destroyed
+- updated TSK Campaign
+- add difficulty level to map name label in the game 
+- fix crash on maps/saves sort
+- fix error caused some servers were not visible in the list
+- TranslationManager: now its possible to export only selected languages
+
+Advanced AI:
+- Improved parameters of the combat AI (now also tuned by Genetic algorithm)
+- Improved defense positioning
+- Possibility to place storehouse in RMG maps
+
+
+KaM Remake Beta r10548
+------------------------------
+- Fix crash, when download map from lobby with debug option 'SaveRandomChecks' ON. Having *.rng file is not obligatory anymore.
+- Enlarge render clip rect by 1 to the top and bottom to fix small render issues with high trees and clip rect at the top
+- Fix cinematic bug: viewport was moved to point 0;0 if Actions.CinematicStart was invoked without CinematicPanTo just after it
+- MapEd: set default defence position radius from 10 to 20
+
+
+KaM Remake Beta r10540
+------------------------------
+Balance changes (for testing purposes)
+- lancer (pikeman) got +5 (=60) antihorse attack
+- rebel got -5 (50) antihorse attack
+- rebel price is 2 gold chests
+- scout vision reduced to 13
+
+Game
+- woodcutter now prefers closer trees to cut / locs to plant trees to the cutting point
+- TH initial max gold value set according to max unit cost
+
+Controls
+- holding shift while destroy house will keep destroy mode on
+
+Server 
+- server is using net protocol revision, instead of game revision. Clients of different versions (but with the same net protocol) are able to use same server
+- added ServerUDPScanPort setting to settings.ini file (to avoid "address already in use" error)
+
+AI
+- improved road pathfinding (AI now build city according to "squares" rather than "random" placing)
+- ability to replace fields (corn and also wine)
+- improved replacement algorithm of quarries
+- city builder has been sped up (house plan with all resources now have top priority)
+- house priority selection has been changed
+
+Various
+- updated F11 development menu components
+- added setting to ini file to enable/disable saving ware distribution between games
+- lobby: added 3rd 'ready' state for spectator: "ready, but need download map/save"
+- added 4 more mission difficulty levels
+- difficulty level is written at the game results title
+- added script action HouseTownHallEquip 
+- updated hints for Split group and School train buttons
+- added hotkey to step 1 tick forward in replay
+- MapEd: show mining ranges for woodcutter / quarry / fisherhut / farm / wineyard
+
+Updated translations: polish, italian, russian, chinese
+Updated MP maps (made by Thunder)
+Added 'Barbarian King' Campaign made by @Strangelove 
+
+Bug fixes
+- game freeze when type color brackets in chat
+- lobby panel appears while in multiplayer menu
+- saves on different machines were not identical, caused save download on back to lobby
+- worker was selected when try to destroy construction site and use tile where worker dig the site
+- sounds were not working propely when invoked from scripts
+- delivery mode bug when change mode during serf get into house
+- warriors continue following enemies even if their alliance settings were changed by script
+- fixed warriors stuck at barracks entrance
+- flag point was not rendered under FOW
+
+2 debug options added were to settings.ini, enabled by default
+
+- SaveRandomChecks - save all random checks that game made during execution. They will be saved in .rng file in save directory. 
+Its better to turn this option off if you want to play extremely long game, more then 3 hours long - set it to 0 in the KaMRemake_settings.ini
+
+- SaveGameAsText - allows to save game data in text form, good for debug, saved in .sav.txt file in save folder
+
+
+KaM Remake Beta r10416
+------------------------------
+- turned off debug for "map or save download in lobby" (was ON occasionaly, caused very slow download)
+- reduce AttackAlert 'Fight distance' from 24 to 12 and duration from 6 to 5 sec (to avoid markers at locs, where battle is over for a long time already)
+- debug: show unit routes even if unit is not on viewport
+- add Polish translation by @sado1 
+- add Wild Grasslands 12P map
+
+
+KaM Remake Beta r10400
+------------------------------
+- right click on message in list (house not occupied f.e.) will mark it as "read"
+- right click on message icon (by script command Actions.ShowMsg, f.e.) will delete it
+
+- fix desync in scripting cache
+- fix market able to get wares that were ordered in previous trade
+- fix bug in cache pathfinding, caused unit go there and back forever
+- limit replay saved points and calculate their frequency depending of replay length to prevent spam into memory, which could cause OutOfMemory error
+- fix lobby/game chat scrolls to the bottom when new line is added
+- fix lobby/game chat "eats" chars in edit field when new added line
+- fix lobby/game chat color goes to the next line
+- fix lobby/game chat selection of colored markup in edit field
+- fix spec can press ready even when map is not selected in lobby, its ok, but green cross didn't appear until host choose map
+- fix too many packet on map select in lobby, caused high pings and lags
+- fix display colored text in maps names and description
+- fix map/save download progress shown as freezed if host changed map/save
+- fix 'Player Won' messages were shown for not connected players when load saved game with empty slot for those players
+- added 2 new script state functions: States.GroupInFIght and States.WarriorInFight to check if group/warrior is in fight
+
 
 
 
