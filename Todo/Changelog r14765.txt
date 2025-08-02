@@ -1,0 +1,135 @@
+Beta r14765
+
+Opimisations:
+- delivery system and other optimisations gave 15-20% better game performance
+- refactoring of savepoints highly reduces usage of RAM, reduces chance of OOM errors even on extremeley long games and speedup game save in the async thread. Save points were refactored to be stored compressed in the memory, not only when saved on a disk
+
+Fixes for:
+- fix error when there are players with different locales, which go back to lobby on a map with different Big or Small map descriptions. It caused saves not being identical.
+- fix OOM error when using too many save points. 
+- fix delivery bug when serf lost ware when redispatching to other demand house while being offroad
+- units hit-boxes sometimes still had small gaps, when units stand next to each other
+- fixed crash, when calculating unit direction when unis was placed by script next to enemy
+- mark corn field tile as a 'soil' thus it would be possible to dig it again if corn overlay will be removed by destroyed house, f.e.
+- Fix for back to lobby feature: we should wait till game save will be done in async save thread
+- fixed: reset Zoom hotkey works while in the cinematics
+- fixed: video does not render when in FullScreen mode
+- fixed bug, when placed with 0 health in the MapEd TownHall could add his demands for a gold into delivery system
+- fix for a viewport could not show top map tiles, when their height increased (in both MapEd or game)
+- Fixed bug, when woodcutter cancel his walk to the tree to cut, if tree is next to the house entrance and there is unit entering or leaving house
+- Fixed crash in the lobby when save was no loaded (f.e. missing files)
+- Pathfinding avoid locked tile: add penalty in a cost function when walk offroad for a unit which should use roads and walks around some locked unit (f.e. builder digging the road / constructing house or soldiers fight on the road)
+- fixed: server password did not work
+- fixed: bug with map size hint render
+- spectator should also get script error message
+- fixes in debug menu
+
+Game:
+- Change of fisher work plan: go fishing more frequent but get only 1 bucket of fish and avoid long 59s wait after that. Production rate stays approximately the same (+/-5%)
+- Show 10k for wares count, when they have >= 10000 items in the store or barracks. In the market show 1k, when its >= 1000 items
+- Use fixed team colors when spectate game in 'teams' view mode (red / orange / yellow / green / blue / pink)
+- Game stats chart legend - make better text visibility
+- F3 units stats: consider units, which are dismissing atm
+- Ware Distribution page (F2) should remember last opened tab
+- Add ReturnToMapEd button to the Player Won / Defeat panel
+- update hints for group action buttons
+- don't fight unit if he becomes our ally during the fight, f.e. by script
+- Reduce MP wait players time from 30s to 15s
+
+Hotkeys:
+- use KeyDown instead of KeyUp for most of the hotkeys in the game. It reduces game reaction time on a hotkey
+- add shortcut to remove buildings without confirmation (hold Shift + Ctrl and click on a house)
+- added shortcuts in MapEd to quick map save (Ctrl + S), Flat terrain and Tiles grid functions
+- Use Alt as a key for RMB. Shift + equip now again order 100 soldiers
+- Group turn hotkeys: turn 90 degrees on RMB or Alt + LMB and hold Shift to turn 180 degrees
+
+Menu:
+- Refactor UI of Campaigns list menu
+- when sort maps by sizes use actual map area for the maps with the same size labels (XS, XL etc)
+- lobby 'Use last know password' button should be disable, if there is no saved password
+- SP mission with single human player should not have a "AI player type" selector enabled
+- MapEd menu: add column with 'human' locs
+
+MapEd:
+- allow to set custom number of fish to catch for 'fish unit' up to 255
+- added notice about special AI attacks behaviour
+- add scroll bar onto AI def pos page
+- fix for: equip rate controls could be disabled and then enabled when change player ID
+- refactor players popup menu: add buttons next to every player to delete ir and to set MP setup
+- apply 'Fix terrain brushes' button on terrain copy
+- Tiles and objects palettes should replace each other when they are opened one after another
+- units page: disable group number control when non-soldier unit is selected
+- hide Blending level track bar, since we are planning to remove the feature
+
+Scripts:
+- ScriptActions for group orders: do not allow orders if group is in fight (same as in the game UI)
+- Add debug option to export preprocessed script code. This is the code PS compiler compiles
+- fixed Actions.HouseTakeWaresFrom was not working for Townhall
+- added script function to change AAI critical houses list to attack
+- improve States.GroupAssignedToDefencePosition - return true if group is assigned to any defense position
+- A.OverlayTextAppend should also catch EConvertError if there are any error in the parameters. Also log all of the parameters on error
+- fixed: Preprocessor couldn't handle non-ansistring paths
+- fixed: Actions.ForCoverRect / FogRevealRect did not cover 1st column / row of the map. Use 0 row / col to cover them
+- Add States PlayerIsAdvancedAI and PlayerIsClassicAI
+- Scripting: Rename recently added States and Actions with 'Hand' prefix to the ones with 'Player' prefix
+  States:
+  HandHouseCanBuild -> PlayerHouseTypeCanBuild
+  HandHouseLock -> PlayerHouseTypeLock
+  HandUnitCanTrain -> PlayerUnitTypeCanTrain
+  HandWareDistribution -> PlayerWareDistributionEx
+  
+  Actions:
+  HandHouseLock -> PlayerHouseTypeLock
+  HandTradeAllowed -> PlayerTradeAllowed
+  HandUnitCanTrain -> PlayerUnitTypeCanTrain
+  HandWareDistribution -> PlayerWareDistributionEx
+  
+- Improvements in PascalScript enums on compilation phase:
+  next syntax is now available:
+  // WT: TKMWareType;
+  // UT: TKMUnitType;
+  array[TKMWareType] of ...
+  array[wtStone..wtFish] of ...
+  WT := wtTrunk + 4;
+  WT := wtish - 3;
+  Inc(WT); 
+  Dec(WT)
+  //WT := UT; // produces TypeMismatch error
+
+
+Maps:
+- Add 'Breaking the Chains' SP mission made by @Harry
+- Add 'True Administrator' SP map madeby @DontTalk
+- Delete 'OC' SP map
+- fixes for 'The Barbarian King' campaign
+- Update Knights Evolve to use new AAI function, fixes in script
+- fixes for 2 reports on TSK04
+- fixed: TSK campaign starting intro video does not play
+- update TSK Logo video: use HD version
+- add advanced ai to all Snow's maps by @sado
+- Town Defence map has AAI as an option to choose, but it should not have it in the menu
+- Fix scripting errors in the number of coop maps:
+  Home of Once Brave
+  A Way East
+  Castle Defenders
+  Citadel of Darkness
+  Dead Border
+  End of Sanity
+  The Flaming North
+  
+Translations:
+- update Dutch translations by @JanPeter
+- update Finnish translation of TSK / TPR by @LeafhillYoshi
+- update Spanish translation by @Zapatillas
+
+Misc:
+- When manually delete maps or replays they will be deleted to the windows recycle bin
+- add 'open settings file / folder' in the F11 menu
+- Add format version to the RXX / RXA files header
+- no need to print stacktrace into error message, when catch exception in the script event handler
+- Add debug button to quick restart the game
+- Allow to have unordered IDs in the libx files for custom maps / campaigns
+- Made OpenAL init in async thread to reduce game load time
+- Fix couple minor memory leaks
+
+

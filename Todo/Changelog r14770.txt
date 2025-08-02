@@ -1,0 +1,5 @@
+Beta r14770
+
+- Fixed critical bug in delivery system on r14765
+- Interpolated animation setting should be saved in the settings.xml
+- Dismiss task: fix abrupt unit animation change after the first step of the task

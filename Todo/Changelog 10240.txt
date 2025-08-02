@@ -1,0 +1,19 @@
+[1:48 PM]Rey: KMR Beta 10k+ r10240
+
+1. Bug fixes
+- reported game crashes
+- delivery system fixes
+- game chat sometimes did not copy from lobby into the game
+- UI bugs
+- campaign difficulty did save between maps
+- reset Players color mode to default for every game
+- game freeze on Furious Warriors map for ClassicAI
+- mapEd object 71 was considered as "unpassable tile" (object 61)
+- reverted warrior orders "attack house" and "storm" improvements, since they are unstable
+2. Added collecting debug data, saved in *.rng file. Should help to fix game desyncs. File size could be significant (~15Mb for 1 hour 12 players game), will be removed from release version.
+3. Added ability to setup hotkey for spectator statistic panel dropbox.
+4. Slight spectator stats panel improvements (separated citizens into 2 stat types, improved game visibility behind stats panel)
+
+Full Version: http://bit.ly/kmr-r10240 
+Rey
+ pinned a message to this channel. See all pinned messages. — 5/19/19, 1:54 PM

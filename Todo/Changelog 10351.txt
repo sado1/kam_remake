@@ -1,0 +1,28 @@
+[4:40 PM]Rey: KMR Beta 10k+ r10351
+
+- fixed crash on player quit for the game with 3 or more players
+- fixed several other desynchronisation
+- fixed lost disconnect packet from player caused other player to wait 30 sec before being able to drop him
+- fixed lobby bug - can't randomize locs when there are closed slots inbetween players
+- fixed lobby minimap for saved games
+- fixed lobby 'Press ready to start language issue
+- fixed ban recruits in barracks (when they left barracks there count did not change)
+- render fix for house resources (reported by Harry)
+- fixed exported CSV stats validation
+- CSV stats use only english now
+
+- Its possible to evacuate wares from Storehouse/Barracks and Market now - use TakeOut delivery mode. From Barracks to other Barracks or Storehouse. From Storehouse to other Storehouse
+- added another 'red triangle' to block ware evacuation from Barracks and Storehouse (use right click on ware)
+- right spectator panel - added amount of goldchests in townhalls to Warfare page
+- MapEditor: added cost of buildings when selecting them
+- Scripts: added OnGroupOrderMove event, triggers when group got order to move at a certain location
+
+- updated and added chinese translation for most (or even all) maps and campaigns in release by @Rolly 
+- updated german and czech translations
+- updated TPR difficulty levels by @Strangelove 
+
+- improved advanced AI by @Toxic 
+- TownHall: Barbarian/MetalBarbarian cose reduced from 10 to 8 gold chests
+- ArmorWorkshop - swaped back leather armor and wooden shield positions
+
+Full Version: http://bit.ly/kmr-r10351 

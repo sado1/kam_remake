@@ -1,0 +1,15 @@
+[1:31 AM]Rey: KMR Beta 10k+ r10135
+
+- Fixed several critical game bugs (some code reverted after experimental changes on r10000) and some minor bugs
+- Fixed reported Advanced AI bugs
+- Added replay rewind (only backwards, to the number of savepoints)
+- Fixed situation, when group attack was interrupted by a certain actions: 
+    link new members, manually or after training from barracks/townhall
+    split group
+    group member died while group was attacking house
+- Soften transitions between some group orders (attack house, storm)
+- Restored Federation of Neryn campaign to its state at r6720
+
+Full version: http://bit.ly/kmr-r10135 
+Rey
+ pinned a message to this channel. See all pinned messages. — 4/18/19, 1:31 AM

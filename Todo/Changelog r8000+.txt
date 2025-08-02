@@ -1,0 +1,274 @@
+[6:37 PM]Rey: KMR Beta 8000+ r8207
+Many small and some big changes there, including:
+- TownHall
+- Woodcutters house Cutting point and new 'Plant Only' mode
+- Ability to select ally's house/unit
+- House closed for worker feature
+- New house delivery mode (ability to take ware out of the house, using house same as storage)
+- ability to set hotkeys as you like
+- lots of MapEditor and scripting improvements
+- Network code and FPS optimizations
+- and many many other smaller things
+
+[7:38 PM]Rey: KMR Beta 8000+ r8219
+Fresh hot fixes
+Full version:
+
+
+[10:37 PM]Rey: KMR Beta 8k+ r8222
+House UI hotfix
+
+
+[11:32 PM]Rey: KMR Beta 8k+ r 8225
+Save download hotfix
+
+
+[11:52 PM]Rey: KMR Beta 8k+ r8228
+Split order in MP game fix
+
+
+[11:32 AM]Rey: KMR Beta 8k+ r8259
+Fix for occasional serfs deliver stone/timber to constructing houses without roads
+Added russian translation and ability to add new translations. New translations could be done with TranslationManager.exe, saved, and then sent to me as *.libx file from data/text/ folder
+Minor fixes
+
+
+[11:43 PM]Rey: KMR Beta 8k+ r8302
+Changes since r8228:
+1. Rebalanced TownHall units gold prices to 3-3-3-5-10-10
+2. Added new Campaign by grayter: On Foreign Lands - Empire Reborn
+3. Change tick calculation to real value, so, f.e., old r6720 x3 is equal to r8300 x2 speed. Game is speed itself remains almost the same, but the speed value is now very accurate.
+4. Added Russian and Hungarian translations and ability to add new translations. New translations could be done with TranslationManager.exe, saved, and then sent to Rey as .libx file from data/text/ folder. Or you can simply modify your lang.libx file similar to text.eng.libx
+BugFixes:
+- occasional serfs deliver stone/timber to constructing houses without roads
+- replay inconsistency after save
+- many other minor fixes
+
+
+[12:10 AM]Rey: KMR Beta 8k+ r8355
+1. Added Random Map Generator (RMG), made by Toxic! 
+You can try it in Map Editor -> Terrain Editing -> Copy/Paste -> RMG Settings. Check screenshot: https://puu.sh/z4B8z/134b0eb252.png
+There are lots of settings, you can try them on your own. Detailed description will be made later.
+2. Fixed grayter Campaign (mission 13)
+3. Another hot delivery fixes: TH gets its gold much better now. Serfs get ware out of house, when inside of it.
+4. Other minor fixes, as usual
+
+
+[8:18 PM]Rey: KMR Beta 8k+ r8614
+1. Added unit dismiss button, to force unit go back to school (without gold reward, though)
+2. Added fixes for original TPR and TSK campaigns by @VatrixGLHF 
+3. MapEd multiple small improvement and changes (added several layers, lots of hotkeys, ability to edit mission txt params and other features)
+4. Added filter by map type for Singleplayer maps
+5. Fixed crash while trying to watch campaign game replay
+6. Other bug fixes
+
+
+
+[9:31 AM]Rey: KMR Beta 8k+ r8616
+Fresh update after getting new bugreport from older versions (r8355 and earlier)
+1. Fixed old crash while open game stats (F3) - could happen if player deleted house in 'closed for worker state' earlier
+
+
+[4:20 AM]Rey: KMR Beta 8k+ r8638
+1. Fixed MapEd bottom and right border problems after map save
+2. MapEd: Added Z-coordinate (corner height)
+3. Slight improvements and fixes with tables in MapEd (Goals/Attacks) and some small render fixes
+4. Fixed error on game start while in Fullscreen mode
+
+
+[6:14 AM]Rey: KMR Beta 8k+ r8687
+1. Added linux servers distributives. Several active servers are on at the moment
+2. Fixed game crash on the game start after change from/to fullscreen
+3. MapEd: added ability to set player color via BGR or RGB color code
+4. Menu MapEd: added simple filter for special/coop maps
+5. Fixed reported bug from r6720 for AI group do not take empty defence position after being triggered by an enemy (and after killing them)
+6. Fixed TSK mission 12 script (by Strangelove)
+
+
+[2:21 AM]Rey: KMR Beta 8k+ r8739
+1. Fixed game crash when try to equip soldiers from barracks with Shift + RMB
+2. Added ability to observe detailed game statistics during the game. Added corresponding
+button to statistics menu (F3).
+Spectators (or while in replay) could see stats for all players, while players in the game - only for allies. 
+3. Added complex map filter on MapEd menu page
+4. Added fixes to TPR/TSK original Campaigns by Vatrix
+
+
+[7:20 PM]Rey: KMR Beta 8k+ r8746
+1. Fixed occasional game crash on locale change
+2. Scripts: added ability to setup custom event handlers. That will allow to have multiple handlers for the same event, invoked one after another. Order of invokation: 1st is default event handler (OnMissionStart, f.e.), then custom handlers in order of declaration in script.
+
+Having custom handlers will open ability to include ready 3rd party scripts with just 1 line of code (by include directive: {$I anotherfile.script}. No need to merge some parts of it with your main script.
+
+Could be added with custom EVENT directive, f.e.:
+{$EVENT evtMissionStart:OnCustomMissionStart}
+
+where 
+evtMissionStart - event type identifier ('evt' - prefix, 'MissionStart' - event name)
+OnCustomMissionStart - name of script procedure, that will be also invoked on mission start (same as default mission start event handler OnMissionStart)
+
+
+[4:21 PM]Rey: KMR Beta 8k+ r8754
+1. Fixed bug for custom event handlers from r8746, when they did not reloaded from save
+2. Added ability to add mission 'difficulty' in MapEd Mission Parameters popup window. If those difficulty level are set there, then player will be able to choose difficulty in the SP menu (only for SP now). 
+Then mapmaker/scriptmaker can get this difficulty level via calling new script function 
+States.MissionDifficulty
+, which return result as TKMMissionDifficulty enumeration.
+
+TKMMissionDifficulty = (mdNone, mdEasy, mdNormal, mdHard);
+
+
+For maps without difficulty (all current maps) mdNone will return. 
+
+Its not affect game or ai. Its just map/game parameters, that player should set on game start and scriptmaker could get its value and modify map somehow.
+
+
+[1:59 PM]Rey: KMR Beta 8k+ r8769
+1. Fixed reported bug, when game occasionally crash on game save
+2. added various scripting functions for AI. Full list check on my wiki page https://github.com/reyandme/kam_remake/wiki
+
+
+[9:56 PM]Rey: KMR Beta 9k+ r9048
+1. Added new advanced AI made by @Toxic. Available for MP game only now.
+There could be some bugs and lots of room for improvement, anyway its should be stronger then 'classic AI'
+2. Minor game gui features:
+- clickable house logo / unit scroll (jump to house / unit)
+- clickable house icons (jump to next house with house icon type)
+- muliplayer menu page, game info / ingame allies panel - mark defeated / won players
+- lobby menu - show lock icon, when password is set
+- game statistics for team: show team members
+3. Added scripting functions to check if field / house plan is placed at location
+
+
+[7:31 PM]Rey: KMR Beta 9k+ r9128
+1. Fixed game crash on some maps, caused by modified navmesh. 
+2. Numerous bugfixes and improvements of Advanced AI.
+3. Other minor bugfixes
+
+
+[11:45 AM]Rey: KMR beta 9k+ r9175
+1. More advanced AI improvements and bug fixes
+2. Added players color mode (self/ally/enemy). Possible to set in in-game settings menu (F4). Added hotkey for fast switch ('O', by default).
+Colors are adjustable in KaM_Remake_settings.ini. 
+3. Added ini setting to always show game time (ShowGameTime)
+4. After beta tester's reports:
+- reverted ability to select ally units / warriors
+- armor smithy and armor workshop has same order of items now: 1st is armor, then shield
+- added 'Ask to get ready' button to lobby room settings to send some alert / notification to not ready players to get ready
+- change lobby real game speed from 1 to 2 with 0.25 step to 1 to 2.5 with 0.1 step
+5. Small bug fixes
+
+
+[1:09 AM]Rey: KMR Beta 9k+ r9371 unstable
+1. Added support for up to 65k terrain tiles and objects
+2. Added ~50 new tiles, mostly transitions from stone, but also new coal and iron tiles with 5 resource per tile
+3. Added new brushes for automatic transitions between terrains. It uses masks of 3 types (atm, easy to add more types in future). Its possible to make transitions between up to 4 terrain types. 
+Unfortunally its hard to reach quality of transtition of prepainted tile, but sometimes its better then nothing.
+4. Improved FPS - do not render any objects under FOW (before they were rendered anyway, but in black color)
+5. Fixed game freeze, caused by new advanced AI
+6. other bugfixes and improvements for advanced AI and RMG by Toxic 
+7. Fixed rogue attack house animation and sound
+8. Fixed market trade bug, when there is some ware in the market virtual 'out' queue (after some trade done, but ware was not delivered) which is not possible to immidiately trade into some other ware. Ware was taken out of market and then immidiately got back into it, what looks odd.
+9. Do not allow unit dismiss during certain actions (f.e. worker digging road/wine)
+10. Fixed corrupted marks while placing new house plan
+11. added Ctrl + F11 hotkey to open F11 menu with shrinked debug panel. Usable to make fast screenshots while in fullscreen mode.
+
+
+[8:55 PM]Rey: KMR Beta 9k+ r9397 with various fixes:
+1. Fixed delivery error, which cause game crash
+2. Fixed ally player FOW render on game start
+3. Fixed wrong terrain kind load from maps, made in the previous versions, which cause wrong tile painting with brushes in the MapEd
+4. Fixed typo, which caused tile 168 being not walkable (and then it was not possible to build iron mine on it)
+5. Fixed old r6720 bug with unit revelation at the his current position happened only on the his next move
+6. Enlarge troops direction selector change dir from 15 to 20 pixels (to prevent occasional troops direction change)
+7. AI and RMG small fixes
+
+
+[8:55 PM]Rey: KMR Beta 9k+ r9473
+1. Fixed advanced AI bug, caused AI to produce too many wooden shields instead of leather jackets
+2. Fixed old bug (since r6720) with unit FOW revelation at his current position happened only on his next move
+3. House FOW revelation is applied from all house points, not only from its bottom right corner point
+4. Improved advanced AI quarries positioning, in attemp to prevent crucial stone depleting
+5. Various small bug fixes and improvements (including new AI)
+6. Improved serfs delivery: when serf finished one delivery at some house he checks if there is any deliver task from that house and even if there is another serf who is on the way to get that task 1st serf will overtake the task.
+Basically it means - if there is some ready product at house then any serf who come inside that house will take something out of it.
+
+Full version: https://goo.gl/hSwA9h 
+Rey
+ pinned a message to this channel. See all pinned messages. — 5/4/18, 9:57 PM
+[9:24 PM]Rey: KMR Beta 9k+ r9482
+1. Fixed MapEd crash for new map
+2. Added export game statistics to csv
+3. Limit number of units appeared after house destroy to 50 (was 255)
+4. Limit max number of equpped units at once to 100 (you can't occasionaly equip 1000 with shift + rmb anymore)
+
+
+[8:24 PM]Rey: KMR Beta 9k+ r9582
+1. Added exported game stats CRC validation (stats export is available after game end, on game results screen)
+2. Spectators/Replay - unblock 'Build' button (F1) to try test house build (show house / field marks)
+3. Serfs can now start eat food immidiately after bringing it into the Inn, if they are hungry
+4. MapEd: Added 'Fix terrain brushes' feature on Terrain brushes page (new 'options' popup menu). This feature will try to fix map inner info to make brushes work again in case if they are broken. Try it on 'Golden Cliffs'
+5. Allow to setup Server name with leading spaces in settings.ini (via quotes)
+6. All maps were resaved. That means they all are in new post r6720 format and could not be opened in pre r9k+ versions, but they are about use twice less place on your disk drive. Back compatibility is still there, you can open r6720 maps in new version 
+[8:24 PM]Rey: More in r9582
+7. MapEd: Add ability to set loc possible AI type (classic/advanced) on mission/player type submenu.
+8. Allow to set Advanced AI player for SP games
+9. Hotkey (Ctrl + 1..9,0): do not reset previous assignation If Object is assigned to another Key
+10. 'Center alert' hotkey (space by default) allow to jump not only to last alert on the minimap, but also to the last unread message notification (hungry unit / unused house etc)
+11. Add test ability to setup TownHall units cost and Market gold ore/gold prices from the script
+Use examples:
+For TH units cost add next line to the script: 
+{$CUSTOM_TH_TROOP_COST 2,2,2,4,6,6}
+
+where numbers 2,2,2,4,6,6 represent TH units cost in order they appear in TH
+For custom market gold prices use
+{$CUSTOM_MARKET_GOLD_PRICE_X 1.2,1.4}
+
+Where 1.2,1.4 is gold ore/gold price multiplier. 
+Please contact me for details if some help is needed
+12. Added ability to setup 'standart' server. That server could limit allowed map list on it, as well as set allowed Peacetime range and speeds ranges.
+Those limit settings should be done in server's settings.ini file
+Please contact me for further details, I'll add more info to wiki soon.
+13. Fix units did not appear on the minimap, when standing on the road. Now enemy soldiers will be always seen in your city, even on road.
+14. Bugfixes, AI / RMG improvements 
+
+
+[3:34 PM]Rey: KMR Beta 9k+ r9624
+1. Fixed errors in previous beta release: crash for advanced AI and error in lobby when all map locs are selected
+2. Added new parameter in options menu: Autosave at game end. Will automatically save game at the end of game with name template %MAPNAME% %Date% %#game this day%
+3. Fix bug when drag scrolling with MMB near screen border (viewport start scrolling as normal, but should be blocked because of drag scrolling)
+4. Disable house controls when open ally house
+5. Spectate / replay - added panel where you can see some of the game stats - check dropbox at the right top corner. Originally made by @ZblCoder 
+
+
+[10:52 PM]Rey: KMR Beta 9k+ r9640
+1. Fixed crashes and errors from previous version
+ (TH units cost / crase on save load, new tiles transitions, coal market price and others) 
+2. Alpha stage feature: add ability to use simple Dynamic FOW. 
+It is set to ON by server settings. Try it on 'Bimbol's Dynamic FOW' server
+
+
+[9:32 PM]Rey: KMR beta 9k+ r9677
+1. Fixed TH units costs
+2. Fixed some of the crashes and bugs
+3. Added redundant logging and saved info to make it easier to find replay / game inconsistency
+4. Added 'Warfare' option for right stats panel for specs/replay viewers
+5. MapEd - add/reduce warriors count in group while pressing Ctrl button will form them in nice looking formation
+6. Fix double click on right stats panel
+7. Forbid Siege workshop for advanced AI (it was just stub house, do not doing anything actually)
+8. Do not show disabled house controls while spectating / watching ally. Just do not allow to press / mouse over them
+9. Fix Server details panel on small displays (when haev ~14 players in lobby). Add new ScrollPanel control, could be usefull when panel size is limited
+
+
+[7:31 PM]Rey: KMR Beta 9k+ r9685
+1. Do not allow dismiss hungry units
+2. Fixed bug for double counting TH gold as consumed, when destroy TH
+3. Fixed redelivery bug, when serf was offroad (serf could not find a road way to any house, so carried ware was lost)
+4. Minor fixes
+
+
+[10:36 AM]Rey: KMR Beta 9k+ r9700
+1. Fixed SP game crash
+2. Turned off debug option, caused MP game desync and crash when player quit game
+3. other reported minor bugfixes
+4. Swap leather and wood in armor workshop (as we swapped wooden shields and leather jackets already)

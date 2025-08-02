@@ -1,0 +1,9 @@
+[10:43 PM]Rey: KMR Beta r10416
+
+- turned off debug for "map or save download in lobby" (was ON occasionaly, caused very slow download)
+- reduce AttackAlert 'Fight distance' from 24 to 12 and duration from 6 to 5 sec (to avoid markers at locs, where battle is over for a long time already)
+- debug: show unit routes even if unit is not on viewport
+- add Polish translation by @sado1 
+- add Wild Grasslands 12P map
+
+Full version: http://bit.ly/kmr-r10416 

@@ -1,0 +1,73 @@
+Beta r13380
+
+Introducing units interpolated animations feature, made by @Lewin
+
+This feature is still under development, that's why its only available on the F11 debug panel.
+To enable check Interpolated Render and Interpolated animations checkboxes on Graphic tweaks subpanel.
+There are know issues with civilians carrying goods, sowing farmer, digging worker and other. 
+Anyway please report other animation issues you find
+
+Interpolated render fixes:
+- improvements in the tick time calculations. Fixed 'jumpy' movement of the units
+- smooth render of group flags
+- fixed unit 'jumpy' exit from the house
+
+Fixes:
+- rare crash in replays caused by new Hints system
+- crash while spectating (reported by Livid)
+- cached pathfinding should not be used for a very close destinations
+- bug, when SP map hand (loc) has no allowed AI types, but AI is placed anyway
+- stats graphs were not correct for SP missions for same colored AI's
+- UI bug on the hotkeys table in the options menu
+- fix for player types in the MapEd were not validated proprely sometimes
+- MapEd copy-paste terrain flip was not applied sometimes
+- fix for 'new map' numeric edit controls (it was difficult to enter arbitrary value there)
+
+Other changes:
+- added edit hotkeys menu onto the game and maped settings panel
+- added interpolated render checkbox onto menu and game options panels
+- add ShowGameSpeed into the settings.xml to always show game speed
+- update speed/time UI after load settings via F11 menu
+- add hint for game recorded speed in the replay
+- add detailed hints over goals on the SP menu page
+- use logical comparison for the filenames in the lists (maps/saves)
+- add 'Discord' button to the Credits page
+- minor Lobby menu refactoring (removed 'game options' label)
+- menu MapEd: add hint with map dimensions when hover over 'Size' column
+- add 'Save game whole map to Jpeg' feature to the Debug Menu
+
+MapEd:
+- allow terrian height up to 150. Its questionable if its worth using, because it could lead to an ugly maps, but allow some interesting ideas on the other hand
+- minor fixes on QuickPlay menu
+- mission goals popup window: added detailed mission goal description, removed disabled radiobox options
+
+Scripts:
+- new States: 
+    UnitInHouse
+    HouseGetAllUnitsIn
+    AIAutoAttack
+    HouseWorker
+    HouseHasWorker (duplicate of HouseHasOccupant)
+    HouseTypeToWorkerType (duplicate of HouseTypeToOccupantType)
+    HouseHasOccupant and HouseTypeToOccupantType marked as deprecated
+- new Actions
+    AIAutoAttack
+    LogLinesMaxCnt
+- Script logs: set limit on number of lines logged by scripts: default value is 100. Scriptmaker could increase it via Actions.LogLinesMaxCnt or use 'Debug scripting' checkbox on F11 debug menu. This feature was added to avoid bad scripts causing game lags because of intense warning logging
+
+Maps and Campaigns:
+- added 'The Cruel King' campaign made by @Gogoud. Campaign was originally made as a custom campaign for KaM TPR 
+- add coop map Border Of Life
+- fixed 'KamStar Beginning' campaign
+- 'A Clash of Kings' moved from coop maps into special maps, since it has unique gameplay
+Removed coop maps:
+- A Farmers Wish Coop
+- Bridgecal Dundee
+- Coalical Dundee
+- Hillycal Dundee
+- The Cracker
+- Tropical Dundee
+- Waterfall Dundee
+Removed SP maps: 
+- Mission For The Competition 
+- TPR_Mission7

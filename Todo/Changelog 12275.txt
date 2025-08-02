@@ -1,0 +1,4 @@
+[8:11 PM]Rey: KMR Beta r12275
+
+- added [ DEBUG ]  to game caption / revision name, if project is compiled under debug build configuration
+

@@ -1,0 +1,15 @@
+Beta r15122
+
+- Fixed 2 important (but not critical) bugs in the redispatching delivery, when serf is inside house and looks for the best demand. One bug is quite old, thanks @Subedei for an intent testing
+- Unit thoughts: show 'eat' thought when unit is hungry, even if there is no Inn with food (like it was on a previous versions). Make smoother thoughts change (without thought bubble 'blink')
+- Game autosave / savepoint / replay savepoint: make restrictions on those parameters less strict
+  number of autosaves from 1 to 50
+  autosave frequency from 300 ticks (30 sec) to 6000 ticks (10 min)
+
+  number os save points from 0 to 60
+  savepoints frequency from 3000 ticks (5 min) to 72000 ticks (2 hours)
+
+  number of replay savepoins from 0 to 60
+  replay savepoints frequency from 300 ticks (30 sec) to 36000 ticks (1 hour)
+
+- Fixed rare AAI crash

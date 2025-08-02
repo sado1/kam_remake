@@ -1,0 +1,8 @@
+[8:45 PM]Rey: KMR Beta 10k+ r10354
+
+- fixed Barracks -> Market delivery
+- fixed crash in MapEd when using QuickPlay option
+
+Full Version http://bit.ly/kmr-r10354 
+Rey
+ pinned a message to this channel. See all pinned messages. — 11/16/19, 8:45 PM

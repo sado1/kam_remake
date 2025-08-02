@@ -1,0 +1,147 @@
+KMR Beta r15379
+
+The most important changes:
+- fixed bug, when ranged units did not attack desired opponent at times
+- fixed stables and swine farm abuse, when it was possible to improve performance of the houses using closed for worker feature
+- because of possible issue with campaign progress being erased, do not allow to open campaigns menu until all of the campaigns are loaded
+- Scripts: States.GroupType returns values in 0-3, as it was since r6720. It is recommended to use new Sates.GroupTypeEx method instead for a newer scripts. Maps in the repo were updated accordingly.
+- NetProtocol revision changed to 15371, to force server owners to update their server to the latest version, since there were old servers which had to be updated
+
+Various bugfixes
+- critical bugfix for warriors trying to clash using occupied vertex
+- fixed 2 errors caused crash when trading at marketplace
+- fixed crash when loading save, caused by TKMUnitVisual (TKMUnit.getSlides)
+- fixed game save desync error caused by rounding error of not needed field in the terrain tile data (light level, which could be easily recalculated on the map load)
+- fixed error when load save and there is mismatch in hand overlay and number of passed parameters in script
+- fixed crash when using BigDescLibx / SmallDescLibx by map author, who messed up with libx indexes and haven't placed the very top index at the end of the file
+- fixed crash when there are too many deliveries, caused by chosen short integer type
+- fixed crash caused by extremely long script variable (more then 65k symbols long)
+
+Gameplay
+- added Shift + Click hotkey in Store and Barracks for the 'red/yellow' triangle feature applied to ALL types of wares. Add corresponding hints
+- Townhall max gold is set to 65k, same as in Barracks / Storehouse
+- unlock F3 stats for fighting maps
+- game and lobby chat, player dropdown list now allows to hold mouse down while choosing the player to chat with
+- fixed rare visual house bug when house is closed for worker at the same time as worker goes to eat
+- fixed bug, when there were no army stats if game is ended in 30 sec after previous load
+- fixed projectiles arcs when ranged units attack houses
+- ranged units are now don't attack opponents who are covered by FOW
+- update text of Carpenter (remove siege workshop info)
+
+Specs/Replay
+- fix FOW was not updated when click on units / houses on stats table at the right top corner of the screen
+- fixes for Spec right panel houses / construction tabs
+
+Menu
+- save game settings file when update favourite and reload settings on lobby menu and mapEd menu
+- MapEd menu: refresh maps list on F5 hotkey
+- fixed visual bug in SP Special Map menu
+- allow 'teams' player color mode for a specified hotkey
+- options menu visual fix on Russian and Ukranian languages
+
+Lobby
+- Ignore | symbol in the server name
+- fixed transfer of the 2 map files with double postfix, like MapName.SndName.eng.wav
+- fixed crash in lobby when sometimes it was not possible to transfer the file
+
+MapEd
+- fix wrong positions of buttons on ObjectsPalette
+- instead of tile 108, we should use 189
+- minor ui fix with a hint on FishCount NumEd
+
+AI
+- fixed AI bug, when ally Classic AI do not help human player
+
+Maps
+- map .txt file is not saved in UTF8, allowing language specific characters, f.e. chinese hieroglyphs
+- fixed Furrior Warriors map
+- updated number of maps and campaigns, full list of updates is in the attachment
+
+
+Scripts
+- fixed few issues with enums, including game freeze when use backwards for cycle down to first enum value (f.e. var bt: Byte; for I := 3 down 0 do)
+- enum: allow >/< comparisions 
+- added actions to change house flag point (barracks / TH / woodcutter) and add HouseFlagPointChange event
+- added OnUnitDismissed event
+- fixed bug, when taking gold out of a townhall with script, the serfs don't recognise that it's not at max gold anymore
+- added direction parameter as part of the OnGroupMoveOrder event
+
+
+Translations
+- updated Chinese translation
+- updated French translation made by Toto
+- updated slovak translation for town tutorial made by marksman
+- updated spanish translation by Zapadellias
+
+Other
+- fixed bug when video did not appear with Brightness = 0
+- video sounds - fix bug, when changing of video sound volume caused change in sound volume of KMR app
+- optimise KaMRandom calls, prepare them for an official release (they will be omitted there)
+- fix perflog on the debug panel
+- fix crash in TranslationManager util
+- show descriptive message, when player starts the game from the non-writable folder (f.e. from the mounted DVD-drive)
+- log now supports UTF8
+- visual fix on tiles 3, 9, 13 - they had a thin line on one of edges
+- add wiki page about installing dedicated servers, update project building page
+- Readme file is updated to an actual state
+
+Campaigns:
+- added The Horror of the Feudal Vanity campaign by Classic (1.5.3)
+- patched Barbarian King campaign by Strangelove (0.0.9c --> 0.9.9.1)
+- patched On Foreign Lands - Empire Reborn by Grayter
+
+SP maps:
+- added Immortals by KaMrat (0.96)
+- added Tumult of the Slaves by KaMrat (0.995)
+- added Sea Scoundrels by KaMrat
+- added Approaching Darkness by DontTalk (1.2)
+- added Reminiscence by DontTalk (1.3.1)
+- added City of the Scorching Sun by DontTalk (1.5.1)
+- added Realm of a Dying Sun by DontTalk (1.3)
+- added Krolm's Anvil by DontTalk (1.3)
+- added K&M Tower Defense by King Dyron (1.0.3)
+- added Sands of Z'ha'dum by Strangelove (1.2)
+- added Return of the King by Strangelove (1.0) 
+- added Shores in Flames by Strangelove (0.7.3)
+- patched True Administrator by DontTalk (0.9 --> 1.0)
+- patched Invasion by Skypper
+- deleted Vortamic
+- deleted Pursuit for Power
+- deleted Two Sides
+
+MP maps:
+(COOP)
+- added This Significant Day by KaMrat (0.94)
+- added Hammerheart by Strangelove (0.7)
+- patched Home of Once Brave by Strangelove (0.7.2d --> 0.8.1)
+- patched Valley of Kings by Strangelove (0.7.4 --> 0.7.4b)
+- patched The Dig by Strangelove (0.9.4 --> 0.9.4b)
+- patched Return to Moorbach by Strangelove (0.8.5 --> 0.8.5b)
+- patched Border of Life by DontTalk (1.2 --> 1.4)
+(PVP)
+- added Death Swamps by KaMrat 
+- added Chlyssich in the Desert by Classic (1.08a)
+- added Temple of Koczis12p by Sado (0.31)
+- added E-Day by Thunder
+- added PlanktonS 12P by Thunder
+- added Omlott Falak by Thunder
+- added Mirage_RND by Thunder
+- patched Furious Warriors by dicsoupcan & RandomLyrics
+- patched Mighty Kingdom by Snow
+- patched Rich Land by Certus
+- patched Arena 2 by Sado
+- patched Wild Grassland 12P
+(Fightmaps)
+- added Chlyssich in the Forest by Classic
+- added Gunplay Pro Max by andreus & vovets1
+- added Equlibrium by Classic
+- added Quicksand by Classic
+- added Rain Season by Classic
+- added Snow Desert by Classic
+- added The Beginning of Spring by Classic
+- patched Atoll by Kirelareus
+- patched Cross by Kirelareus
+- patched Tundra by Kirelareus
+- patched Gunplay by andreus & vovets1
+- patched Rocky Mountains by Classic, andreus and vovets1
+- patched Sharks Islands by andreus & vovets1

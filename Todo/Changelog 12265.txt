@@ -1,0 +1,9 @@
+[4:07 PM]Rey: KMR Beta r12265 
+hotfix for r12260
+
+- remove annoying message about game speed in the MP game
+- fix crash when reduce trade order amount in the market
+
+Full Version: https://bit.ly/kmr-r12265
+Only KaM_Remake.exe file for those who want to upgrade from r12260: https://bit.ly/kmr-r12265_patch_r12260
+Replace KaM_Remake.exe in your kam_remake directory. 

@@ -1,0 +1,13 @@
+Beta r14281
+
+- fixed render of disabled buttons
+- fix for "player color is chosen only on second selection when no map is selected"
+- map zoom was not working when fields / winefields tool is selected in the MapEd
+- block scroll / zoom change when waiting for other players in MP game, to prevent unfair advantage upon them
+- fix game scrolling with cursor buttons in Replay on pause
+- caption of game settings popup window overlapped caption of key bindings popup
+- scrollbar was missing in key bindings menu
+- resizing game window resets scroll position for Memo control (e.g. in Main>MapEditor page)
+- other UI controls fixes 
+- update hint on Defence Position button to be multiline in MapEd
+- add Russian translation for The Cruel King campaign by @Gevorg 

@@ -1,0 +1,81 @@
+Beta r12260
+
+- Hand logistics code has been greatly optimized. Game works much better for a huge cities with total number of thousands of serfs
+
+Advanced AI changes by @Toxic:
+- AIs support each other in defending the city
+- Improved distribution of combat groups between clusters
+- Improved retreat algorithm
+- Improved pathfinding (avoid traffic, narrow paths, and specific group types according to "rock/paper" logic)
+- Performance optimizations (pathfinding, army positioning, calculation of the target groups)
+
+Minor game changes:
+- ScrollSpeed is zoom dependant (faster on zoom-out, slower on zoom-in)
+- Zooming in more smoothly
+- Allow to change game speed in MP if there are no active human players. Player is active if he affect game state: he is not defeated and not spectatro. Speed change could be made only by host.
+- Fixed replay desync when one of the players left the game
+- Fixed save desync on the maps with many script sounds
+- Do not block woodcutter from tree cutting if there is wolf running near tree
+- Market fix: serfs should use previously brought wares for the new trade
+- Fix market wares render for corn and pigs
+- Fix market ware shadow was rendered twice (under the cart)
+- Fix woodcutter could place tree with wrong type on a grass
+
+Hotkeys:
+- Add hotkeys for train/next/prev units in school/barracks/townhall (a/s/d by default)
+- Add 2 more hotkey categories: Unit keys, House keys (subcategories of Game keys)
+- Set default Tiles palette hotkey as F8
+- Allow to bind TAB hotkey 
+- Set default road/field/wine/erase hotkeys to q/w/e/r
+
+MapEd:
+- Add 'Show defence positions' and 'Flat terrain' into Extras panel, add borders for mining areas for 'show mining radius' option
+- Improve defence position display
+- Replace trackbars with numEdits for AI equip rates, recruits delay, max soldiers. Set equip rates in tick instead of in seconds
+- Fix occasional bug, when corn field stages were lost after map save
+- Fix for tile palette hints
+- Fix: terrain lighting was not updated when add / remove water onto the map
+- If new map is created we need to delete map folder with the same name before saving
+- Limit group walk or attack pos to be in the map coordinates
+- It was possible to start quick play game without human player / assets on it
+
+Video:
+- Start videos were not running if fullscreen mode was used
+- Fix for Victory / Defeat video appeared when go between SP - MP game stats screens
+- Disable all sounds before video start
+
+Lobby:
+- Fix occasional bug in lobby, when map list was not shown
+- Fix for 'Block color selection' feature, when color were not properly shown in the lobby after 'back to lobby'
+- Show team connections on minimap even if no loc is chosen, if possible
+
+Replay:
+- Paint ReplayBar as wide as possible
+- Update player name, if player was changed after load of the game 
+- Go to the city center if location has no specified CenterScreen parameter
+
+Misc:
+- Debug 'Interpolated render' was added onto F11 panel (Graphic Tweaks section). It affect projectiles (arrows / stone from tower) and unit movements. No new sprites were added, there are several known movement bugs. To be worked on.
+- Use BASS audio lib instead of libzPlay since few minor bugs were found
+- Improve editable fields selection. Add handler for Ctrl + arrows events to jump/select text by words
+- Game save should overwrite content of an old save folder
+- Deprecate old mission script static commands: ctAddWare, ctAddWareToSecond, ctAddWeapon. Used AddWareToLast instead
+- Export game sprites is made in async thread now
+- Fix game crash if there is no sound files
+- Fixed occasional crash when load map with new masked transitions
+- Fixed bug when unit tried to enter destroyed house in the moment of destruction
+- Fixed occasional crash on player reconnection
+- Fixed Classic AI old bug, when AI could order more units then needed, if there is crown at the barracks entrance. Especially noticable when FastEquip option is set
+- Fix: game speed change was not applied after back to lobby (or any save was loaded)
+- Fixed old error when warrior was unable to make route to destination location
+- Fixed several other bugs, when unit was unable to make route to the destination location
+- Release chat drag scroller when click out of the chat
+- Many of debug tools were added onto F11 debug panel, including checkboxes from MapEd Extras panel
+- Added ini setting to set MapEd history depth
+- Do not limit async thread in wait time, so saves could be made even on very slow hdd's
+- Several snow houses and animations were fixed by @thunder
+
+Maps
+- Various map changes made by @andreus
+- Added number of new script functions by @andreus
+- Updated 2 coop maps made by @Strangelove

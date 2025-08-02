@@ -1,0 +1,60 @@
+Beta r12840
+
+Fixes:
+- hotkeys were reset to defaults on game start
+- crash, caused by loading kmr_dev.xml file
+- bug with "marking text in lobby" and later crash when start game
+- crash if TownHall delivery mode was changed to 'Take Out' while serf with gold was entering house
+- rare crash while dismissing worker
+- crash on a big puzzle-like maps, caused by overflow in Pathfinding algorithm
+- crash when Music folder had more then 255 tracks in it
+- woodcutter could plant wrong tree type on a few new tiles
+- warrior could go there and back between different offenders, if he didn't catch any
+- AI got MP setup on game start. It broke AI behaviour on Furious Warriors and other special maps
+
+Campaigns:
+- allow to use shared scripts of the campaign, scripts should be placed into the 'Scripts' subfolder of the main campaing folder. Scripts inside mission folder override shared scripts with the same name in the Scripts folder
+- allow to use shared audio files in campaigns, they should be placed in the 'Sounds' subfolder of the main campaign folder with XYZ campaign prefix (f.e. TSK.waterfall.ogg). 
+A.PlayOgg(0, 'waterfall', 1) in the TSK01.script will try to find TSK01.waterfall.ogg file in the TSK01 mission folder, and if not found it will try to find TSK.waterfall.ogg in the Campaigns\The Shattered Kingdom\Sounds\ folder
+
+MapEd with new tools by @King Dyron 
+- new Objects Brush tool
+- 2 new tools to modify terrain height: 'constant height' and 'elevate by terrain kind'
+- improve copy-paste tool and Flip tool, it is able to paste only part of the terrain data (terrain/height/objects/overlays)
+- added new gradient mask for terrain transitions
+- fixed tile ID input field on tiles palette
+- fix settings controls were sometimes not accessible
+- minor fixes of GUI elements on low res displays
+- render optimisation of the show mining/units/towers radius tools
+- fix horisontal flip for the tiles with ID > 256
+
+Scripting:
+- added script functions
+Actions
+HouseWareBlockTakeOut
+HouseAllowAllyToSelect
+HouseAllowAllyToSelectAll
+UnitAllowAllyToSelect
+GroupAllowAllyToSelect
+ 
+States
+HouseBarracksRecruitsCount
+HouseWareBlockedTakeOut
+HouseAllowAllyToSelect
+UnitAllowAllyToSelect
+GroupAllowAllyToSelect
+CampaignMissionID
+CampaignMissionsCount
+CampaignUnlockedMissionID
+
+- allow to set tiles with IDs 108, 109, 110, and with ID > 255
+
+Misc
+- disable ability to view allied houses in SP
+- disable videos when run under wine
+- added view readme (pdf) button for single map menu
+- use 'Modding graphics' folder, as a default folder to swap game png's with a custom one ('Sprites' folder is still supported)
+- increased max stone / gold / iron values on RMG settings
+- added 1st custom animated cursor (spinning wheel made of army direction selector)
+- load asian fonts when open Credits menu page
+- fixed some symbols could be printed with negative width so caret goes to the left, when its printed (f.e. russian №)

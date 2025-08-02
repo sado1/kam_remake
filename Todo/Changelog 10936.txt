@@ -1,0 +1,43 @@
+[12:47 PM]Rey: KMR Beta r10936
+
+Game:
+- militia was removed from Townhall
+- unit dismiss action - confirmation was removed
+
+MapEd:
+- brushes: added 1 more terrain kind - snow on grass
+- added 1 more mask for autotransition
+- new tiles: added ~40 new tile transition, mostly between mountains, made by @King Dyron 
+- added blending level for autotransitons
+- changed map format, to support new masks and terrain kinds in the future. Old maps are still supported (from r6720 and previous beta versions)
+- brushes tab now has scrolling
+- left toolbar panel was slightly enlarched 
+- fix group max food was not saved in the map .dat file
+- fix defence positions controls
+- fix gold mine 5 ore tile
+
+Scripts:
+- added OnHouseWareCountChanged script event
+- fix script sounds bug
+
+Other:
+- fix one more desync, related to scripting cache
+- fix wares could be redispatched to constructing sites without road connection
+- fix terrain update after stone was mined (on 'normal' tiles, not auto transitions yet)
+- fix campaign progress for the latest won mission could be lost
+- fix mouse wheel events on Win10, also mousewheel rotate speed is considered now. With help by @Stucuk and @𝓐𝓵𝓮𝔁𝓪𝓷𝓭𝓻_5 
+- fix snow houses checkbox does not work in mp
+- various UI fixes
+- allow snow houses setting is saved in the ini file
+- added debug option for F11 menu to unlock all campaings missions
+
+- improved Combat AI by genetic algorithm
+- updated RMG
+
+Maps:
+- added 3 coop maps and fixed Barbarian King campaign by @Strangelove: The Dig, Return to Moorbach and Siege of Castle Fennford
+- added battle map by @Classic: River Crossing
+- added several maps by @andreus: Sea Battle (special), Dead Border (coop), Shallows of Death (battle), Riverlands
+- map fixes by @andreus: TSK06, TSK09, Northern Islands, A Way East, Lakeland, Leather Wars, The Last Hope, No Escape, The Adventurer's Journey
+
+Full version: http://bit.ly/kmr-r10936 

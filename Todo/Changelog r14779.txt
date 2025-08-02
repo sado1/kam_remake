@@ -1,0 +1,6 @@
+Beta r14779
+
+- Fixed critical bug with not deleted demands when Storehouse / Barracks / Inn were destroyed
+- Fixed backspace was not possible to press while waiting for network players
+- Replay: when load savepoint we should also load previously spectated player FOW
+- Updated Chinese translation

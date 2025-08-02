@@ -1,0 +1,17 @@
+2 AM]Rey: KMR Beta r11537
+
+Hotfix for r11507.
+
+- fixed crash in lobby when joiner choose color
+- fixes crash in MapEd when change wares count in some houses
+- reduced minimum player color distance from 0.3 to 0.15, so less colors are filtered by AI-only locs colors
+- fill AI defence positions with closest group to avoid swapping. Priority order is still respected
+- fixed incorrect FOW render in replays
+- fixed: in singleplayer replays start with fog enabled so replays can be watched without spoilers 
+- fixed scrollbars on terrain brush page in MapEd
+- MapEd history is not shown anymore on map load
+- MapEd tiles palette fixes: removed duplicate tiles, close palette when tile is chosen
+- improve Esc key handling in the MapEd
+- attemp to fix freeze on game exit (probably caused by video player)
+
+Full Version: https://bit.ly/kmr-r11537 

@@ -1,0 +1,30 @@
+Beta r13570
+
+Fixes
+- memory which was used to load Units.rxa textures was not deallocated. Saved ~500Mb of RAM. It should highly reduce number of Out of Memory errors
+- several other minor memory leaks
+- units hitboxes were not correct on r13380
+- bug with some game commands could be executed even after player disconnection
+- game crash when press Alt with opened F11 menu or click on KMR icon in the top-left corner
+- game speed was not reset to default (PT/afterPT) for loaded MP game with 2 or more players, while it had 1 player and changed game speed when saved
+- it was possible to select wrong group when click in the game message log (f.e. unit group is hungry)
+- do not allow beacon cursor over game stats screen
+- message buttons could sometimes overlap one over other (message log and single message icons)
+- script action HouseTakeWaresFrom could crash the game because of interaction with takeOut delivery mode
+- add MemUsed and StackUsed sections to perflog to track RAM usage
+- add options to make whole map screenshot on the 'F11->game advanced' panel: max image size and image type
+
+MapEd:
+- fixed elevation brushes and other issues related to wrong cursor position over terrain with height > 100
+- show actual terrain height az Z coordinate, even in 'flat terrain' mode
+- fix for terrain brushes were not canceled properly on RMB
+- fix terrain flip was not correct for some special tiles (f.e. walls)
+- rename map type 'tactic' to 'fighting' and 'normal' to 'building', same as we use on other menus
+
+Terrain tiles:
+- refactoring of how we store tiles data. Use data/defines/tiles.json with all tiles parameters instead of pattern.dat and hardcoded data. Its much easier to make moddable animation or set any tile parameters now
+- add ice animation for tiles 264 and 265
+- fix for waterfalls and some other animations with 2 layers (f.e. tile 196 with water plant)
+
+Campaigns:
+- delete 'KamStar Beginning' campaign on author request

@@ -1,0 +1,71 @@
+[12:07 PM]Rey: KMR Beta r10540
+
+Balance changes (for testing purposes)
+- lancer (pikeman) got +5 (=60) antihorse attack
+- rebel got -5 (50) antihorse attack
+- rebel price is 2 gold chests
+- scout vision reduced to 13
+
+Game
+- woodcutter now prefers closer trees to cut / locs to plant trees to the cutting point
+- TH initial max gold value set according to max unit cost
+
+Controls
+- holding shift while destroy house will keep destroy mode on
+
+Server 
+- server is using net protocol revision, instead of game revision. Clients of different versions (but with the same net protocol) are able to use same server
+- added ServerUDPScanPort setting to settings.ini file (to avoid "address already in use" error)
+
+AI
+- improved road pathfinding (AI now build city according to "squares" rather than "random" placing)
+- ability to replace fields (corn and also wine)
+- improved replacement algorithm of quarries
+- city builder has been sped up (house plan with all resources now have top priority)
+- house priority selection has been changed
+
+Various
+- updated F11 development menu components
+- added setting to ini file to enable/disable saving ware distribution between games
+- lobby: added 3rd 'ready' state for spectator: "ready, but need download map/save"
+- added 4 more mission difficulty levels
+- difficulty level is written at the game results title
+- added script action HouseTownHallEquip 
+- updated hints for Split group and School train buttons
+- added hotkey to step 1 tick forward in replay
+- MapEd: show mining ranges for woodcutter / quarry / fisherhut / farm / wineyard
+
+Updated translations: polish, italian, russian, chinese
+Updated MP maps (made by Thunder)
+Added 'Barbarian King' Campaign made by @Strangelove 
+
+Full version: http://bit.ly/kmr-r10540 
+Rey
+ pinned a message to this channel. See all pinned messages. — 12/3/19, 9:09 PM
+[9:24 PM]Rey: KMR Beta r10540 (continuation of changelog)
+
+Bug fixes
+- game freeze when type color brackets in chat
+- lobby panel appears while in multiplayer menu
+- saves on different machines were not identical, caused save download on back to lobby
+- worker was selected when try to destroy construction site and use tile where worker dig the site
+- sounds were not working propely when invoked from scripts
+- delivery mode bug when change mode during serf get into house
+- warriors continue following enemies even if their alliance settings were changed by script
+- fixed warriors stuck at barracks entrance
+- flag point was not rendered under FOW
+
+Full version: http://bit.ly/kmr-r10540 
+Rey
+ pinned a message to this channel. See all pinned messages. — 12/3/19, 9:24 PM
+[9:53 PM]Rey: Notes for the latest version r10540:
+
+2 debug options added were to settings.ini, enabled by default
+
+- SaveRandomChecks - save all random checks that game made during execution. They will be saved in .rng file in save directory. 
+Its better to turn this option off if you want to play extremely long game, more then 3 hours long - set it to 0 in the KaMRemake_settings.ini
+
+- SaveGameAsText - allows to save game data in text form, good for debug, saved in .sav.txt file in save folder
+
+Those files (.rng and .sav.txt) will be attached to crashreport or any save.
+In case you have problems (f.e. game freeze too much on autosave) you can turn those options off (set them to 0) 

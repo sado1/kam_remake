@@ -1,0 +1,63 @@
+Beta r15122
+
+Delivery system: 
+- one more important bug fix, which caused not the best delivery was chosen. This caused worse city production timings, than it should be
+- bug fix and refactoring for UpdateDemands mechanism of the houses 
+- reduce importance of already delivered items for the houses with orders
+- TownHall - allow 30 demands at once in the list (was 20)
+
+- RMG updates and fixes
+- load campaigns by async thread to speedup game loading process
+- warriors check for an enemy  more frequently to not miss walking serfs among them, which looks odd
+- ranged units: face towards order direction when they done with their ActionFight
+- reduce offroad penalty to 3 tiles when try to avoid locked tile
+- reduce max number of builders for fisher's hut from 7 to 6
+- change Army Power rates: Cavalry: from 6 to 6.2 peasant from 1.5 to 1.2
+- add option to save ware distribution between games in the menu, made by @greeny
+- campaign menu: allow to stretch briefing scroll image in case its not long enough
+
+
+Fixes: 
+- tower could not attack unit if there was a tree in the diagonal way
+- several fixes in the NavMeshGenerator and AAI
+- game was paused when type P in the game save name edit field
+- crash in the MapEd terrain painter
+- trim maps SmallDesc to EOL
+- minor Lobby UI issue
+- small bug in the game interface where the menu isn't properly reset
+- serfs 'did not see' TH if its spawned by script
+- parsing of dot or comma for float values in the script directives 
+- maps with blocked location color selection got random color after save load and other fixes
+
+
+MapEd:
+- increase max number of players on the map up to 27
+- enlarge left panel
+- minor UI next to refactoring 
+- fixed crash when set def position on an already occupied tile
+- fixed crash, when paste terrain near map left or top edges
+
+Scripting:
+- add several scripting methods to work with HouseClosedForWorker and logarythms
+- add Actions/States.AIUnlimitedEquip method
+- add States.HouseWareAmount
+- add several methods to work with fish unit and its 'fish count'
+- fix in Actions.HouseAddBuildingMaterialsEx when called in the event handler OnHousePlanDigged
+- variables of procedure type now are saved correctly
+- fix in the ScriptValidator util
+
+Maps:
+- 'To the capital' SP map was removed
+- minor fix on Eruption loc 6
+- TSK04: allow to build one more gold mine as it was in r6720
+ 
+
+Other:
+- allow to use modding graphics with RXA files (interpolated sprites could be also replaced)
+- add debug option to export all of the sprites in the .rxa files
+- add debug menu item to open current map script file (in the File menu)
+- do not move overwritten 'paused' save to the windows recycle bin
+- update Ukranian translation made by Lolasik and Rey
+- update Russian translation of several campaigns and missions
+- update German translation made by tschaeikaei
+- debug option "allow unsupported saves" was not saved between games

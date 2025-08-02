@@ -1,0 +1,18 @@
+[10:51 AM]Rey: KMR Beta 10k+ r10156
+
+1. further improvement of spectator panel: 
+  + fixed FPS issues
+  + align same items types in columns (for better comparison)
+  + use "KaM" order for houses/wares/units/warriors
+  + added house damage progress bar
+  + jump to next damaged house on left click/any next house on right click
+2. added "Teams" players color mode for specs/replay
+3. added replay debug info, to detect replay desyncs
+4. fixed replay desynchronisation after load save point (for new feature introduced in r10135)
+5. fixed other reported bugs
+
+- there could be issues with replay desync. Please PM me when that happens, I will need that replay to find out how to fix it. Thx
+
+Full Version: http://bit.ly/kmr-r10156 
+Rey
+ pinned a message to this channel. See all pinned messages. — 4/21/19, 10:51 AM

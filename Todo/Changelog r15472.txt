@@ -1,0 +1,43 @@
+Beta r15472
+
+Game changes:
+Increase shield bonus against xbows from 0.25 to 0.5
+Market ratio changes: Trunk -> Gold ore and Timber -> Gold ore are now traded in 3 to 1 ratio
+Hungry units can no longer be expelled from their homes
+
+Campaigns progress is now saved in xml files in the SavesCMP folder, xml per campaign.
+
+MapEd: AI parameters which were used only by ClassicAI are shown separately in the UI
+
+UI:
+dismissed units got their own stats bar on the stats panel. They are not treated as 'Lost' anymore
+hints for wares in Storehouse/Barracks/Market were added when wares have K-string
+
+Fixes:
+Fixed Townhall related bugs
+Fixed bug when some of the popup windows were closed on a mouse click
+Fixed crash in lobby when change host to another player
+Fixed crash when dismiss cancel was made on the very last tick before entering school
+Fix on MapEd menu: proper selection of the previously opened map
+Fixed issue with game settings were overridden caused by an extensive saving of the favourite maps
+Fix to Delivery task: added check if the serf is hungry after the end of delivery to a warrior
+Fixed ranged warriors bug, when they did not respond on attack command, if they were walking in the same direction
+Fix some of the sound hotkeys were not working
+Fixed UI bug in the Barracks HUD
+Fixed UI bug on the MapEd units page
+Fixed minor UI bug with tile #9
+
+Missions:
+Original campaigns difficulty levels were removed
+
+Map changes by @DontTalk:
+added:
+Conquest of Shovrah Dan
+The Contingency
+patched:
+Chlyssich in the Desert ---> 1.9.31
+Maps removed:
+Island of Bandits
+
+Misc:
+Updated Hungarian and Chinese translations
