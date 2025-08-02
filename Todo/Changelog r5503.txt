@@ -1,5 +1,15 @@
-Fixed in r5503:
-<===================================================================================>
+KaM Remake Scripting Demo
+========================================
+Major features:
+ + Defensive AI
+ + Refactor warriors into TGroups
+ + Scripting
+ + Map Editor
+
+
+KaM Remake r5503 [2013.06.23]
+----------------------------------------
+Fixes:
  +  Make Serfs face the house plan entrance when handing building materials to it
  +  Stonemasons/fishermen would report that resources are depleted when the only mining spots were blocked by another unit
  +  Archers behave badly when you tell them to attack directly (houses and units)

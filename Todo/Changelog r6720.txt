@@ -1,5 +1,16 @@
-﻿Fixed in r6720:
-<===================================================================================>
+﻿KaM Remake r6720
+========================================
+Major features:
+ + Select objects by shape
+ + Undo/Redo in MapEd terrain editing
+ + File transfer in multiplayer for missions and saves [Lewin]
+ + Unicode
+ + Multiplayer spectating
+
+
+KaM Remake r6720 [2013.06.23]
+----------------------------------------
+Fixes:
  +  Actions.GroupOrderSplit returned the original group ID, not the new one
  +  Delivery importance would be ignored in cases where you have more available serfs than available deliveries
  +  Storm attacking soldiers would sometimes pass by enemies instead of stopping to fight them
