@@ -2,9 +2,8 @@ unit KM_ResSound;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, SysUtils, TypInfo,
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
-  KromUtils, KM_Defaults;
+  KM_Defaults;
 
 type
   TAttackNotification = (anCitizens, anTown, anTroops);
@@ -163,7 +162,8 @@ type
 
 implementation
 uses
-  System.Math, System.StrUtils,
+  System.Classes, System.SysUtils, System.TypInfo, System.Math, System.StrUtils,
+  KromUtils,
   KM_CommonClasses;
 
 
@@ -547,41 +547,41 @@ end;
 function TKMResSounds.LoadWarriorSoundsFromFile(const aFile: string): Boolean;
 var
   S: AnsiString;
-  MS: TKMemoryStream;
+  memoryStream: TKMemoryStream;
 begin
   Result := False;
   if not FileExists(aFile) then Exit;
 
-  MS := TKMemoryStreamBinary.Create;
+  memoryStream := TKMemoryStreamBinary.Create;
   try
-    MS.LoadFromFile(aFile);
-    MS.ReadA(S);
+    memoryStream.LoadFromFile(aFile);
+    memoryStream.ReadA(S);
     if S = AnsiString(GAME_REVISION) then
     begin
-      MS.Read(WarriorSoundCount, SizeOf(WarriorSoundCount));
-      MS.Read(fWarriorUseBackup, SizeOf(fWarriorUseBackup));
-      MS.Read(NotificationSoundCount, SizeOf(NotificationSoundCount));
+      memoryStream.Read(WarriorSoundCount, SizeOf(WarriorSoundCount));
+      memoryStream.Read(fWarriorUseBackup, SizeOf(fWarriorUseBackup));
+      memoryStream.Read(NotificationSoundCount, SizeOf(NotificationSoundCount));
       Result := True;
     end;
   finally
-    MS.Free;
+    memoryStream.Free;
   end;
 end;
 
 
 procedure TKMResSounds.SaveWarriorSoundsToFile(const aFile: string);
 var
-  MS: TKMemoryStream;
+  memoryStream: TKMemoryStream;
 begin
-  MS := TKMemoryStreamBinary.Create;
+  memoryStream := TKMemoryStreamBinary.Create;
   try
-    MS.WriteA(GAME_REVISION);
-    MS.Write(WarriorSoundCount, SizeOf(WarriorSoundCount));
-    MS.Write(fWarriorUseBackup, SizeOf(fWarriorUseBackup));
-    MS.Write(NotificationSoundCount, SizeOf(NotificationSoundCount));
-    MS.SaveToFile(aFile);
+    memoryStream.WriteA(GAME_REVISION);
+    memoryStream.Write(WarriorSoundCount, SizeOf(WarriorSoundCount));
+    memoryStream.Write(fWarriorUseBackup, SizeOf(fWarriorUseBackup));
+    memoryStream.Write(NotificationSoundCount, SizeOf(NotificationSoundCount));
+    memoryStream.SaveToFile(aFile);
   finally
-    MS.Free;
+    memoryStream.Free;
   end;
 end;
 
