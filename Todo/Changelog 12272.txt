@@ -1,7 +1,0 @@
-[11:16 AM]Rey: KMR Beta r12272 (with debug on)
-
-- fixed crash when start watching some of the replays
-- fixed crash when open game stats, because of wrong calculations closed houses in stats (Advanced AI can close houses too now)
-- fixed crash in MapEd when save map without players
-- fixed MapEd reset values on mission parameter popup window
-- disallow load unsupported saves by default. Could be enabled from F11 debug panel ('game advanced' section)

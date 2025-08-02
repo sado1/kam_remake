@@ -806,6 +806,281 @@ Removed SP maps:
 - TPR_Mission7
 
 
+KaM Remake Beta r12945
+------------------------------
+Game:
+- woodcutter's house: reverse cycle of woodcutter mode when right click on the woodcutter mode button
+
+Fixes:
+- it was not possible to transfer maps with an empty script file in the lobby, f.e. RMG map
+- autosaves or saves could cause crash in some cases
+- MP game with 1 human player should toggle back to 'lobby' game speed, when press F5-F8 keys
+- MapEd copy-paste feature could crash when pasting big copied area onto small map
+- MapEd: terrain walk connect was not updated in the editor, which causes f.e. missing mining radiuses for fisherhuts
+
+Scripts:
+- Remove script States: MissionBigDesc, MissionBigDescLibx, MissionSmallDesc, MissionSmallDescLibx
+
+Misc:
+- do not show clock animation, when actual game speed is equal to the speed, which was set in the lobby
+- refactoring for hints system. Show hints over list rows and columnBox cells if text does not fit in it, and also possibility to render hint above controls with delay
+- minor UI refactoring of 'Replays' menu page
+- minor UI fixes on game ratios menu (F3)
+- SP results window should not display "Mission completed in:" for a game that has not yet been completed
+- MP stats window: don't show Rosette for best result on the stats bars, if there is only 1 player to show stats of
+- MapEd: minor UI refactoring and fixes regarding some popup windows
+- do not allow to save under windows reserved filenames (AUX/NUL/COM1 etc)
+- allow to use fallback locale for localized pdfs and script sounds files
+- allow to use subfolders in the Modding graphics directory (check Readme.txt file there)
+
+added MP maps:
+- Atari
+- Centre Castle 2021
+- Decay
+fixed Town Merchants map
+
+
+KaM Remake Beta r12864
+------------------------------
+Fixes:
+- it was not possible to load game or replay, if played map had empty script file
+- error, caused script preprocessor to add duplicates of event handlers and console commands
+
+Misc:
+- houses are allowed to be viewed by ally by default only on locs, where human player could play. So its not possible to view AI only locs by default
+- allow to pass -1 as a playerID to Actions.HouseAllowAllyToSelectAll, to apply change to all players
+- campaign shared sounds should be placed into Sounds folder inside main campaign folder
+- allow to use localized sound files from the scripts, via our standart pattern mission_name.sound_name.locale.extension, applied also to campaign shared sounds
+
+Maps:
+- updated coop maps by @andreus, added 2 new coop maps Citadel of Darkness and The Flaming North (changelog: http://bit.ly/andreus-maps-changelog)
+- updated @Strangelove's coop maps and The Barbarian King campaign to the latest versions
+- added new campaign KamStar Beginning made by @King Dyron
+
+
+KaM Remake Beta r12840
+------------------------------
+Fixes:
+- hotkeys were reset to defaults on game start
+- crash, caused by loading kmr_dev.xml file
+- bug with "marking text in lobby" and later crash when start game
+- crash if TownHall delivery mode was changed to 'Take Out' while serf with gold was entering house
+- rare crash while dismissing worker
+- crash on a big puzzle-like maps, caused by overflow in Pathfinding algorithm
+- crash when Music folder had more then 255 tracks in it
+- woodcutter could plant wrong tree type on a few new tiles
+- warrior could go there and back between different offenders, if he didn't catch any
+- AI got MP setup on game start. It broke AI behaviour on Furious Warriors and other special maps
+
+Campaigns:
+- allow to use shared scripts of the campaign, scripts should be placed into the 'Scripts' subfolder of the main campaing folder. Scripts inside mission folder override shared scripts with the same name in the Scripts folder
+- allow to use shared audio files in campaigns, they should be placed in the 'Sounds' subfolder of the main campaign folder with XYZ campaign prefix (f.e. TSK.waterfall.ogg). 
+A.PlayOgg(0, 'waterfall', 1) in the TSK01.script will try to find TSK01.waterfall.ogg file in the TSK01 mission folder, and if not found it will try to find TSK.waterfall.ogg in the Campaigns\The Shattered Kingdom\Sounds\ folder
+
+MapEd with new tools by @King Dyron 
+- new Objects Brush tool
+- 2 new tools to modify terrain height: 'constant height' and 'elevate by terrain kind'
+- improve copy-paste tool and Flip tool, it is able to paste only part of the terrain data (terrain/height/objects/overlays)
+- added new gradient mask for terrain transitions
+- fixed tile ID input field on tiles palette
+- fix settings controls were sometimes not accessible
+- minor fixes of GUI elements on low res displays
+- render optimisation of the show mining/units/towers radius tools
+- fix horisontal flip for the tiles with ID > 256
+
+Scripting:
+- added script functions
+Actions
+HouseWareBlockTakeOut
+HouseAllowAllyToSelect
+HouseAllowAllyToSelectAll
+UnitAllowAllyToSelect
+GroupAllowAllyToSelect
+ 
+States
+HouseBarracksRecruitsCount
+HouseWareBlockedTakeOut
+HouseAllowAllyToSelect
+UnitAllowAllyToSelect
+GroupAllowAllyToSelect
+CampaignMissionID
+CampaignMissionsCount
+CampaignUnlockedMissionID
+
+- allow to set tiles with IDs 108, 109, 110, and with ID > 255
+
+Misc
+- disable ability to view allied houses in SP
+- disable videos when run under wine
+- added view readme (pdf) button for single map menu
+- use 'Modding graphics' folder, as a default folder to swap game png's with a custom one ('Sprites' folder is still supported)
+- increased max stone / gold / iron values on RMG settings
+- added 1st custom animated cursor (spinning wheel made of army direction selector)
+- load asian fonts when open Credits menu page
+- fixed some symbols could be printed with negative width so caret goes to the left, when its printed (f.e. russian №)
+
+
+KaM Remake Beta r12485
+------------------------------
+Citizens stop walking to the Inn if it was destroyed
+
+Changes in game save:
+ - greatly reduced save time, its about 3 times faster now. 
+ - fixed huge lag after end of PT (up to couple of seconds) 
+ - fixed lag when go to lobby or stop the game
+ - compress .sav and .bas save files
+Overall all save files are compressed and made by asynch thread
+
+Game settings changes:
+- game settings are saved in XML format
+- move settings into %MYDOCUMENTS%/My Games/Knights and Merchants Remake/ folder, so they will be reused between game versions 
+- split all settings into server settings (in the .ini file) and game settings (in the .xml file)
+- move hotkeys into the settings, reused between versions as well
+
+Added hotkeys to control sound/music volume, mute, music shuffle
+Added support for multimedia keys on keyboard
+Fix some keys were caught by KMR app and other apps could not handle them (f.e. keyboard media keys)
+Fix game sound could not recognise new device, so music and sounds could be heard on different devices
+RMG minor fixes
+Rename script util functions RoundToUp / RoundToDown to CeilTo / FloorTo. Add RoundTo and TruncTo util functions
+Options menu: set default resolution to currently used resolution in OS
+Fix campaign video / music / briefing audio interaction
+Set starting video as upscaled version of TPR Logo video
+Campaign builder is no longer need any dll's
+Updated Overbyte to version 8.64 with better support of Delphi 10.4 Sydney
+Its not allowed to change speed pace setting from the KaM Remake Settings file
+
+Fixes for TPR / TSK: do not block pigs delivery to AI storehouse on TSK04. Minor fixes for mines placement on TSK14, TPR09, TPR 12
+Minor fixes to coop maps TSK09 and TPR03 by @andreus
+
+
+KaM Remake Beta r12327
+------------------------------
+Advanced AI:
+- combat AI: improved calculation of attack decision
+- added dynamic generation of the NavMesh
+- fixed AAI did not attack in tactic maps
+
+- fixed one more desync in replay (happened very often on 12280)
+- fixed desync if Advanced AI player replace human player in MP game
+- fixed music device was not updated on change (f.e. with bluetooth headphones)
+- show message when resource export is complete
+- save F11 development sections data to kmr_dev.xml
+- fixed game save dialog did not show selected row
+- fixed timestamp for game save at the end of the game
+
+
+KaM Remake Beta r12280
+------------------------------
+- fixed crash when try to generate random map in the lobby
+- script action MapTileArraySet: allow to set vertex height for the last row / column of the map
+
+
+KaM Remake Beta r12275
+------------------------------
+- added [ DEBUG ]  to game caption / revision name, if project is compiled under debug build configuration
+
+
+KaM Remake Beta r12272
+------------------------------
+- fixed crash when start watching some of the replays
+- fixed crash when open game stats, because of wrong calculations closed houses in stats (Advanced AI can close houses too now)
+- fixed crash in MapEd when save map without players
+- fixed MapEd reset values on mission parameter popup window
+- disallow load unsupported saves by default. Could be enabled from F11 debug panel ('game advanced' section)
+
+
+KaM Remake Beta r12265
+------------------------------
+- remove annoying message about game speed in the MP game
+- fix crash when reduce trade order amount in the market
+
+
+KaM Remake Beta r12260
+------------------------------
+- Hand logistics code has been greatly optimized. Game works much better for a huge cities with total number of thousands of serfs
+
+Advanced AI changes by @Toxic:
+- AIs support each other in defending the city
+- Improved distribution of combat groups between clusters
+- Improved retreat algorithm
+- Improved pathfinding (avoid traffic, narrow paths, and specific group types according to "rock/paper" logic)
+- Performance optimizations (pathfinding, army positioning, calculation of the target groups)
+
+Minor game changes:
+- ScrollSpeed is zoom dependant (faster on zoom-out, slower on zoom-in)
+- Zooming in more smoothly
+- Allow to change game speed in MP if there are no active human players. Player is active if he affect game state: he is not defeated and not spectatro. Speed change could be made only by host.
+- Fixed replay desync when one of the players left the game
+- Fixed save desync on the maps with many script sounds
+- Do not block woodcutter from tree cutting if there is wolf running near tree
+- Market fix: serfs should use previously brought wares for the new trade
+- Fix market wares render for corn and pigs
+- Fix market ware shadow was rendered twice (under the cart)
+- Fix woodcutter could place tree with wrong type on a grass
+
+Hotkeys:
+- Add hotkeys for train/next/prev units in school/barracks/townhall (a/s/d by default)
+- Add 2 more hotkey categories: Unit keys, House keys (subcategories of Game keys)
+- Set default Tiles palette hotkey as F8
+- Allow to bind TAB hotkey 
+- Set default road/field/wine/erase hotkeys to q/w/e/r
+
+MapEd:
+- Add 'Show defence positions' and 'Flat terrain' into Extras panel, add borders for mining areas for 'show mining radius' option
+- Improve defence position display
+- Replace trackbars with numEdits for AI equip rates, recruits delay, max soldiers. Set equip rates in tick instead of in seconds
+- Fix occasional bug, when corn field stages were lost after map save
+- Fix for tile palette hints
+- Fix: terrain lighting was not updated when add / remove water onto the map
+- If new map is created we need to delete map folder with the same name before saving
+- Limit group walk or attack pos to be in the map coordinates
+- It was possible to start quick play game without human player / assets on it
+
+Video:
+- Start videos were not running if fullscreen mode was used
+- Fix for Victory / Defeat video appeared when go between SP - MP game stats screens
+- Disable all sounds before video start
+
+Lobby:
+- Fix occasional bug in lobby, when map list was not shown
+- Fix for 'Block color selection' feature, when color were not properly shown in the lobby after 'back to lobby'
+- Show team connections on minimap even if no loc is chosen, if possible
+
+Replay:
+- Paint ReplayBar as wide as possible
+- Update player name, if player was changed after load of the game 
+- Go to the city center if location has no specified CenterScreen parameter
+
+Misc:
+- Debug 'Interpolated render' was added onto F11 panel (Graphic Tweaks section). It affect projectiles (arrows / stone from tower) and unit movements. No new sprites were added, there are several known movement bugs. To be worked on.
+- Use BASS audio lib instead of libzPlay since few minor bugs were found
+- Improve editable fields selection. Add handler for Ctrl + arrows events to jump/select text by words
+- Game save should overwrite content of an old save folder
+- Deprecate old mission script static commands: ctAddWare, ctAddWareToSecond, ctAddWeapon. Used AddWareToLast instead
+- Export game sprites is made in async thread now
+- Fix game crash if there is no sound files
+- Fixed occasional crash when load map with new masked transitions
+- Fixed bug when unit tried to enter destroyed house in the moment of destruction
+- Fixed occasional crash on player reconnection
+- Fixed Classic AI old bug, when AI could order more units then needed, if there is crown at the barracks entrance. Especially noticable when FastEquip option is set
+- Fix: game speed change was not applied after back to lobby (or any save was loaded)
+- Fixed old error when warrior was unable to make route to destination location
+- Fixed several other bugs, when unit was unable to make route to the destination location
+- Release chat drag scroller when click out of the chat
+- Many of debug tools were added onto F11 debug panel, including checkboxes from MapEd Extras panel
+- Added ini setting to set MapEd history depth
+- Do not limit async thread in wait time, so saves could be made even on very slow hdd's
+- Several snow houses and animations were fixed by @thunder
+
+Maps
+- Various map changes made by @andreus
+- Added number of new script functions by @andreus
+- Updated 2 coop maps made by @Strangelove
+
+
+
+
 
 
 Everything before [2022.03.31]

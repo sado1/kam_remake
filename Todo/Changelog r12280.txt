@@ -1,8 +1,0 @@
-[10:09 PM]Rey: KMR Beta r12280
-
-- fixed crash when try to generate random map in the lobby
-- script action MapTileArraySet: allow to set vertex height for the last row / column of the map
-
-Full version: https://bit.ly/kmr-r12280
-Patch (KaM_Remake.exe) to versions r12260 and newer: https://bit.ly/kmr-r12280_patch_r12260
-Replace KaM_Remake.exe in your kam_remake directory 
