@@ -10,9 +10,9 @@ Many small and some big changes there, including:
 - Network code and FPS optimizations
 - and many many other smaller things
 
+
 [7:38 PM]Rey: KMR Beta 8000+ r8219
 Fresh hot fixes
-Full version:
 
 
 [10:37 PM]Rey: KMR Beta 8k+ r8222
@@ -34,13 +34,10 @@ Minor fixes
 
 
 [11:43 PM]Rey: KMR Beta 8k+ r8302
-Changes since r8228:
 1. Rebalanced TownHall units gold prices to 3-3-3-5-10-10
 2. Added new Campaign by grayter: On Foreign Lands - Empire Reborn
 3. Change tick calculation to real value, so, f.e., old r6720 x3 is equal to r8300 x2 speed. Game is speed itself remains almost the same, but the speed value is now very accurate.
-4. Added Russian and Hungarian translations and ability to add new translations. New translations could be done with TranslationManager.exe, saved, and then sent to Rey as .libx file from data/text/ folder. Or you can simply modify your lang.libx file similar to text.eng.libx
 BugFixes:
-- occasional serfs deliver stone/timber to constructing houses without roads
 - replay inconsistency after save
 - many other minor fixes
 
@@ -61,7 +58,6 @@ There are lots of settings, you can try them on your own. Detailed description w
 4. Added filter by map type for Singleplayer maps
 5. Fixed crash while trying to watch campaign game replay
 6. Other bug fixes
-
 
 
 [9:31 AM]Rey: KMR Beta 8k+ r8616
@@ -100,10 +96,8 @@ Spectators (or while in replay) could see stats for all players, while players i
 
 Having custom handlers will open ability to include ready 3rd party scripts with just 1 line of code (by include directive: {$I anotherfile.script}. No need to merge some parts of it with your main script.
 
-Could be added with custom EVENT directive, f.e.:
-{$EVENT evtMissionStart:OnCustomMissionStart}
-
-where 
+Could be added with custom EVENT directive, f.e.: {$EVENT evtMissionStart:OnCustomMissionStart}
+where:
 evtMissionStart - event type identifier ('evt' - prefix, 'MissionStart' - event name)
 OnCustomMissionStart - name of script procedure, that will be also invoked on mission start (same as default mission start event handler OnMissionStart)
 
@@ -111,16 +105,7 @@ OnCustomMissionStart - name of script procedure, that will be also invoked on mi
 [4:21 PM]Rey: KMR Beta 8k+ r8754
 1. Fixed bug for custom event handlers from r8746, when they did not reloaded from save
 2. Added ability to add mission 'difficulty' in MapEd Mission Parameters popup window. If those difficulty level are set there, then player will be able to choose difficulty in the SP menu (only for SP now). 
-Then mapmaker/scriptmaker can get this difficulty level via calling new script function 
-States.MissionDifficulty
-, which return result as TKMMissionDifficulty enumeration.
-
-TKMMissionDifficulty = (mdNone, mdEasy, mdNormal, mdHard);
-
-
-For maps without difficulty (all current maps) mdNone will return. 
-
-Its not affect game or ai. Its just map/game parameters, that player should set on game start and scriptmaker could get its value and modify map somehow.
+Then mapmaker/scriptmaker can get this difficulty level via calling new script function States.MissionDifficulty, which return result as TKMMissionDifficulty enumeration. For maps without difficulty (all current maps) mdNone will return. 
 
 
 [1:59 PM]Rey: KMR Beta 8k+ r8769
@@ -193,9 +178,7 @@ Unfortunally its hard to reach quality of transtition of prepainted tile, but so
 6. Improved serfs delivery: when serf finished one delivery at some house he checks if there is any deliver task from that house and even if there is another serf who is on the way to get that task 1st serf will overtake the task.
 Basically it means - if there is some ready product at house then any serf who come inside that house will take something out of it.
 
-Full version: https://goo.gl/hSwA9h 
-Rey
- pinned a message to this channel. See all pinned messages. — 5/4/18, 9:57 PM
+
 [9:24 PM]Rey: KMR Beta 9k+ r9482
 1. Fixed MapEd crash for new map
 2. Added export game statistics to csv
@@ -216,19 +199,8 @@ Rey
 9. Hotkey (Ctrl + 1..9,0): do not reset previous assignation If Object is assigned to another Key
 10. 'Center alert' hotkey (space by default) allow to jump not only to last alert on the minimap, but also to the last unread message notification (hungry unit / unused house etc)
 11. Add test ability to setup TownHall units cost and Market gold ore/gold prices from the script
-Use examples:
-For TH units cost add next line to the script: 
-{$CUSTOM_TH_TROOP_COST 2,2,2,4,6,6}
-
-where numbers 2,2,2,4,6,6 represent TH units cost in order they appear in TH
-For custom market gold prices use
-{$CUSTOM_MARKET_GOLD_PRICE_X 1.2,1.4}
-
-Where 1.2,1.4 is gold ore/gold price multiplier. 
-Please contact me for details if some help is needed
-12. Added ability to setup 'standart' server. That server could limit allowed map list on it, as well as set allowed Peacetime range and speeds ranges.
+12. Added ability to setup 'standard' server. That server could limit allowed map list on it, as well as set allowed Peacetime range and speeds ranges.
 Those limit settings should be done in server's settings.ini file
-Please contact me for further details, I'll add more info to wiki soon.
 13. Fix units did not appear on the minimap, when standing on the road. Now enemy soldiers will be always seen in your city, even on road.
 14. Bugfixes, AI / RMG improvements 
 
