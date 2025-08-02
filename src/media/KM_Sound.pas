@@ -494,8 +494,8 @@ begin
   if not fIsSoundInitialized then Exit;
   if (aSoundID = sfxNone) and (aFile = '') then Exit;
 
-  //Do not play game sounds, if game is ready to stop
-  if (aSoundType = stGame) and (gGame <> nil) and (gGame.ReadyToStop) then
+  // Do not play game sounds, if game is ready to stop
+  if (aSoundType = stGame) and (gGame <> nil) and gGame.ReadyToStop then
     Exit;
 
   if aAttenuated then
@@ -524,7 +524,7 @@ begin
   for var I := Low(fALSounds) to High(fALSounds) do
   begin
     alGetSourcei(fALSounds[i].ALSource, AL_SOURCE_STATE, @alState);
-    if alState<>AL_PLAYING then
+    if alState <> AL_PLAYING then
     begin
       freeBuf := I;
       Break;
@@ -833,7 +833,7 @@ begin
   if aIndex < 0 then Exit(False);
 
   Result := (fALSounds[aIndex].PlaySince <> 0)
-      and ((TimeSince(fALSounds[aIndex].PlaySince) < fALSounds[aIndex].Duration) or fALSounds[aIndex].Looped)
+      and ((TimeSince(fALSounds[aIndex].PlaySince) < fALSounds[aIndex].Duration) or fALSounds[aIndex].Looped);
 end;
 
 
