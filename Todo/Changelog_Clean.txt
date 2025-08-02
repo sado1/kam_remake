@@ -52,6 +52,12 @@ Maps:
  - Removed SP maps: Mission For The Competition, TPR_Mission7 and To the capital.
 
 
+[2023.01.22]
+------------------------------
+Game:
+ +  Fixed soft shadows generation bug that lead to wider shadows
+
+
 Since r6720
 <===================================================================================>
 Todo:
@@ -131,7 +137,6 @@ Bugs:
  +  MapEd: limit group walk or attack pos to be in the map coordinates
  +  Dynamic scripts: Scripting action OnHousePlanRemove was invoked with wrong coordinates
  +  Dynamic scripts: Notify script OnUnitAttacked only once for attacked unit, do not add self notify on unit attacked
- +  Fixed soft shadows generation bug that lead to wider shadows
  
 Bugs to fix in future:
   
