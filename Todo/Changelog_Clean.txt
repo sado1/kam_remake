@@ -249,18 +249,6 @@ Other:
 - debug option "allow unsupported saves" was not saved between games
 
 
-[2023.04.06]
-------------------------------
-Game:
- + Increase number of hands up to 27 (12 for human players and others for AI's)
- + Add several scripting methods to work with HouseClosedForWorker and logarythms
- + Add Actions/States.AIUnlimitedEquip method
- + Add States.HouseWareAmount
- + Add several methods to work with fish unit and its 'fish count'
-Maps:
- - Removed SP maps: Mission For The Competition, TPR_Mission7 and To the capital.
-
-
 [2023.01.22]
 ------------------------------
 Game:
