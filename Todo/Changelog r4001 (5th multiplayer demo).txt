@@ -1,0 +1,54 @@
+Fixed in r4001:
+<===================================================================================>
+ +  Improved units/objects visibility along map edges
+ +  Crash if you change locale and don't have OpenAL installed due to using non-blocking Application.MessageBox instead of MessageDlg
+ +  Dots and lines displaying on tile edges [Krom]
+ +  Producing more than 65k resources causes an integer overflow in PlayerStats
+ +  Decreasing the resource distribution removes demands immediately when nobody has taken the task yet
+ +  Units now start with the same condition as in TPR (~12 minutes less condition than the last KaM Remake version)
+ +  Fix function of the "Restart" button so it always restarts the mission you were playing, not just loads basesave
+ +  Fixed crash when units feet were off map bounds
+ +  Fixed crash when arrows would be flying outside of map
+ +  Fixed crash when watching Credits page for more than 28min
+ +  The game should display time played without clipping it to 24hours
+ +  Woodcutter should take his axe with him from home when he is going out to chop trees
+ +  "Under attack" messages should play when the loc is not visible on your screen, rather than using arbitrary >=30 rule
+ +  Farmer should not sow corn on tiles left after demolished houses that were built ontop of roads built ontop of fields 
+ +  Placing a house above other players units in MapEd is now handled on mission load (it caused a crash before)
+ +  Pressing the "Restart" button during a replay would sometimes cause a crash
+ +  Resource harvesting now checks walking length rather than direct distance to stop e.g. woodcutters walking all the way around a mountain/river
+ +  Sandhills cause water next to shore tiles to appear darker with square edges
+ +  Fixed a crash with the AI retaliating against a threat
+ +  TSK 19 crashes due to an AI attack (at 06:38) target being off map
+ +  Attacking a house from the bottom right, soldiers will stack up rather than choosing a different free cell (flaws in TKMHouse.InReach)
+ +  If a woodcutter plants a tree where you placed a building site, the site gets canceled (very annoying) due to AbandonWalk and conditions for multiple players building on a tile
+ +  Duplicate app blocking should happen for multiplayer mode only (including replays) as that's the only cheating we care about
+ +  Minimap in MapEd would show group members shifted by 1 tile to south-east
+ +  Messages show "MissionString out of range" after save+exit+load repeated twice (due to fMissionFile not being saved)
+ +  The map editor no longer removes the terrain data used by Krom's Map Editor, so you can use terrain brushes there after saving with the Remake
+ +  Leaders of archers would sometimes not fire after walking, instead they would lock up and stand still
+ +  Fixed some crashes/bugs in the Linux dedicated server
+ +  You won't get a victory if you defeat enemy towns until after recieving all scripted text messages
+ +  Crash when selecting a high refresh rate then selecting a resolution that only supports lower refresh rates
+ +  In full screen: press Alt-F4, click no, press Alt-F4 again. This time message box goes under game window.
+ +  Players can insert illegal characters (according to fAllowedChars) into edits with copy/paste from another program
+ +  Flatten/equalise in the MapEd doesn't seem to work properly (like Krom's editor). Unequalise is ok.
+ +  Heights look different on certain systems, see heights.jpg images and dxdiag report (triangulation issue)
+
+Improvements:
+ +  High quality alpha-blended shadows for houses
+ +  Display charts in game results screens (army, wares count, etc.)
+ +  Show the player's name above each group (flag holder) while 'T' key is kept pressed
+ +  Non-fatal mission script errors will be shown on start
+ +  RXXPacker to make soft shadowed RXX files in 1 click rather than by hand
+ +  Multiplayer should have an option to send a flare (beacon) on the minimap to tell allies (or all players) about something.
+ +  Allow to assign groups and houses(!) to Ctrl+0..9 keys
+ +  Play campaign briefing audio files (and fade music while it plays)
+ +  Selecting a map in multiplayer should show columns with name, size, player count, etc. rather than dumb drop down
+ +  Display count of raw materials of each separate area in MapEd (as number in the middle)
+ +  Alerts on the minimap when a unit/house is under attack
+ +  Show peacetime remaining in MP replays
+ +  Add PlayerCount and Size columns to MapEd selection menu, as well allow to sort maps there
+ +  Edges of messages and other scrolls should be transparent so they look smooth
+ +  Clicking RMB in schools queue should cancel units on right
+ +  Translation manager should have an option to only show certain languages, e.g. DE translator can select just DE and EN rather than scrolling through all of them
