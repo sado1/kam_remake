@@ -416,6 +416,58 @@ Misc:
 - Fix couple minor memory leaks
 
 
+KaM Remake Beta r14423 [2022.04.17]
+------------------------------
+- fix hotkeys to reduce/increase number of colums in the group (they were not working) 
+- fux bug, when autosave overwrites previous autosave when just load a game
+- fix UI issue when selecting entities with hotkeys
+- fix replay button hints, when replay is on pause
+- Installer now gives permissions on installation folder, so its possible to install game into Program Files (now its default folder)
+- fixed bug when AdvancedAI troops could become selected by player
+- several AAI fixes
+- fix crash on game exit, caused by wrong order of freeing of the objects
+- add scroll bar for spectator panel at the right-top corner when play on small resolutions
+
+Hotkeys:
+- School: add Shift + Click to fill full queue and also clear queue when click on the icon in the queue and holding Shift
+- School / Barracks / TownHall:
+    Shift + A = go to the first unit
+    Shift + D = got to the last unit
+    Shift + S = order 10 soldiers (or fill school queue)
+  Shift + Click on equip btn will order 10 soldiers, Shift + Right Click - equip 100
+
+MapEd
+- Fix crash when set units with 0 UnitsPerRow. Improve render of unit group formation
+- Defence Position page: rename Group level trackbar with weak / leather / iron text on a bar
+
+Translations:
+- Add Dutch translation of the campaigns: On Foreign Lands - Empire Reborn, The Barbarian King and The Cruel King by @JanPeter
+- add Chinese and update English translations of The Cruel King campaign
+- updated Chinese / Dutch translations
+- added translation for number of hardcoded strings by @JanPeter
+
+Misc
+- Fixed white rectangular on the minimap of the current view when ZoomBehaviour is set to 1 and 2 (unrestricted)
+- Do not allow to make saves, which names ends with a dot
+- TranslationManager: catch all of the exceptions in the methods to avoid painful data loss
+- Add full support of the Finnish in the installer
+- In Town Tutorial Blue AI can't mine stone
+
+
+KaM Remake Beta r14281 [2022.04.01]
+------------------------------
+- fixed render of disabled buttons
+- fix for "player color is chosen only on second selection when no map is selected"
+- map zoom was not working when fields / winefields tool is selected in the MapEd
+- block scroll / zoom change when waiting for other players in MP game, to prevent unfair advantage upon them
+- fix game scrolling with cursor buttons in Replay on pause
+- caption of game settings popup window overlapped caption of key bindings popup
+- scrollbar was missing in key bindings menu
+- resizing game window resets scroll position for Memo control (e.g. in Main>MapEditor page)
+- other UI controls fixes 
+- update hint on Defence Position button to be multiline in MapEd
+- add Russian translation for The Cruel King campaign by @Gevorg 
+
 
 
 
