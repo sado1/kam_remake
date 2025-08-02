@@ -478,6 +478,12 @@ Game:
  +  Fixed soft shadows generation bug that lead to wider shadows
 
 
+
+Everything before [2022.03.31]
+------------------------------
+
+
+
 Since r6720
 <===================================================================================>
 Todo:
