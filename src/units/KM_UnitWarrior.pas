@@ -713,12 +713,13 @@ begin
   //Archers should start in the reloading if they shot recently phase to avoid rate of fire exploit
   step := 0; //Default
   cycle := Max(gRes.Units[UnitType].UnitAnim[aAction, Direction].Count, 1);
-  if (TKMUnitWarrior(Self).IsRanged) and TKMUnitWarrior(Self).NeedsToReload(cycle) then
+  if IsRanged and NeedsToReload(cycle) then
     //Skip the unit's animation forward to 1 step AFTER firing
-    step := (FiringDelay + (gGameParams.Tick - TKMUnitWarrior(Self).LastShootTime)) mod cycle;
+    step := (FiringDelay + (gGameParams.Tick - LastShootTime)) mod cycle;
 
   if (Action is TKMUnitActionWalkTo) and not TKMUnitActionWalkTo(Action).CanAbandonExternal then
     raise ELocError.Create('Unit fight overrides walk', fPositionRound);
+
   SetAction(TKMUnitActionFight.Create(Self, aAction, aOpponent), step);
 end;
 
