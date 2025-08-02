@@ -1714,7 +1714,7 @@ begin
                     else
                       RenderSpriteOnTile(P, TC_BLOCK); // Red X
                   end;
-    cmRoad:       if (gMySpectator.Hand.CanAddFakeFieldPlan(P, ftRoad)) and (gCursor.Tag1 <> Ord(cfmErase)) then
+    cmRoad:       if gMySpectator.Hand.CanAddFakeFieldPlan(P, ftRoad) and (gCursor.Tag1 <> Ord(cfmErase)) then
                     RenderWireTile(P, icCyan) // Cyan quad
                   else
                     RenderSpriteOnTile(P, TC_BLOCK);       // Red X
@@ -1746,7 +1746,7 @@ begin
                   end;
     cmObjectsBrush: RenderForegroundUI_ObjectsBrush;
     cmMagicWater: begin
-                    If gTerrain.Land[P.Y, P.X].BaseLayer.Rotation+1 <=3 then
+                    if gTerrain.Land[P.Y, P.X].BaseLayer.Rotation+1 <=3 then
                       RenderTile(192, P.X, P.Y, gTerrain.Land[P.Y, P.X].BaseLayer.Rotation+1)
                     else
                       RenderTile(192, P.X, P.Y, 0);
