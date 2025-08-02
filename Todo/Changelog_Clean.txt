@@ -487,6 +487,7 @@ Fixes:
 - fixed crash when change market trade wares when TakeOut delivery mode is on
 - fixed bug with OnHouseDestroyed and killed worker while digging house site
 - do not play script looped sounds on the statistics panel
+ +    Make a separate mutex for beta version so player can run MP game on beta version and on old r6720 at once
 
 Menu:
 - move game settings to the popup window
@@ -676,8 +677,6 @@ Events:
 OnHouseWareCountChanged to use with TKMWareType instead of Integer
 OnWareProduced to use with TKMWareType instead of Integer
 
-
-
 [2023.01.22]
 ------------------------------
 Game:
@@ -755,8 +754,6 @@ Bugs:
  +  Fixed crash when Music folder has more then 255 tracks in it 
  +  Fix for def positions: Only fill closest positions for idle groups (on mission start)
  +  Fixed IO errors, that happened because windows TDirectory.Delete procedure is called asynchronously and dont wait until delete is done 
- +  Fixed bug with flashing log messages after game load 
- +  Fixed bug with OnHouseDestroyed and killed worker while digging house site
  +  When uinstalling KMR, there are a lot of temp files left (.mi, logs, etc)
  +  MapEd: bug with group formatting when reducing group size with more then 1 row to less then row size units (F.e. you have 5x2 group and reduce its size to 3 units)
  +  MapEd: when placing markers(reveal FOW/center screen/AI start/defence AI)/units/houses/roads/fields/tile brushes/tile objects - after RBM click buttons are still selected, even if you can't use them actually.
@@ -878,8 +875,6 @@ Improvements:
  +    Allow to game speed in MP if there are no active human players
  +    Game Save should overwrite old save folder content
  +    Greatly reduced save time
- +    Do save game scripting overlays data into the game save 
- +    Group rows right click gives +/-5 rows to the group 
  +    Game statistics:
         Ability to see stats while watching replay / spectating. Or allied players stats while playing
         Army: Separate statistics for different warrior types with filters (total/instantenious/lost/defeated)
@@ -927,9 +922,7 @@ Improvements:
  +    Added ini setting to change autosaves number and frequency (in reasonable range)
  +    Add search when type into Load Map (in MapEd) Save/Load game (while in game) lists
  +    ScrollSpeed is zoom dependant now (faster on zoom-out, slower on zoom-in)
- +    Game scroll speed - multiply it by 2.5
  +    Zoom change is made more smoothly now
- +    Show game settings on a PopUp window
  
  Main menu:
  +  L Ability to mark maps as a favourite (gold star) so they appear at the top of the list (find your favourite maps without scrolling through whole list)
@@ -960,9 +953,7 @@ Improvements:
  +      new game mode - random map
  +      players can't choose same or similar colors as only-AI locs has
  +      show team connections on minimap even if no loc is chosen, if possible
- +      New 4 colors for MP
  +    SinglePlayer menu: added separatation by map type: scenario/build/fight/special. Also added PlayableBySp map tag, to make it possible to play MP maps from singleplayer menu (against AI)
- +    Add a button to return to campaign after quitting a campaign mission
       Map Editor page:
         + added map description and 'view PDF' button, same as in lobby
         + added 'Map Rename' button
@@ -1011,7 +1002,6 @@ Improvements:
  +    Added animation for mission nodes on Campaign page
  +    Allow to use shared scripts of the campaign, scripts should be placed into the 'Scripts' folder inside main campaing folder
  +    Allow to use shared sounds of the campaign, sounds should be placed into the 'Sounds' folder inside main campaing folder
- +    Allow to use custom types in TKMCampaignData type for a global campaign script
  
  Maps:
  +    Added ability to add map pdf readme with different translations (locales)
@@ -1088,9 +1078,6 @@ Improvements:
  +    Mission goals popup window: added detailed mission goal description, removed disabled radiobox options
  +    Cancel unit / house selection on Esc key down
  +    Def positions: set (or update) def position group type and direction according to unit under cursor
- +    Better defence positions placement (automatically add unit group)
- +    rework how fields / winefields are placed with stages
- +    add Set smooth coal feature
  +    New in extras menu:
         Passability trackbar:
           + Can Build without house/tree passability - show tiles, where it will be possible to build, after tree or house is removed
@@ -1139,106 +1126,6 @@ Improvements:
  +    Added states: UnitInHouse and HouseGetAllUnitsIn 
  +    Added events: OnGroupOrderBeforeSplit / OnGameSpeedChanged / OnPeacetime / OnHouseRepaired 
  +    Added dozen of new States related to terrain tile type (IsSoil/IsSnow etc)
- +    Refactor script methods related to house locks
- +    AI AutoRepair replaced with enum type of TKMRepairMode, so mapmakers could manage houses repair via Actions.HouseRepairEnable manually from script
- +    Added Actions.AIDefencePositionRemoveByUID
- +    Added:
-
-States:
-AAIAttackHouseTypesGet
-AIDefencePositionGetEx
-AIGroupsFormationGetEx
-ClosestGroupEx
-ClosestGroupMultipleTypesEx
-ClosestHouseEx
-ClosestHouseMultipleTypesEx
-ClosestUnitEx
-ClosestUnitMultipleTypesEx
-GroupTypeEx   
-HouseBarracksRecruitBlock  
-HouseTypeEx   
-HouseTypeMaxHealthEx   
-HouseTypeNameEx   
-HouseWareBlockedEx   
-MapTilePassabilityEx   
-MarketFromWareEx   
-MarketToWareEx   
-MarketValueEx   
-PlayerIsAdvancedAI
-PlayerIsClassicAI
-PlayerHouseTypeCanBuild   
-PlayerUnitTypeCanTrain   
-PlayerHouseTypeLock   
-PlayerWareDistributionEx   
-StatHouseMultipleTypesCountEx   
-StatHouseTypeCountEx   
-StatHouseTypePlansCountEx   
-StatResourceProducedCountEx
-StatResourceProducedMultipleTypesCountEx   
-StatUnitKilledCountEx
-StatUnitKilledMultipleTypesCountEx
-StatUnitLostCountEx
-StatUnitLostMultipleTypesCountEx
-StatUnitMultipleTypesCountEx
-StatUnitTypeCountEx  
-UnitCarryingEx  
-UnitDirectionEx  
-UnitTypeEx  
-UnitTypeNameEx  
-WareTypeNameEx  
-
-Events:
-OnHouseAfterDestroyedEx   
-OnHousePlanPlacedEx   
-OnHousePlanRemovedEx   
-OnMarketTradeEx   
-OnUnitAfterDiedEx   
-
-Actions:
-AAIAttackHouseTypesSet
-AIAttackAddEx  
-AIDefencePositionAddEx
-AIGroupsFormationSetEx
-GiveAnimalEx  
-GiveGroupEx  
-GiveUnitEx   
-GiveHouseEx   
-GiveHouseSiteEx  
-GiveWaresEx  
-GiveWeaponsEx  
-GroupOrderWalkEx  
-HouseAddBuildingMaterialsEx  
-HouseAddBuildingProgressEx  
-HouseAddWaresToEx  
-HouseBarracksGiveRecruits  
-HouseBarracksEquipEx  
-HouseBarracksRecruitBlock  
-HouseSchoolQueueAddEx  
-HouseTakeWaresFromEx  
-HouseTownHallEquipEx  
-HouseWareBlockEx  
-HouseWeaponsOrderSetEx  
-MarketSetTradeEx  
-PlanAddHouseEx  
-PlayerHouseTypeLock
-PlayerTradeAllowed   
-PlayerUnitTypeCanTrain   
-PlayerWareDistributionEx   
-UnitDirectionSetEx  
-
-Changes:
-
-States.HouseDeliveryMode to use TKMDeliveryMode instead of Integer
-Actions.HouseDeliveryMode to use TKMDeliveryMode instead of Integer
-States.HouseTypeToWorkerType to use with TKMHouseType / TKMUnitType
-Actions.HouseWoodcutterMode to use with TKMWoodcutterMode instead of Integer  
-Actions.HouseWareBlockTakeOut to use with TKMWareType instead of Integer 
-States.HouseWareBlockedTakeOut to use with TKMWareType instead of Integer 
-States.HouseWoodcutterMode to use with TKMWoodcutterMode instead of Integer
-States.UnitUnlocked -> HandCanTrainUnit to use with TKMUnitType instead of Integer
-Events: 
-OnHouseWareCountChanged to use with TKMWareType instead of Integer
-OnWareProduced to use with TKMWareType instead of Integer
  
  Maps:
  +    Added 'The Cruel King' campaign made by Gogoud
@@ -1252,7 +1139,6 @@ OnWareProduced to use with TKMWareType instead of Integer
  +    Updated Overbyte to version 8.64 with better support of Delphi 10.4 Sydney
  +    added ability to add your custom videos for campaign and its missions
  +    added dev perf log 
- +    Add debug option to make game save (works also in replay)
  +    added Scripting Editor tool
  +    Set default resolution to currently used resolution in OS
  +    minimum resolution was increased to 720px 
@@ -1287,20 +1173,10 @@ OnWareProduced to use with TKMWareType instead of Integer
  +    Set default resolution to currently used resolution in OS
  +    Filenames now will filter names reserved by windows (aux, nul, com1, com2 etc)
  +    Update 3rd party network framework Overbyte to version 8.64
- +    Use russian ё letter instead of е, when possible
- +    Make a separate mutex for beta version so player can run MP game on beta version and on old r6720 at once
- +    added new network command to ask other player to send crashreport as well, so in case he will send it I will get 2 reports from both of the players
  +    Game settings changes: 
         split them into server settings (in the .ini file) and game settings (in the .xml file)
         move settings into %MYDOCUMENTS%/MyGames/Knights and Merchants Remake/ folder, so they will be reused between game versions 
         move hotkeys into the settings, so they will be saved as well
-        Add height limit xml setting for MapEd. Some mapmakers do not really like max height of 150 (thus they want to keep max at 100, f.e.)
-        Set default zoom as an xml setting
-        New zoom functionality behaviour (added to game settings)
-        
-Translations:
- +    Added Finnish translation
- +    Use russian ё letter instead of е, when possible 
         
 Content changes:
  3 new campaigns
