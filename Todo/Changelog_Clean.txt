@@ -40,7 +40,19 @@ Misc:
  + Updated Hungarian and Chinese translations
 
 
-Since r6720:
+[2023.04.06]
+------------------------------
+Game:
+ + Increase number of hands up to 27 (12 for human players and others for AI's)
+ + Add several scripting methods to work with HouseClosedForWorker and logarythms
+ + Add Actions/States.AIUnlimitedEquip method
+ + Add States.HouseWareAmount
+ + Add several methods to work with fish unit and its 'fish count'
+Maps:
+ - Removed SP maps: Mission For The Competition, TPR_Mission7 and To the capital.
+
+
+Since r6720
 <===================================================================================>
 Todo:
   Update translation for labels: 
@@ -502,11 +514,6 @@ Improvements:
  +    Refactor script methods related to house locks
  +    AI AutoRepair replaced with enum type of TKMRepairMode, so mapmakers could manage houses repair via Actions.HouseRepairEnable manually from script
  +    Added Actions.AIDefencePositionRemoveByUID
- +    Add scripting actions to set/unset scripting overlay word wrap and font
- +    Add several scripting methods to work with HouseClosedForWorker and logarythms
- +    Add Actions/States.AIUnlimitedEquip method
- +    Add States.HouseWareAmount
- +    Add several methods to work with fish unit and its 'fish count'
  +    Added:
 
 States:
@@ -607,7 +614,7 @@ OnWareProduced to use with TKMWareType instead of Integer
  
  Maps:
  +    Added 'The Cruel King' campaign made by Gogoud
- -    Removed SP maps: Mission For The Competition, TPR_Mission7 and To the capital.
+ -    Removed SP maps: Mission For The Competition, TPR_Mission7.
  +    Add 'Breaking the Chains' SP mission made by Harry
  +    Add 'True Administrator' SP map madeby DontTalk
  
