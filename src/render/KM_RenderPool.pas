@@ -1397,7 +1397,7 @@ begin
         // Don't use Hand.GetFieldPlans as it will give us plans multiple times for allies
         gHands[I].Constructions.FieldworksList.GetFields(fFieldsList, aRect, False)
     else
-      gHands[gMySpectator.FOWIndex].GetFieldPlans(fFieldsList, aRect, False)
+      gHands[gMySpectator.FOWIndex].GetFieldPlans(fFieldsList, aRect, False);
   end
   else
   begin
@@ -1414,7 +1414,7 @@ begin
         // Don't use Hand.GetHousePlans as it will give us plans multiple times for allies
         gHands[I].Constructions.HousePlanList.GetOutlines(fHousePlansList, aRect)
     else
-      gHands[gMySpectator.FOWIndex].GetHousePlans(fHousePlansList, aRect)
+      gHands[gMySpectator.FOWIndex].GetHousePlans(fHousePlansList, aRect);
   end
   else
     gMySpectator.Hand.GetHousePlans(fHousePlansList, aRect);
@@ -1529,7 +1529,7 @@ begin
                             RenderSpriteOnTile(P, 394, gMySpectator.Hand.FlagColor);
                             gRenderAux.CircleOnTerrain(P.X-0.5, P.Y-0.5,
                              gCursor.MapEdSize,
-                             gMySpectator.Hand.FlagColor AND $10FFFFFF,
+                             gMySpectator.Hand.FlagColor and $10FFFFFF,
                              gMySpectator.Hand.FlagColor);
                           end;
     MARKER_DEFENCE:       begin
@@ -1686,7 +1686,6 @@ end;
 procedure TKMRenderPool.RenderForegroundUI;
 var
   P: TKMPoint;
-  F: TKMPointF;
 begin
   if gCursor.Cell.Y * gCursor.Cell.X = 0 then Exit; // Caused a rare crash
 
@@ -1696,7 +1695,6 @@ begin
     gGame.MapEditor.Paint(plCursors, KMRect(0,0,0,0));
 
   P := gCursor.Cell;
-  F := gCursor.Float;
 
   if (gCursor.Mode <> cmNone) and (gCursor.Mode <> cmHouses) and
      (gMySpectator.FogOfWar.CheckTileRevelation(P.X, P.Y) = 0) then
@@ -1885,7 +1883,7 @@ begin
       if UT in UNITS_WARRIORS then
       begin
         gGame.MapEditor.DetermineGroupFormationAndDir(P, UNIT_TO_GROUP_TYPE[TKMUnitType(gCursor.Tag1)], formation, dir);
-        DoRenderGroup(UT, KMPointDir(P, dir), formation.NumUnits, formation.UnitsPerRow, gMySpectator.Hand.FlagColor)
+        DoRenderGroup(UT, KMPointDir(P, dir), formation.NumUnits, formation.UnitsPerRow, gMySpectator.Hand.FlagColor);
       end
       else
         AddUnitWithDefaultArm(UT, 0, uaWalk, dir, UNIT_STILL_FRAMES[dirS], P.X+UNIT_OFF_X, P.Y+UNIT_OFF_Y, gMySpectator.Hand.FlagColor, True);
