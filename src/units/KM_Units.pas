@@ -2226,7 +2226,7 @@ begin
       if Action is TKMUnitActionGoInOut then
         SetActionLockedStay(0, uaWalk); //Abandon the walk out in this case
 
-      if (Task is TKMTaskGoEat) and (TKMTaskGoEat(Task).Eating) then
+      if (Task is TKMTaskGoEat) and TKMTaskGoEat(Task).Eating then
       begin
         FreeAndNil(fTask); //Stop the eating animation and makes the unit appear
         SetActionStay(0, uaWalk); //Free the current action and give the unit a temporary one
@@ -2269,7 +2269,7 @@ end;
 
 procedure TKMUnit.Walk(const aFrom, aTo: TKMPoint);
 begin
-  gTerrain.UnitWalk(aFrom, aTo, Self)
+  gTerrain.UnitWalk(aFrom, aTo, Self);
 end;
 
 

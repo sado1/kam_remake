@@ -2,9 +2,9 @@ unit KM_UnitWarrior;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, SysUtils, KromUtils, Math,
+  Classes,
   KM_CommonClasses, KM_Defaults, KM_Points,
-  KM_Houses, KM_Terrain, KM_Units, KM_CommonGameTypes;
+  KM_Houses, KM_Units, KM_CommonGameTypes;
 
 
 type
@@ -140,10 +140,10 @@ type
 
 implementation
 uses
-  TypInfo, Generics.Collections,
+  SysUtils, KromUtils, Math, TypInfo, Generics.Collections,
   KM_Entity,
   KM_ResTexts, KM_HandsCollection, KM_RenderPool, KM_UnitTaskAttackHouse,
-  KM_Hand, KM_HandLogistics, KM_HandTypes, KM_HandEntity,
+  KM_Hand, KM_HandLogistics, KM_HandTypes, KM_HandEntity, KM_Terrain,
   KM_UnitActionFight, KM_UnitActionGoInOut, KM_UnitActionWalkTo, KM_UnitActionStay,
   KM_UnitActionStormAttack, KM_Resource, KM_ResUnits, KM_UnitGroup,
   KM_GameParams, KM_CommonUtils, KM_RenderDebug, KM_UnitVisual,
@@ -190,7 +190,7 @@ procedure TKMUnitWarrior.SyncLoad;
 begin
   inherited;
 
-  fGroup := TKMUnitGroup(gHands.GetGroupByUID(Integer(fGroup)));
+  fGroup := gHands.GetGroupByUID(Integer(fGroup));
   fOrderTargetUnit := TKMUnitWarrior(gHands.GetUnitByUID(Integer(fOrderTargetUnit)));
   fAttackingUnit := TKMUnitWarrior(gHands.GetUnitByUID(Integer(fAttackingUnit)));
   fOrderTargetHouse := gHands.GetHouseByUID(Integer(fOrderTargetHouse));
@@ -390,7 +390,7 @@ begin
   //If the target house has been destroyed then return nil
   //Don't clear fOrderTargetHouse here, since we could get called from UI
   //depending on player actions (getters should be side effect free)
-  if (fOrderTargetHouse <> nil) and (fOrderTargetHouse.IsDestroyed) then
+  if (fOrderTargetHouse <> nil) and fOrderTargetHouse.IsDestroyed then
     Result := nil
   else
     Result := fOrderTargetHouse;
@@ -637,7 +637,7 @@ end;
 
 function TKMUnitWarrior.PathfindingShouldAvoid: Boolean;
 begin
-  Result := Inherited PathfindingShouldAvoid;
+  Result := inherited PathfindingShouldAvoid;
   Result := Result and (fNextOrder = woNone); //If we have been given an order we're about to move somewhere 
 end;
 
