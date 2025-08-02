@@ -3,11 +3,10 @@ unit KM_RenderPool;
 interface
 uses
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
-  Classes,
-  dglOpenGL, SysUtils, KromOGLUtils, KromUtils, Math,
+  KromOGLUtils, KromUtils,
   KM_Defaults, KM_CommonTypes, KM_CommonClasses, KM_Pics, KM_Points, KM_Render, KM_Viewport,
-  KM_RenderTerrain, KM_ResHouses, KM_ResSprites, KM_Units, KM_HandEntity,
-  KM_Houses, KM_Terrain, KM_CommonGameTypes, KM_RenderDebug,
+  KM_RenderTerrain, KM_Units, KM_HandEntity,
+  KM_Houses, KM_CommonGameTypes, KM_RenderDebug,
   KM_ResTypes;
 
 type
@@ -158,15 +157,17 @@ var
 
 implementation
 uses
+  Classes, SysUtils, Math,
+  dglOpenGL,
   KM_Entity,
-  KM_RenderAux, KM_RenderGameAux, KM_HandsCollection, KM_Game, KM_GameSettings, KM_Sound, KM_Resource, KM_ResUnits,
-  KM_ResMapElements, KM_AIFields, KM_TerrainPainter, KM_Cursor,
+  KM_RenderAux, KM_RenderGameAux, KM_HandsCollection, KM_Game, KM_GameSettings, KM_Sound,
+  KM_AIFields, KM_TerrainPainter, KM_Cursor,
   KM_Hand, KM_UnitGroup, KM_CommonUtils,
   KM_GameParams, KM_Utils, KM_ResTilesetTypes, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_HandTypes,
   KM_Projectiles,
-  KM_TerrainTypes,
-  KM_ResInterpolation,
+  KM_Terrain, KM_TerrainTypes,
+  KM_Resource, KM_ResHouses, KM_ResInterpolation, KM_ResMapElements, KM_ResSprites, KM_ResUnits,
   KM_AITypes;
 
 
