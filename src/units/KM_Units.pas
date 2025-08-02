@@ -233,7 +233,7 @@ type
     function  IsIdle: Boolean;
     procedure TrainInHouse(aSchool: TKMHouseSchool);
 
-    function CanStepTo(X,Y: Integer; aPass: TKMTerrainPassability): Boolean;
+    function CanStepTo(aX, aY: Integer; aPass: TKMTerrainPassability): Boolean;
     function CanWalkTo(const aTo: TKMPoint; aDistance: Single): Boolean; overload;
     function CanWalkTo(const aTo: TKMPoint; aPass: TKMTerrainPassability; aDistance: Single): Boolean; overload;
     function CanWalkTo(const aFrom, aTo: TKMPoint; aDistance: Single): Boolean; overload;
@@ -2139,14 +2139,14 @@ begin
 end;
 
 
-function TKMUnit.CanStepTo(X,Y: Integer; aPass: TKMTerrainPassability): Boolean;
+function TKMUnit.CanStepTo(aX, aY: Integer; aPass: TKMTerrainPassability): Boolean;
 begin
-  Result := gTerrain.TileInMapCoords(X,Y)
-        and (gTerrain.Land^[Y,X].IsUnit = nil)
-        and (gTerrain.CheckPassability(KMPoint(X,Y), aPass))
-        and (not KMStepIsDiag(Position, KMPoint(X,Y)) //Only check vertex usage if the step is diagonal
-             or (not gTerrain.HasVertexUnit(KMGetDiagVertex(Position, KMPoint(X,Y)))))
-        and (gTerrain.CanWalkDiagonally(Position, X, Y));
+  Result := gTerrain.TileInMapCoords(aX,aY)
+        and (gTerrain.Land^[aY,aX].IsUnit = nil)
+        and gTerrain.CheckPassability(KMPoint(aX,aY), aPass)
+        and (not KMStepIsDiag(Position, KMPoint(aX,aY)) // Only check vertex usage if the step is diagonal
+             or (not gTerrain.HasVertexUnit(KMGetDiagVertex(Position, KMPoint(aX,aY)))))
+        and gTerrain.CanWalkDiagonally(Position, aX, aY);
 end;
 
 
