@@ -1,8 +1,0 @@
-Beta r13586
-
-- patch KaM_Remake.exe to have madexcept if built by msbuild. Fixes missing crashreport feature for r13570
-- fix very important error in calculation of unit rounded position when it goes diagonally between tiles, right in the middle between 2 tiles
-- fix crash if place beacon outside of the map (before 1st row or column of tiles)
-- fix reported crash of AdvancedAI in NavMeshDefences
-- MapEd alliances: replace 'symmetrical' checkbox with a label, since we disallow it anyway for now; minor refactoring
-- register missing Actions.HouseDeliveryMode in the pascalscript engine

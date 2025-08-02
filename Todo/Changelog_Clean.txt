@@ -677,6 +677,135 @@ Events:
 OnHouseWareCountChanged to use with TKMWareType instead of Integer
 OnWareProduced to use with TKMWareType instead of Integer
 
+
+KaM Remake Beta r13651 [2021.07.12]
+------------------------------
+- patch KaM_Remake.exe to have madexcept if built by msbuild. Fixes missing crashreport feature for r13570
+- fix very important error in calculation of unit rounded position when it goes diagonally between tiles, right in the middle between 2 tiles
+- fix crash if place beacon outside of the map (before 1st row or column of tiles)
+- fix reported crash of AdvancedAI in NavMeshDefences
+- MapEd alliances: replace 'symmetrical' checkbox with a label, since we disallow it anyway for now; minor refactoring
+- register missing Actions.HouseDeliveryMode in the pascalscript engine
+
+
+KaM Remake Beta r13586 [2021.07.02]
+------------------------------
+- patch KaM_Remake.exe to have madexcept if built by msbuild. Fixes missing crashreport feature for r13570
+- fix very important error in calculation of unit rounded position when it goes diagonally between tiles, right in the middle between 2 tiles
+- fix crash if place beacon outside of the map (before 1st row or column of tiles)
+- fix reported crash of AdvancedAI in NavMeshDefences
+- MapEd alliances: replace 'symmetrical' checkbox with a label, since we disallow it anyway for now; minor refactoring
+- register missing Actions.HouseDeliveryMode in the pascalscript engine
+
+
+KaM Remake Beta r13570 [2021.06.14]
+------------------------------
+Fixes
+- memory which was used to load Units.rxa textures was not deallocated. Saved ~500Mb of RAM. It should highly reduce number of Out of Memory errors
+- several other minor memory leaks
+- units hitboxes were not correct on r13380
+- bug with some game commands could be executed even after player disconnection
+- game crash when press Alt with opened F11 menu or click on KMR icon in the top-left corner
+- game speed was not reset to default (PT/afterPT) for loaded MP game with 2 or more players, while it had 1 player and changed game speed when saved
+- it was possible to select wrong group when click in the game message log (f.e. unit group is hungry)
+- do not allow beacon cursor over game stats screen
+- message buttons could sometimes overlap one over other (message log and single message icons)
+- script action HouseTakeWaresFrom could crash the game because of interaction with takeOut delivery mode
+- add MemUsed and StackUsed sections to perflog to track RAM usage
+- add options to make whole map screenshot on the 'F11->game advanced' panel: max image size and image type
+
+MapEd:
+- fixed elevation brushes and other issues related to wrong cursor position over terrain with height > 100
+- show actual terrain height az Z coordinate, even in 'flat terrain' mode
+- fix for terrain brushes were not canceled properly on RMB
+- fix terrain flip was not correct for some special tiles (f.e. walls)
+- rename map type 'tactic' to 'fighting' and 'normal' to 'building', same as we use on other menus
+
+Terrain tiles:
+- refactoring of how we store tiles data. Use data/defines/tiles.json with all tiles parameters instead of pattern.dat and hardcoded data. Its much easier to make moddable animation or set any tile parameters now
+- add ice animation for tiles 264 and 265
+- fix for waterfalls and some other animations with 2 layers (f.e. tile 196 with water plant)
+
+Campaigns:
+- delete 'KamStar Beginning' campaign on author request
+
+
+KaM Remake Beta r13380 [2021.05.28]
+------------------------------
+Introducing units interpolated animations feature, made by @Lewin
+
+This feature is still under development, that's why its only available on the F11 debug panel.
+To enable check Interpolated Render and Interpolated animations checkboxes on Graphic tweaks subpanel.
+There are know issues with civilians carrying goods, sowing farmer, digging worker and other. 
+Anyway please report other animation issues you find
+
+Interpolated render fixes:
+- improvements in the tick time calculations. Fixed 'jumpy' movement of the units
+- smooth render of group flags
+- fixed unit 'jumpy' exit from the house
+
+Fixes:
+- rare crash in replays caused by new Hints system
+- crash while spectating (reported by Livid)
+- cached pathfinding should not be used for a very close destinations
+- bug, when SP map hand (loc) has no allowed AI types, but AI is placed anyway
+- stats graphs were not correct for SP missions for same colored AI's
+- UI bug on the hotkeys table in the options menu
+- fix for player types in the MapEd were not validated proprely sometimes
+- MapEd copy-paste terrain flip was not applied sometimes
+- fix for 'new map' numeric edit controls (it was difficult to enter arbitrary value there)
+
+Other changes:
+- added edit hotkeys menu onto the game and maped settings panel
+- added interpolated render checkbox onto menu and game options panels
+- add ShowGameSpeed into the settings.xml to always show game speed
+- update speed/time UI after load settings via F11 menu
+- add hint for game recorded speed in the replay
+- add detailed hints over goals on the SP menu page
+- use logical comparison for the filenames in the lists (maps/saves)
+- add 'Discord' button to the Credits page
+- minor Lobby menu refactoring (removed 'game options' label)
+- menu MapEd: add hint with map dimensions when hover over 'Size' column
+- add 'Save game whole map to Jpeg' feature to the Debug Menu
+
+MapEd:
+- allow terrian height up to 150. Its questionable if its worth using, because it could lead to an ugly maps, but allow some interesting ideas on the other hand
+- minor fixes on QuickPlay menu
+- mission goals popup window: added detailed mission goal description, removed disabled radiobox options
+
+Scripts:
+- new States: 
+    UnitInHouse
+    HouseGetAllUnitsIn
+    AIAutoAttack
+    HouseWorker
+    HouseHasWorker (duplicate of HouseHasOccupant)
+    HouseTypeToWorkerType (duplicate of HouseTypeToOccupantType)
+    HouseHasOccupant and HouseTypeToOccupantType marked as deprecated
+- new Actions
+    AIAutoAttack
+    LogLinesMaxCnt
+- Script logs: set limit on number of lines logged by scripts: default value is 100. Scriptmaker could increase it via Actions.LogLinesMaxCnt or use 'Debug scripting' checkbox on F11 debug menu. This feature was added to avoid bad scripts causing game lags because of intense warning logging
+
+Maps and Campaigns:
+- added 'The Cruel King' campaign made by @Gogoud. Campaign was originally made as a custom campaign for KaM TPR 
+- add coop map Border Of Life
+- fixed 'KamStar Beginning' campaign
+- 'A Clash of Kings' moved from coop maps into special maps, since it has unique gameplay
+Removed coop maps:
+- A Farmers Wish Coop
+- Bridgecal Dundee
+- Coalical Dundee
+- Hillycal Dundee
+- The Cracker
+- Tropical Dundee
+- Waterfall Dundee
+Removed SP maps: 
+- Mission For The Competition 
+- TPR_Mission7
+
+
+
 [2023.01.22]
 ------------------------------
 Game:
