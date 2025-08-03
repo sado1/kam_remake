@@ -11,89 +11,89 @@ Major features:
  + Unicode
  + Multiplayer spectating
 Fixes:
- +  Actions.GroupOrderSplit returned the original group ID, not the new one
- +  Delivery importance would be ignored in cases where you have more available serfs than available deliveries
- +  Storm attacking soldiers would sometimes pass by enemies instead of stopping to fight them
- +  Citizens would not step out of a house onto a tile which was not road
- +  Wares icons went off by few pixels to the left-top on the wares rows, reverted back
- +  MapEd should not allow to set active player type to nor human nor AI
- +  Script command IsFieldAt checked winefields by mistake (same as IsWineFieldAt)
- +  Script could order to attack allied assets. Check alliance settings when executing attack commands from script
- +  Script would not allow to play WAV files with anything except lower case letters and digits
- +  Random seed should be different before each game
- +  Attacking an animal through script command would crash a game
- +  AIs should retaliate when the arrows are in the air, not while the archer is just aiming
- +  Limit save name length (long names can cause crash)
- +  Fixed winefield bug (MapEd did not save grapes objects)
- +  Scripts should not allow to link players warriors to other players group
- +  In-house enable/disable ware delivery in script worked in reverse
- +  Actions.PlayerWareDistribution did not update house orders, so houses didn't notice that the distribution has changed
- +  Integer overflow in stats caused by counting stone/wood as consumed twice when an incomplete house was destroyed
- +  Crash during delivery if ToHouse was destroyed while the serf was inside FromHouse
- +  Network system messages are now translated
- +  Player alliance towards self is inconsistent, especially in MP and when accessing from script (should be Ally always!)
- +  Block sending chat during reconnection to prevent messages being lost or causing errors (when fMyIndexOnServer is out of date)
- +  Beacons did not render on unrevealed areas
- +  Singleplayer replays ended at the last player command rather than when they were saved (use gic_GameSave in SP too)
- +  Actions.GiveHouse failed when there was a worker building a field or road next to the house
- +  Strange AI behaviour in campaign missions due to AI attack values not carrying over like they do in KaM
- +  AI warriors should attack enemies when they are within 4 tiles, to prevent sneaking into AI village (can be set in MapEd)
- +  Terrain brushes in MapEd erase corn/wine fields (should preserve them)
- +  When citizen walks into a house he should be deselected
- +  Make wood to be delivered first to building sites
- +  Changing game options resets all players' ready status so host can't change at the last moment without player agreement
- +  Hotkeys (0..9) are now stored in multiplayer saves too
- +  Replays show the scripted overlay text for the selected player
- +  Message log is no longer lost when saving in multiplayer, and messages no longer show in replays
- +  Arrows shot over longer distances would be invisible for the last ~10% of their flight (units die when no one appears to be shooting them)
- +  Rare stack overflow with flattening terrain recursively during stone mining near a house (which cannot be elevated) See example stonebug.jpg
- +  Dynamic scripts should not allow to give houses/units to disabled player
- +      Script should not allow to place houses on top of fields
- +  TSK15 - AI does not build because stone is too far away (AI builder was incomplete)
- +  Due to archers being less powerful many campaign missions cannot be won (e.g. first battle in TSK 2, TSK 8)
+ + Actions.GroupOrderSplit returned the original group ID, not the new one
+ + Delivery importance would be ignored in cases where you have more available serfs than available deliveries
+ + Storm attacking soldiers would sometimes pass by enemies instead of stopping to fight them
+ + Citizens would not step out of a house onto a tile which was not road
+ + Wares icons went off by few pixels to the left-top on the wares rows, reverted back
+ + MapEd should not allow to set active player type to nor human nor AI
+ + Script command IsFieldAt checked winefields by mistake (same as IsWineFieldAt)
+ + Script could order to attack allied assets. Check alliance settings when executing attack commands from script
+ + Script would not allow to play WAV files with anything except lower case letters and digits
+ + Random seed should be different before each game
+ + Attacking an animal through script command would crash a game
+ + AIs should retaliate when the arrows are in the air, not while the archer is just aiming
+ + Limit save name length (long names can cause crash)
+ + Fixed winefield bug (MapEd did not save grapes objects)
+ + Scripts should not allow to link players warriors to other players group
+ + In-house enable/disable ware delivery in script worked in reverse
+ + Actions.PlayerWareDistribution did not update house orders, so houses didn't notice that the distribution has changed
+ + Integer overflow in stats caused by counting stone/wood as consumed twice when an incomplete house was destroyed
+ + Crash during delivery if ToHouse was destroyed while the serf was inside FromHouse
+ + Network system messages are now translated
+ + Player alliance towards self is inconsistent, especially in MP and when accessing from script (should be Ally always!)
+ + Block sending chat during reconnection to prevent messages being lost or causing errors (when fMyIndexOnServer is out of date)
+ + Beacons did not render on unrevealed areas
+ + Singleplayer replays ended at the last player command rather than when they were saved (use gic_GameSave in SP too)
+ + Actions.GiveHouse failed when there was a worker building a field or road next to the house
+ + Strange AI behaviour in campaign missions due to AI attack values not carrying over like they do in KaM
+ + AI warriors should attack enemies when they are within 4 tiles, to prevent sneaking into AI village (can be set in MapEd)
+ + Terrain brushes in MapEd erase corn/wine fields (should preserve them)
+ + When citizen walks into a house he should be deselected
+ + Make wood to be delivered first to building sites
+ + Changing game options resets all players' ready status so host can't change at the last moment without player agreement
+ + Hotkeys (0..9) are now stored in multiplayer saves too
+ + Replays show the scripted overlay text for the selected player
+ + Message log is no longer lost when saving in multiplayer, and messages no longer show in replays
+ + Arrows shot over longer distances would be invisible for the last ~10% of their flight (units die when no one appears to be shooting them)
+ + Rare stack overflow with flattening terrain recursively during stone mining near a house (which cannot be elevated) See example stonebug.jpg
+ + Dynamic scripts should not allow to give houses/units to disabled player
+ + Script should not allow to place houses on top of fields
+ + TSK15 - AI does not build because stone is too far away (AI builder was incomplete)
+ + Due to archers being less powerful many campaign missions cannot be won (e.g. first battle in TSK 2, TSK 8)
 
 Improvements:
- +  M  Noticeably improved render performance when zoomed out
- +  M  Noticeably improved render performance when there are many houses on the screen
- +  L  Serfs check for a better delivery destination when arriving at the From house (due to state of village changing)
- +  M  MapEd: Copy/paste works between multiple instances of the editor using Windows clipboard
- +  L  Allow to specify localized player names for the missions
- +  L  Game will flash on task bar when new chat message arrives
- +  L  Set random seed on game start (for MP it needs to be decided by host and synced before the game starts)
- +  L  A way to order +100 weapons at weapon makers and other places (shift + left-click)
- +  L  MapEd: Allow custom map sizes
- +  L  Shortcuts for all soldier buttons: , & . to rotate, + & - to add/withdraw lines, X to charge, F for food
- +  L  MapEd: Randomize terrain tiles when creating a new map
- +  L  MapEd: Increased max terrain brush size to 32
- +  L  New script command !BLOCK_UNIT to block certain types of units/soldiers from being trained/equipped
- +  L  Allow cinematics in dynamic scripts
- +  M  File transfers in multiplayer lobby
- +  L  Master server use MySQL for storage rather than .txt files
- +  L  Shift+3 joins the selected warrior group to the group assigned to hotkey 3 (Starcraft style)
- +  L  The host can ban players from the lobby (only from this lobby, it is not a permanent ban)
- +  L  MapEd and script let you add out wares to houses (e.g. stone to stonemason)
- +  M  New column in load/replays menus: Date/time (stored internally in save format since file modified date is not very trustworthy)
- +  L  Keyboard shortcuts to zoom for people without a scrollwheel (page up/page down)
- +  L  Distribution of wares is viewable during replays
- +  L  Rally point for the barracks
- +  L  Warriors leaving the barracks will form a square formation rather than a long snake like in TSK/TPR
- +  L  Multiplayer spectating
- +  L  MapEd option to enable the AI to retaliate against allies' assets being attacked like they do for themselves
- +  L  Multiplayer in-game player list ordered by teams
- +  L  When archers are ordered to attack by right clicking enemy unit, they will walk into range in formation not spread out
- +  L  Add script command to allow to add recruits into the Barracks in MapEd (only Barracks for simplicity, other houses dont need it)
- +  L  Pressing spacebar will center the screen on the latest alert (beacon or under attack)
- +  L  Save screenshots into own folder called "Screenshots"
- +  L  Add an option to give hosting rights to another player in lobby
- +  L  The story message on campaign map minimizes instead of jumping annoyingly
- +  L  Unlocked campaign map flags have numbers so you can find a mission easily
- +  M  Ability to return to the lobby (by vote) after the game has started in multiplayer
- +  M  Servers running on the local area network are detected and listed at the top of the server list
- +  L  Some way to delete multiplayer saves from within the KaM Remake (delete button on replay viewer)
- +  L  Some way to delete maps from within the KaM Remake (delete button in MapEd menu)
- +  L  MapEd: Magic water works for ice
- +  L  Way to hide scripted overlay
- +  L  Message when weaponmaker has complete his order
+ + Noticeably improved render performance when zoomed out
+ + Noticeably improved render performance when there are many houses on the screen
+ + Serfs check for a better delivery destination when arriving at the From house (due to state of village changing)
+ + MapEd: Copy/paste works between multiple instances of the editor using Windows clipboard
+ + Allow to specify localized player names for the missions
+ + Game will flash on task bar when new chat message arrives
+ + Set random seed on game start (for MP it needs to be decided by host and synced before the game starts)
+ + A way to order +100 weapons at weapon makers and other places (shift + left-click)
+ + MapEd: Allow custom map sizes
+ + Shortcuts for all soldier buttons: , & . to rotate, + & - to add/withdraw lines, X to charge, F for food
+ + MapEd: Randomize terrain tiles when creating a new map
+ + MapEd: Increased max terrain brush size to 32
+ + New script command !BLOCK_UNIT to block certain types of units/soldiers from being trained/equipped
+ + Allow cinematics in dynamic scripts
+ + File transfers in multiplayer lobby
+ + Master server use MySQL for storage rather than .txt files
+ + Shift+3 joins the selected warrior group to the group assigned to hotkey 3 (Starcraft style)
+ + The host can ban players from the lobby (only from this lobby, it is not a permanent ban)
+ + MapEd and script let you add out wares to houses (e.g. stone to stonemason)
+ + New column in load/replays menus: Date/time (stored internally in save format since file modified date is not very trustworthy)
+ + Keyboard shortcuts to zoom for people without a scrollwheel (page up/page down)
+ + Distribution of wares is viewable during replays
+ + Rally point for the barracks
+ + Warriors leaving the barracks will form a square formation rather than a long snake like in TSK/TPR
+ + Multiplayer spectating
+ + MapEd option to enable the AI to retaliate against allies' assets being attacked like they do for themselves
+ + Multiplayer in-game player list ordered by teams
+ + When archers are ordered to attack by right clicking enemy unit, they will walk into range in formation not spread out
+ + Add script command to allow to add recruits into the Barracks in MapEd (only Barracks for simplicity, other houses dont need it)
+ + Pressing spacebar will center the screen on the latest alert (beacon or under attack)
+ + Save screenshots into own folder called "Screenshots"
+ + Add an option to give hosting rights to another player in lobby
+ + The story message on campaign map minimizes instead of jumping annoyingly
+ + Unlocked campaign map flags have numbers so you can find a mission easily
+ + Ability to return to the lobby (by vote) after the game has started in multiplayer
+ + Servers running on the local area network are detected and listed at the top of the server list
+ + Some way to delete multiplayer saves from within the KaM Remake (delete button on replay viewer)
+ + Some way to delete maps from within the KaM Remake (delete button in MapEd menu)
+ + MapEd: Magic water works for ice
+ + Way to hide scripted overlay
+ + Message when weaponmaker has complete his order
 
 
 KaM Remake r5503 [2013.06.23]
@@ -128,35 +128,35 @@ Fixes:
 
 Improvements:
  +  H  Refactor army management with TGroup layer
- +  L  Allow to set wares count in houses in MapEd
- +  M  FPS shown along side ping so you can easily identify the player causing lag
- +  L  VSync should be configurable on the settings page, it can reduce performance a bit on some systems and players might like to change it
- +  M  Block delivery flags for specific wares in the barracks
- +  L  Wares need to be taken out of the barracks for trading at the market
- +  M  Terrain painting brushes in MapEd
- +  L  Disabling Market buttons will let player know that he can't select new trade without canceling current one
- +  L  Improved stats panel, when possible items are placed one per row 
- +  L  Host can set password for lobby
- +  M  Sliders in lobby for selecting speed during peacetime and after peacetime
- +  L  Army graph starts 5% before the first variation (to skip peacetime)
- +  L  Add a command to let the AI repair houses without building new ones (wasn't possible in KaM)
- +  L  Draw highlight on houses mentioned in an open message
+ + Allow to set wares count in houses in MapEd
+ + FPS shown along side ping so you can easily identify the player causing lag
+ + VSync should be configurable on the settings page, it can reduce performance a bit on some systems and players might like to change it
+ + Block delivery flags for specific wares in the barracks
+ + Wares need to be taken out of the barracks for trading at the market
+ + Terrain painting brushes in MapEd
+ + Disabling Market buttons will let player know that he can't select new trade without canceling current one
+ + Improved stats panel, when possible items are placed one per row 
+ + Host can set password for lobby
+ + Sliders in lobby for selecting speed during peacetime and after peacetime
+ + Army graph starts 5% before the first variation (to skip peacetime)
+ + Add a command to let the AI repair houses without building new ones (wasn't possible in KaM)
+ + Draw highlight on houses mentioned in an open message
  +    Fix fences shading along edges of FOW
- +  L  Pressing a key selects the map starting with that letter in map/save lists
+ + Pressing a key selects the map starting with that letter in map/save lists
  +    School+Inn and Quarry+Woodcutters are unlocked in pairs to speedup early game
  +    Made that missions without victory goals do not proclaim player victorious immediately. Instead victory never happens (or ruled by script)
- +  L  Randomize locations within teams option in the lobby
- +  L  Ability to send a whisper (private chat) to a specific player
- +  M  Visualise fog of war for the selected player in replays so you can understand player's perspective
- +  M  Scrolling around the map using middle mouse click, as in TPR
- +  M  Allow host to set a description for the lobby shown on the server selection page ("noobs/pros only", "chat lobby", etc.)
- +  L  Private messaging in MP
- +  L  Add unused sprite 17 from trees.rx
- +  L  Pressing a character with a dropdown/listbox selected will choose the first item starting with that character
- +  L  It is impossible to identify selected group if player flag color is white. Use dark-grey instead.
- +  L  Clicking a location on the lobby minimap selects that location if it's available
- +  L  Minimap preview in lobby could indicate teams somehow as well (border around the color circle?)
- +  L  MapEd: Magic water brush to allow to change waterflow direction on whole area
+ + Randomize locations within teams option in the lobby
+ + Ability to send a whisper (private chat) to a specific player
+ + Visualise fog of war for the selected player in replays so you can understand player's perspective
+ + Scrolling around the map using middle mouse click, as in TPR
+ + Allow host to set a description for the lobby shown on the server selection page ("noobs/pros only", "chat lobby", etc.)
+ + Private messaging in MP
+ + Add unused sprite 17 from trees.rx
+ + Pressing a character with a dropdown/listbox selected will choose the first item starting with that character
+ + It is impossible to identify selected group if player flag color is white. Use dark-grey instead.
+ + Clicking a location on the lobby minimap selects that location if it's available
+ + Minimap preview in lobby could indicate teams somehow as well (border around the color circle?)
+ + MapEd: Magic water brush to allow to change waterflow direction on whole area
 
 
 KaM Remake r4179 []
