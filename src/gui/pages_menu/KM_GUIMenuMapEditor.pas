@@ -23,7 +23,8 @@ type
 
     fSelectedMapInfo: TKMFileIdentInfo; // Identification info about last selected map
 
-    procedure LoadClick(Sender: TObject);
+    procedure CreateNewClick(Sender: TObject);
+    procedure LoadExistingClick(Sender: TObject);
     procedure MapTypeChange(Sender: TObject);
     procedure MapFilterChanged(Sender: TObject);
     procedure MapFilterReset(Sender: TObject);
@@ -252,7 +253,7 @@ begin
 
       Button_Create := TKMButton.Create(Panel_NewMap, 0, 278, 220, 30, gResTexts[TX_MENU_MAP_CREATE_NEW_MAP], bsMenu);
       Button_Create.Anchors := [anLeft, anBottom];
-      Button_Create.OnClick := LoadClick;
+      Button_Create.OnClick := CreateNewClick;
 
     Panel_MapEdLoad := TKMPanel.Create(Panel_MapEd, 305, 30, 440, 708);
     Panel_MapEdLoad.Anchors := [anLeft, anTop, anBottom];
@@ -266,14 +267,14 @@ begin
       ColumnBox_MapEd.SearchColumn := 2;
       ColumnBox_MapEd.OnColumnClick := ColumnClick;
       ColumnBox_MapEd.OnChange := SelectMap;
-      ColumnBox_MapEd.OnDoubleClick := LoadClick;
+      ColumnBox_MapEd.OnDoubleClick := LoadExistingClick;
       ColumnBox_MapEd.OnCellClick := ColumnBoxMaps_CellClick;
       ColumnBox_MapEd.ShowHintWhenShort := True;
       ColumnBox_MapEd.HintBackColor := TKMColor4f.New(149, 128, 69); //Dark yellow color
 
       Button_Load := TKMButton.Create(Panel_MapEdLoad, 0, 606, 440, 30, gResTexts[TX_MENU_MAP_LOAD_EXISTING], bsMenu);
       Button_Load.Anchors := [anLeft, anBottom];
-      Button_Load.OnClick := LoadClick;
+      Button_Load.OnClick := LoadExistingClick;
 
       Button_MapMove := TKMButton.Create(Panel_MapEdLoad, 0, 642, 440, 30, gResTexts[TX_MENU_MAP_MOVE_DOWNLOAD], bsMenu);
       Button_MapMove.Anchors := [anLeft, anBottom];
@@ -481,17 +482,28 @@ begin
 end;
 
 
-procedure TKMMenuMapEditor.LoadClick(Sender: TObject);
+procedure TKMMenuMapEditor.CreateNewClick(Sender: TObject);
 var
   mapEdSizeX, mapEdSizeY: Integer;
-  map: TKMMapInfo;
 begin
   NewMapEnsureNumEdValues;
+
+  mapEdSizeX := NumEdit_MapSizeX.Value;
+  mapEdSizeY := NumEdit_MapSizeY.Value;
+
+  if Assigned(OnNewMapEditor) then
+    OnNewMapEditor('', mapEdSizeX, mapEdSizeY);
+end;
+
+
+procedure TKMMenuMapEditor.LoadExistingClick(Sender: TObject);
+var
+  map: TKMMapInfo;
+begin
   fMaps.Lock;
   try
     //This is also called by double clicking on a map in the list
-    if ((Sender = Button_Load) or (Sender = ColumnBox_MapEd))
-    and Button_Load.Enabled and ColumnBox_MapEd.IsSelected then
+    if Button_Load.Enabled and ColumnBox_MapEd.IsSelected then
     begin
       //Make local copy of Map before Unlock
       map := fMaps[ColumnBox_MapEd.SelectedItemTag];
@@ -507,15 +519,6 @@ begin
     end;
   finally
     fMaps.Unlock; //Double unlock should not harm
-  end;
-
-  //Create new map (NumEdits hold actual dimensions)
-  if Sender = Button_Create then
-  begin
-    mapEdSizeX := NumEdit_MapSizeX.Value;
-    mapEdSizeY := NumEdit_MapSizeY.Value;
-    if Assigned(OnNewMapEditor) then
-      OnNewMapEditor('', mapEdSizeX, mapEdSizeY);
   end;
 end;
 
