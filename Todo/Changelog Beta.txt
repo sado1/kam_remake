@@ -1,4 +1,4 @@
-﻿KaM Remake Next build
+﻿KaM Remake Beta r_____ []
 ------------------------------
 Game:
  + Fixed SampleRate for original KaM sound effects
