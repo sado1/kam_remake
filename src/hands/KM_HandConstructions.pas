@@ -159,7 +159,7 @@ type
     destructor Destroy; override;
 
     procedure AddHouse(aHouse: TKMHouse);
-    function FindBestJob(aWorker: TKMUnitWorker; out aBid: Single): Integer;
+    function FindBestJob(aWorker: TKMUnitWorker): Integer;
     function GetAvailableJobsCount:Integer;
     procedure GiveTask(aIndex: Integer; aWorker: TKMUnitWorker);
     procedure RemWorker(aIndex: Integer);
@@ -1018,16 +1018,16 @@ begin
 end;
 
 
-function TKMRepairList.FindBestJob(aWorker: TKMUnitWorker; out aBid: Single): Integer;
+function TKMRepairList.FindBestJob(aWorker: TKMUnitWorker): Integer;
 var
   I: Integer;
-  newBid: Single;
+  bestBid, newBid: Single;
 begin
   //We can weight the repairs by distance, severity, etc..
   //For now, each worker will go for the house closest to him
 
   Result := -1;
-  aBid := MaxSingle;
+  bestBid := MaxSingle;
   for I := 0 to fHousesCount - 1 do
   if (fHouses[I].House <> nil)
   and (fHouses[I].Assigned < MAX_WORKERS[fHouses[i].House.HouseType]) then
@@ -1035,9 +1035,9 @@ begin
     newBid := KMLengthDiag(aWorker.Position, fHouses[I].House.Position);
     newBid := newBid + fHouses[I].Assigned * BID_MODIF;
 
-    if newBid < aBid then
+    if newBid < bestBid then
     begin
-      aBid := newBid;
+      bestBid := newBid;
       Result := I;
     end;
   end;
@@ -1365,7 +1365,6 @@ end;
 procedure TKMHandConstructions.AssignRepairs;
 var
   I, availableWorkers, availableJobs, jobID: Integer;
-  myBid: Single;
   bestWorker: TKMUnitWorker;
 begin
   availableWorkers := GetIdleWorkerCount;
@@ -1377,7 +1376,7 @@ begin
     for I := 0 to fWorkersCount - 1 do
       if fWorkers[I].Worker.IsIdle then
       begin
-        jobID := fRepairList.FindBestJob(fWorkers[I].Worker, myBid);
+        jobID := fRepairList.FindBestJob(fWorkers[I].Worker);
         if jobID <> -1 then
           fRepairList.GiveTask(jobID, fWorkers[I].Worker);
       end;
