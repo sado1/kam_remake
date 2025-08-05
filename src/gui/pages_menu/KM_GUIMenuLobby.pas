@@ -416,8 +416,8 @@ procedure TKMMenuLobby.CreateControls(aParent: TKMPanel);
   end;
 
 const
-  CW = 690; C1 = 10; C2 = 220; C3 = 375; C4 = 460; C5 = 570; C6 = 650;
-  C1W = 170; C2W = 145; C3W = 75; C4W = 80; FL = 15;
+  CW = 690; C1 = 10; C2 = 230; C3 = 385; C4 = 470; C5 = 577; C6 = 652;
+  C1W = 170; C2W = 145; C3W = 75; C4W = 80; FL = 25;
   TC2_ADD = 50;
   ALL_TXT_W_MIN = 35;
 var
@@ -475,7 +475,7 @@ begin
       for I := 1 to MAX_LOBBY_SLOTS do
       begin
         offY := 70 + (I-1) * 23;
-        Image_Flag[I] := TKMImage.Create(Panel_Players, 3, offY, 20, 20, 0, rxGuiMain);
+        Image_Flag[I] := TKMImage.Create(Panel_Players, 10, offY, 20, 20, 0, rxGuiMain);
         Image_Flag[I].ImageCenter;
         Image_Flag[I].Tag := I; //Required for PlayerMenuShow
         Image_Flag[I].OnClick := PlayerMenuShow;
