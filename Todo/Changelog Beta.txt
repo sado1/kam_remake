@@ -2,6 +2,7 @@
 ------------------------------
 Game:
  + Fixed SampleRate for original KaM sound effects
+ + Added tick part to GameTime string in logs
 
 Maps:
  + Added The Fall of House Fennford by Strangelove
