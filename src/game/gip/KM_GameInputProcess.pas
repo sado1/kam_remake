@@ -1061,26 +1061,26 @@ begin
       gicGamePause:               ;//if fReplayState = gipRecording then fGame.fGamePlayInterface.SetPause(boolean(Params[0]));
       gicGameSpeed:               gGame.SetSpeedGIP(FloatParam, fReplayState = gipRecording);
       gicGameAutoSave:            if (fReplayState = gipRecording) and gGameSettings.Autosave then
-                                    try
+                                    try // this action is game-state neutral - ignore an error, so we don't desynchronize a MP game
                                       gGame.AutoSave(DateTimeParam); //Timestamp is synchronised
                                     except
-                                      gLog.AddTime('Failed to issue GIP command: ' + GetEnumName(TypeInfo(TKMGameInputCommandType),integer(CommandType)));
+                                      gLog.AddTime('Failed to execute GIP command: ' + GetEnumName(TypeInfo(TKMGameInputCommandType),integer(CommandType)));
                                     end;
       gicGameAutoSaveAfterPT:     if (fReplayState = gipRecording) and gGameSettings.Autosave then
-                                    try
+                                    try // this action is game-state neutral - ignore an error, so we don't desynchronize a MP game
                                       gGame.AutoSaveAfterPT(DateTimeParam); //Timestamp is synchronised
                                     except
-                                      gLog.AddTime('Failed to issue GIP command: ' + GetEnumName(TypeInfo(TKMGameInputCommandType),integer(CommandType)));
+                                      gLog.AddTime('Failed to execute GIP command: ' + GetEnumName(TypeInfo(TKMGameInputCommandType),integer(CommandType)));
                                     end;
       gicGameSaveReturnLobby:     if fReplayState = gipRecording then
                                   begin
                                     gGameApp.PrepareReturnToLobby(DateTimeParam); //Timestamp is synchronised
                                     Exit;
                                   end;
-      gicGameLoadSave:            try
+      gicGameLoadSave:            try // this action is game-state neutral - ignore an error, so we don't desynchronize a MP game
                                     ; //Just a marker to know when game was loaded
                                   except
-                                    gLog.AddTime('Failed to issue GIP command: ' + GetEnumName(TypeInfo(TKMGameInputCommandType),integer(CommandType)));
+                                    gLog.AddTime('Failed to execute GIP command: ' + GetEnumName(TypeInfo(TKMGameInputCommandType),integer(CommandType)));
                                   end;
       gicGameTeamChange:          begin
                                     //Currently unused, disabled to prevent potential exploitation
@@ -1091,15 +1091,15 @@ begin
                                       fGame.Networking.SendPlayerListAndRefreshPlayersSetup;}
                                   end;
       gicGameAlertBeacon:         ExecGameAlertBeaconCmd(aCommand);
-      gicGameHotkeySet:           try
+      gicGameHotkeySet:           try // this action is game-state neutral - ignore an error, so we don't desynchronize a MP game
                                     P.SelectionHotkeys[IntParams[0]] := IntParams[1];
                                   except
-                                    gLog.AddTime('Failed to issue GIP command: ' + GetEnumName(TypeInfo(TKMGameInputCommandType),integer(CommandType)));
+                                    gLog.AddTime('Failed to execute GIP command: ' + GetEnumName(TypeInfo(TKMGameInputCommandType),integer(CommandType)));
                                   end;
-      gicGameMessageLogRead:      try
+      gicGameMessageLogRead:      try // this action is game-state neutral - ignore an error, so we don't desynchronize a MP game
                                     P.MessageLog[IntParams[0]].IsReadGIP := True;
                                   except
-                                    gLog.AddTime('Failed to issue GIP command: ' + GetEnumName(TypeInfo(TKMGameInputCommandType),integer(CommandType)));
+                                    gLog.AddTime('Failed to execute GIP command: ' + GetEnumName(TypeInfo(TKMGameInputCommandType),integer(CommandType)));
                                   end;
       gicGameMessageListRead:     P.MessageLog.ReadAtCountGIP := IntParams[0];
       gicGamePlayerChange:        begin
