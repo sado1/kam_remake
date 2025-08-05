@@ -416,7 +416,7 @@ procedure TKMMenuLobby.CreateControls(aParent: TKMPanel);
   end;
 
 const
-  CW = 690; C1 = 5; C2 = 205; C3 = 360; C4 = 445; C5 = 570; C6 = 650;
+  CW = 690; C1 = 10; C2 = 220; C3 = 375; C4 = 460; C5 = 570; C6 = 650;
   C1W = 170; C2W = 145; C3W = 75; C4W = 80; FL = 15;
   TC2_ADD = 50;
   ALL_TXT_W_MIN = 35;
@@ -429,7 +429,7 @@ begin
     //Server Name
     Panel_ServerName := TKMPanel.Create(Panel_Lobby, 30, 30, CW, 26);
       TKMBevel.Create(Panel_ServerName,   0,  0, CW, 26);
-      Label_ServerName := TKMLabel.Create(Panel_ServerName, C1+FL, 7, CW-20, 20, '', fntMetal, taLeft);
+      Label_ServerName := TKMLabel.Create(Panel_ServerName, C1+FL+5, 7, CW-20, 20, '', fntMetal, taLeft);
 
       Image_PasswordLock := TKMImage.Create(Panel_ServerName, C1, 5, 12, 16, 73, rxGuiMain);
       Image_PasswordLock.Hide;
@@ -459,7 +459,7 @@ begin
 
       Bevel_SpecsDivide := TKMBevel.Create(Panel_Players, 10, 50, CW-20, 3);
 
-      Image_HostStar := TKMImage.Create(Panel_Players, C2-15, 50, 20, 20, 77, rxGuiMain);
+      Image_HostStar := TKMImage.Create(Panel_Players, C2-20, 50, 20, 20, 77, rxGuiMain);
       Image_HostStar.Hide;
 
       slotTxtWidth := Max(C1W - 45,
@@ -475,7 +475,7 @@ begin
       for I := 1 to MAX_LOBBY_SLOTS do
       begin
         offY := 70 + (I-1) * 23;
-        Image_Flag[I] := TKMImage.Create(Panel_Players, 0, offY, 20, 20, 0, rxGuiMain);
+        Image_Flag[I] := TKMImage.Create(Panel_Players, 3, offY, 20, 20, 0, rxGuiMain);
         Image_Flag[I].ImageCenter;
         Image_Flag[I].Tag := I; //Required for PlayerMenuShow
         Image_Flag[I].OnClick := PlayerMenuShow;
