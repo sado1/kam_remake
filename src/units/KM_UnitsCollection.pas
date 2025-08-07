@@ -109,8 +109,7 @@ begin
   if not gTerrain.TileInMapCoords(placeTo.X, placeTo.Y) then
   begin
     gLog.AddTime('Unable to add unit to ' + KM_Points.TypeToString(placeTo));
-    Result := nil;
-    Exit;
+    Exit(nil);
   end;
 
   if (aInHouse = nil) and gTerrain.HasUnit(placeTo) then
