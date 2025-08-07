@@ -547,8 +547,12 @@ begin
   try
     case entity.EntityType of
       etUnit: begin
+                var U := TKMUnit(entity);
+
                 // Delete unit by using precise HitTest result from gCursor (rather than Position)
-                gHands.RemAnyUnit(TKMUnit(entity).Position);
+                if gHands.RemAnyUnit(U.Position) then
+                  History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH], [gRes.Units[U.UnitType].GUIName, U.Position.ToString]));
+
                 if not aEraseAll then Exit;
               end;
       etHouse:begin
@@ -830,9 +834,13 @@ begin
   if gCursor.Tag1 = UNIT_REMOVE_TAG then
   begin
     entity := gMySpectator.HitTestCursor(True);
-    // Delete unit by using precise HitTest result from gCursor (rather than Position)
     if entity.IsUnit then
-      gHands.RemAnyUnit(TKMUnit(entity).Position);
+    begin
+      // Delete unit by using precise HitTest result from gCursor (rather than Position)
+      U := TKMUnit(entity);
+      if gHands.RemAnyUnit(U.Position) then
+        History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH], [gRes.Units[U.UnitType].GUIName, U.Position.ToString]));
+    end;
   end
   else
   if gTerrain.CanPlaceUnit(P, TKMUnitType(gCursor.Tag1)) then
@@ -855,8 +863,8 @@ begin
     else
     begin
       U := gHands.PlayerAnimals.AddUnit(TKMUnitType(gCursor.Tag1), P);
-      if U is TKMUNitFish then
-        TKMUNitFish(U).FishCount := gCursor.MapEdFishCount;
+      if U is TKMUnitFish then
+        TKMUnitFish(U).FishCount := gCursor.MapEdFishCount;
     end;
   end;
 end;
@@ -865,7 +873,7 @@ end;
 procedure TKMMapEditor.Reset;
 begin
   if Self = nil then Exit;
-  
+
   ActiveMarker.MarkerType := mmtNone;
 end;
 
