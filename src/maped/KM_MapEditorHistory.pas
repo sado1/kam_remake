@@ -66,6 +66,7 @@ type
       GroupMemberCount: Integer;
       GroupColumns: Integer;
       GroupOrder: TKMMapEdOrder;
+      FishCount: Byte;
     end;
   public
     constructor Create(const aCaption: string);
@@ -382,6 +383,8 @@ begin
 
       fUnits[L].Condition := U.Condition;
 
+      if U is TKMUnitFish then
+        fUnits[L].FishCount := TKMUnitFish(U).FishCount;
       Inc(L);
     end;
   end;
@@ -445,7 +448,7 @@ begin
   for I := 0 to High(fUnits) do
   begin
     if fUnits[I].UnitType in [CITIZEN_MIN..CITIZEN_MAX] then
-      U := gHands[fUnits[I].Owner].AddUnit(fUnits[I].UnitType, fUnits[I].Position, False, 0, False, False)
+      U := gHands[fUnits[I].Owner].AddUnit(fUnits[I].UnitType, fUnits[I].Position, False)
     else
     if fUnits[I].UnitType in [WARRIOR_MIN..WARRIOR_MAX] then
     begin
@@ -456,7 +459,11 @@ begin
       G.MapEdOrder := fUnits[I].GroupOrder;
     end
     else
-      U := gHands.PlayerAnimals.AddUnit(fUnits[I].UnitType, fUnits[I].Position, False);
+    begin
+      U := gHands.PlayerAnimals.AddUnit(fUnits[I].UnitType, fUnits[I].Position);
+      if (U is TKMUnitFish) then
+        TKMUnitFish(U).FishCount := fUnits[I].FishCount;
+    end;
 
     U.Condition := fUnits[I].Condition;
   end;

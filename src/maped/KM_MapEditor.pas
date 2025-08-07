@@ -551,7 +551,7 @@ begin
 
                 // Delete unit by using precise HitTest result from gCursor (rather than Position)
                 if gHands.RemAnyUnit(U.Position) then
-                  History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH], [gRes.Units[U.UnitType].GUIName, U.Position.ToString]));
+                  fHistory.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH], [gRes.Units[U.UnitType].GUIName, U.Position.ToString]));
 
                 if not aEraseAll then Exit;
               end;
@@ -839,32 +839,34 @@ begin
       // Delete unit by using precise HitTest result from gCursor (rather than Position)
       U := TKMUnit(entity);
       if gHands.RemAnyUnit(U.Position) then
-        History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH], [gRes.Units[U.UnitType].GUIName, U.Position.ToString]));
+        fHistory.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH], [gRes.Units[U.UnitType].GUIName, U.Position.ToString]));
     end;
   end
   else
   if gTerrain.CanPlaceUnit(P, TKMUnitType(gCursor.Tag1)) then
   begin
+    var unitType := TKMUnitType(gCursor.Tag1);
     formation.NumUnits := 1;
     formation.UnitsPerRow := 1;
 
     //Check if we can really add a unit
-    if TKMUnitType(gCursor.Tag1) in UNITS_CITIZEN then
-      gMySpectator.Hand.AddUnit(TKMUnitType(gCursor.Tag1), P, False)
-    else
-    if TKMUnitType(gCursor.Tag1) in UNITS_WARRIORS then
+    if unitType in UNITS_CITIZEN then
     begin
-      var unitType := TKMUnitType(gCursor.Tag1);
+      gMySpectator.Hand.AddUnit(unitType, P, False);
+      fHistory.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gRes.Units[unitType].GUIName, P.ToString]));
+    end else
+    if unitType in UNITS_WARRIORS then
+    begin
       GT := UNIT_TO_GROUP_TYPE[unitType];
       DetermineGroupFormationAndDir(P, GT, formation, dir);
       gMySpectator.Hand.AddUnitGroup(unitType, P, dir, formation.UnitsPerRow, formation.NumUnits);
-      History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gRes.Units[unitType].GUIName, P.ToString]));
-    end
-    else
+      fHistory.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gRes.Units[unitType].GUIName, P.ToString]));
+    end else
     begin
-      U := gHands.PlayerAnimals.AddUnit(TKMUnitType(gCursor.Tag1), P);
+      U := gHands.PlayerAnimals.AddUnit(unitType, P);
       if U is TKMUnitFish then
         TKMUnitFish(U).FishCount := gCursor.MapEdFishCount;
+      fHistory.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gRes.Units[unitType].GUIName, P.ToString]));
     end;
   end;
 end;
@@ -937,7 +939,7 @@ begin
     begin
       var unitType := UNIT_TYPES_BY_GT_LVL[groupType, gCursor.MapEdDefPosGroupLevel];
       gMySpectator.Hand.AddUnitGroup(unitType, aLoc, dir, formation.UnitsPerRow, formation.NumUnits);
-      History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gRes.Units[unitType].GUIName, aLoc.ToString]));
+      fHistory.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gRes.Units[unitType].GUIName, aLoc.ToString]));
     end;
   end;
 

@@ -297,7 +297,7 @@ begin
   if gGameParams.IsMapEditor then
   begin
     //In MapEd we create only flagholder, other members are virtual
-    warrior := TKMUnitWarrior(gHands[aOwner].AddUnit(aUnitType, KMPointDir(PosX, PosY, aDir), False, 0, False, False));
+    warrior := TKMUnitWarrior(gHands[aOwner].AddUnit(aUnitType, KMPointDir(PosX, PosY, aDir), False));
     if warrior <> nil then
     begin
       warrior.AnimStep  := UNIT_STILL_FRAMES[aDir];
