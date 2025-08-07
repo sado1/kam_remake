@@ -2,7 +2,7 @@
 
 ---
 
-[Systemanforderungen](#systemanforderungen) · [Installation](#installation) · [Gameplay](#gameplay) · [F.A.Q.](#häufig-gestellte-fragen) · [Community und feedback](#community-und-feedback) · [Bekannte Fehler](#bekannte-fehler) · [Quelltext](#quelltext) · [Credits](#credits) · [Impressum](#impressum)
+[Systemanforderungen](#systemanforderungen) · [Installation](#installation) · [Gameplay](#gameplay) · [Häufig gestellte Fragen](#häufig-gestellte-fragen) · [Community und feedback](#community-und-feedback) · [Bekannte Fehler](#bekannte-fehler-und-einschränkungen) · [Quelltext](#quelltext) · [Credits](#credits) · [Impressum](#impressum)
 
 ---
 
