@@ -449,7 +449,7 @@ begin
     else
     if fUnits[I].UnitType in [WARRIOR_MIN..WARRIOR_MAX] then
     begin
-      G := gHands[fUnits[I].Owner].AddUnitGroup(fUnits[I].UnitType, fUnits[I].Position, fUnits[I].Dir, 1, 1, False);
+      G := gHands[fUnits[I].Owner].AddUnitGroup(fUnits[I].UnitType, fUnits[I].Position, fUnits[I].Dir, 1, 1);
       U := G.FlagBearer;
       G.MapEdCount := fUnits[I].GroupMemberCount;
       G.UnitsPerRow := fUnits[I].GroupColumns;

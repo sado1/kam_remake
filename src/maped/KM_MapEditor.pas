@@ -854,11 +854,11 @@ begin
     else
     if TKMUnitType(gCursor.Tag1) in UNITS_WARRIORS then
     begin
-      GT := UNIT_TO_GROUP_TYPE[TKMUnitType(gCursor.Tag1)];
-
+      var unitType := TKMUnitType(gCursor.Tag1);
+      GT := UNIT_TO_GROUP_TYPE[unitType];
       DetermineGroupFormationAndDir(P, GT, formation, dir);
-
-      gMySpectator.Hand.AddUnitGroup(TKMUnitType(gCursor.Tag1), P, dir, formation.UnitsPerRow, formation.NumUnits)
+      gMySpectator.Hand.AddUnitGroup(unitType, P, dir, formation.UnitsPerRow, formation.NumUnits);
+      History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gRes.Units[unitType].GUIName, P.ToString]));
     end
     else
     begin
@@ -933,16 +933,18 @@ begin
     formation := gMySpectator.Hand.AI.General.DefencePositions.TroopFormations[groupType];
     // Do not add group if loc is already occupied by unit
     if (G = nil)
-      and (gTerrain.UnitsHitTest(aLoc.X, aLoc.Y) = nil) then
-      gMySpectator.Hand.AddUnitGroup(UNIT_TYPES_BY_GT_LVL[groupType, gCursor.MapEdDefPosGroupLevel],
-                                     aLoc, dir, formation.UnitsPerRow, formation.NumUnits);
+    and (gTerrain.UnitsHitTest(aLoc.X, aLoc.Y) = nil) then
+    begin
+      var unitType := UNIT_TYPES_BY_GT_LVL[groupType, gCursor.MapEdDefPosGroupLevel];
+      gMySpectator.Hand.AddUnitGroup(unitType, aLoc, dir, formation.UnitsPerRow, formation.NumUnits);
+      History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gRes.Units[unitType].GUIName, aLoc.ToString]));
+    end;
   end;
 
   gMySpectator.Hand.AI.General.DefencePositions.Add(KMPointDir(aLoc, dir),
                                                     groupType,
                                                     DEFAULT_DEFENCE_POSITION_RADIUS,
                                                     gCursor.MapEdDefPosType);
-
 end;
 
 

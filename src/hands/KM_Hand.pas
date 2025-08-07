@@ -190,8 +190,7 @@ type
                      aRequiredWalkConnect: Byte = 0; aCheat: Boolean = False; aMakeCheckpoint: Boolean = True): TKMUnit; reintroduce; overload;
     function AddUnit(aUnitType: TKMUnitType; const aLoc: TKMPointDir; aAutoPlace: Boolean = True;
                      aRequiredWalkConnect: Byte = 0; aCheat: Boolean = False; aMakeCheckpoint: Boolean = True): TKMUnit; reintroduce; overload;
-    function AddUnitGroup(aUnitType: TKMUnitType; const Position: TKMPoint; aDir: TKMDirection; aUnitPerRow, aCount: Word;
-                          aMakeCheckpoint: Boolean = True): TKMUnitGroup;
+    function AddUnitGroup(aUnitType: TKMUnitType; const Position: TKMPoint; aDir: TKMDirection; aUnitPerRow, aCount: Word): TKMUnitGroup;
 
     function TrainUnit(aUnitType: TKMUnitType; aInHouse: TKMHouse): TKMUnit;
 
@@ -616,8 +615,7 @@ begin
 end;
 
 
-function TKMHand.AddUnitGroup(aUnitType: TKMUnitType; const Position: TKMPoint; aDir: TKMDirection; aUnitPerRow, aCount: Word;
-                              aMakeCheckpoint: Boolean = True): TKMUnitGroup;
+function TKMHand.AddUnitGroup(aUnitType: TKMUnitType; const Position: TKMPoint; aDir: TKMDirection; aUnitPerRow, aCount: Word): TKMUnitGroup;
 var
   I: Integer;
 begin
@@ -626,7 +624,7 @@ begin
 
   if aUnitType in [CITIZEN_MIN..CITIZEN_MAX] then
     for I := 0 to aCount - 1 do
-      AddUnit(aUnitType, Position, True, 0, False, aMakeCheckpoint)
+      AddUnit(aUnitType, Position, True, 0, False, False)
   else
   if aUnitType in [WARRIOR_MIN..WARRIOR_MAX] then
     Result := fUnitGroups.AddGroup(fID, aUnitType, Position.X, Position.Y, aDir, aUnitPerRow, aCount);
@@ -634,10 +632,6 @@ begin
   //Group can be nil if it fails to be placed on terrain (e.g. because of terrain height passability)
   if Result <> nil then
     Result.OnGroupDied := GroupDied;
-
-  if gGameParams.IsMapEditor and aMakeCheckpoint then
-    gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
-                                                           [gRes.Units[aUnitType].GUIName, Position.ToString]));
 
   //Units will be added to statistic inside the function for some units may not fit on map
 end;
