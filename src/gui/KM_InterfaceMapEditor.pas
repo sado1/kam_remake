@@ -1440,41 +1440,37 @@ end;
 
 
 procedure TKMMapEdInterface.MoveObjectToCursorCell(aObjectToMove: TObject);
-var
-  H: TKMHouse;
-  houseNewPos, houseOldPos: TKMPoint;
 begin
   if aObjectToMove = nil then Exit;
 
-  //House move
+  // House
   if aObjectToMove is TKMHouse then
   begin
-    H := TKMHouse(aObjectToMove);
+    var H := TKMHouse(aObjectToMove);
 
-    houseOldPos := H.Position;
-
-    houseNewPos := KMPointAdd(gCursor.Cell, fDragHouseOffset);
+    var houseOldPos := H.Position;
+    var houseNewPos := KMPointAdd(gCursor.Cell, fDragHouseOffset);
 
     if not fDragingObject then
       SetHousePosition(H, houseNewPos) //handles Right click, when house is selected
     else
       if not IsDragHouseModeOn then
         DragHouseModeStart(houseNewPos, houseOldPos);
-  end;
-
-  //Unit move
-  if aObjectToMove is TKMUnit then
-  begin
-    if aObjectToMove is TKMUnitWarrior then
-      aObjectToMove := gHands.GetGroupByMember(TKMUnitWarrior(aObjectToMove))
-    else
-      TKMUnit(aObjectToMove).SetUnitPosition(gCursor.Cell);
-  end;
-
-  //Unit group move
+  end else
+  // Group (as expected, right-clicking repositions the group)
   if aObjectToMove is TKMUnitGroup then
-    //Just move group to specified location
+  begin
     TKMUnitGroup(aObjectToMove).SetGroupPosition(gCursor.Cell);
+  end else
+  // Warrior (a bit unexpectedly, dragging group leader around drags warriror)
+  if aObjectToMove is TKMUnitWarrior then
+  begin
+    var G := gHands.GetGroupByMember(TKMUnitWarrior(aObjectToMove));
+    TKMUnitGroup(G).SetGroupPosition(gCursor.Cell);
+  end else
+  // Unit
+  if aObjectToMove is TKMUnit then
+    TKMUnit(aObjectToMove).SetUnitPosition(gCursor.Cell);
 end;
 
 
