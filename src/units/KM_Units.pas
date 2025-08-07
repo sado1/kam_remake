@@ -170,7 +170,7 @@ type
     property Position: TKMPoint read fPositionRound;
     property PositionPrev: TKMPoint read fPositionPrev;
     property PositionNext: TKMPoint read fPositionNext write SetPositionNext;
-    procedure SetUnitPosition(const aPos: TKMPoint);
+    function SetUnitPosition(const aPos: TKMPoint): Boolean;
 
     property Direction: TKMDirection read fDirection write SetDirection;
     property CurrentHitPoints: Byte read fHitPoints;
@@ -1579,16 +1579,15 @@ begin
 end;
 
 
-procedure TKMUnit.SetUnitPosition(const aPos: TKMPoint);
-var
-  newPos: Boolean;
+function TKMUnit.SetUnitPosition(const aPos: TKMPoint): Boolean;
 begin
   //This is only used by the map editor, set all positions to aPos
   Assert(gGameParams.IsMapEditor);
 
-  if not gTerrain.CanPlaceUnit(aPos, UnitType) then Exit;
+  if not gTerrain.CanPlaceUnit(aPos, UnitType) then
+    Exit(False);
 
-  newPos := fPositionRound <> aPos;
+  Result := fPositionRound <> aPos;
 
   gTerrain.UnitRem(fPositionRound);
   fPositionRound := aPos;
@@ -1596,10 +1595,6 @@ begin
   fPositionPrev := aPos;
   fPositionF := KMPointF(aPos);
   gTerrain.UnitAdd(fPositionRound, Self);
-
-  if newPos then
-    gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH],
-                                                           [gRes.Units[UnitType].GUIName, aPos.ToString]));
 end;
 
 

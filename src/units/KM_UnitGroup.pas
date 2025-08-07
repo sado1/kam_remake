@@ -140,7 +140,7 @@ type
     property Members[aIndex: Integer]: TKMUnitWarrior read GetMember;
     function GetAliveMember: TKMUnitWarrior;
     property FlagBearer: TKMUnitWarrior read GetFlagBearer;
-    procedure SetGroupPosition(const aValue: TKMPoint);
+    function SetGroupPosition(const aValue: TKMPoint): Boolean;
     property Direction: TKMDirection read GetDirection write SetDirection;
     property UnitsPerRow: Word read fUnitsPerRow write SetUnitsPerRow;
     property SelectedUnit: TKMUnitWarrior read GetSelectedInUI write SetSelectedInUI;
@@ -587,11 +587,11 @@ begin
 end;
 
 
-procedure TKMUnitGroup.SetGroupPosition(const aValue: TKMPoint);
+function TKMUnitGroup.SetGroupPosition(const aValue: TKMPoint): Boolean;
 begin
   Assert(gGameParams.IsMapEditor);
 
-  fMembers[0].SetUnitPosition(aValue);
+  Result := fMembers[0].SetUnitPosition(aValue);
   fOrderLoc.Loc := fMembers[0].Position; //Don't assume we can move to aValue
 end;
 

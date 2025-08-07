@@ -1460,17 +1460,24 @@ begin
   // Group (as expected, right-clicking repositions the group)
   if aObjectToMove is TKMUnitGroup then
   begin
-    TKMUnitGroup(aObjectToMove).SetGroupPosition(gCursor.Cell);
+    var G := TKMUnitGroup(aObjectToMove);
+    if G.SetGroupPosition(gCursor.Cell) then
+      gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH], [gRes.Units[G.UnitType].GUIName, G.Position.ToString]));
   end else
   // Warrior (a bit unexpectedly, dragging group leader around drags warriror)
   if aObjectToMove is TKMUnitWarrior then
   begin
     var G := gHands.GetGroupByMember(TKMUnitWarrior(aObjectToMove));
-    TKMUnitGroup(G).SetGroupPosition(gCursor.Cell);
+    if G.SetGroupPosition(gCursor.Cell) then
+      gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH], [gRes.Units[G.UnitType].GUIName, G.Position.ToString]));
   end else
   // Unit
   if aObjectToMove is TKMUnit then
-    TKMUnit(aObjectToMove).SetUnitPosition(gCursor.Cell);
+  begin
+    var U := TKMUnit(aObjectToMove);
+    if U.SetUnitPosition(gCursor.Cell) then
+      gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH], [gRes.Units[U.UnitType].GUIName, U.Position.ToString]));
+  end;
 end;
 
 
