@@ -91,7 +91,7 @@ type
     DragEnabled: Boolean;
 
     constructor Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
-                       aImageType: TKMPopUpBGImageType = pbYellow; aWithCrossImg: Boolean = False;
+                       aImageType: TKMPopUpBGImageType = pbYellow; aCloseIcon: Boolean = False;
                        aBevelForContents: Boolean = True; aShowShadeBevel: Boolean = True);
 
     procedure MouseDown (X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
@@ -280,7 +280,7 @@ end;
 // aWidth / aHeight represents not TKMPopUpPanel sizes, but its internal panel: ItemsPanel
 // PopUpPanel draw bigger image behind it
 constructor TKMPopUpPanel.Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
-                                 aImageType: TKMPopUpBGImageType = pbYellow; aWithCrossImg: Boolean = False;
+                                 aImageType: TKMPopUpBGImageType = pbYellow; aCloseIcon: Boolean = False;
                                  aBevelForContents: Boolean = True; aShowShadeBevel: Boolean = True);
 var
   margin, l, t, topMarg, baseW, baseH, w, h: Integer;
@@ -325,7 +325,7 @@ begin
               end;
   end;
 
-  if aWithCrossImg then
+  if aCloseIcon then
   begin
     Image_Close := TKMImage.Create(Self, Width - GetCrossRight, GetCrossTop, 31, 30, 52);
     Image_Close.Anchors := [anTop, anRight];
