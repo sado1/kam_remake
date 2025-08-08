@@ -28,7 +28,7 @@ type
     function GetItemTag(aIndex: Integer): Integer;
   protected
     Shape_Background: TKMShape;
-    fList: TKMColumnBox;
+    ColumnBox_List: TKMColumnBox;
   public
     constructor Create(aParent: TKMPanel; aWidth: Integer; aMenuMode: TKMPopUpMenuMode = DEFAULT_POPUP_MENU_MODE);
     procedure AddItem(const aCaption: UnicodeString; aTag: Integer = 0);
@@ -164,19 +164,19 @@ begin
   Shape_Background.OnClick := MenuHide;
   Shape_Background.Hide;
 
-  fList := TKMColumnBox.Create(Self, 0, 0, aWidth, 0, fntGrey, bsMenu);
-  fList.AnchorsStretch;
-  fList.BackAlpha := 0.8;
-  fList.Focusable := False;
-  fList.SetColumns(fntGrey, [''], [0]);
-  fList.ShowHeader := False;
+  ColumnBox_List := TKMColumnBox.Create(Self, 0, 0, aWidth, 0, fntGrey, bsMenu);
+  ColumnBox_List.AnchorsStretch;
+  ColumnBox_List.BackAlpha := 0.8;
+  ColumnBox_List.Focusable := False;
+  ColumnBox_List.SetColumns(fntGrey, [''], [0]);
+  ColumnBox_List.ShowHeader := False;
 
   case fMenuMode of
-    pmmActionOnMouseDownNMove: fList.OnChange := MenuActionTriggered;
-    pmmActionOnMouseUp:        fList.OnClick  := MenuActionTriggered;
+    pmmActionOnMouseDownNMove: ColumnBox_List.OnChange := MenuActionTriggered;
+    pmmActionOnMouseUp:        ColumnBox_List.OnClick  := MenuActionTriggered;
   end;
 
-  fList.Hide;
+  ColumnBox_List.Hide;
 
   fMasterControl.SubscribeOnOtherMouseUp(ControlMouseUp);
 
@@ -186,38 +186,38 @@ end;
 
 procedure TKMPopUpMenu.Clear;
 begin
-  fList.Clear;
+  ColumnBox_List.Clear;
 end;
 
 
 function TKMPopUpMenu.GetItemIndex: Integer;
 begin
-  Result := fList.ItemIndex;
+  Result := ColumnBox_List.ItemIndex;
 end;
 
 
 function TKMPopUpMenu.GetItemTag(aIndex: Integer): Integer;
 begin
-  Result := fList.Rows[aIndex].Tag;
+  Result := ColumnBox_List.Rows[aIndex].Tag;
 end;
 
 
 procedure TKMPopUpMenu.SetItemIndex(aValue: Integer);
 begin
-  fList.ItemIndex := aValue;
+  ColumnBox_List.ItemIndex := aValue;
 end;
 
 
 procedure TKMPopUpMenu.AddItem(const aCaption: UnicodeString; aTag: Integer = 0);
 begin
-  fList.AddItem(MakeListRow([aCaption], aTag));
-  Height := fList.ItemHeight * fList.RowCount;
+  ColumnBox_List.AddItem(MakeListRow([aCaption], aTag));
+  Height := ColumnBox_List.ItemHeight * ColumnBox_List.RowCount;
 end;
 
 
 procedure TKMPopUpMenu.UpdateItem(aIndex: Integer; const aCaption: UnicodeString);
 begin
-  fList.Rows[aIndex].Cells[0].Caption := aCaption;
+  ColumnBox_List.Rows[aIndex].Cells[0].Caption := aCaption;
 end;
 
 
@@ -234,7 +234,7 @@ end;
 procedure TKMPopUpMenu.MenuHide(Sender: TObject);
 begin
   Hide;
-  fList.Hide;
+  ColumnBox_List.Hide;
   Shape_Background.Hide;
 end;
 
@@ -247,15 +247,15 @@ end;
 
 procedure TKMPopUpMenu.ShowAt(X, Y: Integer);
 begin
-  fList.AbsLeft := X;
-  fList.AbsTop := Y;
+  ColumnBox_List.AbsLeft := X;
+  ColumnBox_List.AbsTop := Y;
 
   //Reset previously selected item
-  fList.ItemIndex := -1;
+  ColumnBox_List.ItemIndex := -1;
 
   Show;
   Shape_Background.Show;
-  fList.Show;
+  ColumnBox_List.Show;
 end;
 
 
@@ -270,7 +270,7 @@ begin
   inherited;
 
   // Hide list and shape on MouseUp
-  fList.Hide;
+  ColumnBox_List.Hide;
   Shape_Background.Hide;
 end;
 
