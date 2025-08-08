@@ -159,10 +159,9 @@ begin
 
   fMenuMode := aMenuMode;
 
+  // Note that Shape belongs to us, but we will manually position it to align with Parent to cover it
   Shape_Background := TKMShape.Create(Self, 0, 0, aParent.Width, aParent.Height);
-  Shape_Background.AnchorsStretch;
   Shape_Background.OnClick := MenuHide;
-  Shape_Background.Hide;
 
   ColumnBox_List := TKMColumnBox.Create(Self, 0, 0, aWidth, 0, fntGrey, bsMenu);
   ColumnBox_List.AnchorsStretch;
@@ -175,8 +174,6 @@ begin
     pmmActionOnMouseDownNMove: ColumnBox_List.OnChange := MenuActionTriggered;
     pmmActionOnMouseUp:        ColumnBox_List.OnClick  := MenuActionTriggered;
   end;
-
-  ColumnBox_List.Hide;
 
   fMasterControl.SubscribeOnOtherMouseUp(HandleOtherControlMouseUp);
 
@@ -211,6 +208,8 @@ end;
 procedure TKMPopUpMenu.AddItem(const aCaption: UnicodeString; aTag: Integer = 0);
 begin
   ColumnBox_List.AddItem(MakeListRow([aCaption], aTag));
+
+  // Set own height (and anchored List will follow)
   Height := ColumnBox_List.ItemHeight * ColumnBox_List.RowCount;
 end;
 
@@ -234,8 +233,6 @@ end;
 procedure TKMPopUpMenu.MenuHide(Sender: TObject);
 begin
   Hide;
-  ColumnBox_List.Hide;
-  Shape_Background.Hide;
 end;
 
 
@@ -247,15 +244,18 @@ end;
 
 procedure TKMPopUpMenu.ShowAt(X, Y: Integer);
 begin
-  ColumnBox_List.AbsLeft := X;
-  ColumnBox_List.AbsTop := Y;
+  // Position self (and List will follow)
+  AbsLeft := X;
+  AbsTop := Y;
+
+  // Actualize modal background position
+  Shape_Background.AbsLeft := Parent.AbsLeft;
+  Shape_Background.AbsTop := Parent.AbsTop;
 
   // Reset previously selected item
   ColumnBox_List.ItemIndex := -1;
 
   Show;
-  Shape_Background.Show;
-  ColumnBox_List.Show;
 end;
 
 
@@ -269,9 +269,7 @@ procedure TKMPopUpMenu.MouseUp(X, Y: Integer; Shift: TShiftState; Button: TMouse
 begin
   inherited;
 
-  // Hide list and shape on MouseUp
-  ColumnBox_List.Hide;
-  Shape_Background.Hide;
+  Hide;
 end;
 
 
