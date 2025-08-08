@@ -2,13 +2,10 @@ unit KM_ControlsPopUp;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes,
-  Controls,
-  KromOGLUtils,
+  Classes, Controls,
   KM_Controls, KM_ControlsBase, KM_ControlsList,
-  KM_ResFonts,
-  KM_Points,
-  KM_CommonTypes;
+  KM_CommonTypes, KM_Points,
+  KM_ResFonts;
 
 
 type
