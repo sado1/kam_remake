@@ -52,7 +52,7 @@ type
 
   TKMPopUpPanel = class(TKMPanel)
   const
-    DEF_FONT: TKMFont = fntOutline;
+    DEFAULT_CAPTION_FONT = fntOutline;
   private
     fDragging: Boolean;
     fDragStartPos: TKMPoint;
@@ -343,7 +343,7 @@ begin
 
   Image_Background.ImageStretch;
 
-  Label_Caption := TKMLabel.Create(ItemsPanel, 0, -25, ItemsPanel.Width, 20, aCaption, DEF_FONT, taCenter);
+  Label_Caption := TKMLabel.Create(ItemsPanel, 0, -25, ItemsPanel.Width, 20, aCaption, DEFAULT_CAPTION_FONT, taCenter);
 
   AnchorsCenter;
   Hide;

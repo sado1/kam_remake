@@ -62,17 +62,17 @@ const
 constructor TKMMapEdMenuQuickPlay.Create(aParent: TKMPanel; aOnMapTypChanged: TBooleanEvent);
 const
   CTRLS_WIDTH = 220;
-  WID = 240;
+  MIN_WIDTH = 240;
 var
-  left, top, w: Integer;
-  cap: string;
+  left, top, desiredWidth: Integer;
+  panelCaption: string;
 begin
   inherited Create;
 
-  cap := gResTexts[TX_MAPED_MAP_QUICK_PLAY];
-  w := Max(WID, gRes.Fonts[TKMPopUpPanel.DEF_FONT].GetTextSize(cap).X + 40);
+  panelCaption := gResTexts[TX_MAPED_MAP_QUICK_PLAY];
+  desiredWidth := Max(MIN_WIDTH, gRes.Fonts[TKMPopUpPanel.DEFAULT_CAPTION_FONT].GetTextSize(panelCaption).X + 40);
 
-  PopUp_QuickPlay := TKMPopUpPanel.Create(aParent, w, PANEL_QUICKPLAY_HEIGHT, cap, pbGray);
+  PopUp_QuickPlay := TKMPopUpPanel.Create(aParent, desiredWidth, PANEL_QUICKPLAY_HEIGHT, panelCaption, pbGray);
 
   left := (PopUp_QuickPlay.ItemsPanel.Width - CTRLS_WIDTH) div 2;
     top := 15;
@@ -121,7 +121,6 @@ begin
   fMenuSave.Button_SaveSave.Caption := gResTexts[TX_MAPED_MAP_QUICK_PLAY_SAVE_AND_START];
   fMenuSave.Button_SaveSave.Hint := gResTexts[TX_MAPED_MAP_QUICK_PLAY_SAVE_AND_START_HINT];
   fMenuSave.Button_SaveSave.OnChangeEnableStatus := SaveBtn_EnableStatusChanged;
-
 end;
 
 
