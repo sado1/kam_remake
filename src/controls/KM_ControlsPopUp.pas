@@ -282,27 +282,22 @@ end;
 constructor TKMPopUpPanel.Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
                                  aImageType: TKMPopUpBGImageType = pbYellow; aCloseIcon: Boolean = False;
                                  aBevelForContents: Boolean = True; aModalBackground: Boolean = True);
-var
-  margin, l, t, topMarg, baseW, baseH, w, h: Integer;
 begin
   fBGImageType := aImageType;
 
-  margin := MarginMainLeftRight;
-
-  baseW := aWidth + 2*margin;
-  topMarg := MarginMainTop;
-  baseH := aHeight + MarginMainBottom + topMarg;
-  w := Min(aParent.Width, baseW);
-  h := Min(aParent.Height, baseH);
-  l := Max(0, (aParent.Width - w) div 2);
-  t := Max(0, (aParent.Height - h) div 2);
+  var desiredWidth := aWidth + 2 * MarginMainLeftRight;
+  var desiredHeight := aHeight + MarginMainBottom + MarginMainTop;
+  var allowedWidth := Min(aParent.Width, desiredWidth);
+  var allowedHeight := Min(aParent.Height, desiredHeight);
+  var desiredLeft := Max(0, (aParent.Width - allowedWidth) div 2);
+  var desiredTop := Max(0, (aParent.Height - allowedHeight) div 2);
 
   // Create panel with calculated sizes
-  inherited Create(aParent, l, t, w, h);
+  inherited Create(aParent, desiredLeft, desiredTop, allowedWidth, allowedHeight);
 
   // Fix its base sizes as a desired one
-  BaseWidth := baseW;
-  BaseHeight := baseH;
+  BaseWidth := desiredWidth;
+  BaseHeight := desiredHeight;
 
   FitInParent := True;
   DragEnabled := False;
@@ -312,9 +307,9 @@ begin
   if aModalBackground then
     Bevel_ModalBackground := TKMBevel.Create(Self, -5000, -5000, 10000, 10000);
 
-  Image_Background := TKMImage.Create(Self, 0, 0, w, h, 15, rxGuiMain);
+  Image_Background := TKMImage.Create(Self, 0, 0, allowedWidth, allowedHeight, 15, rxGuiMain);
 
-  ItemsPanel := TKMPanel.Create(Self, margin, topMarg, Width - 2*margin, Height - topMarg - MarginMainBottom);
+  ItemsPanel := TKMPanel.Create(Self, MarginMainLeftRight, MarginMainTop, Width - 2*MarginMainLeftRight, Height - MarginMainTop - MarginMainBottom);
 
   case fBGImageType of
     pbGray:   Image_Background.TexId := 15;
