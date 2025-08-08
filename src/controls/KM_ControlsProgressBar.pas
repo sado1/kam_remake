@@ -218,6 +218,8 @@ end;
 destructor TKMReplayBar.Destroy;
 begin
   FreeAndNil(fMarks);
+
+  inherited;
 end;
 
 
