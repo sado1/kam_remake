@@ -64,11 +64,11 @@ type
     procedure UpdateSizes;
     procedure Close(Sender: TObject);
 
-    function GetLeftRightMargin: Integer;
-    function GetTopMargin: Integer;
-    function GetBottomMargin: Integer;
-    function GetCrossTop: Integer;
-    function GetCrossRight: Integer;
+    function MarginMainLeftRight: Integer;
+    function MarginMainTop: Integer;
+    function MarginMainBottom: Integer;
+    function MarginCrossTop: Integer;
+    function MarginCrossRight: Integer;
 
     function GetActualWidth: Integer;
     procedure SetActualWidth(aValue: Integer);
@@ -287,11 +287,11 @@ var
 begin
   fBGImageType := aImageType;
 
-  margin := GetLeftRightMargin;
+  margin := MarginMainLeftRight;
 
   baseW := aWidth + 2*margin;
-  topMarg := GetTopMargin;
-  baseH := aHeight + GetBottomMargin + topMarg;
+  topMarg := MarginMainTop;
+  baseH := aHeight + MarginMainBottom + topMarg;
   w := Min(aParent.Width, baseW);
   h := Min(aParent.Height, baseH);
   l := Max(0, (aParent.Width - w) div 2);
@@ -314,7 +314,7 @@ begin
 
   Image_Background := TKMImage.Create(Self, 0, 0, w, h, 15, rxGuiMain);
 
-  ItemsPanel := TKMPanel.Create(Self, margin, topMarg, Width - 2*margin, Height - topMarg - GetBottomMargin);
+  ItemsPanel := TKMPanel.Create(Self, margin, topMarg, Width - 2*margin, Height - topMarg - MarginMainBottom);
 
   case fBGImageType of
     pbGray:   Image_Background.TexId := 15;
@@ -327,7 +327,7 @@ begin
 
   if aCloseIcon then
   begin
-    Image_Close := TKMImage.Create(Self, Width - GetCrossRight, GetCrossTop, 31, 30, 52);
+    Image_Close := TKMImage.Create(Self, Width - MarginCrossRight, MarginCrossTop, 31, 30, 52);
     Image_Close.Anchors := [anTop, anRight];
     Image_Close.Hint := gResTexts[TX_MSG_CLOSE_HINT];
     Image_Close.OnClick := Close;
@@ -359,7 +359,7 @@ begin
 end;
 
 
-function TKMPopUpPanel.GetLeftRightMargin: Integer;
+function TKMPopUpPanel.MarginMainLeftRight: Integer;
 const
   MARGIN_SIDE: array [TKMPopUpBGImageType] of Byte = (20, 35, 20);
 begin
@@ -367,7 +367,7 @@ begin
 end;
 
 
-function TKMPopUpPanel.GetTopMargin: Integer;
+function TKMPopUpPanel.MarginMainTop: Integer;
 const
   MARGIN_TOP: array [TKMPopUpBGImageType] of Byte = (40, 80, 50);
 begin
@@ -375,7 +375,7 @@ begin
 end;
 
 
-function TKMPopUpPanel.GetBottomMargin: Integer;
+function TKMPopUpPanel.MarginMainBottom: Integer;
 const
   MARGIN_BOTTOM: array [TKMPopUpBGImageType] of Byte = (20, 50, 20);
 begin
@@ -383,7 +383,7 @@ begin
 end;
 
 
-function TKMPopUpPanel.GetCrossTop: Integer;
+function TKMPopUpPanel.MarginCrossTop: Integer;
 const
   CROSS_TOP: array [TKMPopUpBGImageType] of Byte = (24, 40, 24);
 begin
@@ -391,18 +391,18 @@ begin
 end;
 
 
-function TKMPopUpPanel.GetCaption: string;
-begin
-  Result := Label_Caption.Caption;
-end;
-
-
-function TKMPopUpPanel.GetCrossRight: Integer;
+function TKMPopUpPanel.MarginCrossRight: Integer;
 const
-  // We probably should calc those sizes as dependant of the Width
+  // Margin from right side, depends on bg graphics
   CROSS_RIGHT: array [TKMPopUpBGImageType] of Byte = (50, 130, 55);
 begin
   Result := CROSS_RIGHT[fBGImageType];
+end;
+
+
+function TKMPopUpPanel.GetCaption: string;
+begin
+  Result := Label_Caption.Caption;
 end;
 
 
@@ -516,7 +516,7 @@ procedure TKMPopUpPanel.SetActualWidth(aValue: Integer);
 var
   baseW: Integer;
 begin
-  baseW := aValue + GetLeftRightMargin*2;
+  baseW := aValue + MarginMainLeftRight*2;
   SetWidth(Min(Parent.Width, baseW));
 end;
 
@@ -531,7 +531,7 @@ procedure TKMPopUpPanel.SetActualHeight(aValue: Integer);
 var
   baseH, h: Integer;
 begin
-  baseH := aValue + GetBottomMargin + GetTopMargin;
+  baseH := aValue + MarginMainBottom + MarginMainTop;
   h := Min(Parent.Height, baseH);
   SetHeight(h);
 end;
