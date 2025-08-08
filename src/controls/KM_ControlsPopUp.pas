@@ -81,7 +81,7 @@ type
     procedure SetCaption(const aValue: string);
   protected
     Bevel_Contents: TKMBevel;
-    BevelShade: TKMBevel;
+    Bevel_ModalBackground: TKMBevel;
     Image_Background, Image_Close: TKMImage;
     Label_Caption: TKMLabel;
     procedure SetWidth(aValue: Integer); override;
@@ -92,7 +92,7 @@ type
 
     constructor Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
                        aImageType: TKMPopUpBGImageType = pbYellow; aCloseIcon: Boolean = False;
-                       aBevelForContents: Boolean = True; aShowShadeBevel: Boolean = True);
+                       aBevelForContents: Boolean = True; aModalBackground: Boolean = True);
 
     procedure MouseDown (X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
     procedure MouseMove (X,Y: Integer; Shift: TShiftState); override;
@@ -281,7 +281,7 @@ end;
 // PopUpPanel draw bigger image behind it
 constructor TKMPopUpPanel.Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
                                  aImageType: TKMPopUpBGImageType = pbYellow; aCloseIcon: Boolean = False;
-                                 aBevelForContents: Boolean = True; aShowShadeBevel: Boolean = True);
+                                 aBevelForContents: Boolean = True; aModalBackground: Boolean = True);
 var
   margin, l, t, topMarg, baseW, baseH, w, h: Integer;
 begin
@@ -309,8 +309,8 @@ begin
   fHandleCloseKey := False;
   fCapOffsetY := 0;
 
-  if aShowShadeBevel then
-    BevelShade := TKMBevel.Create(Self, -2000,  -2000, 5000, 5000);
+  if aModalBackground then
+    Bevel_ModalBackground := TKMBevel.Create(Self, -5000, -5000, 10000, 10000);
 
   Image_Background := TKMImage.Create(Self, 0, 0, w, h, 15, rxGuiMain);
 
