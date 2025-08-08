@@ -21,13 +21,14 @@ type
   TKMPopUpMenu = class(TKMPanel)
   private
     fMenuMode: TKMPopUpMenuMode;
-    fShapeBG: TKMShape;
-    fList: TKMColumnBox;
     procedure MenuHide(Sender: TObject);
     procedure MenuActionTriggered(Sender: TObject);
     procedure SetItemIndex(aValue: Integer);
     function GetItemIndex: Integer;
     function GetItemTag(aIndex: Integer): Integer;
+  protected
+    Shape_Background: TKMShape;
+    fList: TKMColumnBox;
   public
     constructor Create(aParent: TKMPanel; aWidth: Integer; aMenuMode: TKMPopUpMenuMode = DEFAULT_POPUP_MENU_MODE);
     procedure AddItem(const aCaption: UnicodeString; aTag: Integer = 0);
@@ -158,10 +159,10 @@ begin
 
   fMenuMode := aMenuMode;
 
-  fShapeBG := TKMShape.Create(Self, 0, 0, aParent.Width, aParent.Height);
-  fShapeBG.AnchorsStretch;
-  fShapeBG.OnClick := MenuHide;
-  fShapeBG.Hide;
+  Shape_Background := TKMShape.Create(Self, 0, 0, aParent.Width, aParent.Height);
+  Shape_Background.AnchorsStretch;
+  Shape_Background.OnClick := MenuHide;
+  Shape_Background.Hide;
 
   fList := TKMColumnBox.Create(Self, 0, 0, aWidth, 0, fntGrey, bsMenu);
   fList.AnchorsStretch;
@@ -174,7 +175,6 @@ begin
     pmmActionOnMouseDownNMove: fList.OnChange := MenuActionTriggered;
     pmmActionOnMouseUp:        fList.OnClick  := MenuActionTriggered;
   end;
-
 
   fList.Hide;
 
@@ -235,7 +235,7 @@ procedure TKMPopUpMenu.MenuHide(Sender: TObject);
 begin
   Hide;
   fList.Hide;
-  fShapeBG.Hide;
+  Shape_Background.Hide;
 end;
 
 
@@ -254,7 +254,7 @@ begin
   fList.ItemIndex := -1;
 
   Show;
-  fShapeBG.Show;
+  Shape_Background.Show;
   fList.Show;
 end;
 
@@ -271,7 +271,7 @@ begin
 
   // Hide list and shape on MouseUp
   fList.Hide;
-  fShapeBG.Hide;
+  Shape_Background.Hide;
 end;
 
 
