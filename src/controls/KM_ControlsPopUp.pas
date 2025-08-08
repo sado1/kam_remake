@@ -77,17 +77,18 @@ type
 
     procedure SetHandleCloseKey(aValue: Boolean);
     procedure SetCapOffsetY(aValue: Integer);
+    function GetCaption: string;
+    procedure SetCaption(const aValue: string);
   protected
     Bevel_Contents: TKMBevel;
     BevelShade: TKMBevel;
+    ImageBG, ImageClose: TKMImage;
+    CaptionLabel: TKMLabel;
     procedure SetWidth(aValue: Integer); override;
     procedure SetHeight(aValue: Integer); override;
   public
     ItemsPanel: TKMPanel;
     DragEnabled: Boolean;
-    ImageBG, ImageClose: TKMImage;
-
-    CaptionLabel: TKMLabel;
 
     constructor Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
                        aImageType: TKMPopUpBGImageType = pbYellow; aWithCrossImg: Boolean = False;
@@ -109,6 +110,7 @@ type
     property ActualHeight: Integer read GetActualHeight write SetActualHeight;
     property ActualWidth: Integer read GetActualWidth write SetActualWidth;
     property CapOffsetY: Integer read fCapOffsetY write SetCapOffsetY;
+    property Caption: string read GetCaption write SetCaption;
 
     property HandleCloseKey: Boolean read fHandleCloseKey write SetHandleCloseKey;
   end;
@@ -389,6 +391,12 @@ begin
 end;
 
 
+function TKMPopUpPanel.GetCaption: string;
+begin
+  Result := CaptionLabel.Caption;
+end;
+
+
 function TKMPopUpPanel.GetCrossRight: Integer;
 const
   // We probably should calc those sizes as dependant of the Width
@@ -541,6 +549,12 @@ begin
   CaptionLabel.Top := CaptionLabel.Top + aValue - fCapOffsetY;
 
   fCapOffsetY := aValue;
+end;
+
+
+procedure TKMPopUpPanel.SetCaption(const aValue: string);
+begin
+  CaptionLabel.Caption := aValue;
 end;
 
 

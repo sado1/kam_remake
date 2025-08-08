@@ -69,13 +69,13 @@ end;
 
 function TKMGUICommonGameOptions.GetCaption: string;
 begin
-  Result := PopUpPanel_Settings.CaptionLabel.Caption;
+  Result := PopUpPanel_Settings.Caption;
 end;
 
 
 procedure TKMGUICommonGameOptions.SetCaption(const aValue: string);
 begin
-  PopUpPanel_Settings.CaptionLabel.Caption := aValue;
+  PopUpPanel_Settings.Caption := aValue;
 end;
 
 
