@@ -82,8 +82,8 @@ type
   protected
     Bevel_Contents: TKMBevel;
     BevelShade: TKMBevel;
-    ImageBG, ImageClose: TKMImage;
-    CaptionLabel: TKMLabel;
+    Image_Background, Image_Close: TKMImage;
+    Label_Caption: TKMLabel;
     procedure SetWidth(aValue: Integer); override;
     procedure SetHeight(aValue: Integer); override;
   public
@@ -312,26 +312,26 @@ begin
   if aShowShadeBevel then
     BevelShade := TKMBevel.Create(Self, -2000,  -2000, 5000, 5000);
 
-  ImageBG := TKMImage.Create(Self, 0, 0, w, h, 15, rxGuiMain);
+  Image_Background := TKMImage.Create(Self, 0, 0, w, h, 15, rxGuiMain);
 
   ItemsPanel := TKMPanel.Create(Self, margin, topMarg, Width - 2*margin, Height - topMarg - GetBottomMargin);
 
   case fBGImageType of
-    pbGray:   ImageBG.TexId := 15;
-    pbYellow: ImageBG.TexId := 18;
+    pbGray:   Image_Background.TexId := 15;
+    pbYellow: Image_Background.TexId := 18;
     pbScroll: begin
-                ImageBG.Rx := rxGui;
-                ImageBG.TexId := 409;
+                Image_Background.Rx := rxGui;
+                Image_Background.TexId := 409;
               end;
   end;
 
   if aWithCrossImg then
   begin
-    ImageClose := TKMImage.Create(Self, Width - GetCrossRight, GetCrossTop, 31, 30, 52);
-    ImageClose.Anchors := [anTop, anRight];
-    ImageClose.Hint := gResTexts[TX_MSG_CLOSE_HINT];
-    ImageClose.OnClick := Close;
-    ImageClose.HighlightOnMouseOver := True;
+    Image_Close := TKMImage.Create(Self, Width - GetCrossRight, GetCrossTop, 31, 30, 52);
+    Image_Close.Anchors := [anTop, anRight];
+    Image_Close.Hint := gResTexts[TX_MSG_CLOSE_HINT];
+    Image_Close.OnClick := Close;
+    Image_Close.HighlightOnMouseOver := True;
   end;
 
   ItemsPanel.AnchorsStretch;
@@ -341,9 +341,9 @@ begin
     Bevel_Contents.AnchorsStretch;
   end;
 
-  ImageBG.ImageStretch;
+  Image_Background.ImageStretch;
 
-  CaptionLabel := TKMLabel.Create(ItemsPanel, 0, -25, ItemsPanel.Width, 20, aCaption, DEF_FONT, taCenter);
+  Label_Caption := TKMLabel.Create(ItemsPanel, 0, -25, ItemsPanel.Width, 20, aCaption, DEF_FONT, taCenter);
 
   AnchorsCenter;
   Hide;
@@ -393,7 +393,7 @@ end;
 
 function TKMPopUpPanel.GetCaption: string;
 begin
-  Result := CaptionLabel.Caption;
+  Result := Label_Caption.Caption;
 end;
 
 
@@ -417,7 +417,7 @@ end;
 
 procedure TKMPopUpPanel.ControlMouseDown(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
 begin
-  if Sender = ImageBG then
+  if Sender = Image_Background then
     MouseDown(X, Y, Shift, Button);
 end;
 
@@ -453,7 +453,7 @@ begin
   if not DragEnabled or not fDragging then Exit;
 
   Left := EnsureRange(Left + X - fDragStartPos.X, 0, fMasterControl.MasterPanel.Width - Width);
-  Top := EnsureRange(Top + Y - fDragStartPos.Y, -ImageBG.Top, fMasterControl.MasterPanel.Height - Height);
+  Top := EnsureRange(Top + Y - fDragStartPos.Y, -Image_Background.Top, fMasterControl.MasterPanel.Height - Height);
 
   fDragStartPos := TKMPoint.New(X,Y);
 end;
@@ -501,8 +501,8 @@ end;
 
 procedure TKMPopUpPanel.UpdateSizes;
 begin
-  ImageBG.Width := Width;
-  ImageBG.Height := Height;
+  Image_Background.Width := Width;
+  Image_Background.Height := Height;
 end;
 
 
@@ -546,7 +546,7 @@ end;
 
 procedure TKMPopUpPanel.SetCapOffsetY(aValue: Integer);
 begin
-  CaptionLabel.Top := CaptionLabel.Top + aValue - fCapOffsetY;
+  Label_Caption.Top := Label_Caption.Top + aValue - fCapOffsetY;
 
   fCapOffsetY := aValue;
 end;
@@ -554,7 +554,7 @@ end;
 
 procedure TKMPopUpPanel.SetCaption(const aValue: string);
 begin
-  CaptionLabel.Caption := aValue;
+  Label_Caption.Caption := aValue;
 end;
 
 
