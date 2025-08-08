@@ -178,8 +178,7 @@ begin
 
   fList.Hide;
 
-  // Subscribe to get other controls mouse up events
-  fMasterControl.AddMouseUpCtrlSub(ControlMouseUp);
+  fMasterControl.SubscribeOnOtherMouseUp(ControlMouseUp);
 
   Hide;
 end;
@@ -343,14 +342,9 @@ begin
   AnchorsCenter;
   Hide;
 
-  // Subscribe to get other controls mouse move events
-  fMasterControl.AddMouseMoveCtrlSub(ControlMouseMove);
-
-  // Subscribe to get other controls mouse down events
-  fMasterControl.AddMouseDownCtrlSub(ControlMouseDown);
-
-  // Subscribe to get other controls mouse up events
-  fMasterControl.AddMouseUpCtrlSub(ControlMouseUp);
+  fMasterControl.SubscribeOnOtherMouseMove(ControlMouseMove);
+  fMasterControl.SubscribeOnOtherMouseDown(ControlMouseDown);
+  fMasterControl.SubscribeOnOtherMouseUp(ControlMouseUp);
 end;
 
 
