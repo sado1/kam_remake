@@ -44,8 +44,11 @@ type
     procedure ControlMouseUp(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
   end;
 
-
-  TKMPopUpBGImageType = (pbGray, pbYellow, pbScroll);
+  TKMPopUpBGImageType = (
+    pbGray,   // Dark grey scroll with big header roll
+    pbYellow, // Yellow scroll without header roll
+    pbScroll  // Yellow scroll with small header roll
+  );
 
   TKMPopUpPanel = class(TKMPanel)
   const
@@ -75,7 +78,7 @@ type
     procedure SetHandleCloseKey(aValue: Boolean);
     procedure SetCapOffsetY(aValue: Integer);
   protected
-    BevelBG: TKMBevel;
+    Bevel_Contents: TKMBevel;
     BevelShade: TKMBevel;
     procedure SetWidth(aValue: Integer); override;
     procedure SetHeight(aValue: Integer); override;
@@ -88,7 +91,7 @@ type
 
     constructor Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
                        aImageType: TKMPopUpBGImageType = pbYellow; aWithCrossImg: Boolean = False;
-                       aShowBevel: Boolean = True; aShowShadeBevel: Boolean = True);
+                       aBevelForContents: Boolean = True; aShowShadeBevel: Boolean = True);
 
     procedure MouseDown (X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
     procedure MouseMove (X,Y: Integer; Shift: TShiftState); override;
@@ -271,14 +274,12 @@ begin
 end;
 
 
-
-
 { TKMPopUpPanel }
 // aWidth / aHeight represents not TKMPopUpPanel sizes, but its internal panel: ItemsPanel
 // PopUpPanel draw bigger image behind it
 constructor TKMPopUpPanel.Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
                                  aImageType: TKMPopUpBGImageType = pbYellow; aWithCrossImg: Boolean = False;
-                                 aShowBevel: Boolean = True; aShowShadeBevel: Boolean = True);
+                                 aBevelForContents: Boolean = True; aShowShadeBevel: Boolean = True);
 var
   margin, l, t, topMarg, baseW, baseH, w, h: Integer;
 begin
@@ -332,10 +333,10 @@ begin
   end;
 
   ItemsPanel.AnchorsStretch;
-  if aShowBevel then
+  if aBevelForContents then
   begin
-    BevelBG := TKMBevel.Create(ItemsPanel, 0, 0, ItemsPanel.Width, ItemsPanel.Height);
-    BevelBG.AnchorsStretch;
+    Bevel_Contents := TKMBevel.Create(ItemsPanel, 0, 0, ItemsPanel.Width, ItemsPanel.Height);
+    Bevel_Contents.AnchorsStretch;
   end;
 
   ImageBG.ImageStretch;
