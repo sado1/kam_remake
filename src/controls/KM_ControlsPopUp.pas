@@ -23,6 +23,7 @@ type
     fMenuMode: TKMPopUpMenuMode;
     procedure MenuHide(Sender: TObject);
     procedure MenuActionTriggered(Sender: TObject);
+    procedure HandleOtherControlMouseUp(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
     procedure SetItemIndex(aValue: Integer);
     function GetItemIndex: Integer;
     function GetItemTag(aIndex: Integer): Integer;
@@ -42,7 +43,6 @@ type
     property MenuMode: TKMPopUpMenuMode read fMenuMode;
 
     procedure MouseUp(X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
-    procedure ControlMouseUp(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
   end;
 
   TKMPopUpBGImageType = (
@@ -178,7 +178,7 @@ begin
 
   ColumnBox_List.Hide;
 
-  fMasterControl.SubscribeOnOtherMouseUp(ControlMouseUp);
+  fMasterControl.SubscribeOnOtherMouseUp(HandleOtherControlMouseUp);
 
   Hide;
 end;
@@ -250,7 +250,7 @@ begin
   ColumnBox_List.AbsLeft := X;
   ColumnBox_List.AbsTop := Y;
 
-  //Reset previously selected item
+  // Reset previously selected item
   ColumnBox_List.ItemIndex := -1;
 
   Show;
@@ -259,7 +259,7 @@ begin
 end;
 
 
-procedure TKMPopUpMenu.ControlMouseUp(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
+procedure TKMPopUpMenu.HandleOtherControlMouseUp(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
 begin
   MouseUp(X, Y, Shift, Button);
 end;
