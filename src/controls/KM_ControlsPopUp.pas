@@ -65,6 +65,10 @@ type
     procedure UpdateSizes;
     procedure Close(Sender: TObject);
 
+    procedure HandleOtherControlMouseMove(Sender: TObject; X,Y: Integer; Shift: TShiftState);
+    procedure HandleOtherControlMouseDown(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
+    procedure HandleOtherControlMouseUp(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
+
     function MarginMainLeftRight: Integer;
     function MarginMainTop: Integer;
     function MarginMainBottom: Integer;
@@ -100,11 +104,6 @@ type
     procedure MouseUp   (X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
 
     function KeyUp(Key: Word; Shift: TShiftState): Boolean; override;
-
-    procedure ControlMouseMove(Sender: TObject; X,Y: Integer; Shift: TShiftState);
-
-    procedure ControlMouseDown(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
-    procedure ControlMouseUp(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
 
     property OnClose: TKMEvent read fOnClose write fOnClose;
 
@@ -340,9 +339,9 @@ begin
   AnchorsCenter;
   Hide;
 
-  fMasterControl.SubscribeOnOtherMouseMove(ControlMouseMove);
-  fMasterControl.SubscribeOnOtherMouseDown(ControlMouseDown);
-  fMasterControl.SubscribeOnOtherMouseUp(ControlMouseUp);
+  fMasterControl.SubscribeOnOtherMouseMove(HandleOtherControlMouseMove);
+  fMasterControl.SubscribeOnOtherMouseDown(HandleOtherControlMouseDown);
+  fMasterControl.SubscribeOnOtherMouseUp(HandleOtherControlMouseUp);
 end;
 
 
@@ -402,14 +401,14 @@ begin
 end;
 
 
-procedure TKMPopUpPanel.ControlMouseDown(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
+procedure TKMPopUpPanel.HandleOtherControlMouseDown(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
 begin
   if Sender = Image_Background then
     MouseDown(X, Y, Shift, Button);
 end;
 
 
-procedure TKMPopUpPanel.ControlMouseMove(Sender: TObject; X, Y: Integer; Shift: TShiftState);
+procedure TKMPopUpPanel.HandleOtherControlMouseMove(Sender: TObject; X, Y: Integer; Shift: TShiftState);
 begin
   inherited;
 
@@ -417,7 +416,7 @@ begin
 end;
 
 
-procedure TKMPopUpPanel.ControlMouseUp(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
+procedure TKMPopUpPanel.HandleOtherControlMouseUp(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
 begin
   MouseUp(X, Y, Shift, Button);
 end;
