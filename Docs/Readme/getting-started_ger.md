@@ -18,10 +18,12 @@
 1. Besitze das originale Spiel (Knights and Merchants: The Peasants Rebellion):
 	- Installer von der originalen CD und GOG.com sollten einfach funktionieren.
 	- Falls du TPR von Steam erworben hast, musst du TPR mindestens ein mal ausgeführt haben, ansonsten kann es der Installer des Remakes nicht finden.
-	- Falls du Linux verwendest, siehe <https://github.com/reyandme/kam_remake/wiki/Game-installation-on-Linux>
+	- Falls du Linux verwendest, siehe [Linux Installation](https://github.com/reyandme/kam_remake/blob/master/Docs/Readme/linux-installation.md)
+	- Falls du Mac verwendest, siehe [Mac Installation](https://github.com/reyandme/kam_remake/blob/master/Docs/Readme/mac-installation.md)
 1. Führe den Remake Installer aus und folge den Anweisungen.
     - In case it shows error "Setup hat ermittelt, dass Knights and Merchants: The Peasants Rebellion nicht installiert ist.", but you already installed TPR long time ago, try installing TPR again, as it is possible it got corrupted over time.
     - In case the installer window is not shown at all: right click "KaM Remake installer.exe" -> tab General -> Security: set [v] Unblock
+    - OpenAL is required for sound to work properly. The installer will ask, if you want it to be automatically installed.
 1. Das KaM Remake verwendet OpenGL für die Grafiken. Falls es visuelle Probleme gibt oder das Spiel nicht gestartet werden kann, besuche die Webseite deiner Grafikkarte und hole dir den aktuellsten Treiber.
 1. Launch the mod - KaM_Remake.exe or from the Desktop/Start Menu if you chose to create shortcuts.
 

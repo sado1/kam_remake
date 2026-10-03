@@ -18,10 +18,12 @@
 1. Приобретите оригинальную игру "Knights and Merchants: The Peasants Rebellion" (В РФ была локализована как: "Война и мир") :
 	- Установка с оригинального CD диска или с сайта GOG.com также подойдёт.
 	- Если вы купили игру в Steam, то после покупки её нужно запустить хотя бы раз, чтобы при установке KaM Remake игра была обнаружена на устройстве.
-	- Если вы пользователь ОС Linux, по этой ссылке можно найти инструкцию для установки игры на эту операционную систему. <https://github.com/reyandme/kam_remake/wiki/Game-installation-on-Linux>
+	- Если вы пользователь ОС Linux, по этой ссылке можно найти инструкцию для установки игры на эту операционную систему. [Linux Installation](https://github.com/reyandme/kam_remake/blob/master/Docs/Readme/linux-installation.md)
+	- Если вы пользователь Mac, по этой ссылке можно найти инструкцию для установки игры на эту операционную систему.  [Mac Installation](https://github.com/reyandme/kam_remake/blob/master/Docs/Readme/mac-installation.md)
 1. Запустите установку KaM Ramake и следуйте инструкциям.
     - In case it shows error "Мастер установки не обнаружил установленной игры Knights and Merchants: The Peasants Rebellion.", but you already installed TPR long time ago, try installing TPR again, as it is possible it got corrupted over time.
     - In case the installer window is not shown at all: right click "KaM Remake installer.exe" -> tab General -> Security: set [v] Unblock
+    - OpenAL is required for sound to work properly. The installer will ask, if you want it to be automatically installed.
 1. KaM Remake использует OpenGL для отрисовки графики. Если при игре появляются какие-либо визуальные проблемы, посетите сайт изготовителя вашей графической карты и убедитесь что вы используете последние драйверы.
 1. Запуск игры происходит с помощью исполнительного файла - KaM_Remake.exe или из панели "Пуск" если была проставлена галочка "Создать ярлыки".
 
