@@ -3093,10 +3093,10 @@ begin
         gNetworking.LastProcessedTick := fParams.Tick;
 
       // Tell the master server about our game on the specific tick (host only)
-      if fParams.IsMultiPlayerOrSpec and gNetworking.IsHost
-        and ((fParams.IsNormalMission and (fParams.Tick = ANNOUNCE_BUILD_MAP))
-        or (fParams.IsTactic and (fParams.Tick = ANNOUNCE_BATTLE_MAP))) then
-      gNetworking.ServerPoller.AnnounceGame(fParams.Name, fParams.MapFullCRC, gNetworking.Room.GetConnectedCount);
+      if fParams.IsMultiPlayerOrSpec
+      and gNetworking.IsHost
+      and ((fParams.IsNormalMission and (fParams.Tick = ANNOUNCE_BUILD_MAP)) or (fParams.IsTactic and (fParams.Tick = ANNOUNCE_BATTLE_MAP))) then
+        gNetworking.ServerPoller.AnnounceGame(fParams.Name, fParams.MapFullCRC, gNetworking.Room.GetConnectedCount);
 
       fScripting.UpdateState;
       gTerrain.UpdateState;
