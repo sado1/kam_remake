@@ -2,8 +2,8 @@ unit KM_AIFields;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_NavMesh, KM_AIInfluences, KM_Eye, KM_Supervisor,
-  KM_CommonClasses, KM_Points, KM_GameTypes;
+  KM_CommonClasses, KM_Points, KM_GameTypes,
+  KM_NavMesh, KM_AIInfluences, KM_Eye, KM_Supervisor;
 
 
 type
@@ -45,9 +45,6 @@ uses
   KM_Defaults,
   KM_DevPerfLog, KM_DevPerfLogTypes;
 
-const
-  AIFIELDS_MARKER = 'AIFields';
-
 
 { TKMAIFields }
 constructor TKMAIFields.Create();
@@ -67,6 +64,7 @@ begin
   FreeAndNil(fInfluences);
   FreeAndNil(fEye);
   FreeAndNil(fSupervisor);
+
   inherited;
 end;
 
@@ -90,7 +88,7 @@ end;
 
 procedure TKMAIFields.Save(SaveStream: TKMemoryStream);
 begin
-  SaveStream.PlaceMarker(AIFIELDS_MARKER);
+  SaveStream.PlaceMarker('AIFields');
 
   SaveStream.Write(fCanHaveAAI);
   fNavMesh.Save(SaveStream);
@@ -106,7 +104,7 @@ end;
 
 procedure TKMAIFields.Load(LoadStream: TKMemoryStream);
 begin
-  LoadStream.CheckMarker(AIFIELDS_MARKER);
+  LoadStream.CheckMarker('AIFields');
 
   LoadStream.Read(fCanHaveAAI);
   fNavMesh.Load(LoadStream);
