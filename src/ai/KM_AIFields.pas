@@ -43,6 +43,7 @@ implementation
 uses
   SysUtils,
   KM_Defaults,
+  KM_HandsCollection,
   KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
@@ -120,6 +121,9 @@ end;
 
 procedure TKMAIFields.UpdateState(aTick: Cardinal);
 begin
+  // Nothing was initialized (nor saved / loaded) if no hand can be AI
+  if not gHands.CanHaveAI then Exit;
+
   {$IFDEF DBG_PERFLOG}
   gPerfLogs.SectionEnter(psAIFields);
   {$ENDIF}

@@ -3101,8 +3101,7 @@ begin
       fScripting.UpdateState;
       gTerrain.UpdateState;
 
-      if gHands.CanHaveAI() then
-        gAIFields.UpdateState(fParams.Tick);
+      gAIFields.UpdateState(fParams.Tick);
 
       gHands.UpdateState(fParams.Tick); // Quite slow
 
