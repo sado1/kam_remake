@@ -31,18 +31,18 @@ uses
 procedure TKMKeysSettings.UpdateResKeys;
 var
   KF: TKMKeyFunction;
-  nKey, fHotkeysNode: TKMXmlNode;
+  nHotkeys, nKey: TKMXmlNode;
   keyFuncName: string;
 begin
   if gResKeys = nil then Exit;
-  fHotkeysNode := Root.AddOrFindChild('Hotkeys');
+  nHotkeys := Root.AddOrFindChild('Hotkeys');
 
   for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
   begin
     keyFuncName := GetKeyFunctionStr(KF);
-    if fHotkeysNode.HasChild(keyFuncName) then
+    if nHotkeys.HasChild(keyFuncName) then
     begin
-      nKey := fHotkeysNode.AddOrFindChild(keyFuncName);
+      nKey := nHotkeys.AddOrFindChild(keyFuncName);
       if nKey.HasAttribute('Key') then
         gResKeys[KF] := nKey.Attributes['Key'].AsInteger;
     end;
