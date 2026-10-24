@@ -19,6 +19,7 @@ KaM Remake Beta r_____ []
 + Fixed terrain connectivity after applying terrain brushes from dynamic script
 + Fixed error in watching replays without AI opponents
 + Fixed animals blocking units when walking back and forth diagonally
++ Fixed minor flaw in multiplayer latency estimation
 
 
 KaM Remake Beta r16397 [2026.09.19]
