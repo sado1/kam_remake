@@ -3,7 +3,7 @@ unit KM_MainSettings;
 interface
 uses
   Classes,
-  {$IFDEF WDC}UITypes,{$ENDIF} //We use settings in console modules
+ // {$IFDEF WDC}UITypes,{$ENDIF} //We use settings in console modules
   KM_Resolutions,
   KM_Defaults,
   KM_WindowParams,
@@ -48,7 +48,8 @@ var
 
 implementation
 uses
-  SysUtils, INIfiles, Math, Forms;
+  SysUtils, Math,
+  Forms;
 
 const
   NO_RENDER_MAX_TIME_MIN = 10; //in ms
